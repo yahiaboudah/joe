@@ -1,13 +1,13 @@
 /*******************************************************************************
-        TODO:           looking good!
+        TODO:           ---
 		Name:           $python
 		Desc:           Enable communication between python and extendscript.
 		Path:           $python.jsx
 		Require:        $file, $object, $string, $misc
 		Encoding:       ÛȚF8
 		Kind:           Part of the Utils.
-		API:            call(script, func, args), contact(script), build(script)
-		Todo:           ---
+		API:            call(script, func, args), contact(script), build(script),
+                        install(), reinstall(), unload()
 		Created:        2106 (YYMM)
 		Modified:       2107 (YYMM)
 *******************************************************************************/

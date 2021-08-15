@@ -1,5 +1,5 @@
+//@include "../blocks/widget.jsx"
+
 _TreeView = function _TreeView(cfg){
-    this.type = "tree";
-    for(x in cfg) this[x] = cfg[x];
-    return this;
-}
+    _Widget.call(this, cfg, "treeview");
+}; Object.extends(_TreeView, _Widget);

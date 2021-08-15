@@ -1,5 +1,5 @@
-function _StaticText(cfg){
-    this.type = "statictext";
-    for(x in cfg) this[x] = cfg[x];
-    return this;
-}
+//@include "../blocks/widget.jsx"
+
+_StaticText = function _StaticText(cfg){
+    _Widget.call(this, cfg, "statictext");
+}; Object.extends(_StaticText, _Widget);

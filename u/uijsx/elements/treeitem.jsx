@@ -1,5 +1,5 @@
+//@include "../blocks/widget.jsx"
+
 _TreeItem = function _TreeItem(cfg){
-    this.type = "treeitem";
-    for(x in cfg) this[x] = cfg[x];
-    return this;
-}
+    _Widget.call(this, cfg, "treeitem");
+}; Object.extends(_TreeItem, _Widget);

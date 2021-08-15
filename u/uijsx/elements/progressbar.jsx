@@ -1,5 +1,5 @@
+//@include "../blocks/widget.jsx"
+
 _ProgressBar = function _ProgressBar(cfg){
-    this.type = "progressbar";
-    for(x in cfg) this[x] = cfg[x];
-    return this;
-}
+    _Widget.call(this, cfg, "progressbar");
+}; Object.extends(_ProgressBar, _Widget);

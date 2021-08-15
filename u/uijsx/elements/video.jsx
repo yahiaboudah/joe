@@ -1,5 +1,5 @@
-function _Video(cfg){
-    this.type = "video";
-    for(x in cfg) this[x] = cfg[x];
-    return this;
-}
+//@include "../blocks/widget.jsx"
+
+_Video = function _Video(cfg){
+    _Widget.call(this, cfg, "video");
+}; Object.extends(_Video, _Widget);

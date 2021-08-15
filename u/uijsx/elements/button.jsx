@@ -1,5 +1,5 @@
+//@include "../blocks/widget.jsx"
+
 _Button = function _Button(cfg){
-    this.type = "button";
-    for(x in cfg) this[x] = cfg[x];
-    return this;
-}
+    _Widget.call(this, cfg, "button");
+}; Object.extends(_Button, _Widget);

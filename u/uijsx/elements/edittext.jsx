@@ -1,6 +1,5 @@
+//@include "../blocks/widget.jsx"
 
-function _EditText(cfg){
-    this.type = "edittext";
-    for(x in cfg) this[x] = cfg[x];
-    return this;
-}
+_EditText = function _EditText(cfg){
+    _Widget.call(this, cfg, "edittext");
+}; Object.extends(_EditText, _Widget);

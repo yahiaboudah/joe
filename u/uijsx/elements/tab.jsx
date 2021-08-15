@@ -1,5 +1,5 @@
+//@include "../blocks/container.jsx"
+
 _Tab = function _Tab(cfg){
-    this.type = "tab";
-    for(x in cfg) this[x] = cfg[x];
-    return this;
-}
+    _Widget.call(this, cfg, "tab");
+}; Object.extends(_Tab, _Container);

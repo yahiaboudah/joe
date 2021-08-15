@@ -1,5 +1,5 @@
-function _IconButton(cfg){
-    this.type = "image";
-    for(x in cfg) this[x] = cfg[x];
-    return this;
-}
+//@include "../blocks/widget.jsx"
+
+_IconButton = function _IconButton(cfg){
+    _Widget.call(this, cfg, "iconbutton");
+}; Object.extends(_IconButton, _Widget);

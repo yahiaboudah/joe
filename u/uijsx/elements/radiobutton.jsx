@@ -1,5 +1,5 @@
+//@include "../blocks/widget.jsx"
+
 _RadioButton = function _RadioButton(cfg){
-    this.type = "radiobutton";
-    for(x in cfg) this[x] = cfg[x];
-    return this;
-}
+    _Widget.call(this, cfg, "radiobutton");
+}; Object.extends(_RadioButton, _Widget);

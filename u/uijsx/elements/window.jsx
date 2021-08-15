@@ -1,3 +1,12 @@
+
+function oinfo($obj, $type){
+    for(var i=0, str = "", ps = $obj.reflect[$type], len = ps.length; i<len; i++)
+    {
+        k    = ps[i].toString();
+        str += (k + ": " + uneval(win[k]) + "\n");
+    }   return str;
+}
+
 function _Window(cfg){
     
     this.win  = new Window(cfg.type);
@@ -22,3 +31,19 @@ function _Window(cfg){
 
     return this.win;
 }
+
+win = new Window("palette");
+b= win.add("button", undefined, "some random button");
+
+Window.prototype.fill = function(cfg){
+    for(x in cfg) this[x] = cfg[x];
+}
+
+$.writeln(oinfo(win, "properties"));
+
+win.fill({
+    visible: true,
+    opacity: 1,
+    enabled: true
+})
+win.show();

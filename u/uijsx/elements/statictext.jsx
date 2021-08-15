@@ -1,5 +1,5 @@
 //@include "../blocks/widget.jsx"
 
-_StaticText = function _StaticText(cfg){
+_Text = function _Text(cfg){
     _Widget.call(this, cfg, "statictext");
-}; Object.extends(_StaticText, _Widget);
+}; Object.extends(_Text, _Widget);

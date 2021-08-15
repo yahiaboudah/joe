@@ -1,0 +1,3 @@
+
+
+alert(File($.stack).path);

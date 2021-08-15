@@ -2,7 +2,7 @@
         TODO:           looking good!
 		Name:           $python
 		Desc:           Enable communication between python and extendscript.
-		Path:           ../utils/$python.jsx
+		Path:           $python.jsx
 		Require:        $file, $object, $string, $misc
 		Encoding:       ÛȚF8
 		Kind:           Part of the Utils.
@@ -15,10 +15,10 @@ delete($.global.python);
 ($.global.hasOwnProperty("python") || (function (host, self){
 
     /*******************************************************/
-    //@include "utils/$file.jsx"
-    //@include "utils/$object.jsx"
-    //@include "utils/$string.jsx"
-    //@include "utils/$misc.jsx"
+    //@include "../utjsx/$file.jsx"
+    //@include "../utjsx/$object.jsx"
+    //@include "../utjsx/$string.jsx"
+    //@include "../utjsx/$misc.jsx"
     /*******************************************************/
     host[self] = self;
 

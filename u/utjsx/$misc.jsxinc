@@ -74,8 +74,9 @@
         return JSON.parse(obb);
     }
 
-    self.frame = function(){
+    self.frame = function(str, size){
         
+        var size    = typeof size == "undefined"?50: size;
         var block   = String.fromCharCode(9632); // the block character: ■
         var entry   = ((size+2) / 2) - (str.length / 2);
         return      ( 

@@ -1,10 +1,8 @@
 
-//@include "c:/p/Joe/u/utjsx/$object.jsxinc"
-//@include "c:/p/Joe/u/utjsx/$array.jsxinc"
 
-w = new Window("palette");
-button = w.add("iconbutton", undefined, "d:/ICONS/img/sova.png")
-
-$.writeln(Object.print(button.graphics.PenType))
-
+w = new Window("palette", "shit");
+image = w.add("image", undefined, "d:/ICONS/img/sova.png")
+image.addEventListener("click", function(){
+    image.image = "/d/ICONS/img/edit.png"
+})
 w.show();

@@ -10,32 +10,43 @@
 // }))
 // win.show();
 
-function playvideo(winObj, pp){
-    
-    seq = Folder(pp).getFiles("*.jpg");
-    $.writeln(seq.length);
-    $.writeln(seq[0].toSource())
-    for(var i=0, len = seq.length; i<len; i++){
-        curr = winObj.add("image", undefined, seq[i]);
-        winObj.layout.layout(true);
-        winObj.remove(curr);
-        winObj.layout.layout(true);
-    }
-}
+var counter = 1;
 
+Image.prototype.refresh = function(){
+    var wh = this.size;
+    this.size = [1+wh[0],1+wh[1]];
+    this.size = [wh[0],wh[1]];
+    wh = null;
+}
 var w = new Window ("palette", "Video Player");
 var play = w.add ("iconbutton", undefined, File ("/d/ICONS/img/edit.png"));
+var myImage  = w.add("image", undefined,File ("d:/media/Memes/exp/1.jpg") )
 
-play.onClick  = function(){
-    seq = Folder("d:/ICONS/img").getFiles();
-    for(var i=0, len = seq.length; i<2; i++){
-        curr = w.add("image", undefined, seq[i]);
-        w.layout.layout(true);
-        // $.sleep(500);
-        // w.remove(curr);
-        // w.layout.layout(true);
-    }
+myImage.onDraw = function()
+{
+    this.graphics.drawImage(ScriptUI.newImage("d:/media/Memes/exp/"+counter+".jpg"),0, 0);
+};
+
+play.onClick = function(){
+    counter++;
+    myImage.refresh();
 }
+
+// counter = 0;
+// seq = Folder("d:/media/Memes/exp").getFiles();
+
+// play.onClick  = function(){
+    
+//     pp = seq[counter].fsName;
+//     if(counter == seq.length-1)
+//     {
+//         counter = 0;
+//         return;
+//     }
+//     img.image = pp;
+//     counter++;
+//     // this.notify("onClick");
+// }
 
 w.show();
 

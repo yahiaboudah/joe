@@ -24,3 +24,22 @@ _Element.prototype.define = function(cfg){
         } catch(e) {continue};
     }
 }
+
+_Element.prototype.assign = function(val, def, types, callback){
+    type = typeof val;
+    if(typeof types == "array")
+    {
+        for(var i=0, l = types.length;i <l; i++)
+        {
+            if(type == types[i]) return val;
+        } 
+        return def;
+    }
+    if(callback !== undefined)
+    {
+        isDef = callback.call(null, val);
+        return !isDef? def:val;
+    }
+    if(type == "undefined") return def;
+    return val; 
+}

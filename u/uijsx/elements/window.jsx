@@ -7,6 +7,10 @@ _Window = function _Window(cfg){
     this.win.preferredSize.width = this.width;
     this.win.preferredSize.height = this.height;
     this.win.text = this.title;
+    this.win.orientation = this.orientation;
+    this.win.alignChildren = this.alignChildren;
+    this.win.spacing = this.spacing;
+    this.win.margins = this.margins;
 
 }; Object.extends(_Window, _Container);
 

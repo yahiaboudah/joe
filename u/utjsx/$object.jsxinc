@@ -13,10 +13,10 @@
 		Created:        2106 (YYMM)
 		Modified:       2107 (YYMM)
 *******************************************************************************/
-//@include "$array.jsx"
-//@include "$arguments.jsx"
-//@include "$file.jsx"
-//@include "$json.jsx"
+//@include "$array.jsxinc"
+//@include "$arguments.jsxinc"
+//@include "$file.jsxinc"
+//@include "$json.jsxinc"
 /******************************************************************************/
 
 Object.keys = (function () {
@@ -219,6 +219,19 @@ Object.print = function(obj, lvl, writeit) {
     var str = "",
         hdr = "",
         max = 50;
+    
+    function frame(){
+        var block   = String.fromCharCode(9632); // the block character: ■
+        var entry   = ((size+2) / 2) - (str.length / 2);
+        return      ( 
+                    block.repeat(size+2)+
+                    "\n"+
+                    block.repeat(3)+" ".repeat(entry) + str + " ".repeat(size-entry-str.length-4) +block.repeat(3-str.length%2)+ 
+                    "\n"+
+                    block.repeat(size+2)+
+                    "\n"
+                    );
+    }
 
     hdr = "["+obj.constructor.name+"]: w/len: " + Object.size(obj);
     str    = (frame(hdr, max) + Object.stringify(obj, lvl));

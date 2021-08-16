@@ -11,9 +11,9 @@
 		Created:        2106 (YYMM)
 		Modified:       2107 (YYMM)
 *******************************************************************************/
-//@include "$$.jsx"
-//@include "$array.jsx"
-//@include "$string.jsx"
+//@include "$$.jsxinc"
+//@include "$array.jsxinc"
+//@include "$string.jsxinc"
 /******************************************************************************/
 
 File.prototype.isOpen = false;

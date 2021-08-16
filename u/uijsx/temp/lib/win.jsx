@@ -1,5 +1,5 @@
 //@include "activeproject.jsx"
-//@include "activescene.jsx"
+//@include "../../elements/window.jsx"
 
 app = new _Window({
     type: "palette",
@@ -11,7 +11,8 @@ app = new _Window({
     spacing: 10,
     margins: 16,
     children: [
-        new ActiveProject(),
-        new ActiveScene()
+        new _Button({
+            text: "stuff goes here!"
+        })
     ]
 })

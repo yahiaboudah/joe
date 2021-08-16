@@ -3,6 +3,7 @@
 
 _Container = function _Container(cfg){
     _Element.call(this, cfg);
+
 }; Object.extends(_Container, _Element);
 
 _Container.prototype.populate = function(obj, children){

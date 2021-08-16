@@ -2,7 +2,7 @@
 //@include "../../elements/tab.jsx"
 //@include "../../elements/statictext.jsx"
 
-function Soul(){
+function Plan(){
     this.build = function()
     {
         return new _TabbedPanel({

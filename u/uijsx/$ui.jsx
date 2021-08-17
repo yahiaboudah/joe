@@ -10,27 +10,26 @@
 // }))
 // win.show();
 
-var counter = 1;
+// Image.prototype.refresh = function(){
+//     var wh = this.size;
+//     this.size = [1+wh[0],1+wh[1]];
+//     this.size = [wh[0],wh[1]];
+//     wh = null;
+// }
+// var w = new Window ("palette", "Video Player");
+// var play = w.add ("iconbutton", undefined, File ("/d/ICONS/img/edit.png"));
+// var myImage  = w.add("image", undefined,File ("d:/media/Memes/exp/1.jpg") , {counter: 1})
 
-Image.prototype.refresh = function(){
-    var wh = this.size;
-    this.size = [1+wh[0],1+wh[1]];
-    this.size = [wh[0],wh[1]];
-    wh = null;
-}
-var w = new Window ("palette", "Video Player");
-var play = w.add ("iconbutton", undefined, File ("/d/ICONS/img/edit.png"));
-var myImage  = w.add("image", undefined,File ("d:/media/Memes/exp/1.jpg") )
+// myImage.onDraw = function()
+// {
+//     this.properties.counter++;
+//     this.graphics.drawImage(ScriptUI.newImage("d:/media/Memes/exp/"+this.properties.counter+".jpg"),0, 0);
+// };
 
-myImage.onDraw = function()
-{
-    this.graphics.drawImage(ScriptUI.newImage("d:/media/Memes/exp/"+counter+".jpg"),0, 0);
-};
+// play.onClick = function(){
+//     myImage.refresh();
+// }
 
-play.onClick = function(){
-    counter++;
-    myImage.refresh();
-}
 
 // counter = 0;
 // seq = Folder("d:/media/Memes/exp").getFiles();
@@ -48,7 +47,7 @@ play.onClick = function(){
 //     // this.notify("onClick");
 // }
 
-w.show();
+// w.show();
 
 // icon = flowers["icon"];
 // for(y in icon)
@@ -78,3 +77,68 @@ w.show();
 // var flowers = w.add ("image", undefined, File ("/d/media/Memes/exp/5.jpg"));
 // flowers.size = [250,250];
 // w.show ();
+
+// =============================
+
+// var w = new Window( "palette", "Alert Box Builder");
+
+// p = w.add("panel", undefined, "my panel")
+// b = p.add("iconbutton", undefined, "d:/ICONS/img/edit.png");
+// b2= p.add("iconbutton", undefined, "d:/icons/img/ae composition.png");
+
+
+// ScriptUI.events.createEvent( "MouseEvent" );
+
+// w.addEventListener("mousedown", function(){
+//     alert("Window was clicked!");
+// })
+
+// p.addEventListener("mousedown", function(){
+//     alert("panel clicked!");
+// })
+
+// b.addEventListener("mousedown", function(){
+//     alert("button was clicked!");
+// })
+
+// b2.addEventListener("mousedown", function(){
+//     alert("comp button was clicked!");
+// })
+
+// w.show();
+
+// ======================================
+clearOutput();
+w = new Window("palette");
+
+b = w.add("iconbutton", undefined, "d:/icons/img/edit.png")
+
+p = w.add("panel", undefined, "myPanel")
+p.orientation = "stack";
+
+// i = p.add("image", undefined, "d:/media/memes/exp/1.jpg");
+fs = Folder("d:/media/memes/exp/").getFiles();
+    for(var i=0,len=fs.length; i<len; i++){
+        write("getting it!");
+        p.add("image", undefined, fs[i]);
+        write(p.children.length)
+        if(i < len -1) clearOutput()
+    }
+
+b.onClick = function(){
+    for(var i =p.children.length-1;i>=0;i--)
+    {
+        // alert("removing child: " + String(0));
+        //alert("crap")
+        //if(typeof p.children[g] == "undefined") alert("not real");
+        p.children[i].hide();
+        alert("some shit");
+        // l.remove();
+
+        clearOutput();
+        // alert("removed");
+    }
+}
+
+w.show();
+

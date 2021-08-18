@@ -116,27 +116,22 @@ b = w.add("iconbutton", undefined, "d:/icons/img/edit.png")
 p = w.add("panel", undefined, "myPanel")
 p.orientation = "stack";
 
-// i = p.add("image", undefined, "d:/media/memes/exp/1.jpg");
-fs = Folder("d:/media/memes/exp/").getFiles();
-    for(var i=0,len=fs.length; i<len; i++){
-        write("getting it!");
-        p.add("image", undefined, fs[i]);
-        write(p.children.length)
-        if(i < len -1) clearOutput()
-    }
+img = p.add("image", undefined, "d:/media/memes/exp/1.jpg", {name: "curr"});
 
 b.onClick = function(){
-    for(var i =p.children.length-1;i>=0;i--)
-    {
-        // alert("removing child: " + String(0));
-        //alert("crap")
-        //if(typeof p.children[g] == "undefined") alert("not real");
-        p.children[i].hide();
-        alert("some shit");
-        // l.remove();
-
-        clearOutput();
-        // alert("removed");
+    fs = Folder("d:/media/memes/exp/").getFiles();
+    i  = 1;
+    while(i < fs.length){
+        // p.remove("curr");
+        // p.add("image", undefined, fs[i++], {name: "curr"});
+        // p.layout.layout(true);
+        app.setTimeout(function(i){
+            p.remove("curr");
+            p.add("image", undefined, fs[i++], {name: "curr"});
+            p.layout.layout(true);
+        }, 10);
+        g=0;
+        while(g < 1000) g++;
     }
 }
 

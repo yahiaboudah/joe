@@ -4,25 +4,19 @@ _Window = function _Window(cfg){
     _Container.call(this, cfg, "window");
 
 
-    var evHandlingFuncs = ["Close", "Activate", "Move", "Moving", "Resize", "Resizing", "ShortcutKey", "Show"];
-    var falseProps = ["spacing", "margins","resizeable", "minimizeButton", "maximizeButton", "independent", "borderless"];
-    var defSizeFunc = function(x){return x <= 10};
+    var evHndFuncs = ["Close", "Activate", "Move", "Moving", "Resize", "Resizing", "ShortcutKey", "Show"],
+        falseProps = ["spacing", "margins","resizeable", "minimizeButton", "maximizeButton", "independent", "borderless"];
+    
+    var defSizeFunc = function(x){return x <= 10},
+        winTypeFunc = function(t){return ((t != "window") && (t != "palette") && (t != "dialog"))}
 
     // Window properties:
-    this.wintype = this.assign(this.wintype, "palette", ["string"],
-                    function(t){
-                        if(t != "window"
-                        && t != "palette"
-                        && t != "dialog"){
-                            return true;
-                        }
-                    });
-
+    this.wintype = this.assign(this.wintype, "palette", ["string"], winTypeFunc);
+    
     this.win = new Window(this.wintype);
     
     // size:
     this.win.preferredSize.width = this.assign(this.width,200, undefined, defSizeFunc);
-    
     this.win.preferredSize.height = this.assign(this.height,200, undefined, defSizeFunc);
 
     // custom props:
@@ -32,16 +26,11 @@ _Window = function _Window(cfg){
     this.win.closeButton = this.assign(this.closeButton, true);
 
     // false props:
-    for(i=-1; ++i<falseProps.length;)
-    {
-        p = falseProps[i];
+    for(i=0; i<falseProps.length;i++, p= falseProps[i]){ 
         this.win[p] = this.assign(this[p], 0);
     }
-
     // Event handling:
-    for(i=-1; ++i<evHandlingFuncs.length;)
-    {
-        f = "on" + (f = evHandlingFuncs[i]);
+    for(i=0; i<evHndFuncs.length;i++, f = "on" + (f = evHndFuncs[i])){
         this.win[f] = this.assign(this[f], undefined, ["function"]);
     }
 

@@ -5,6 +5,7 @@ _Window = function _Window(cfg){
 
 
     var evHandlingFuncs = ["Close", "Activate", "Move", "Moving", "Resize", "Resizing", "ShortcutKey", "Show"];
+    var falseProps = ["spacing", "margins","resizeable", "minimizeButton", "maximizeButton", "independent", "borderless"];
 
     // Window properties:
     this.wintype = this.assign(this.wintype, "palette", ["string"],
@@ -27,18 +28,17 @@ _Window = function _Window(cfg){
                 this.assign(this.height,200, undefined,
                 function(x){return x<=10});
 
+    // false props:
+    for(i=-1; ++i<falseProps.length;)
+    {
+        p = falseProps[i];
+        this.win[p] = this.assign(this[p], 0);
+    }
     // props:
     this.win.text = this.assign(this.title, "untitled", ["string"]);
     this.win.orientation = this.assign(this.orientation, "column");
     this.win.alignChildren = this.assign(this.alignChildren, ["left", "center"], ["array", "string"]);
-    this.win.spacing = this.assign(this.spacing, 0);
-    this.win.margins = this.assign(this.margins,0);
-    this.win.resizeable = this.assign(this.resizeable, false);
     this.win.closeButton = this.assign(this.closeButton, true);
-    this.win.minimizeButton = this.assign(this.minimizeButton, false);
-    this.win.maximizeButton = this.assign(this.maximizeButton, false);
-    this.win.independent = this.assign(this.independent, false);
-    this.win.borderless = this.assign(this.borderless, false);
 
     // Event handling:
     for(i=-1; ++i<evHandlingFuncs.length;)

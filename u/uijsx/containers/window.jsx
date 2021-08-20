@@ -47,34 +47,13 @@ _Window = function _Window(cfg){
 
 }; Object.extends(_Window, _Container);
 
-_Window.alert = function(cfg)
-{
-    Window.alert(cfg.msg, cfg.title, cfg.errIcon);
-}
+// class funcs:
+_Window.alert   = Function("cfg", "Window.alert(cfg.msg, cfg.title, cfg.errIcon)");
+_Window.confirm = Function("cfg", "Window.confirm(cfg.msg, cfg.defNo, cfg.title)");
+_Window.find    = Function("cfg", "Window.find(cfg.type, cfg.title)")
+_Window.prompt  = Function("cfg", "Window.prompt(cfg.msg, cfg.defValue, cfg.title)");
 
-_Window.confirm = function(cfg)
-{
-    Window.confirm(cfg.msg, cfg.defNo, cfg.title);
-}
-
-_Window.find = function(cfg)
-{
-    Window.find(cfg.type, cfg.title);
-}
-
-_Window.prompt = function(cfg)
-{
-    Window.prompt(cfg.msg, cfg.defValue, cfg.title);
-}
-
-_Window.prototype.show = function(){
-    this.win.show();
-}
-
-_Window.prototype.close = function(){
-    this.win.close();
-}
-
-_Window.prototype.center = function(){
-    this.win.center();
-}
+// win obj funcs:
+_Window.prototype.show   = Function("this.win.show()");
+_Window.prototype.close  = Function("this.win.close()");
+_Window.prototype.center = Function("this.win.center()");

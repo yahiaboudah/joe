@@ -7,5 +7,7 @@
     "vscode": "c:/dev/vscode/code.exe*Visual Studio Code",
     "audacity": "c:/audio/Audacity/audacity.exe*Audacity",
     "discord": "C:/interbot/Discord/app-1.0.9002/Discord.exe*Discord",
-    "dc": "C:/interbot/Discord/app-1.0.9002/Discord.exe*Discord"
+    "dc": "C:/interbot/Discord/app-1.0.9002/Discord.exe*Discord",
+    "valorant": "D:/Games/Riot Games/VALORANT/VALORANT.lnk*Valorant",
+    "val": "D:/Games/Riot Games/VALORANT/VALORANT.lnk*Valorant"
 }

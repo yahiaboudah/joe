@@ -1,7 +1,5 @@
 
-import json
-import argparse
-import subprocess
+import json, argparse, subprocess, os
 
 PROGRAMS = "c:/pro/joe/commandopen/programs.json"
 
@@ -47,7 +45,10 @@ class ProgramOpener():
             data = my_programs[process].split('*')
             pr, msg = data[0], self.open_msg(data[1])
 
-            subprocess.Popen(pr)
+            ext = pr.split('.')[1]
+            if(ext == 'lnk'): os.startfile(pr)
+            else:             subprocess.Popen(pr)
+            
             return msg
         
         else: return self.fail_msg(process)

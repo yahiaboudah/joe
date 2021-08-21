@@ -1,5 +1,4 @@
 
-
 w = new Window("palette", "some of my shit");
 
 w.orientation = "row";

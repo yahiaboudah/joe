@@ -26,10 +26,8 @@ class ProgramOpener():
                                         usage='%(prog)s program_name')
 
         my_parser.add_argument('program', action='store', type=str)
-
-        args = my_parser.parse_args()
-
-        self.passed_pr_name = vars(args)["program"]
+        
+        self.passed_pr_name = vars(my_parser.parse_args())["program"]
     
     def run_cli(self):
         self.cli()

@@ -209,3 +209,122 @@
 //   }
 //  w.close();
 //  }
+
+// var names = ["Annabel", "Bertie", "Caroline", "Debbie", "Erica"];
+// var w = new Window ("dialog", "Place documents", undefined, {closeButton: false});
+// w.alignChildren = "right";
+// var main = w.add ("group");
+//  main.add ("statictext", undefined, "Folder: ");
+//  var group = main.add ("group {alignChildren: 'left', orientation: 'stack'}");
+
+//  var list = group.add ("dropdownlist", undefined, names);
+ 
+//  var e = group.add ("edittext");
+//  e.text = names[0]; e.active = true;
+ 
+//  list.preferredSize.width = 240;
+//  e.preferredSize.width = 220; e.preferredSize.height = 20;
+
+// var buttons = w.add ("group")
+//  buttons.add ("button", undefined, "OK");
+//  buttons.add ("button", undefined, "Cancel");
+
+// list.onChange = function () {
+//  e.text = list.selection.text;
+//  e.active = true;
+// }
+// w.show ();
+
+// var w = new Window ("dialog");
+// var tree = w.add ("treeview", [0, 0, 150, 150]);
+// var mammals = tree.add ("node", "Mammals");
+//  mammals.add ("item", "cats");
+//  mammals.add ("item", "dogs");
+// var insects = tree.add ("node", "Insects");
+//  insects.add ("item", "ants");
+//  insects.add ("item", "bees");
+//  insects.add ("item", "flies");
+// mammals.expanded = true;
+// insects.expanded = true;
+// w.show ();
+
+/* Treeview with icons:: */
+// var w = new Window ("dialog");
+// var tree = w.add ("treeview", [0, 0, 150, 200]);
+// var folder_1 = tree.add ("node", "Folder 1");
+//  folder_1.image = File ("/d/icons/img/edit.png");
+//  folder_1.add ("item", "File 1 1");
+//  folder_1.items[0].image = File ("/d/icons/img/ae composition.png");
+//  folder_1.add ("item", "File 1 2");
+//  folder_1.items[1].image = File ("/d/icons/img/ae composition.png");
+//  folder_1.add ("item", "File 1 3");
+//  folder_1.items[2].image = File ("/d/icons/img/ae composition.png");
+// var folder_2 = tree.add ("node", "Folder 2");
+//  folder_2.image = File ("/d/icons/img/edit.png");
+//  folder_2.add ("item", "File 2 1");
+//  folder_2.add ("item", "File 2 2");
+//  folder_2.add ("item", "File 2 3");
+//  // another method to add the icons
+//  for (var i = 0; i < folder_2.items.length; i++){
+//  folder_2.items[i].image = File ("/d/icons/img/ae composition.png");
+//  }
+// folder_1.expanded = true;
+// folder_2.expanded = true;
+// w.show();
+
+// var w = new Window ('dialog');
+// var tree = w.add ('treeview', [0, 0, 150, 350]);
+// var mammals = tree.add ('node', 'Mammals');
+//  mammals.cats = mammals.add ('node', 'cats');
+//  mammals.cats.add ('item', 'tabbies');
+//  mammals.cats.add ('item', 'tiggers');
+//  mammals.dogs = mammals.add ('node', 'dogs');
+//  mammals.dogs.add ('item', 'terrier');
+//  mammals.dogs.collies = mammals.dogs.add ('node', 'colly');
+//  mammals.dogs.collies.add ('item', 'border');
+//  mammals.dogs.collies.add ('item', 'highland');
+//  mammals.dogs.add ('item', 'labrador');
+// var insects = tree.add ('node', 'Insects');
+//  insects.add ('item', 'ants');
+//  insects.add ('item', 'bees');
+//  insects.add ('item', 'flies');
+// var fgroup = w.add ('group {_: StaticText {text: "Find: "}}');
+//  var srch = fgroup.add ('edittext {characters: 10}');
+// var search_button = w.add ('button {text: "Search"}');
+// search_button.onClick = function (){
+//  var items = find_item (tree, [], srch.text);
+//  if (items.length == 0) { // Nothing found
+//  tree.selection = null;
+//  return;
+//  }
+//  var item = items[0];
+//  var temp = item; // store this so we can select it later
+//  // Expand the full path
+//  while (item.parent.constructor.name != 'TreeView') {
+//  item.parent.expanded = true;
+//  item = item.parent;
+//  }
+//  tree.selection = temp;
+//  tree.active = true;
+// } // search_button.onClick
+// 51
+// function find_item (tree, list, item){
+//  var branches = tree.items;
+//  for (var i = 0; i < branches.length; i++) {
+//  if (branches[i].type == 'node') {
+//  find_item (branches[i], list, item);
+//  } else if (branches[i].text == item) {
+//  list.push (branches[i]);
+//  }
+//  }
+//  return list;
+// }
+// w.show ();
+
+var w = new Window ("dialog");
+var s = w.add ("statictext", undefined, "Static");
+
+s.graphics.drawString("myself", s.graphics.newPen (w.graphics.PenType.SOLID_COLOR, [0.7,
+    0.7, 0.7], 1), 0,0, "Arial-Bold:50");
+
+w.show ();

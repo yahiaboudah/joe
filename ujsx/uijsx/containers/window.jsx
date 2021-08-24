@@ -37,24 +37,27 @@ _Window = function _Window(cfg){
                               ["string"], winTypeFunc);
 
     /*===================== make a Window instance ======================*/
-    this.win = new Window(this.wintype, undefined);
+    this.win = new Window(this.wintype);
     /*===================================================================*/
 
     // size:
-    this.win.preferredSize.width = this.assign(
-                                    this.width,200,
-                                    ["number"],
-                                    defSizeFunc
-                                );
-    this.win.preferredSize.height = this.assign(
-                                   this.height,200,
-                                   ["number"],
-                                   defSizeFunc);
+    if(!this.nosize)
+    {
+        this.win.preferredSize.width = this.assign(
+            this.width,200,
+            ["number"],
+            defSizeFunc
+        );
+        this.win.preferredSize.height = this.assign(
+           this.height,200,
+           ["number"],
+           defSizeFunc);
+    }
 
     // custom props:
     this.win.text          = this.assign(this.title,        "untitled",          ["string"]         );
     this.win.orientation   = this.assign(this.orientation,  "column",            undefined          );
-    this.win.alignChildren = this.assign(this.alignChildren, ["center", "center"], ["array", "string"]);
+    this.win.alignChildren = this.assign(this.alignChildren, undefined         , ["array", "string"]);
     this.win.closeButton   = this.assign(this.closeButton,   true,               undefined          );
 
     for(i=-1; ++i<falseProps.length;) this.win[falseProps[i]] = this.assign(this[falseProps[i]], 0,          undefined  );
@@ -63,7 +66,12 @@ _Window = function _Window(cfg){
     /*=========== Populate with children ===============*/
     if(this["children"])
     {
-        c = this.win.add(this.children[0].type, undefined, this.children[0].text);
+        for(var i=0, len =this["children"].length; i< len; i++)
+        {
+            c = this.children[i];
+            cc = this.win.add(c.type, undefined, c.text);
+            cc.onClick = c["onClick"]; 
+        }
     }
 
 }; Object.extends(_Window, _Container);

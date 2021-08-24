@@ -4,17 +4,27 @@ _Window = function _Window(cfg){
     _Container.call(this, cfg, "window");
 
 
+    /**
+     * Liquify the newly created window instance with (window = new _Window({...})) using
+     * the cfg (configuration) object to set values for window args. Set default args if
+     * no property args are assigned.
+     * 
+     * 1) Copy cfg properties to *this*, the _Window instance or set default values.
+     * 2) Pass -this- properties into the built-in Window class instance.
+     * 3) A fully mature Window instance.
+    */
     var evHndFuncs = ["Close", "Activate", "Move", "Moving", "Resize", "Resizing", "ShortcutKey", "Show"],
         falseProps = ["spacing", "margins","resizeable", "minimizeButton", "maximizeButton", "independent", "borderless"];
     
     var defSizeFunc = function(x){return x <= 10},
         winTypeFunc = function(t){return ((t != "window") && (t != "palette") && (t != "dialog"))}
 
-    // Window properties:
     this.wintype = this.assign(this.wintype, "palette", ["string"], winTypeFunc);
-    
+
+    /*===================== make a Window instance ======================*/
     this.win = new Window(this.wintype);
-    
+    /*===================================================================*/
+
     // size:
     this.win.preferredSize.width = this.assign(this.width,200, undefined, defSizeFunc);
     this.win.preferredSize.height = this.assign(this.height,200, undefined, defSizeFunc);
@@ -26,12 +36,14 @@ _Window = function _Window(cfg){
     this.win.closeButton = this.assign(this.closeButton, true);
 
     // false props:
-    for(i=0; i<falseProps.length;i++, p= falseProps[i]){ 
+    for(i=-1; ++i<falseProps.length;){ 
+        p = falseProps[i];
         this.win[p] = this.assign(this[p], 0);
     }
-    // Event handling:
-    for(i=0; i<evHndFuncs.length;i++, f = "on" + (f = evHndFuncs[i])){
-        this.win[f] = this.assign(this[f], undefined, ["function"]);
+    // event handler functions:
+    for(i=-1; ++i<evHndFuncs.length;){
+        f = "on" + (f = evHndFuncs[i]);
+        this.win[f] = this.assign(this[f], function(){}, ["function"]);
     }
 
 }; Object.extends(_Window, _Container);

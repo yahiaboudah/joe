@@ -321,10 +321,10 @@
 // }
 // w.show ();
 
-var w = new Window ("dialog");
-var s = w.add ("statictext", undefined, "Static");
+// var w = new Window ("dialog");
+// var s = w.add ("statictext", undefined, "Static");
 
-s.graphics.drawString("myself", s.graphics.newPen (w.graphics.PenType.SOLID_COLOR, [0.7,
-    0.7, 0.7], 1), 0,0, "Arial-Bold:50");
+// s.graphics.drawString("myself", s.graphics.newPen (w.graphics.PenType.SOLID_COLOR, [0.7,
+//     0.7, 0.7], 1), 0,0, "Arial-Bold:50");
 
-w.show ();
+// w.show ();

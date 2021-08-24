@@ -13,37 +13,57 @@ _Window = function _Window(cfg){
      * 2) Pass -this- properties into the built-in Window class instance.
      * 3) A fully mature Window instance.
     */
-    var evHndFuncs = ["Close", "Activate", "Move", "Moving", "Resize", "Resizing", "ShortcutKey", "Show"],
-        falseProps = ["spacing", "margins","resizeable", "minimizeButton", "maximizeButton", "independent", "borderless"];
+    var evHndFuncs = ["Close", "Activate", "Move",
+                     "Moving", "Resize", "Resizing",
+                     "ShortcutKey", "Show"],
+        
+        falseProps = ["spacing", "margins",
+                     "resizeable", "borderless", 
+                    "minimizeButton", "maximizeButton",
+                     "independent"];
     
-    var defSizeFunc = function(x){return x <= 10},
-        winTypeFunc = function(t){return ((t != "window") && (t != "palette") && (t != "dialog"))}
+    var defSizeFunc = function(x)
+                    {
+                    return x <= 10
+                    },
+        winTypeFunc = function(t)
+                    {
+                    return ((t != "window") 
+                        && (t != "palette") 
+                        && (t != "dialog"))
+                    }
 
-    this.wintype = this.assign(this.wintype, "palette", ["string"], winTypeFunc);
+    this.wintype = this.assign(this.wintype, "palette",
+                              ["string"], winTypeFunc);
 
     /*===================== make a Window instance ======================*/
-    this.win = new Window(this.wintype);
+    this.win = new Window(this.wintype, undefined);
     /*===================================================================*/
 
     // size:
-    this.win.preferredSize.width = this.assign(this.width,200, undefined, defSizeFunc);
-    this.win.preferredSize.height = this.assign(this.height,200, undefined, defSizeFunc);
+    this.win.preferredSize.width = this.assign(
+                                    this.width,200,
+                                    ["number"],
+                                    defSizeFunc
+                                );
+    this.win.preferredSize.height = this.assign(
+                                   this.height,200,
+                                   ["number"],
+                                   defSizeFunc);
 
     // custom props:
-    this.win.text = this.assign(this.title, "untitled", ["string"]);
-    this.win.orientation = this.assign(this.orientation, "column");
-    this.win.alignChildren = this.assign(this.alignChildren, ["left", "center"], ["array", "string"]);
-    this.win.closeButton = this.assign(this.closeButton, true);
+    this.win.text          = this.assign(this.title,        "untitled",          ["string"]         );
+    this.win.orientation   = this.assign(this.orientation,  "column",            undefined          );
+    this.win.alignChildren = this.assign(this.alignChildren, ["center", "center"], ["array", "string"]);
+    this.win.closeButton   = this.assign(this.closeButton,   true,               undefined          );
 
-    // false props:
-    for(i=-1; ++i<falseProps.length;){ 
-        p = falseProps[i];
-        this.win[p] = this.assign(this[p], 0);
-    }
-    // event handler functions:
-    for(i=-1; ++i<evHndFuncs.length;){
-        f = "on" + (f = evHndFuncs[i]);
-        this.win[f] = this.assign(this[f], function(){}, ["function"]);
+    for(i=-1; ++i<falseProps.length;) this.win[falseProps[i]] = this.assign(this[falseProps[i]], 0,          undefined  );
+    for(i=-1; ++i<evHndFuncs.length;) this.win[evHndFuncs[i]] = this.assign(this[evHndFuncs[i]], undefined, ["function"]);
+
+    /*=========== Populate with children ===============*/
+    if(this["children"])
+    {
+        c = this.win.add(this.children[0].type, undefined, this.children[0].text);
     }
 
 }; Object.extends(_Window, _Container);

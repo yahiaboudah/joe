@@ -32,7 +32,10 @@ _Element.prototype.define = function(cfg){
 
 _Element.prototype.assign = function(val, def, types, callback){
     
-    type    = typeof val,
+    type    = val === undefined?
+              "undefined":
+              val.constructor.name.toLowerCase(); 
+    
     badType = false;
 
     if(types instanceof Array)

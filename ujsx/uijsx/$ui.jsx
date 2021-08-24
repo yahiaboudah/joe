@@ -107,33 +107,105 @@
 
 // w.show();
 
-// ======================================
-clearOutput();
-w = new Window("palette");
+// // ======================================
 
-b = w.add("iconbutton", undefined, "d:/icons/img/edit.png")
+// var dir = "/d/icons/img/";
+// var icons = {
+//             a: File(dir+"sova.png"), 
+//             b: File(dir+"edit.png"),
+//             c: File(dir+"ae composition.png"), 
+//             d: File(dir+"kj.png")}
 
-p = w.add("panel", undefined, "myPanel")
-p.orientation = "stack";
+// var w = new Window("dialog");
+// b = w.add ("iconbutton", undefined, ScriptUI.newImage ("/d/icons/img/sova.png",
+//                                                       "/d/icons/img/edit.png", 
+//                                                       "/d/icons/img/ae composition.png", 
+//                                                       "/d/icons/img/kj.png"));
+// a = w.add("button", undefined ,"disable other");
+// a.onClick = function(){
+//     b.enabled = !b.enabled;
+// }
+// w.show();
 
-img = p.add("image", undefined, "d:/media/memes/exp/1.jpg", {name: "curr"});
+// create an example array
+// lines = [];
+// for (i = 0; i < 20; i++)
+// lines.push ("Line " + String (i));
+// alert_scroll ("Example", lines);
 
-b.onClick = function(){
-    fs = Folder("d:/media/memes/exp/").getFiles();
-    i  = 1;
-    while(i < fs.length){
-        // p.remove("curr");
-        // p.add("image", undefined, fs[i++], {name: "curr"});
-        // p.layout.layout(true);
-        app.setTimeout(function(i){
-            p.remove("curr");
-            p.add("image", undefined, fs[i++], {name: "curr"});
-            p.layout.layout(true);
-        }, 10);
-        g=0;
-        while(g < 1000) g++;
-    }
-}
+// function alert_scroll (title, input) { // string, string/list
+// // if input is an array, convert it to a string
+// if (input instanceof Array)
+//  input = input.join ("\r");
+// var w = new Window ("dialog", title);
+// var list = w.add ("edittext", undefined, input, {multiline: true, scrolling: true, readonly: true});
+// // the list should not be taller than the maximum possible height of the window
+// list.maximumSize.height = w.maximumSize.height - 100;
+// list.minimumSize.width = 150;
+// w.add ("button", undefined, "Close", {name: "ok"});
+// w.show()}
 
-w.show();
+// var w = new Window ("dialog");
+// // w.alignChildren = "left";
+// var check1 = w.add ("checkbox", undefined, "Prefer white");
+// var check2 = w.add ("checkbox", undefined, "Prefer black and white");
+// check1.value = true;
+// w.show ();
 
+// var w = new Window ("dialog");
+// var radio_group = w.add ("panel");
+//  radio_group.alignChildren = "left";
+//  radio_group.add ("radiobutton", undefined, "InDesign");
+//  radio_group.add ("radiobutton", undefined, "PDF");
+//  radio_group.add ("radiobutton", undefined, "IDML");
+//  radio_group.add ("radiobutton", undefined, "Text");
+// w.add ("button", undefined, "OK");
+// // set dialog defaults
+// radio_group.children[0].value = true;
+// function selected_rbutton (rbuttons) {
+//  for (var i = 0; i < rbuttons.children.length; i++) {
+//  if (rbuttons.children[i].value == true) {
+//  return rbuttons.children[i].text;
+//  }
+//  }
+// }
+// ff = w.show();
+
+// $.writeln(ff);
+
+// ls = ['bat', 'bear', 'beaver', 'bee', 'cat', 'cats and dogs', 'dog', 'maggot', 'moose',
+// 'moth', 'mouse', 'moogrt'];
+
+// picked = type_ahead (ls);
+
+// function type_ahead (animals) {
+    
+//     var w = new Window ('dialog {text: "Quick select", alignChildren: "fill"}');
+   
+//     var entry = w.add ('edittext {active: true}');
+//     var list = w.add ('listbox', [0, 0, 150, 250], animals);
+    
+//     list.selection = 0;
+
+//     entry.onChanging = function () {
+        
+//         var temp = this.text;
+
+//         list.removeAll ();
+//         for (var i = 0; i < animals.length; i++) {
+//             if (animals[i].toLowerCase().indexOf (temp) == 0) {
+//                 list.add ('item', animals[i]);
+//                 }
+//         }
+//     if (list.items.length > 0){
+//         list.selection = 0;
+//         }
+//     }
+//   // We need the button to catch the Return/Enter key (CC and later)
+//   w.add ('button', undefined, 'Ok', {name: 'ok'});
+
+//   if (w.show () != 2){
+//    alert(list.selection.text);
+//   }
+//  w.close();
+//  }

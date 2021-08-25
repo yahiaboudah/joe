@@ -10,10 +10,7 @@ w = new _Window({
 	spacing: 10,
 	margins: 10,
 	title: "test",
-	children: [
-		new _Text({
-			text: "our text"
-		}),
+	children: [	
 		new _Button({
 			text: "some stuff",
 			onClick: function(){

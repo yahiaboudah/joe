@@ -449,3 +449,91 @@
 // w.show() 
 // does not work
 
+// Socket 
+// Core JavaScript Classes 
+// Creates a TCP/IP connection, or establishes a TCP/IP server.
+// Example: 
+// // A simple Chat server on port 1234 
+
+// function chatServer() { 
+//   var tcp = new Socket; 
+//   // listen on port 1234 
+//   $.writeln("Chat server listening on port 1234"); 
+//   if (tcp.listen (1234)) { 
+//     for (;;) { 
+//       // poll for a new connection 
+//       var connection = tcp.poll(); 
+//       if (connection != null) { 
+//         $.writeln("Connection from " + connection.host); 
+//         // we have a new connection, so welcome and chat 
+//         // until client terminates the session 
+//         connection.$.writeln("Welcome to a little chat!"); 
+//         chat (connection); 
+//         connection.writeln ( "*** Goodbye ***"); 
+//         connection.close(); 
+//         delete connection; 
+//         $.writeln ("Connection closed"); 
+//       } 
+//     } 
+//   } 
+// } chatServer();
+
+// // Keyboard shortcuts to fire a button
+
+// w = new Window("palette");
+// b = w.add("button");
+// b.text = "text"; //rw
+// b.onClick = function()
+// {
+//     alert("I was clicked");
+// }
+// w.addEventListener("keydown", function(k){
+//     m = ScriptUI.environment.keyboardState;
+//     k = k.keyName;
+
+//     if(k == "B") alert("B");
+//     if(k == "C" && m.altKey) alert("ALT + C");
+//     if(k == "B" && m.altKey) alert("ALT + B");
+//     if(k == "F" && m.altKey) alert("ALT + F");
+//     if(k == "G" && m.altKey) b.notify("onClick");
+// })
+// w.show();
+
+w = new Window("palette");
+b = w.add("button", undefined, "button", {someprop: "alzel,azle,"});
+
+//button has 24 properties:
+with (b)
+{
+    characters = 14;
+    justify = "right";
+    text= "textteeextaezazeaezazeazeeazzz";
+    active = true;
+    shortcutKey = "b";
+    graphics = "graphics";
+    visible = true;
+    bounds = "bounds";
+    location = "location";
+    maximumSize=  400;
+    minimumSize = 400;
+    preferredSize = [100,100],
+    size = [50,50];
+    windowBounds = "windowBounds";
+    alignment = "left";
+    children = "children";
+    properties = {};
+    enabled = true;
+    helpTip = "helpTip";
+    indent = "indent";
+    parent = w;
+    textDirection = "right";
+    window = w;
+    type ="type";
+}
+
+b.onClick = function()
+{
+    alert(this.text.length);
+}
+
+w.show()

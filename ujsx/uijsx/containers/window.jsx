@@ -64,17 +64,24 @@ _Window = function _Window(cfg){
     for(i=-1; ++i<evHndFuncs.length;) this.win[evHndFuncs[i]] = this.assign(this[evHndFuncs[i]], undefined, ["function"]);
 
     /*=========== Populate with children ===============*/
-    if(this["children"])
-    {
-        for(var i=0, len =this["children"].length; i< len; i++)
-        {
-            c = this.children[i];
-            cc = this.win.add(c.type, undefined, c.text);
-            cc.onClick = c["onClick"]; 
-        }
-    }
+    with(this) populate(win, children);
 
 }; Object.extends(_Window, _Container);
+
+// internal:
+_Window.prototype.populate = function(w, cs){
+    
+    for(i=-1; ++i< cs.length;)
+    {
+        c = cs[i];
+        cc= w.add(c.type);
+        // for every c:
+        for(pp in c) if(c.hasOwnProperty(pp) && pp != "type")
+        {
+            cc[pp] = c[pp];
+        }
+    }
+}
 
 // class funcs:
 _Window.alert   = Function("cfg", "Window.alert(cfg.msg, cfg.title, cfg.errIcon)");

@@ -6,11 +6,6 @@ Object.extends = function (child, parent) {
     child.prototype = new F();
 };
 
-Object.prototype.ext = function(o){
-    for(x in o) this[x] = o[x];
-    return this;
-}
-
 _Element = function _Element(cfg, type){
     
     this.type   = (typeof type == "undefined"? "element": type);

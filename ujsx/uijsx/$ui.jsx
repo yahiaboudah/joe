@@ -328,3 +328,124 @@
 //     0.7, 0.7], 1), 0,0, "Arial-Bold:50");
 
 // w.show ();
+
+// cool as shit password:
+
+// var w = new Window ('dialog');
+// w.group = w.add ('group');
+//  w.group.add ('statictext {text: "Enter a number:"}');
+//  w.input = w.group.add ('edittext {characters: 10, active: true, justify: "right"}');
+//  w.buttons = w.add ('group {alignment: "right"}');
+//  w.ok = w.buttons.add ('button {text: "OK", enabled: false}');
+//  w.buttons.add ('button {text: "Cancel"}');
+// w.input.onChanging = function () {
+//  var valid = (w.input.text == "password");
+//  this.graphics.backgroundColor = this.graphics.newBrush (this.graphics.BrushType.
+//  SOLID_COLOR, valid ? [1, 1, 1, 1] : [1, 0.5, 0.5, 1]);
+//  w.ok.enabled = valid;
+// }
+// if(w.show() == 2)
+// {
+//     alert("cancled");
+// }
+// else alert("OK, you're logged in!");
+
+// var found = new Array (50);
+// var w = new Window ('palette');
+// w.pbar = w.add ('progressbar', undefined, 0, found.length);
+// w.pbar.preferredSize.width = 300;
+// w.show();
+// for (var i = 0; i < found.length; i+=10){
+// w.pbar.value = i;
+// if(w.pbar.value == 60) w.close();
+// // Do something useful here
+// }
+
+// var w = new Window ('dialog {text: "Preferences", orientation: "column", alignChildren:["fill","fill"], properties: {closeButton: false}}');
+// w.main = w.add ('group {preferredSize: [600, 500], alignChildren: ["left","fill"]}');
+// w.stubs = w.main.add ('listbox', undefined, ['General', 'Interface', 'UI Scaling']);
+// w.stubs.preferredSize.width = 150;
+// w.tabGroup = w.main.add ('group {alignment: ["fill","fill"], orientation: "stack"}');
+// w.tabs = [];
+// w.tabs[0] = w.tabGroup.add ('group');
+// w.tabs[0].add ('statictext {text: "General"}');
+// w.tabs[0].add ('panel');
+// w.tabs[0].add ('checkbox {text: "Show Start workspace when no documents are open"}');
+// w.tabs[0].add ('checkbox {text: "Show Recent Files workspace when opening a file"}');
+// w.tabs[0].add ('panel {text: "Page numbering", preferredSize: [-1, 80]}');
+// w.tabs[0].add ('panel {text: "Font downloading and embedding", preferredSize: [-1, 80]}');
+// w.tabs[0].add ('panel {text: "Object editing", preferredSize: [-1, 150]}');
+// w.tabs[0].add ('panel {text: "When placing or pasting content", preferredSize: [-1, 80]}');
+// with (w.tabs[0]) {
+// with (add ('group {alignment: "center"}')) {
+// add ('button {text: "Reset al warning dialogs"}');
+// }
+// 59
+// }
+// w.tabs[1] = w.tabGroup.add ('group');
+// w.tabs[1].add ('statictext {text: "Interface"}');
+// w.tabs[1].add ('panel {preferredSize: [-1, -10]}');
+// w.tabs[1].add ('panel {text: "Appearance", preferredSize: [-1, 80]}');
+// w.tabs[1].add ('panel {text: "Cursor and gesture options", preferredSize: [-1, 150]}');
+// w.tabs[1].add ('panel {text: "Panels", preferredSize: [-1, 150]}');
+// w.tabs[1].add ('panel {text: "Options", preferredSize: [-1, 100]}');
+// w.tabs[2] = w.tabGroup.add ('group');
+// w.tabs[2].add ('statictext {text: "UI Scaling"}');
+// w.tabs[2].add ('panel');
+// w.tabs[2].add ('panel {text: "Options", preferredSize: [-1, 200]}');
+
+// w.buttons = w.add ('group {alignment: "right"}');
+// w.buttons.add ('button {text: "OK"}');
+// w.buttons.add ('button {text: "Cancel"}');
+// for (var i = 0; i < w.tabs.length; i++) {
+// w.tabs[i].orientation = 'column';
+// w.tabs[i].alignChildren = 'fill';
+// w.tabs[i].alignment = ['fill','fill'];
+// w.tabs[i].visible = false;
+// }
+// w.stubs.onChange = showTab;
+// function showTab () {
+// if (w.stubs.selection !== null) {
+// for (var i = w.tabs.length-1; i >= 0; i--) {
+// w.tabs[i].visible = false;
+// }
+// w.tabs[w.stubs.selection.index].visible = true;
+// }
+// }
+// w.onShow = function () {
+// w.stubs.selection = 1;
+// showTab;
+// }
+// w.show();
+
+// var numbers = ["one", "two", "three", "thirty", "hundred"];
+// var w = new Window ("dialog", "Drop-down select");
+// var ddown = w.add ("dropdownlist", undefined, numbers);
+// ddown.minimumSize.width = 200;
+// ddown.selection = 0; ddown.active = true;
+// ddown.addEventListener ("keydown", function (k)
+//  {
+//  k = k.keyName.toLowerCase();
+//  var i = 0;
+//  while (i < numbers.length-1 && numbers[i].charAt(0).toLowerCase() != k)
+//  {++i;}
+//  if (numbers[i].charAt(0).toLowerCase() == k)
+//  ddown.selection = i;
+//  }
+// );
+// w.show ();
+
+// w = new Window ('dialog', 'Test', undefined, {resizeable: true})
+// // w.alignChildren = ['fill', 'fill'];
+// w.add ('button {text: "But"}');
+// w.add ('button {text: "But"}');
+// w.onResizing = w.onResize = function () {
+//  w.orientation = (w.size.width > w.size.height) ? 'row' : 'column';
+//  w.layout.resize ();
+// }
+// w.onShow = function () {
+//  w.layout.resize ();
+// }
+// w.show() 
+// does not work
+

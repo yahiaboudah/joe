@@ -17,7 +17,7 @@ w = new _Window({
 		new _Button({
 			text: "some stuff",
 			onClick: function(){
-				alert("some stuff got cliked on!");
+				alert("some stuff got cliked on, clicked on, shit on..!");
 			}
 		})
 	]

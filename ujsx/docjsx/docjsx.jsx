@@ -36,6 +36,10 @@ Table.prototype.row = function(fsp)
     return str +"\n" + Table.hd.rep(str.length);
 }
 
+Table.prototype.add_row = function(fsp){
+    this.table.push(this.row(arguments));
+}
+
 Table.prototype.get = function(){
     return this.table.join("\n");
 }

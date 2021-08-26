@@ -140,7 +140,7 @@
                         [The address and the property]
                         
                         The address is how we find and retreive our UI object, and
-                        the property is the thing we are interested in updating. 
+                        the property is the thing we are interested in updating.
 
 ******************************************************************************/
 

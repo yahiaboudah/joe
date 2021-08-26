@@ -125,13 +125,20 @@
     
     The state manager basically creates a State object with key-value pairs that
     have information about:
+
         1) Key: The state variable: The state variable name.
+        
         2) Value: An object with two keys: value and followers:
+            
             - Value:     The value of that state variable at a certain time.
-            - Followers: An array containing a list of all the widget that
+            
+            - Listeners: An array containing a list of all the widget that
                         are to be notified and updated when the updateState() 
                         function is called. Each array element is broken down
-                        to two pieces of information: [The address and the property]
+                        to two pieces of information: 
+                        
+                        [The address and the property]
+                        
                         The address is how we find and retreive our UI object, and
                         the property is the thing we are interested in updating. 
 
@@ -144,7 +151,7 @@
 GLOBALSTATE = {
     stttext : {
         value: "initial text",
-        followers:[
+        listeners:[
             "&(statictextwidget)text"
         ]
     }
@@ -171,17 +178,3 @@ w = new _Window({
 })
 $.writeln($.summary());
 w.show();
-
-// // Normal UI creation and state management:
-// w = new Window("palette")
-// s = w.add("statictext", undefined, "text");
-// s.justify    = "center"
-// s.characters = 10;
-// b = w.add("button", undefined, "button");
-
-// b.onClick = function(){
-//     s.justify = "left";
-//     s.text = "other text"
-// }
-
-// w.show();

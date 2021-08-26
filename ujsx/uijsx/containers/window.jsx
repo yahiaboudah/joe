@@ -74,7 +74,7 @@ _Window.prototype.populate = function(w, cs){
     for(i=-1; ++i< cs.length;)
     {
         c = cs[i];
-        cc= w.add(c.type);
+        cc= w.add(c.type);  
         // for every c:
         for(pp in c) if(c.hasOwnProperty(pp) && pp != "type")
         {

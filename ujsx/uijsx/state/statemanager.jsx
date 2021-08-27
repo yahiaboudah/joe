@@ -7,6 +7,8 @@
 		Modified:       2108 (YYMM)
 *******************************************************************************/
 
+const { useState } = require("react");
+
 /******************************************************************************
 ============================ Docs =============================================
 
@@ -148,30 +150,49 @@
 //@include "../elements/button.jsx"
 //@include "../elements/statictext.jsx"
 
-GLOBALSTATE = {
+WINSTATE = {
     stttext : {
-        value: "initial text",
+        value: "my text value",
         listeners:[
-            "&(statictextwidget)text"
+            "&[0]text"
+        ]
+    },
+    buttonwidth: {
+        value: 50,
+        listeners: [
+            "&[1]width"
         ]
     }
 }; //& + prop
 
 w = new _Window({
+    
     title: "testwin",
     nosize: true,
     spacing: 10,
     margins: 10,
     children: [
+
         new _Text({
             stateful: true,
-            text: GLOBALSTATE.stttext
+            text: {
+                statevar: "sttext",
+                modifier: function(x){
+                    return "My Static Text Is: " + x;
+                }
+            }
         }),
+        
         new _Button({
+            stateful: true,
             text: "button",
-            onClick: function()
-            {
-                
+            width: {
+                statevar: "buttonwidth"
+            },
+            onClick: function(context){
+                context.updateState("sttext", "My New Text Value");
+                context.updateState("buttonwidth", function(oldWidth){ return oldWidth + 10});
+                context.refresh();
             }
         })
     ]

@@ -9,7 +9,7 @@ table = {
     VD: "(",
 
     create: function(tableArr, minMargin){
-        this.table = tableArr;
+        this.table = tableArr || [];
         this.minMargin = minMargin || 10;
         temparr = this.getMaxSizes();
         this.maxRSizes = temparr[0];
@@ -22,6 +22,7 @@ table = {
         return fs;
     },
 
+    // render function ok?
     render: function(){
         $.writeln(this.maxCSizes.toSource() + "\n" + this.maxRSizes.toSource());
         // return 0;
@@ -35,12 +36,14 @@ table = {
         return strTable;
     },
 
+    // not sure I need this:
     getMaxHorizontalLength: function(ez){
         var e_parts = ez.split("\n");
         for(ii=-1; ++ii<e_parts.length;) e_parts[ii] = e_parts[ii].length;
         return Math.max.apply(null, e_parts);
     },
 
+    // Still a bit foggy!
     constructRow: function(margin, hsizes, vsizes, ri){
         
         fr = "";
@@ -78,6 +81,8 @@ table = {
             s += arr[q]; 
         }   return s;
     },
+
+    // works:
     getMaxSizes: function(){
         tableArr = this.table;
         csizes = [];

@@ -8,12 +8,9 @@ table = {
     HD: String.fromCharCode(9632),
     VD: "(",
 
-    create: function(tableArr, minMargin){
-        this.table = tableArr || [];
-        this.minMargin = minMargin || 10;
-        temparr = this.getMaxSizes();
-        this.maxRSizes = temparr[0];
-        this.maxCSizes = temparr[1];
+    create: function(arr, marg){
+        this.table = arr || [];
+        this.minMargin = marg || 10;
     },
 
     repeatStr: function(s, t){
@@ -36,15 +33,8 @@ table = {
         return strTable;
     },
 
-    // not sure I need this:
-    getMaxHorizontalLength: function(ez){
-        var e_parts = ez.split("\n");
-        for(ii=-1; ++ii<e_parts.length;) e_parts[ii] = e_parts[ii].length;
-        return Math.max.apply(null, e_parts);
-    },
-
     // Still a bit foggy!
-    constructRow: function(margin, hsizes, vsizes, ri){
+    constructRow: function(margin, csizes, vsizes, ri){
         
         fr = "";
         r  = this.table[ri];
@@ -52,7 +42,7 @@ table = {
         child_rows = [];
         for(var i= 0, len= r.length; i<len; i++)
         {
-            allSize = hsizes[i] + margin;
+            allSize = csizes[i] + margin;
             e = r[i];
             
             // elen = this.getMaxHorizontalLength(e);
@@ -67,49 +57,127 @@ table = {
                 child_rows[k] += e_part + spacing + this.VD + spacing;
             }
 
-            fr = child_rows.join("\n") + "\n" + this.repeatStr(this.HD, this.sum(hsizes));
+            fr = child_rows.join("\n") + "\n" + this.repeatStr(this.HD, this.sum(csizes));
 
             return fr;
 
         }
     },
+    format: function(){
+        // justify = left
+        var tb = this.table,
+            dm = this.minMargin,
+            cs = this.maxColumnSizes(),
+            rs = this.maxRowSizes(),
+            r  = -1,
+            c  = -1;
 
-    sum: function(arr){
-        s = 0;
-        for(var q= 0; q< arr.length; q++)
+        var spc = function(n){return this.repeatStr(" ", n)}
+        
+        for(;++r<tb.length;) for(;++c<tb[0].length;)
         {
-            s += arr[q]; 
-        }   return s;
+                block = tb[r][c];
+                bKids = block.split("\n");
+                bWdth = this.strWidth(block);
+                bHght = this.strHeight(block);
+                cSize = cs[c];
+                rSize = cs[r];
+
+                for(k=0; k<bKids.length;k++)
+                {
+                    bKid = bKids[k];
+
+                    // justify: left
+                    // lPad = 0 + dm; 
+                    // rPad = (cSize - bKid.length) + dm; 
+
+                    // justify: right
+                    // rPad =  0 + dm;
+                    // lPad = (cSize - bKid.length) + dm;
+
+                    // justify: center
+                    lPad = ((cSize - bKid.length)/2) + dm; 
+                    rPad = ((cSize - bKid.length)/2) + dm;
+        
+                    bKid = spc(lPad) + bKid + spc(rPad) + this.VD;
+                    bKids[k] = bKid;
+                }
+
+                fblock = bKids.join("\n") + "\n" + this.repeatStr(this.HD, cSize);
+                tb[r][c] = fblock;
+        }
+        this.table = tb;
     },
+    strWidth: function(s)
+    {
+        return this.arrMax(s.split("\n"), function(s){
+            return s.length;
+        });
+    },
+    strHeight: function(s){
+        return s.split("\n").length;
+    },
+    sum: function(a){
+        s = 0;
+        for(q=-1; ++q< a.length;) s += a[q]; 
+        a = q = null;
+        return s;
+    },
+    arrMax: function(a, f){
 
-    // works:
-    getMaxSizes: function(){
-        tableArr = this.table;
-        csizes = [];
-        for(var c=0; c< tableArr[0].length; c++)
+        if(!!f) for(i=-1;++i<a.length;) a[i] = f(a[i])
+        
+        m = a[0];
+        for(i=-1;++i<a.length;) if(a[i] > m) m = a[i];
+
+        a = f = i = null;
+        return m;
+    },
+    maxColumnSizes: function(){
+        
+        var tb = this.table,
+            cs = [];
+
+        JL = "\n";
+
+        for(var c=0; c< tb[0].length; c++)
         {
-            maxCSize = 0;
-            for(var r=0; r< tableArr.length; r++)
+            max = 0;
+            for(var r=0; r< tb.length; r++)
             {
-                currCSize = tableArr[r][c].length;
-                if(currCSize > maxCSize) maxCSize = currCSize;
+                /**************************/
+                curr = this.arrMax(tb[r][c].split(JL), function(s){
+                    return s.length;
+                });
+                /**************************/
+                if(curr > max) max = curr;
             }
-            csizes.push(maxCSize);
+            cs.push(max);
         }
+        tb = JL = null;
+        return cs;
+    },
+    maxRowSizes: function(){
+        
+        var tb = this.table,
+            rs = [];
+        
+        JL = "\n";
 
-        rsizes = [];
-        for(var r=0; r< tableArr.length; r++)
+        for(var r=0; r< tb.length; r++)
         {
-            maxRSize = 0;
-            for(var c=0; c< tableArr[r].length; c++)
+            max = 0;
+            for(var c=0; c< tb[r].length; c++)
             {
-                currRSize = tableArr[r][c].split("\n").length;
-                if(currRSize > maxRSize) maxRSize = currRSize;
+                /********************************/
+                curr = tb[r][c].split(JL).length;
+                /********************************/
+                if(curr > max) max = curr;
             }
-            rsizes.push(maxRSize);
+            rs.push(max);
         }
-
-        return [rsizes, csizes]
+        tb = JL = null;
+        return rs;
     }
 }
 
@@ -120,6 +188,6 @@ t = table.create([
     ["onClick", "function", "undefinedd", "undefinedd"]
 ]);
 
-rt = table.render();
+table.format();
 
-$.writeln(rt);
+$.writeln(table.table[0][0]);

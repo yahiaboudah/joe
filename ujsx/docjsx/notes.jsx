@@ -15,3 +15,21 @@
 
 // thisis = whatsThis.call(customScope, ["first", "second"]);
 // $.writeln(thisis);
+
+
+// // comma operator
+// c ="c";
+// d = "d";
+
+// // d = "newd";
+// // c = "newc";
+// // stuff = d + c;
+
+// // same as:
+// stuff = (
+//     d = "newd",
+//     c = "newc",
+//     d + c
+//     )
+
+// $.writeln(stuff)

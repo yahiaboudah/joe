@@ -52,12 +52,14 @@ function format(table){
         // rs = this.maxRowSizes(),
         r  = -1,
         c  = -1;
-    while(++r<tb.length) {while(++c<tb[0].length)
+    while(++r<tb.length) 
     {
+        while(++c<tb[0].length)
+        {
         block = tb[r][c];
         bKids = block.split("\n");
         cSize = cs[c];
-        // rSize = rs[r];
+
         for(k=0; k<bKids.length;k++)
         {
             bKid = bKids[k];
@@ -68,9 +70,7 @@ function format(table){
             bKids[k] = bKid;
         }
 
-        fblock = bKids.join("\n");
-        tb[r][c] = fblock;
-        // $.writeln(tb[r][c])
+        tb[r][c] = bKids.join("\n");
         }
         c = -1;
         block = bKids = cSize = fblock = null;
@@ -79,7 +79,7 @@ function format(table){
 }
 
 function render(tabla){
-    
+
     t =tabla;
     s = "";
     fullRow = "";
@@ -90,16 +90,18 @@ function render(tabla){
         {
             row += t[r][c];
         }
-        s += VD + row +  "\n" + str(HD) * (row.length+1) + "\n";
+        s += /*+ VD*/ row +  "\n" + str(HD) * (row.length+1) + "\n";
         
     }
-    return str(HD)* (row.length +1) + "\n" + s;
+    // return str(HD)* (row.length +1) + "\n" + s;
+    return s
 }
 
 r = format([
     ["smart", "work", "big", "play  pussy", "nah"],
     ["hard", "sex", "deep", "pussy", " i like it"],
     ["hard", "sex", "deep", "pussy", " how i like it"],
+    
     ["hard", "sex", "deep", "pussy", " i like it"],
     ["hard", "sex", "deep", "pussy", " how i like it"],
     ["hard", "sex", "deep", "pussy", "t"]

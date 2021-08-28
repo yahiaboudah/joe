@@ -14,7 +14,7 @@ table = {
     },
 
     format: function(){
-        
+
         String.prototype["*"] = function(n){
             fs = "";
             while(n--) fs += this.toString();
@@ -58,7 +58,7 @@ table = {
                     bKids[k] = bKid;
                 }
 
-                fblock = bKids.join("\n") + "\n" + str(this.HD) * (this.arrMax(bKids, function(e){return e.length}));
+                fblock = bKids.join("\n") + "\n" + str(this.HD) * (this.maxLen(bKids));
                 $.writeln(fblock)
                 tb[r][c] = fblock;
         }
@@ -68,14 +68,14 @@ table = {
         // delete(String.prototype["*"]);
         // str = tb = dm = cs = rs = r = c = null;
     },
-    arrMax: function(a, f){
-
-        if(!!f) for(i=-1;++i<a.length;) a[i] = f(a[i])
-        
-        m = a[0];
-        for(i=-1;++i<a.length;) if(a[i] > m) m = a[i];
-
-        a = f = i = null;
+    maxLen: function(a){
+        m = a[0].length;
+        if(a.length == 1) return m;
+        for(i=1 ;i<a.length; i++)
+        {
+            l = a[i].length
+            if(l > m) m = l;
+        }
         return m;
     },
     maxColumnSizes: function(){
@@ -91,9 +91,7 @@ table = {
             for(var r=0; r< tb.length; r++)
             {
                 /**************************/
-                curr = this.arrMax(tb[r][c].split(JL), function(s){
-                    return s.length;
-                });
+                curr = this.maxLen(tb[r][c].split(JL));
                 /**************************/
                 if(curr > max) max = curr;
             }
@@ -106,8 +104,8 @@ table = {
 
 
 table.create([
-    ["property is  really", "type extend", "defaultshit", "values", "incredible"],
-    ["property is  really", "type extend", "defaultshit", "values", "another incredible jojo"]
+    ["prop bigger is bigger", "type extend", "defaultshit"],
+    ["property cool there is a problem", "type extend", "defaultshit tt"]
 ]);
 
 t = table.format();

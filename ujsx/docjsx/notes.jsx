@@ -33,3 +33,5 @@
 //     )
 
 // $.writeln(stuff)
+
+$.writeln(Math.ceil(0.5));

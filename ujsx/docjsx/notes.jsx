@@ -99,5 +99,3 @@
 // patt = /^(table)\s+\[\d+\,\d+\]\(\d+\)/g;
 // str = "table [5,5](22)"
 
-
-$.writeln((str.match(patt)))

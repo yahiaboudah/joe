@@ -3,12 +3,10 @@
 		Name:           statemanager
 		Desc:           A state manager for uijsx.
 		Kind:           Helper.
+        API:            useState(), updateState()
 		Created:        2108 (YYMM)
 		Modified:       2108 (YYMM)
 *******************************************************************************/
-
-const { useState } = require("react");
-
 /******************************************************************************
 ============================ Docs =============================================
 
@@ -35,16 +33,15 @@ const { useState } = require("react");
 
             new _Text({
                 stateful: true,
-                text: {
-                    statevar: "sttext",
-                    init: "text"
-                }
+                text: useState("sttext", function(x){
+                    return "My Static Text Is: " + x;
+                }, "my text")
             }),
             
             new _Button({
                 text: "button",
                 onClick: function(){
-                    updateState("sttext", "other text")
+                    updateState("sttext", undefined,"other text")
                 }
             })
         
@@ -120,7 +117,8 @@ const { useState } = require("react");
                     for(i=0..)
                     {
                         // ...
-                        STATE[statevar].followers.push(i + propName);
+                        address = i + k + j + ...;
+                        STATE[statevar].listeners.push(address + propName);
                     }
 
 ==> How the State Manager Works:
@@ -132,7 +130,7 @@ const { useState } = require("react");
         
         2) Value: An object with two keys: value and followers:
             
-            - Value:     The value of that state variable at a certain time.
+            - Value:     The value of that state variable in a given time.
             
             - Listeners: An array containing a list of all the widget that
                         are to be notified and updated when the updateState() 
@@ -143,6 +141,22 @@ const { useState } = require("react");
                         
                         The address is how we find and retreive our UI object, and
                         the property is the thing we are interested in updating.
+                        (ex. text property)
+
+                        [A modifier function]
+
+                        When the 'updateState(statevar)' function is called upon 
+                        the occuring of an event, our State Manager looks at the
+                        passed name of the piece of state we're interested in
+                        changing, then it proceeds to retreive the listeners to
+                        the change in that piece of state, one at a time. It uses
+                        the modifier function to modify the final value of our 
+                        widget property by taking the statevar as an argument, and
+                        returning the final polished value.
+
+                         (x) => ("My Static Text Is: " + x);
+
+                         # ES3 JS/ EXTENDSCRIPT do not support arrow functions # 
 
 ******************************************************************************/
 
@@ -175,27 +189,27 @@ w = new _Window({
 
         new _Text({
             stateful: true,
-            text: {
-                statevar: "sttext",
-                modifier: function(x){
-                    return "My Static Text Is: " + x;
-                }
-            }
+            
+            text: useState("sttext", function(x){
+                return "My Static Text Value Is: " + x;
+            }, "my text")
+        
         }),
         
         new _Button({
+            
             stateful: true,
             text: "button",
-            width: {
-                statevar: "buttonwidth"
-            },
-            onClick: function(context){
-                context.updateState("sttext", "My New Text Value");
-                context.updateState("buttonwidth", function(oldWidth){ return oldWidth + 10});
-                context.refresh();
+            width: useState("buttonwidth", undefined, 40),
+            
+            onClick: function(){
+                /* later on: do fn.call(this)*/
+                this.updateState("sttext", "My New Text Value");
+                this.updateState("buttonwidth", function(oldWidth){ return oldWidth + 10});
+                this.refresh();
             }
         })
     ]
 })
-$.writeln($.summary());
+
 w.show();

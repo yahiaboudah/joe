@@ -34,4 +34,61 @@
 
 // $.writeln(stuff)
 
-$.writeln(Math.ceil(0.5));
+// function Utils(){
+//     extend = function(x,c) { for(b in c) x[b] = c[b] } 
+//     extend(this,
+//         {
+//         stuff: function(){
+//             return 'stuff is good';
+//         }
+//     })
+
+//     $.global[{
+//         toString: function(){
+//             return "python";
+//         }
+//     }] = function(){
+//         return "v 1.0.2";
+//     }
+// }
+
+// function Main(){
+//     Utils.call(this);
+// }
+
+// m = new Main("some shit");
+// $.writeln(m.stuff())
+// $.writeln(python())
+
+String.prototype.pushAt = function(i, p, d, n) {
+    
+    d = (typeof d == "undefined")? true: d;
+    n = (typeof d == "undefined")? 1: n;
+    f = this.substring(0,i);
+    l = this.substring(d? (i+n): i);
+
+    return f + p + l;
+}
+
+s = "&1 get &2 me an &3 icecream";
+
+a = ["one", "two", "three"];
+
+function __(s){
+
+    arra = Array.prototype.slice.call(arguments, 1);
+    patt = /&/g;
+    
+    while(!!patt.exec(s))
+    {
+      li = patt.lastIndex -1;
+      no = s[li+1];
+      if(isNaN(no)) continue;
+      s = s.pushAt(li, arra[no-1], true, 2);
+    }
+
+    return s;
+}
+
+finals = __("&1 get &2 me an &3 icecream", "one", "two", "three");
+$.writeln(finals);

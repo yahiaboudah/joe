@@ -1,5 +1,4 @@
 
-
 function TableUtils()
 {
     var extend = function(x,c) { for(b in c) x[b] = c[b] } 
@@ -22,9 +21,30 @@ function TableUtils()
             while(i--) s += a[i]
             return s;
         },
-        write: function()
+        write: function(path)
         {
-            nm = __("table [&1, &2](&3)", this.maxRowSizes, this.maxColSizes, tableCount);
+            path = path || File($.fileName).path;
+            patt = /^(table)\s+\[\d+\,\d+\]\(\d+\)/g;
+            txtf = Folder(path).getFiles("*.txt");
+            num  = 1;
+            
+            len  = txtf.length;
+            while(len--)
+            {
+                if(!(txtf[len].displayName.match(patt)).length) continue;
+                num++;
+            }
+
+            name = fstr("table [&1, &2](&3)", this.maxRowSizes, this.maxColSizes, num);
+
+            file = File(path + "/" + name);
+            file._write(this.show());
+
+            return file.fsName;
+        },
+        show: function(){
+            this.format();
+            return this.render();
         }
 
     });
@@ -43,9 +63,15 @@ function TableUtils()
         l = this.substring(d? (i+n): i);
     
         return f + p + l;
+    };
+
+    File.prototype._write = function(c){
+        this.open('w');
+        this.write(c);
+        this.close();
     }
     
-    $.gloabl["__"] = function(s)
+    $.global["fstr"] = function(s)
     {
         arra = Array.prototype.slice.call(arguments, 1);
         patt = /&/g;
@@ -71,7 +97,6 @@ function TableUtils()
 function Table(table, margin, VD, HD){
     
     TableUtils.call(this);
-    this.setup();
 
     this.VD     = VD || String.fromCharCode(9619); // ▓
     this.HD     = HD || String.fromCharCode(9632); // ■■■
@@ -165,10 +190,11 @@ Table.prototype.format = function(){
         c = -1; // reset column count for new row
         block = bKids = cSize = fblock = null; // cleanup
     }
-    return tb;
+    this.table = tb;
 }
-Table.prototype.render() = function{
+Table.prototype.render = function(){
 
+    this.format(); // should be non-optional:
     // Stitch the blocks together:
 
     var tb  = this.table,
@@ -182,13 +208,13 @@ Table.prototype.render() = function{
     for(var r=0; r< tb.length; r++)
     {
         rr = "";
-        rw = sum(cs); // calculate the row width
+        rw = this.sum(cs); // calculate the row width
 
         for(var k=0; k< rs[r]; k++) // go through each line of each row:
         {
             for(var c=0; c< cs.length; c++) // go through each column:
             {
-                rr += t[r][c].split(JL)[k]; // running split (csize) times not efficient.
+                rr += tb[r][c].split(JL)[k]; // running split (csize) times not efficient.
             }   rr += JL;
         }
         s += rr + (str(this.HD) * rw) + "\n";
@@ -196,9 +222,10 @@ Table.prototype.render() = function{
     return s
 }
 
-// r = format([
-//     ["smart", "work", "big", "play"],
-//     ["hard", "sex", "deep", "pussy"],
-// ]);
-// r = render(r);
-// $.writeln(r);
+mytable = new Table([
+    ["smart", "work", "big", "play"],
+    ["hard", "sex", "deep", "pussy"]
+]);
+
+rendered = mytable.render();
+$.writeln(rendered)

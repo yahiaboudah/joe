@@ -76,7 +76,6 @@ function TableUtils()
     }
     
 }
-
 function Table(table, margin, VD, HD){
     
     TableUtils.call(this);
@@ -90,6 +89,13 @@ function Table(table, margin, VD, HD){
 
     this.maxColSizes = this.maxColumnSizes();
     this.maxRowSizes = this.getMaxRowSizes();
+}
+Table.fNamePatt = /^(table)\s+\[\d+(x)\d+\]\(\d+\)/g;
+Table.removeAll = function(){
+    
+    fs = Folder(File($.fileName).path).getFiles("*.txt");
+    i  = fs.length;
+    while(i--) if(fs[i].displayName.match(Table.fNamePatt)) fs[i].remove();
 }
 Table.prototype.maxColumnSizes = function(){
     
@@ -205,9 +211,10 @@ Table.prototype.render = function(offset){
     }
     return fs;
 }
-Table.prototype.write = function(path){
+Table.prototype.write = function(pad, path){
     
     path = path || Folder(File($.fileName).path).fsName;
+    pad  = pad || 5;
     patt = Table.fNamePatt;
     txtf = Folder(path).getFiles("*.txt");
     num  = 1;
@@ -218,23 +225,14 @@ Table.prototype.write = function(path){
     name = ("table [&1x&2](&3)").fstr(this.maxRowSizes.length, this.maxColSizes.length, num);
 
     file = File(path + "\\" + name + ".txt");
-    file._write(this.render(5));
+    file._write(this.render(pad));
 
     return file.fsName;
 }
-
-Table.fNamePatt = /^(table)\s+\[\d+(x)\d+\]\(\d+\)/g;
-
-Table.removeAll = function(){
-    
-    fs = Folder(File($.fileName).path).getFiles("*.txt");
-    i  = fs.length;
-    while(i--) if(fs[i].displayName.match(Table.fNamePatt)) fs[i].remove();
-}
-
 Table.prototype.show = function(){
     $.writeln(this.render())
 }
+
 
 Table.removeAll();
 new Table([
@@ -244,4 +242,4 @@ new Table([
     ["smart", "work", "big\nboy\nmy\nman", "play"],
     ["smart", "work", "big", "play"],
     ["smart", "work", "big", "play"]
-]).write();
+]).write(8);

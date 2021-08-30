@@ -500,44 +500,17 @@
 // w.show();
 
 w = new Window("palette");
+b = w.add("button");
+b.text = "new stuff";
+b.preferredSize.width = b.text.length * 6.5;
 
-c = w.add("panel", undefined,"stuff")
-b = c.add("button", undefined, "button", {someprop: "alzel,azle,"});
-bb = c.add("iconbutton", undefined, "d:/icons/img/sova.png");
-bb.text = "texttezzezwzeeeeeeeeeeeeeeeeeeeeeeeee";
-
-
-//button has 24 properties:
-with (b)
-{
-    // characters = 50;
-    // justify   = "center";
-    // alignment = "center"
-    text= "yessivzzzzzvr";
-    active = false;
-    shortcutKey = "b";
-    graphics = "graphics";
-    visible = true;
-    // bounds = "bounds";
-    // size = [50, 50]
-    // maximumSize=  [50, 50];
-    // minimumSize = [10, 50];
-    // location = [40,40]
-    // preferredSize = [100,100]
-    // size = [170,35];
-    // windowBounds = "windowBounds";
-    // children = "children";
-    // properties = {};
-    // enabled = true;
-    // helpTip = "helpTip";
-    // indent = "indent";
-    // parent = w;
-    // window = w;
-    // type ="type";
-}
+pixelPerLetter = 6.5;
 
 b.onClick = function(){
-    alert(this.parent)
+    this.text += "5";
+    this.size.width = this.text.length * (6.5);
+    this.window.layout.layout(true);
+    if(this.text.length > 100) w.close()
 }
 
 w.show()

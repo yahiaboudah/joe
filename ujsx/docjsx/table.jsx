@@ -97,12 +97,12 @@ Table.removeAll = function(path){
     i  = fs.length;
     while(i--) if(fs[i].displayName.match(Table.fNamePatt)) fs[i].remove();
 }
-Table.process = function(behaveNum){
+Table.process = function(){
     
     arr  = Array.prototype.slice.call(arguments);
     fArr = [];
     sign = ",";
-    behN = behaveNum || 50;
+    behN = 35;
     
     for(i=0; i<arr.length; i++)
     {
@@ -119,7 +119,6 @@ Table.process = function(behaveNum){
     }
     return fArr;
 }
-
 Table.prototype.maxColumnSizes = function(){
     
     var tb = this.table,
@@ -255,14 +254,3 @@ Table.prototype.write = function(path, pad){
 Table.prototype.show = function(){
     $.writeln(this.render())
 }
-
-
-// Table.removeAll();
-// new Table([
-//     ["smart\nboy", "work", "big", "play"],
-//     ["hard\npenile\nimagery", "sex", "deep", "pussy"],
-//     ["smart", "work", "big", "play with\n that thing"],
-//     ["smart", "work", "big\nboy\nmy\nman", "play"],
-//     ["smart", "work", "big", "play"],
-//     ["smart", "work", "big", "play"]
-// ]).write(8);

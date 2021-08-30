@@ -510,7 +510,7 @@ with (b)
     // characters = -5;
     justify = "right";
     text= "0texttezzezwzwxcfextaezazeaezazeazeeazzz";
-    // active = true;
+    active = false;
     shortcutKey = "b";
     graphics = "graphics";
     visible = true;
@@ -532,3 +532,5 @@ with (b)
     // window = w;
     // type ="type";
 }
+
+w.show()

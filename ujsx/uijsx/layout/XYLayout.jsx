@@ -38,8 +38,8 @@ XYLayout.prototype =
         if(typeof k.layout !== "undefined") k.layout.layout();
         
         k.location = [l, t];
-        t += this.tt(k.size.height, 'c') + this.y;
-        l += this.tt(k.size.width, 'r')  + this.x;
+        t += this.tt(k.size.height, 'c') + this.y; //top+
+        l += this.tt(k.size.width, 'r')  + this.x; //left+
     }
     
     this.c[PS] = [(l-this.x) + this.tt(k.size.width, 'c'), 

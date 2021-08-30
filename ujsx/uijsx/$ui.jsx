@@ -500,28 +500,32 @@
 // w.show();
 
 w = new Window("palette");
-b = w.add("button", undefined, "button", {someprop: "alzel,azle,"});
-bb = w.add("iconbutton", undefined, "d:/icons/img/sova.png");
-bb.text = "0texttezzezwzeeeeeeeeeeeeeeeeeeeeeeeee";
+
+c = w.add("panel", undefined,"stuff")
+b = c.add("button", undefined, "button", {someprop: "alzel,azle,"});
+bb = c.add("iconbutton", undefined, "d:/icons/img/sova.png");
+bb.text = "texttezzezwzeeeeeeeeeeeeeeeeeeeeeeeee";
+
 
 //button has 24 properties:
 with (b)
 {
-    // characters = -5;
-    justify = "center";
-    text= "yessir";
+    // characters = 50;
+    // justify   = "center";
+    // alignment = "center"
+    text= "yessivzzzzzvr";
     active = false;
     shortcutKey = "b";
     graphics = "graphics";
     visible = true;
     // bounds = "bounds";
-    // location = "location";
-    // maximumSize=  400;
-    // minimumSize = 400;
-    // preferredSize = [50,50],
-    size = [300,50];
+    // size = [50, 50]
+    // maximumSize=  [50, 50];
+    // minimumSize = [10, 50];
+    // location = [40,40]
+    // preferredSize = [100,100]
+    // size = [170,35];
     // windowBounds = "windowBounds";
-    alignment = "right";
     // children = "children";
     // properties = {};
     // enabled = true;
@@ -533,7 +537,7 @@ with (b)
 }
 
 b.onClick = function(){
-    alert(this.textDirection);
+    alert(this.parent)
 }
 
 w.show()

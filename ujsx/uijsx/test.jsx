@@ -9,4 +9,4 @@ var w = new Window ("palette");
 // w.preferredSize[1] = 400;
 // w.preferredSize = [300, 0]; // set just the width
 w.preferredSize = [5, 400]; // set just the height
-w.show()
+// w.show()

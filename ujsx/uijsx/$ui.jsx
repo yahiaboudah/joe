@@ -499,18 +499,53 @@
 // })
 // w.show();
 
-w = new Window("palette");
-b = w.add("button");
-b.text = "new stuff";
-b.preferredSize.width = b.text.length * 6.5;
 
-pixelPerLetter = 6.5;
+PPL = 6.5; // pixel per letter
+
+Image.prototype.refresh = function(){
+
+    s = this.size;
+    this.size = [1+s[0],1+s[1]];
+    this.size = [s[0],s[1]];
+    s = null;
+}
+
+w = new Window("dialog");
+
+b = w.add("button", undefined, "new stuff");
+
+bb = w.add("iconbutton", undefined, "/d/icons/img/edit.png")
+
+img = w.add("image", undefined, File("d:/media/Memes/exp/1.jpg") , {counter: 1, max:23})
+
+img.onDraw = function(){
+    
+    if(this.properties.counter > this.properties.max) this.properties.counter = 0;
+    
+    this.properties.counter++;
+    this.graphics.drawImage(ScriptUI.newImage(File("/d/media/Memes/exp/"+this.properties.counter+".jpg")), 0,0);
+}
 
 b.onClick = function(){
     this.text += "5";
     this.size.width = this.text.length * (6.5);
     this.window.layout.layout(true);
-    if(this.text.length > 100) w.close()
+    // if(this.text.length > 100) w.close()
 }
+
+bb.addEventListener("mouseover", function(){
+    while(1)
+    {   if(!this.mouseover){ // need to figure this one out!
+        this.properties.counter = 0;
+        this.refresh();
+        }
+        File("C:/pro/joe/ujsx/uijsx/press.pyw").execute();
+    }
+})
+
+
+w.addEventListener("keydown", function(k){
+    if(k.keyName == "F") bb.refresh();
+})
 
 w.show()

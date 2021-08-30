@@ -501,39 +501,34 @@
 
 w = new Window("palette");
 b = w.add("button", undefined, "button", {someprop: "alzel,azle,"});
+bb = w.add("iconbutton", undefined, "d:/icons/img/sova.png");
+bb.text = "0texttezzezwzwxcfextaezazeaezazeazeeazzz";
 
 //button has 24 properties:
 with (b)
 {
-    characters = 14;
+    // characters = -5;
     justify = "right";
-    text= "textteeextaezazeaezazeazeeazzz";
-    active = true;
+    text= "0texttezzezwzwxcfextaezazeaezazeazeeazzz";
+    // active = true;
     shortcutKey = "b";
     graphics = "graphics";
     visible = true;
-    bounds = "bounds";
-    location = "location";
-    maximumSize=  400;
-    minimumSize = 400;
-    preferredSize = [100,100],
-    size = [50,50];
-    windowBounds = "windowBounds";
-    alignment = "left";
-    children = "children";
-    properties = {};
-    enabled = true;
-    helpTip = "helpTip";
-    indent = "indent";
-    parent = w;
-    textDirection = "right";
-    window = w;
-    type ="type";
+    // bounds = "bounds";
+    // location = "location";
+    // maximumSize=  400;
+    // minimumSize = 400;
+    // preferredSize = [100,100],
+    // size = [50,50];
+    // windowBounds = "windowBounds";
+    // alignment = "left";
+    // children = "children";
+    // properties = {};
+    // enabled = true;
+    // helpTip = "helpTip";
+    // indent = "indent";
+    // parent = w;
+    // textDirection = "right";
+    // window = w;
+    // type ="type";
 }
-
-b.onClick = function()
-{
-    alert(this.text.length);
-}
-
-w.show()

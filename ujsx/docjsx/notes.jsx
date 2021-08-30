@@ -99,3 +99,7 @@
 // patt = /^(table)\s+\[\d+\,\d+\]\(\d+\)/g;
 // str = "table [5,5](22)"
 
+
+// s = "    knae   ";
+// s.replace(/^(\s*)|(\s*)$/g, "")
+// $.writeln(s)

@@ -91,12 +91,35 @@ function Table(table, margin, VD, HD){
     this.maxRowSizes = this.getMaxRowSizes();
 }
 Table.fNamePatt = /^(table)\s+\[\d+(x)\d+\]\(\d+\)/g;
-Table.removeAll = function(){
+Table.removeAll = function(path){
     
-    fs = Folder(File($.fileName).path).getFiles("*.txt");
+    fs = Folder(path || File($.fileName).path).getFiles("*.txt");
     i  = fs.length;
     while(i--) if(fs[i].displayName.match(Table.fNamePatt)) fs[i].remove();
 }
+Table.process = function(behaveNum){
+    
+    arr  = Array.prototype.slice.call(arguments);
+    fArr = [];
+    sign = ",";
+    behN = behaveNum || 50;
+    
+    for(i=0; i<arr.length; i++)
+    {
+        tmp = [];
+        row = arr[i];
+        spt = row.split(sign);
+        for(k = 0; k<spt.length; k++)
+        {
+            tmp.push(spt[k]
+                    .replace(/^\s*|\s*$/g, "")
+                    .replace(RegExp("(.{"+behN+"})", "g"), "$1\n"));
+        }
+        fArr.push(tmp);
+    }
+    return fArr;
+}
+
 Table.prototype.maxColumnSizes = function(){
     
     var tb = this.table,
@@ -108,7 +131,8 @@ Table.prototype.maxColumnSizes = function(){
     {
         max = 0;
         for(var r=0; r< tb.length; r++)
-        {
+        {   
+            !tb[r][c]? tb[r][c] = "":0;
             /**************************/
             curr = (tb[r][c].split(JL)).max("length");
             /**************************/
@@ -187,18 +211,17 @@ Table.prototype.render = function(offset){
     this.format(); // should be non-optional:
 
     var tb  = this.ftable,
-        fs  = "",
         JL  = "\n",
         rs  = this.maxRowSizes,
         cs  = this.maxColSizes,
-        of  = typeof offset == "undefined"?" ":(str(" ") * offset);
-        mg  = this.margin;
+        of  = typeof offset == "undefined"?" ":(str(" ") * offset),
+        mg  = this.margin,
+        rw  = cs.sum() + (2 * mg * cs.length) + cs.length;
+        fs  = of + str(this.HD) * (rw+1) + JL;
         
     for(var r=0; r< tb.length; r++)
     {
         rr = "";
-        rw = cs.sum() + (2 * mg * cs.length) + cs.length; // calculate the row width
-
         for(var k=0; k< rs[r]; k++) // go through each line of each row:
         {
             rr += of + this.VD + tb[r][0].split(JL)[k];
@@ -211,10 +234,10 @@ Table.prototype.render = function(offset){
     }
     return fs;
 }
-Table.prototype.write = function(pad, path){
+Table.prototype.write = function(path, pad){
     
     path = path || Folder(File($.fileName).path).fsName;
-    pad  = pad || 5;
+    pad  = pad || 8;
     patt = Table.fNamePatt;
     txtf = Folder(path).getFiles("*.txt");
     num  = 1;
@@ -234,12 +257,12 @@ Table.prototype.show = function(){
 }
 
 
-Table.removeAll();
-new Table([
-    ["smart\nboy", "work", "big", "play"],
-    ["hard\npenile\nimagery", "sex", "deep", "pussy"],
-    ["smart", "work", "big", "play with\n that thing"],
-    ["smart", "work", "big\nboy\nmy\nman", "play"],
-    ["smart", "work", "big", "play"],
-    ["smart", "work", "big", "play"]
-]).write(8);
+// Table.removeAll();
+// new Table([
+//     ["smart\nboy", "work", "big", "play"],
+//     ["hard\npenile\nimagery", "sex", "deep", "pussy"],
+//     ["smart", "work", "big", "play with\n that thing"],
+//     ["smart", "work", "big\nboy\nmy\nman", "play"],
+//     ["smart", "work", "big", "play"],
+//     ["smart", "work", "big", "play"]
+// ]).write(8);

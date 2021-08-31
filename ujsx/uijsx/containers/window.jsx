@@ -84,10 +84,10 @@ _Window.prototype.populate = function(w, cs){
 }
 
 // class funcs:
-_Window.alert   = Function("cfg", "Window.alert(cfg.msg, cfg.title, cfg.errIcon)");
-_Window.confirm = Function("cfg", "Window.confirm(cfg.msg, cfg.defNo, cfg.title)");
-_Window.find    = Function("cfg", "Window.find(cfg.type, cfg.title)")
-_Window.prompt  = Function("cfg", "Window.prompt(cfg.msg, cfg.defValue, cfg.title)");
+_Window.alert   = Function("c", "Window.alert(c.msg, c.title, c.errIcon)");
+_Window.confirm = Function("c", "Window.confirm(c.msg, c.defNo, c.title)");
+_Window.find    = Function("c", "Window.find(c.type, c.title)")
+_Window.prompt  = Function("c", "Window.prompt(c.msg, c.defValue, c.title)");
 
 // win obj funcs:
 _Window.prototype.show   = Function("this.win.show()");

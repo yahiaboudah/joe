@@ -1,8 +1,10 @@
-// //@include "../blocks/widget.jsx"
+//@include "../blocks/widget.jsx"
 
-// _Video = function _Video(cfg){
-//     _Widget.call(this, cfg, "video");
-// }; Object.extends(_Video, _Widget);
+_Video = function _Video(cfg){
+	
+	_Widget.call(this, cfg, "video");
+
+}; Object.extends(_Video, _Widget);
 
 
 var win = new Window("palette");

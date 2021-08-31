@@ -516,7 +516,7 @@ b = w.add("button", undefined, "new stuff");
 
 bb = w.add("iconbutton", undefined, "/d/icons/img/edit.png")
 
-img = w.add("image", undefined, File("d:/media/Memes/exp/1.jpg") , {counter: 1, max:23})
+img = w.add("image", undefined, File("d:/media/Memes/exp/1.jpg") , {counter: 1, max:23, mouseon: false})
 
 img.onDraw = function(){
     
@@ -526,6 +526,10 @@ img.onDraw = function(){
     this.graphics.drawImage(ScriptUI.newImage(File("/d/media/Memes/exp/"+this.properties.counter+".jpg")), 0,0);
 }
 
+function simulateKey(){
+    File("C:/pro/joe/ujsx/uijsx/press.pyw").execute();
+}
+
 b.onClick = function(){
     this.text += "5";
     this.size.width = this.text.length * (6.5);
@@ -533,19 +537,16 @@ b.onClick = function(){
     // if(this.text.length > 100) w.close()
 }
 
-bb.addEventListener("mouseover", function(){
-    while(1)
-    {   if(!this.mouseover){ // need to figure this one out!
-        this.properties.counter = 0;
-        this.refresh();
-        }
-        File("C:/pro/joe/ujsx/uijsx/press.pyw").execute();
-    }
+img.addEventListener("mouseout", function(){
+    this.properties.mouseon = false;
 })
 
+img.addEventListener("mouseover", function(){
+    this.properties.mouseon = true;
+})
 
 w.addEventListener("keydown", function(k){
-    if(k.keyName == "F") bb.refresh();
+    if(k.keyName == "F") img.refresh();
 })
 
 w.show()

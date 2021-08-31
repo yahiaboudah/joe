@@ -55,7 +55,7 @@ ui =
         },
         {
             type: "statictext",
-            text: "textvalue",
+            text: new UseState("statetext", function(x){return "stats: " + x}), //use constructor name to detect A useState!
             onClick: function(){
 
             }

@@ -105,13 +105,19 @@ File.prototype.$create = function(text, encoding) {
     return this;
 }
 // Handler
-File.prototype.$execute = function(slp, doClose) {
+File.prototype.$execute = function(slp, doClose, callback) {
         if(typeof slp == "undefined") slp =0;
 
         this.execute();
         if(doClose) this.$close();
         
         $.sleep(slp);
+
+        if(typeof callback == "function")
+        {
+                callback.call(this);
+        }
+
         return this;
 }
 // Info

@@ -2,22 +2,17 @@
 
 function Path(){
     
-    this.parts = [];
+    this.ps = [];
     
-    var args = Array.prototype.slice.call(arguments),
-        len  = args.length,
-        i    = -1;
+    var ag = Array.prototype.slice.call(arguments),
+        ln = args.length,
+        id = -1;
     
-    while(++i<len)
-    {
-        arg = args[i];
-        spt = arg.split("/");
-        Array.prototype.push.apply(this.parts, spt);
-    } 
+    while(++i<ln) Array.prototype.push.apply(this.ps, ag[i].split("/"));
 }
 
-Path.prototype.resolve = function(){
-    return this.parts.join("/");
+Path.prototype.resolve = function(s/*slash*/){ // 0 => /, 1=> \\
+    return this.parts.join(!s? "/": "\\");
 }
 
 Path.prototype.exists = function(){
@@ -38,8 +33,9 @@ Path.prototype["/"] = function(op){
     return new Path(newPath);
 }
 
-pp = new Path("d:/media");
-ps = pp / "Memesplusplus";
+pp = new Path("d:/media", "Memes");
+$.writeln(Folder(pp.resolve(1)).exists)
+// ps = pp / "Memesplusplus";
 
-$.writeln(ps.mkdir())
-$.writeln(ps.parts)
+// $.writeln(ps.mkdir())
+// $.writeln(ps.parts)

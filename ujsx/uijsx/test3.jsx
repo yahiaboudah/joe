@@ -1,5 +1,3 @@
 
 
 
-
-$.writeln(Folder.temp.fsName)

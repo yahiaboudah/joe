@@ -5,14 +5,22 @@ function Path(){
     this.ps = [];
     
     var ag = Array.prototype.slice.call(arguments),
-        ln = args.length,
+        ln = ag.length,
         id = -1;
     
-    while(++i<ln) Array.prototype.push.apply(this.ps, ag[i].split("/"));
+    while(++id<ln) Array.prototype.push.apply(this.ps, ag[id].split("/"));
+}
+
+Path.prototype.py = function(){
+    e0 = this.ps.shift();
+    e1 = this.ps.shift();
+    rt = [e0, e1].join("\\\\");
+    bd = this.ps.join("\\");
+    return [rt, bd].join("\\");
 }
 
 Path.prototype.resolve = function(s/*slash*/){ // 0 => /, 1=> \\
-    return this.parts.join(!s? "/": "\\");
+    return this.ps.join(!s? "/": "\\");
 }
 
 Path.prototype.exists = function(){
@@ -32,10 +40,3 @@ Path.prototype["/"] = function(op){
 
     return new Path(newPath);
 }
-
-pp = new Path("d:/media", "Memes");
-$.writeln(Folder(pp.resolve(1)).exists)
-// ps = pp / "Memesplusplus";
-
-// $.writeln(ps.mkdir())
-// $.writeln(ps.parts)

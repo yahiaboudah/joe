@@ -1,17 +1,17 @@
 //@include "../../utjsx/$file.jsx"
+//@include "../../utjsx/$path.jsx"
 
-pp = "d:\\\\Cache\\sound\\sound.mp3";
-
-function playAudio(audioPath){    
+function playAudio(pp){    
     
     File(Folder.temp.fsName + "/ply.pyw").$create([
         
         "from playsound import playsound",
-        "playsound(r\""+audioPath+"\")"
+        "playsound(r\"" + new Path(pp).py() + "\")"
     
     ].join("\n")).$execute(100,1,function(){
         this.remove();
     });
+
 }
 
-playAudio(pp);
+playAudio("d:/Cache/sound/sound.mp3");

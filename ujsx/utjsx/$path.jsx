@@ -1,7 +1,19 @@
 
 
-function Path(ip){
-    this.parts = ip.split("/");
+function Path(){
+    
+    this.parts = [];
+    
+    var args = Array.prototype.slice.call(arguments),
+        len  = args.length,
+        i    = -1;
+    
+    while(++i<len)
+    {
+        arg = args[i];
+        spt = arg.split("/");
+        Array.prototype.push.apply(this.parts, spt);
+    } 
 }
 
 Path.prototype.resolve = function(){
@@ -30,3 +42,4 @@ pp = new Path("d:/media");
 ps = pp / "Memesplusplus";
 
 $.writeln(ps.mkdir())
+$.writeln(ps.parts)

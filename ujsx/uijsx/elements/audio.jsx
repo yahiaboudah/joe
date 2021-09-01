@@ -4,7 +4,7 @@ pp = "d:\\\\Cache\\sound\\sound.mp3";
 
 function playAudio(audioPath){    
     
-    File(Folder.temp + "/ply.pyw").$create([
+    File(Folder.temp.fsName + "/ply.pyw").$create([
         
         "from playsound import playsound",
         "playsound(r\""+audioPath+"\")"

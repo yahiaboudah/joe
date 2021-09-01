@@ -56,9 +56,9 @@ function gifo(cfg) {
 		}, 2);
 	});
 
-	gif.addEventListener("mousedown", function(){
-		alert(this.imgSeq.toSource());
-	})
+	// gif.addEventListener("mousedown", function(){
+	// 	alert(this.imgSeq.toSource());
+	// })
 
 	gif.icon = ScriptUI.newImage(gif.imgSeq[0]);
 }

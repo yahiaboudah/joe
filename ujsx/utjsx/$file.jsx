@@ -195,7 +195,7 @@ File.prototype.$listen = function(delay, debug, patience, cleanup){
 File.prototype.getDuration = function(){
     
     if(!this.exists) return 0;
-    if(["video", "audio"].includes(this.getType())) return 0;
+    if(!["video", "audio"].includes(this.getType())) return 0;
     
     k = app.project.importFile(new ImportOptions(this));
     d = k.duration;

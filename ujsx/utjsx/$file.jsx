@@ -187,10 +187,14 @@ File.prototype.$listen = function(delay, debug, patience, cleanup){
 }
 
 File.prototype.getDuration = function(){
+    
     if(!this.exists) return 0;
+    if(["video", "audio"].includes(this.getType())) return 0;
+    
     k = app.project.importFile(new ImportOptions(this));
     d = k.duration;
-    k.remove();
+    
+    k.remove(); k = null;
     return d;
 }
 
@@ -204,28 +208,37 @@ File.prototype.getExt = function(){
 
 File.prototype.getType = function(){
 
-   xt = this.name.replace(/^.*\./,"").toLowerCase();
-   tp = File.TYPES_BY_EXTENSION[xt] || 7;
-   nm = File.CATEGORIES[tp].toLowerCase();
-   
-   return nm;
-}    
+        xt = this.name.replace(/^.*\./,"").toLowerCase();
+        tp = File.TYPES_BY_EXTENSION[xt] || 7;
+        nm = File.CATEGORIES[tp].toLowerCase();
+
+        return nm;
+}
+
+/*WARNING: TESTED AND ONLY WORKS IN AFTER EFFECTS*/
+File.prototype.getDuration = function(){
+        if(!this.exists) return 0;
+        k = app.project.importFile(new ImportOptions(this));
+        d = k.duration;
+        k.remove();
+        return d;
+}
 
 // Folder Handler
 Folder.prototype.$clearFolder = function(extensionName) {
 
-    if (this.fsName.checkFF() != -1) throw Error("dirPath is not a folder path");
-    var isAll = (typeof extensionName == "undefined")? true: false;
+        if (this.fsName.checkFF() != -1) throw Error("dirPath is not a folder path");
+        var isAll = (typeof extensionName == "undefined")? true: false;
 
-    var ffs = this.getFiles();
+        var ffs = this.getFiles();
 
-    ffs.forEach(function(f) {
-            var ext = f.fsName.split('.');
-            ext = ext[ext.length-1];
-            if (f.constructor == File && (isAll || (ext == extensionName)) ) f.remove();
-    })
+        ffs.forEach(function(f) {
+                var ext = f.fsName.split('.');
+                ext = ext[ext.length-1];
+                if (f.constructor == File && (isAll || (ext == extensionName)) ) f.remove();
+        })
 
-    return 0;
+        return 0;
 }
 Folder.prototype.$remove = function(){
         this.$clearFolder();

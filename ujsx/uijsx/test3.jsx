@@ -26,13 +26,13 @@
 // af = new File("D:/Cache/sound/sound.itss");
 // $.writeln(af.getType())
 
-// File.prototype.getDuration = function(){
-//     if(!this.exists) return 0;
-//     k = app.project.importFile(new ImportOptions(this));
-//     d = k.duration;
-//     k.remove();
-//     return d;
-// }
+File.prototype.getDuration = function(){
+    if(!this.exists) return 0;
+    k = app.project.importFile(new ImportOptions(this));
+    d = k.duration;
+    k.remove();
+    return d;
+}
 
 // af = new File("/d/Cache/exp/00020.jpg");
 // $.writeln(af.getDuration())

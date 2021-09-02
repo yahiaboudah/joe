@@ -128,6 +128,7 @@ _Button = function _Button(cfg){
 
 	this.characters = 0;
 	this.text = "";
+	
 	this.justify = "center";
 	this.shortcutKey = "";
 	this.enabled = 1;
@@ -139,6 +140,8 @@ _Button = function _Button(cfg){
 	this.alignment = "center";
 
 	//========================
+	this.onClick = cfg.onClick;
+	
 	this.eventListeners = [
 		// [eventName:str, function handler(){...}:func, capturePhase:bool]
 		// ...

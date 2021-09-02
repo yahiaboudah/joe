@@ -1,13 +1,4 @@
 
-
-// function ButtonCreator(specialOnClick)
-// {
-//     this.type = "button";
-//     this.text = "stuff";
-//     this.onClick = specialOnClick;
-// }
-
-
 Function.prototype.bind = Function.prototype.bind || function bind(thisArg) {
 	var method = this;
 	var args = Array.prototype.slice.call(arguments, 1);

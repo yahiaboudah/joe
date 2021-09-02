@@ -40,18 +40,38 @@ ui =
             type: "button",
             text: "button",
             onClick: function(){
+                this.text ="newtext";
                 this.setState("statetext", function(s){ return "t:" + this.statecounter.value});
                 this.setState("statecounter", function(c){ return c+1})
             }
         },
         {
             type: "statictext",
-            text: new UseState("statetext", function(x){return "stats: " + x}), //use constructor name to detect A useState!
+            text: "no worries",
             onClick: function(){
 
             }
         }
     ]
+}
+
+function StateManager(){}
+StateManager.setState = function(stateVar, newState){
+    
+    // update the state value:
+    oldState = this.state[stateVar].value;
+    if(typeof newState == "function") newState = newState.call(this.state, oldState);
+    this.state[stateVar].value = newState;
+
+    //notify the listeners:
+    ls = this.state[stateVar].listeners;
+    for(var i=0; i<ls.length; i++)
+    {
+        addr = ls[i][0];
+        prop = ls[i][1];
+        func = ls[i][2];
+        this.children[addr][prop] = newState;
+    }
 }
 
 function parse(tree){
@@ -60,22 +80,7 @@ function parse(tree){
     root.spacing = tree.spacing;
     root.margins = tree.margins;
     root.orientation = tree.orientation;
-    root.setState = function(stateVar, newState){
-
-        oldState = this.state[stateVar].value;
-        if(typeof newState == "function") newState = newState.call(this.state, oldState);
-        this.state[stateVar].value = newState;
-
-        //notify the listeners:
-        ls = this.state[stateVar].listeners;
-        for(var i=0; i<ls.length; i++)
-        {
-            addr = ls[i][0];
-            prop = ls[i][1];
-            func = ls[i][2];
-            this.children[addr][prop] = newState;
-        }
-    }
+    root.setState = StateManager.setState.bind(root);
 
     root.state = tree.state;
 

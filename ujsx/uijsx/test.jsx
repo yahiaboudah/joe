@@ -40,7 +40,7 @@ ui =
             type: "button",
             text: "button",
             onClick: function(){
-                this.text ="newtext";
+                // this.text ="weirdly";
                 this.setState("statetext", function(s){ return "t:" + this.statecounter.value});
                 this.setState("statecounter", function(c){ return c+1})
             }
@@ -73,6 +73,7 @@ StateManager.setState = function(stateVar, newState){
         this.children[addr][prop] = newState;
     }
 }
+
 
 function parse(tree){
 

@@ -101,6 +101,13 @@ ShapeLayer.prototype.areas = function(){
 
 ShapeLayer.prototype.distances = function(startingPoint){
 
+    var propPosition = function(n)
+    {
+        return contents.property(n)
+                       .property("Transform")
+                       .property("Position").value;
+    }
+
     var distances  = [],
         comp       = app.project.activeItem,
         contents   = this.property("Contents"),
@@ -113,7 +120,7 @@ ShapeLayer.prototype.distances = function(startingPoint){
     var i =0;
     for(;++i< numProps+1;){
       
-        pos = contents.property(i).property("Transform").property("Position").value;
+        pos = propPosition(i);
       
         switch (startingPoint) {
        

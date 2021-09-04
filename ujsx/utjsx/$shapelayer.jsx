@@ -101,11 +101,11 @@ ShapeLayer.prototype.areas = function(){
 
 ShapeLayer.prototype.distances = function(startingPoint){
 
-    var propPosition = function(n)
+    var propPosition = function(c, n, pp)
     {
-        return contents.property(n)
-                       .property("Transform")
-                       .property("Position").value;
+        return c.property(n)
+                .property("Transform")
+                .property(pp).value;
     }
 
     var distances  = [],
@@ -120,7 +120,7 @@ ShapeLayer.prototype.distances = function(startingPoint){
     var i =0;
     for(;++i< numProps+1;){
       
-        pos = propPosition(i);
+        pos = prop(contents, i, "Position");
       
         switch (startingPoint) {
        

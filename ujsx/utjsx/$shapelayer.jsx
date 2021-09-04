@@ -56,7 +56,6 @@ ShapeLayer.prototype.alpha = function(){
     cc.remove();
     return rgba[3];
 }
-
 /**
  * get the amount of pixels each group of a shape 
  * layer occupies, all listed in an Array.
@@ -68,7 +67,6 @@ ShapeLayer.prototype.alpha = function(){
  * 4) Return the areas.
  * @returns Array 
  */
-
 ShapeLayer.prototype.groupAreas = function(){
     
     var areas    = [],
@@ -100,4 +98,60 @@ ShapeLayer.prototype.groupAreas = function(){
     }
 
     return areas;
+}
+ShapeLayer.prototype.distances = function(){
+    const errMsg = {
+        selectedLayer : "No selected layer name provided.",
+        invalidSortingDirection : "The provided sorting direction is invalid."
+    };
+
+    comp = app.project.activeItem;
+
+    distances = [];
+    
+    contents = this.property("Contents");
+    
+    src = this.sourceRectAtTime(comp.time,false);
+    WIDTH = src.width;
+    HEIGHT = src.height; 
+    
+    for(var i=1;i<contents.numProperties+1;i++){
+      
+        pos = contents.property(i).property("Transform").property("Position").value;
+      
+        switch (startingPoint) {
+       
+            case morphing.CONSTANTS.SORTING_DIRECTIONS.topleft:
+               dist = Math.sqrt(Math.pow((pos[0]-src.left),2)+Math.pow((pos[1]-src.top),2));
+               break;
+            case morphing.CONSTANTS.SORTING_DIRECTIONS.leftRight:
+               dist = pos[0]-src.left;
+               break;
+            case morphing.CONSTANTS.SORTING_DIRECTIONS.rightLeft:
+               dist = WIDTH - (pos[0]-src.left);
+               break;   
+            case morphing.CONSTANTS.SORTING_DIRECTIONS.topdown:
+               dist = pos[1] - src.top;
+               break;
+            case morphing.CONSTANTS.SORTING_DIRECTIONS.bottomUp:
+               dist = HEIGHT - (pos[1] - src.top)
+               break;
+            case morphing.CONSTANTS.SORTING_DIRECTIONS.closestTo:
+               if(typeof selectedLayerName != "undefined"){
+                    selectedLayer = comp.layers.byName(selectedLayerName);
+                    selLayerPos = selectedLayer.transform.position;
+                    // TODO: Figure out the position coordinates of the
+                    // elements relative to the comp coordinate system.
+                    // Then simply subtract the distances to figure which
+                    // ones are closer than others.
+                }else{
+                    alert(errMsg.selectedLayer);
+                }  
+            default:
+                alert(errMsg.invalidSortingDirection);
+                break;
+      }
+      distances[distances.length] = dist;
+    }
+    return distances;
 }

@@ -92,3 +92,14 @@ Array.prototype.println = function() {
 Array.prototype.includes = function(k) {
     return this.indexOf(k) > -1;
 }
+
+Array.prototype.rotate = function(d, i){
+    a = this; // eval("["+String(this)+"]");
+    
+    if(d == "left")  while(i--) a.push(a.shift());
+    if(d == "right") while(i--) a.unshift(a.pop());
+
+    return arr;
+}
+
+Array.prototype.

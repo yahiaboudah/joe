@@ -1,0 +1,4 @@
+*.log
+mainMorpher.jsx
+test?.*
+ignored.txt

@@ -101,17 +101,17 @@ ShapeLayer.prototype.areas = function(){
 
 ShapeLayer.prototype.distances = function(startingPoint){
 
-    comp = app.project.activeItem;
+    var distances  = [],
+        comp       = app.project.activeItem,
+        contents   = this.property("Contents"),
+        numProps   = contents.numProperties;
+        
+    var src = this.sourceRectAtTime(comp.time, false);
+        wd  = src.width;
+        ht  = src.height;
 
-    distances = [];
-    
-    contents = this.property("Contents");
-    
-    src = this.sourceRectAtTime(comp.time,false);
-    WIDTH = src.width;
-    HEIGHT = src.height; 
-    
-    for(var i=1;i<contents.numProperties+1;i++){
+    var i =0;
+    for(;++i< numProps+1;){
       
         pos = contents.property(i).property("Transform").property("Position").value;
       

@@ -56,3 +56,48 @@ ShapeLayer.prototype.alpha = function(){
     cc.remove();
     return rgba[3];
 }
+
+/**
+ * get the amount of pixels each group of a shape 
+ * layer occupies, all listed in an Array.
+ * This works by storing the visiblity status of each
+ * group. then:
+ * 1) Make groups enabled 1 at a time, retrieve area.
+ * 2) Push area into the areas array.
+ * 3) Finally restore the original visibility status
+ * 4) Return the areas.
+ * @returns Array 
+ */
+
+ShapeLayer.prototype.groupAreas = function(){
+    
+    var areas    = [],
+        visibles = [],
+        contents = this.property("Contents"),
+        numProps = contents.numProperties,
+        i        = 0;
+
+    while(++i < numProps+1)
+    {
+        visibles.push(contents.property(i).enabled); 
+        contents.property(i).enabled = false;
+    }   
+    
+    i = 1;
+    contents.property(i).enabled = true;
+    areas.push(this.area() * this.alpha());
+    
+    while (++i< numProps+1)
+    {
+        contents.property(i-1).enabled = false;
+        contents.property(i+0).enabled = true;
+        areas.push(this.area() * this.alpha());
+    }   i = 0;
+
+    while(++i < numProps+1)
+    {
+        contents.property(i).enabled = visibles[i-1];
+    }
+
+    return areas;
+}

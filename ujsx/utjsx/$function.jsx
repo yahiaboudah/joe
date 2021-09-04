@@ -27,3 +27,9 @@ Function.prototype.bind = Function.prototype.bind || function bind(thisArg) {
 		return eval('new method(' + __args.join(',') + ')');
 	};
 }
+
+Function.prototype.body = function(){
+	return this.toString()
+		   .replace(/^[^{]*\{[\s]*/,"    ")
+           .replace(/\s*\}[^}]*$/,"");
+}

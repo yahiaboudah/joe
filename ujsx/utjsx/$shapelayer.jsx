@@ -25,4 +25,56 @@ ShapeLayer.prototype.area = function(c){
     return sr.width * sr.height * sc[0] * sc[1] / 10000;
 }
 
-// $.writeln(app.project.activeItem.selectedLayers[0].area() /1920/1080);
+ShapeLayer.prototype.alpha = function(){
+
+    var colorControl = this.property("Effects").addProperty("Color Control");
+        colorProp    = colorControl.property("Color");
+
+    var exp = 
+    [
+    "sr = thisLayer.sourceRectAtTime()",
+    "sc = transform.scale",
+    
+    "w = sc[0] * sr.width  / 200",
+    "h = sc[1] * sr.height / 200",
+    "p = [toWorld([sr.left,0])[0] + w,toWorld([0,sr.top])[1]+h]",
+    
+    "thisLayer.sampleImage(p,[w,h])"
+
+    ].join(";\n");
+
+    colorProp.expression = exp;
+    rgba = colorProp.value;
+
+    colorControl.remove();
+    return rgba[3];
+}
+
+function x(){
+
+
+
+    sr = thisLayer.sourceRectAtTime();
+
+    sc = transform.scale;
+
+    w = sc[0] * sr.width  / 200;
+
+    h = sc[1] * sr.height / 200;
+
+    p = [toWorld([sr.left,0])[0] + w,toWorld([0,sr.top])[1]+h];
+
+    thisLayer.sampleImage(p,[w,h])
+}
+
+function body(ff){
+    ff = ff.toString();
+    ff = ff.replace(/^[^{]*\{[\s]*/,"    ")
+           .replace(/\s*\}[^}]*$/,"");
+    return ff;
+}
+
+$.writeln(body(x))
+
+// sel = app.project.activeItem.selectedLayers[0];
+// $.writeln(sel.alpha());

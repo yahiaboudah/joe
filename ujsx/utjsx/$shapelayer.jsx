@@ -1,5 +1,3 @@
-const { array } = require("prop-types");
-
 /*******************************************************************************
 		Name:           $shapelayer
 		Desc:           Shape layer utils.

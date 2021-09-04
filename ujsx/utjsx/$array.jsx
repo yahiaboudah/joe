@@ -141,21 +141,18 @@ Array.prototype.map = function(cb) {
     if (typeof cb !== 'function') throw TypeError(cb + ' is not a function');
     if (arguments.length > 1) T = arguments[1];
     A = new Array(len);
-    k = 0;
+    k = -1;
   
-    while (k < len) {
+    while (++k < len) {
 
       var kValue, mappedValue;
   
-      if (k in O) {
-  
+      if (k in O) 
+      {
         kValue = O[k];
-  
         mappedValue = cb.call(T, kValue, k, O);
-  
         A[k] = mappedValue;
       }
-      k++;
     }
     
     return A;

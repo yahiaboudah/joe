@@ -102,4 +102,28 @@ Array.prototype.rotate = function(d, i){
     return arr;
 }
 
-Array.prototype.
+Array.prototype.reduce = function(cb) {
+    
+    'use strict';
+    if (this == null)             throw TypeError('Reduce called on null or undefined');
+    if (typeof cb !== 'function') throw TypeError(cb + ' is not a function');
+    var t = Object(this), len = t.length >>> 0, k = 0, value;
+    
+    if(arguments.length == 2) 
+    {
+      value = arguments[1];
+    } 
+    else 
+    {
+      while (k < len && !(k in t)) k++; 
+      if (k >= len) throw TypeError('Reduce of empty array with no initial value');
+      value = t[k++];
+    }
+
+    for (; k < len; k++) 
+    {
+      if (k in t) value = cb(value, t[k], k, t);
+    }
+    
+    return value;
+};

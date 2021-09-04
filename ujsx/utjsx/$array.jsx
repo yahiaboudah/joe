@@ -126,4 +126,37 @@ Array.prototype.reduce = function(cb) {
     }
     
     return value;
-};
+}
+
+Array.prototype.map = function(cb) {
+
+    if (this == null) throw TypeError('Map array is null or not defined');
+  
+    var T,
+        A,
+        k,
+        O   = Object(this),
+        len = O.length >>> 0;
+  
+    if (typeof cb !== 'function') throw TypeError(cb + ' is not a function');
+    if (arguments.length > 1) T = arguments[1];
+    A = new Array(len);
+    k = 0;
+  
+    while (k < len) {
+
+      var kValue, mappedValue;
+  
+      if (k in O) {
+  
+        kValue = O[k];
+  
+        mappedValue = cb.call(T, kValue, k, O);
+  
+        A[k] = mappedValue;
+      }
+      k++;
+    }
+    
+    return A;
+}

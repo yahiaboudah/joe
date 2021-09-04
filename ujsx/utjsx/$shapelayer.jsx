@@ -29,13 +29,17 @@ ShapeLayer.prototype.area = function(c){
     
     return sr.width * sr.height * sc[0] * sc[1] / 10000;
 }
-
+/**
+ * Get the alpha value for a shape layer by writing an expression
+ * and grabbing the result from a temporary Color Control.
+ * @returns float
+ */
 ShapeLayer.prototype.alpha = function(){
 
-    var colorControl = this.property("Effects").addProperty("Color Control");
-        colorProp    = colorControl.property("Color");
+    var cc = this.property("Effects").addProperty("Color Control"); // color control
+        cp = cc.property("Color"); // color prop
 
-    colorProp.expression = (function(){
+    cp.expression = (function(){
 
         sr = thisLayer.sourceRectAtTime();
         sc = transform.scale;
@@ -47,11 +51,8 @@ ShapeLayer.prototype.alpha = function(){
         thisLayer.sampleImage(p,[w,h])
     
     }).body();
-    rgba = colorProp.value;
+    rgba = cp.value;
 
-    colorControl.remove();
+    cc.remove();
     return rgba[3];
 }
-
-sel = app.project.activeItem.selectedLayers[0];
-$.writeln(sel.alpha());

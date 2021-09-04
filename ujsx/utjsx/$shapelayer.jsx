@@ -101,11 +101,19 @@ ShapeLayer.prototype.areas = function(){
 
 ShapeLayer.prototype.distances = function(startingPoint){
 
-    var propPosition = function(c, n, pp)
+
+    Number.prototype["^"] = function(op){
+        return Math.pow(this, op);
+    }
+
+    propPosition = function(c, n, pp)
     {
         return c.property(n)
                 .property("Transform")
                 .property(pp).value;
+    }
+    num = function(v){
+        return new Number(v);
     }
 
     var distances  = [],
@@ -119,9 +127,13 @@ ShapeLayer.prototype.distances = function(startingPoint){
 
     var i =0;
     for(;++i< numProps+1;){
-      
-        pos = prop(contents, i, "Position");
-      
+
+        pos  = prop(contents, i, "Position");
+        dist = Math.sqrt(
+                        num(pos[0]-src.left) ^ 2 
+                      + num(pos[1]-src.top)  ^ 2
+                        );
+
         switch (startingPoint) {
        
             case morphing.CONSTANTS.SORTING_DIRECTIONS.topleft:

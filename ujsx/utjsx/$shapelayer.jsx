@@ -1,3 +1,5 @@
+const { array } = require("prop-types");
+
 /*******************************************************************************
 		Name:           $shapelayer
 		Desc:           Shape layer utils.
@@ -99,7 +101,7 @@ ShapeLayer.prototype.areas = function(){
     return areas;
 }
 
-ShapeLayer.prototype.distances = function(startingPoint){
+ShapeLayer.prototype.distances = function(origin){
 
 
     Number.prototype["^"] = function(op){
@@ -117,6 +119,7 @@ ShapeLayer.prototype.distances = function(startingPoint){
     }
 
     var distances  = [],
+        positions  = [],
         comp       = app.project.activeItem,
         contents   = this.property("Contents"),
         numProps   = contents.numProperties;
@@ -125,48 +128,50 @@ ShapeLayer.prototype.distances = function(startingPoint){
         wd  = src.width;
         ht  = src.height;
 
-    var i =0;
-    for(;++i< numProps+1;){
+    var i=0;
+    for(;++i<numProps+1;) positions.push(prop(contents,i, "Position"))
+    i = 0;
 
-        pos  = prop(contents, i, "Position");
-        dist = Math.sqrt(
-                        num(pos[0]-src.left) ^ 2 
-                      + num(pos[1]-src.top)  ^ 2
-                        );
-
-        switch (startingPoint) {
-       
-            case morphing.CONSTANTS.SORTING_DIRECTIONS.topleft:
-               dist = Math.sqrt(Math.pow((pos[0]-src.left),2)+Math.pow((pos[1]-src.top),2));
-               break;
-            case morphing.CONSTANTS.SORTING_DIRECTIONS.leftRight:
-               dist = pos[0]-src.left;
-               break;
-            case morphing.CONSTANTS.SORTING_DIRECTIONS.rightLeft:
-               dist = WIDTH - (pos[0]-src.left);
-               break;   
-            case morphing.CONSTANTS.SORTING_DIRECTIONS.topdown:
-               dist = pos[1] - src.top;
-               break;
-            case morphing.CONSTANTS.SORTING_DIRECTIONS.bottomUp:
-               dist = HEIGHT - (pos[1] - src.top)
-               break;
-            case morphing.CONSTANTS.SORTING_DIRECTIONS.closestTo:
-               if(typeof selectedLayerName != "undefined"){
-                    selectedLayer = comp.layers.byName(selectedLayerName);
-                    selLayerPos = selectedLayer.transform.position;
-                    // TODO: Figure out the position coordinates of the
-                    // elements relative to the comp coordinate system.
-                    // Then simply subtract the distances to figure which
-                    // ones are closer than others.
-                }else{
-                    alert(errMsg.selectedLayer);
-                }  
-            default:
-                alert(errMsg.invalidSortingDirection);
-                break;
-      }
-      distances[distances.length] = dist;
+    switch(origin)
+    {
+        case "topleft":
+            distances = positions.map(function(pos){
+                return Math.sqrt(
+                                num(pos[0] - src.left) ^ 2 
+                              + num(pos[1] - src.top ) ^ 2
+                       );
+            }); break;
+        
+        case "left":
+            distances = positions.map(function(pos){
+                return pos[0] - src.left;
+            }); break;
+        
+        case "right":
+            distances = positions.map(function(pos){
+                return wd - (pos[0] - src.left);
+            }); break;
+        
+        case "top":
+            distances = positions.map(function(pos){
+                return pos[1] - src.top;
+            }); break;
+        
+        case "bottom":
+            distances = positions.map(function(pos){
+                return ht - (pos[1] - src.top);
+            }); break;
+        
+        case "custom":
+            // TODO: Figure out the position coordinates of the
+            // elements relative to the comp coordinate system.
+            // Then simply subtract the distances to figure which
+            // ones are closer than others.
+            break;
+        
+        default:
+            $.writeln("invalid origin"); 
     }
+
     return distances;
 }

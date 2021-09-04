@@ -14,7 +14,6 @@ Function.prototype.body = function(){
 		   .replace(/^[^{]*\{[\s]*/,"")
            .replace(/\s*\}[^}]*$/,"");
 }
-
 /**
  * Calculates the area of the given shape layer..
  * @param {CompItem} c 
@@ -67,7 +66,7 @@ ShapeLayer.prototype.alpha = function(){
  * 4) Return the areas.
  * @returns Array 
  */
-ShapeLayer.prototype.groupAreas = function(){
+ShapeLayer.prototype.areas = function(){
     
     var areas    = [],
         visibles = [],
@@ -99,11 +98,8 @@ ShapeLayer.prototype.groupAreas = function(){
 
     return areas;
 }
-ShapeLayer.prototype.distances = function(){
-    const errMsg = {
-        selectedLayer : "No selected layer name provided.",
-        invalidSortingDirection : "The provided sorting direction is invalid."
-    };
+
+ShapeLayer.prototype.distances = function(startingPoint){
 
     comp = app.project.activeItem;
 

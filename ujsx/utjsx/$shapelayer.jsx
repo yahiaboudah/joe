@@ -133,8 +133,35 @@ ShapeLayer.prototype.distances = function(origin){
         return new Number(v);
     }
 
-    var distances  = [],
-        positions  = [],
+    funcs = {
+
+        topleft: function(pos){
+            return Math.sqrt(
+                            (num(pos[0] - src.left) ^ 2) 
+                          + (num(pos[1] - src.top ) ^ 2)
+                   );
+        },
+        left: function(pos){
+            return pos[0] - src.left;
+        },
+        right: function(pos){
+            return wd - (pos[0] - src.left);
+        },
+        top: function(pos){
+            return pos[1] - src.top;
+        },
+        bottom: function(pos){
+            return ht - (pos[1] - src.top);
+        },
+        custom: function(pos){
+            // TODO: Figure out the position coordinates of the
+            // elements relative to the comp coordinate system.
+            // Then simply subtract the distances to figure which
+            // ones are closer than others.
+        }
+    }
+
+    var positions  = [],
         origin     = origin || "topleft";
         contents   = this.property("Contents"),
         numProps   = contents.numProperties;
@@ -145,62 +172,26 @@ ShapeLayer.prototype.distances = function(origin){
 
     for(i=0;++i<numProps+1;) positions.push(prop(contents,i, "Position"))
 
-    switch(origin)
-    {
-        case "topleft":
-            distances = positions.map(function(pos){
-                return Math.sqrt(
-                                (num(pos[0] - src.left) ^ 2) 
-                              + (num(pos[1] - src.top ) ^ 2)
-                       );
-            }); break;
-        
-        case "left":
-            distances = positions.map(function(pos){
-                return pos[0] - src.left;
-            }); break;
-        
-        case "right":
-            distances = positions.map(function(pos){
-                return wd - (pos[0] - src.left);
-            }); break;
-        
-        case "top":
-            distances = positions.map(function(pos){
-                return pos[1] - src.top;
-            }); break;
-        
-        case "bottom":
-            distances = positions.map(function(pos){
-                return ht - (pos[1] - src.top);
-            }); break;
-        
-        case "custom":
-            // TODO: Figure out the position coordinates of the
-            // elements relative to the comp coordinate system.
-            // Then simply subtract the distances to figure which
-            // ones are closer than others.
-            break;
-        
-        default:
-            $.writeln("invalid origin"); 
-    }
+    dists = positions.map(funcs[origin]);
 
+    /**************************/
     delete(Array.prototype.map);
     delete(Number.prototype["^"]);
+    funcs = prop = num = positions 
+    = origin = contents = numProps
+    = src = wd = ht = null;
+    /*************************/
 
-    return distances;
+    return dists;
 }
 
-Math.sum = function(){
-    args = Array.prototype.slice.call(arguments);
-    for(i=-1, sum=0;++i<args.length;) sum += args[i];
-    return sum;
-}
+// Math.sum = function(){
+//     args = Array.prototype.slice.call(arguments);
+//     for(i=-1, sum=0;++i<args.length;) sum += args[i];
+//     return sum;
+// }
 
-layer = app.project.activeItem.layer(1);
-dists = layer.distances("left");
+// layer = app.project.activeItem.layer(1);
+// dists = layer.distances("left");
 
-$.writeln(dists);
-
-// $.writeln(Math.sum.apply(null, dists))
+// $.writeln(dists);

@@ -9,11 +9,6 @@
 		Created:        2109 (YYMM)
 		Modified:       2109 (YYMM)
 *******************************************************************************/
-Function.prototype.body = function(){
-	return this.toString()
-		   .replace(/^[^{]*\{[\s]*/,"")
-           .replace(/\s*\}[^}]*$/,"");
-}
 /**
  * Calculates the area of the given shape layer..
  * @param {CompItem} c 
@@ -35,6 +30,12 @@ ShapeLayer.prototype.area = function(c){
  */
 ShapeLayer.prototype.alpha = function(){
 
+    Function.prototype.body = function(){
+        return this.toString()
+               .replace(/^[^{]*\{[\s]*/,"")
+               .replace(/\s*\}[^}]*$/,"");
+    }
+
     var cc = this.property("Effects").addProperty("Color Control"); // color control
         cp = cc.property("Color"); // color prop
 
@@ -53,6 +54,7 @@ ShapeLayer.prototype.alpha = function(){
     rgba = cp.value;
 
     cc.remove();
+    delete(Function.prototype.body);
     return rgba[3];
 }
 /**
@@ -133,10 +135,11 @@ ShapeLayer.prototype.distances = function(origin){
 
     var distances  = [],
         positions  = [],
+        origin     = origin || "topleft";
         contents   = this.property("Contents"),
         numProps   = contents.numProperties;
         
-    var src = this.sourceRectAtTime(this.containingComp.time, false);
+    var src = this.sourceRectAtTime(this.containingComp.time, 0);
         wd  = src.width;
         ht  = src.height;
 
@@ -147,8 +150,8 @@ ShapeLayer.prototype.distances = function(origin){
         case "topleft":
             distances = positions.map(function(pos){
                 return Math.sqrt(
-                                num(pos[0] - src.left) ^ 2 
-                              + num(pos[1] - src.top ) ^ 2
+                                (num(pos[0] - src.left) ^ 2) 
+                              + (num(pos[1] - src.top ) ^ 2)
                        );
             }); break;
         
@@ -188,3 +191,16 @@ ShapeLayer.prototype.distances = function(origin){
 
     return distances;
 }
+
+Math.sum = function(){
+    args = Array.prototype.slice.call(arguments);
+    for(i=-1, sum=0;++i<args.length;) sum += args[i];
+    return sum;
+}
+
+layer = app.project.activeItem.layer(1);
+dists = layer.distances("left");
+
+$.writeln(dists);
+
+// $.writeln(Math.sum.apply(null, dists))

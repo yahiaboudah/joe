@@ -105,6 +105,21 @@ ShapeLayer.prototype.distances = function(origin){
     Number.prototype["^"] = function(op){
         return Math.pow(this, op);
     }
+    Array.prototype.map = function(cb) {
+        if (this == null) throw TypeError('Map array is null or not defined');
+        var T,A,k,O   = Object(this),len = O.length >>> 0;
+        if (typeof cb !== 'function') throw TypeError(cb + ' is not a function');
+        if (arguments.length > 1) T = arguments[1];
+        A = new Array(len); k = -1;
+        while (++k < len) {
+          var kValue, mappedValue;
+          if (k in O){
+            kValue = O[k];
+            mappedValue = cb.call(T, kValue, k, O);
+            A[k] = mappedValue;
+          }
+        } return A;
+    }
 
     propPosition = function(c, n, pp)
     {
@@ -118,11 +133,10 @@ ShapeLayer.prototype.distances = function(origin){
 
     var distances  = [],
         positions  = [],
-        comp       = app.project.activeItem,
         contents   = this.property("Contents"),
         numProps   = contents.numProperties;
         
-    var src = this.sourceRectAtTime(comp.time, false);
+    var src = this.sourceRectAtTime(this.containingComp.time, false);
         wd  = src.width;
         ht  = src.height;
 
@@ -170,6 +184,9 @@ ShapeLayer.prototype.distances = function(origin){
         default:
             $.writeln("invalid origin"); 
     }
+
+    delete(Array.prototype.map);
+    delete(Number.prototype["^"]);
 
     return distances;
 }

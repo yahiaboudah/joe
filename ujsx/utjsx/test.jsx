@@ -6,9 +6,6 @@ function testexpr(){
     toWorld([p[0]-src.width/3.6, p[1]+src.height/2.6])
 }
 
-
-comp = app.project.activeItem;
-
 src = comp.layer(1).sourceRectAtTime(comp.time,false);
 
 layer = comp.layer(1).property("Contents");

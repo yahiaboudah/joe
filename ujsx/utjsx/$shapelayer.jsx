@@ -121,7 +121,7 @@ ShapeLayer.prototype.distances = function(origin){
         } return A;
     }
 
-    propPosition = function(c, n, pp)
+    prop = function(c, n, pp)
     {
         return c.property(n)
                 .property("Transform")
@@ -140,9 +140,7 @@ ShapeLayer.prototype.distances = function(origin){
         wd  = src.width;
         ht  = src.height;
 
-    var i=0;
-    for(;++i<numProps+1;) positions.push(prop(contents,i, "Position"))
-    i = 0;
+    for(i=0;++i<numProps+1;) positions.push(prop(contents,i, "Position"))
 
     switch(origin)
     {

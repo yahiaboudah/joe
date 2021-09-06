@@ -173,3 +173,10 @@ Array.prototype.sortedIndices = function(){
         return a[x-1] > a[y-1];
     })
 }
+
+Array.prototype.math2D = function(typ, xory)
+{
+    return Math[typ].apply(null, this.map(function(x){
+        return x[xory]
+    }))
+}

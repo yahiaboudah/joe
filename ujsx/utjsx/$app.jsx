@@ -1,4 +1,7 @@
 
+
+
+
 app.importOptions = function(){
     opts = new ImportOptions();
     opts.file = cfg.file;
@@ -22,6 +25,10 @@ app.mostRecent = function(dp, typ){
     for(;++i<fs.length;) if(fs[i].modified>re.modified) re = fs[i];
     
     return re;
+}
+
+app.getFileDlg = function(sugg, helptip, type){
+    return (new File(sugg)).openDlg(helptip,type);
 }
 
 app.getExpression = function(ftName, typ){
@@ -58,4 +65,3 @@ app.makeAnimMarkers(animObj){
     }
     return [times,comments];
 }
-

@@ -101,6 +101,15 @@ ShapeLayer.prototype.areas = function(){
     return areas;
 }
 
+ShapeLayer.prototype.moveFirstVertex = function(idx){
+
+    var i = 0,
+        c = this.property("Contents"),
+        n = c.numProperties + 1;
+
+    for(;++i<n;) c.property(i).moveFirstVertex(idx);
+}
+
 ShapeLayer.prototype.distances = function(origin){
 
 

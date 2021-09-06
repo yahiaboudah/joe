@@ -12,6 +12,18 @@ app.import = function(fp){
     }));
 }
 
+app.mostRecent = function(dp, typ){
+
+    var fs = Folder(fp).getFiles(typ || "*"),
+        re = fs[0],
+        i  = -1;
+    
+    if(!re) return;
+    for(;++i<fs.length;) if(fs[i].modified>re.modified) re = fs[i];
+    
+    return re;
+}
+
 app.getExpression = function(ftName, typ){
     
     return (function(){
@@ -44,5 +56,6 @@ app.makeAnimMarkers(animObj){
       durs.push(dur);
 
     }
-    return [times,comments]
+    return [times,comments];
 }
+

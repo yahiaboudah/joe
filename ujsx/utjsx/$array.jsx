@@ -217,4 +217,44 @@ Array.prototype.upperLeftIndex = function(){
 }
 Array.prototype.upperRightIndex = function(){
     
+    a = this;
+    o = {
+        x: a.math2D("max", 0),
+        y: a.math2D("min", 1)
+    }
+    
+    m = a.map(function(v){
+        return Math.sqrt(Math.pow( v[0] - o.x,2) + Math.pow(v[1] - o.y,2));
+    }).min();
+
+    return a.indexOf(m);
+}
+
+Array.prototype.bottomRightIndex = function(){
+    
+    a = this;
+    o = {
+        x: a.math2D("max", 0),
+        y: a.math2D("max", 1)
+    }
+    
+    m = a.map(function(v){
+        return Math.sqrt(Math.pow( v[0] - o.x,2) + Math.pow(v[1] - o.y,2));
+    }).min();
+
+    return a.indexOf(m);
+}
+Array.prototype.bottomLeftIndex = function(){
+    
+    a = this;
+    o = {
+        x: a.math2D("min", 0),
+        y: a.math2D("max", 1)
+    }
+    
+    m = a.map(function(v){
+        return Math.sqrt(Math.pow( v[0] - o.x,2) + Math.pow(v[1] - o.y,2));
+    }).min();
+
+    return a.indexOf(m);
 }

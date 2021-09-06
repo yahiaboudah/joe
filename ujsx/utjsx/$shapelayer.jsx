@@ -156,6 +156,7 @@ ShapeLayer.prototype.distances = function(origin){
         custom: function(pos){
             // TODO: Figure out the position coordinates of the
             // elements relative to the comp coordinate system.
+            
             // Then simply subtract the distances to figure which
             // ones are closer than others.
         }
@@ -184,6 +185,8 @@ ShapeLayer.prototype.distances = function(origin){
 
     return dists;
 }
+
+
 
 // Math.sum = function(){
 //     args = Array.prototype.slice.call(arguments);

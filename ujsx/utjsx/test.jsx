@@ -29,3 +29,13 @@
 // $.writeln(x0)
 
 // $.writeln(p)
+
+arr = [1,2,3,4,4,5,4,6,4,66];
+i = 0;
+total = 0;
+idx = 0;
+
+for(;++i<arr.length;) if(arr[i] == 4) (idx = i, total++)
+$.writeln(total)
+$.writeln(idx)
+$.writeln(i)

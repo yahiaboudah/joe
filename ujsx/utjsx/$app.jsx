@@ -1,7 +1,26 @@
+const { string } = require("prop-types");
 
 CompItem.prototype.sel = function(p){
   if(typeof p == "undefined") return this.selectedLayers;
   return this.selectedLayers[p];
+}
+
+LayerItem.prototype.setProp(pp, val){
+  switch (pp) {
+    case "scale":
+      this.transform.scale.setValue(val);
+      break;
+  }
+}
+
+LayerItem.prototype.pixelWidth = function()
+{
+  return this.sourceRectAtTime(this.containingComp.time,false).width;
+}
+
+LayerItem.prototype.pixelHeight = function()
+{
+  return this.sourceRectAtTime(this.containingComp.time,false).height;
 }
 
 /**
@@ -50,7 +69,6 @@ app.getSelected = function(s, f)
   return tmp;
 }
 
-
 app.importOptions = function(cfg){
     opts = new ImportOptions();
     opts.file = cfg.file;
@@ -62,6 +80,36 @@ app.import = function(fp){
         file: new File(fp),
         importAs: ImportAsType.FOOTAGE
     }));
+}
+
+app.importAndDrop = function(fp, comp){
+
+  var fName = File(fp).name,
+      footg = null;
+  
+  comp  = comp || app.project.activeItem;
+
+  var inst = 0,
+      i    = 0,
+      len  = app.project.items.length,
+      idx  = 0;
+    
+  for(;++i<len+1;) if(app.project.item(i).name == fName) (idx=0, inst++);
+  
+  if(idx) footg = app.project.item(idx);
+  if(!inst)
+  {
+    footg = app.import({
+        file: filePath,
+        importAs: ImportAsType.FOOTAGE
+    })
+  }
+
+  var layer = comp.layers.add(footg),
+      len   = app.project.items.length;
+
+  app.project.item(len).selected = false;
+  return layer;
 }
 
 app.mostRecent = function(dp, typ){
@@ -97,6 +145,21 @@ app.getExpression = function(ftName, typ){
     }).body().replace("footageName", ftName).replace("type", typ);
 }
 
+app.numObj = function(comp, typ){
+
+  var comp = comp || app.project.activeItem,
+      i    = 0,
+      n    = 0;
+  
+  for(;++i<comp.layers.length+1;)
+  {
+    com = eval(comp.layer(i).comment);
+    if(com && com.type == typ) n++;
+  }
+
+  return n; 
+}
+
 app.makeAnimMarkers(animObj){
     
     var anim = "",
@@ -113,4 +176,30 @@ app.makeAnimMarkers(animObj){
 
     }
     return [times,comments];
+}
+
+app.knob(name, comp){
+
+  comp = comp || app.project.activeItem;
+  objN = callee.name;
+  name = name || objN + ": " + app.numObj(comp,objN);
+  
+  path = "D:/icons/img/sova.png";
+  dVal = // default values: 
+  {
+    "scale": [10, 10]
+  }
+  // import/drop/ set defaultValues:
+  layer = app.importAndDrop(knobPath ,comp);
+  for(v in dVal) layer.setProp(v, dVal[v])
+  
+  // Add slider controls, link to layer props:
+  layer.property("Effects").addProperty("Slider Control");
+  layer.setProp("rotation:expr", (function(){
+    // or: thisLayer.effect(..
+    comp("compName").layer("layerName").effect("Slider Control")("Slider");
+
+  }).body().replace("compName", comp.name).replace("layerName", layer.name));
+  
+  return layer;
 }

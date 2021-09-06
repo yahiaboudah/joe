@@ -174,9 +174,47 @@ Array.prototype.sortedIndices = function(){
     })
 }
 
+Array.prototype.min = function(){
+    return Math.min.apply(null, this);
+}
+
+Array.prototype.max = function(){
+    return Math.max.apply(null, this);
+}
+
 Array.prototype.math2D = function(typ, xory)
 {
     return Math[typ].apply(null, this.map(function(x){
         return x[xory]
     }))
+}
+
+Array.prototype.upIndex = function(){
+    return this.indexOf(this.math2D("max", 1));
+}
+Array.prototype.bottomIndex = function(){
+    return this.indexOf(this.math2D("min", 1));
+}
+Array.prototype.leftIndex = function(){
+    return this.indexOf(this.math2D("min", 0));
+}
+Array.prototype.rightIndex = function(){
+    return this.indexOf(this.math2D("max", 0));
+}
+Array.prototype.upperLeftIndex = function(){
+    
+    a = this;
+    o = {
+        x: a.math2D("min", 0),
+        y: a.math2D("min", 1)
+    }
+    
+    m = a.map(function(v){
+        return Math.sqrt(Math.pow( v[0] - o.x,2) + Math.pow(v[1] - o.y,2));
+    }).min();
+
+    return a.indexOf(m);
+}
+Array.prototype.upperRightIndex = function(){
+    
 }

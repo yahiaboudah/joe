@@ -96,8 +96,8 @@ Array.prototype.includes = function(k) {
 Array.prototype.rotate = function(d, i){
     a = this; // eval("["+String(this)+"]");
     
-    if(d == "left")  while(i--) a.push(a.shift());
-    if(d == "right") while(i--) a.unshift(a.pop());
+    if(d == "l")  while(i--) a.push(a.shift());
+    if(d == "r") while(i--) a.unshift(a.pop());
 
     return arr;
 }
@@ -156,4 +156,20 @@ Array.prototype.map = function(cb) {
     }
     
     return A;
+}
+
+Array.range = function(l){
+    
+    arr = [],
+    i   = -1;
+
+    for(;++i<l;) arr[i] = (i+1);
+    return arr;
+}
+
+Array.prototype.sortedIndices = function(){
+    a = this;
+    return Array.range(a.length).sort(function(x,y){
+        return a[x-1] > a[y-1];
+    })
 }

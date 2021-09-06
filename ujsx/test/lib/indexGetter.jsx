@@ -64,9 +64,20 @@ IndexGetter.prototype.getIndex = function(passedArr,indexPos){
     }
 }
 
+Array.prototype.range = function(l){
+    
+    arr = [],
+    i   = -1;
+    
+    for(;++i<l;) arr[i] = (i+1); 
+    return arr;
+}
+
 IndexGetter.prototype.sortIndices = function(list){
-  var result = [];
+  
+    var result = [];
   for(var i = 0; i < list.length; i++) result[i] = i;
+
   result = result.sort(function(u,v) { return list[u] - list[v]; });
   for(var i = 0; i < result.length; i++) result[i] += 1;
   return result;

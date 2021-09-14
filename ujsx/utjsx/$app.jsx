@@ -5,7 +5,7 @@ CompItem.prototype.sel = function(p){
   return this.selectedLayers[p];
 }
 
-LayerItem.prototype.setProp(pp, val){
+LayerItem.prototype.setProp = function(pp, val){
   switch (pp) {
     case "scale":
       this.transform.scale.setValue(val);
@@ -22,7 +22,39 @@ LayerItem.prototype.pixelHeight = function()
 {
   return this.sourceRectAtTime(this.containingComp.time,false).height;
 }
+/**
+ * Set time of a composition all nested comps inside of it.
+ * @param {*Integer} t 
+ * @param {*CompItem} c 
+ * @param {*Boolean} all
+ * Returns nothing. 
+ */
+app.setTime = function(t,c, all){
+  
+  all = typeof all == "undefined"?1:all;
+  cmp = cmp || app.project.activeItem;
+  i = 0, n = c.layers.length + 1;
 
+  //==============/
+  cmp.duration = t;
+  //==============/
+  for(;++i<n;)
+  {
+    lyr      = cmp.layer(i);
+    isLocked = lyr.locked;
+    l.locked = false; //unlock
+
+    //=============================================================/
+    lyr.outPoint = t;
+    if(all && lyr.source instanceof CompItem) setTime(t, lyr.source);
+    //=============================================================/
+
+    lyr.locked = isLocked; //relock
+  }
+
+  //cleanup:
+  all = cmp = i = n = lyr = isLocked = null;
+}
 /**
  * {s}: type.
  * {f}: if another type is found in the selLayers, abort.
@@ -160,7 +192,7 @@ app.numObj = function(comp, typ){
   return n; 
 }
 
-app.makeAnimMarkers(animObj){
+app.makeAnimMarkers = function(animObj){
     
     var anim = "",
         dura = 0,
@@ -178,7 +210,7 @@ app.makeAnimMarkers(animObj){
     return [times,comments];
 }
 
-app.knob(name, comp){
+app.knob = function(name, comp){
 
   comp = comp || app.project.activeItem;
   objN = callee.name;

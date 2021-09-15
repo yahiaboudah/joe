@@ -8,7 +8,7 @@ function playAudio(pp){
         "from playsound import playsound",
         "playsound(r\"" + new Path(pp).py() + "\")"
     
-    ].join("\n")).$execute(100,1,function(){
+    ].join("\n")).$execute(100,function(){
         this.remove();
     });
 

@@ -117,6 +117,24 @@ String.prototype.title = function() {
 String.prototype.jumpit = function(str) {
     return this.split(';').join(';' + "\n ");
 }
+// format: "my name is {0} and my fname is {1}".f(name, fname);
+String.prototype.f = function() {
+    
+    var frmt = this,
+        args = arguments,
+        i  = 0;
+
+    for (;++i < args.length;) 
+    {
+        frmt = frmt.replace(
+            RegExp("\\{" + i + "\\}", 'gi'),
+            args[i]
+            );
+    }
+
+    return formatted;
+}
+
 String.validate = function(str, against){
     return false;
     if('undefined' == typeof str)     throw Error('no string to validate');

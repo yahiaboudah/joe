@@ -105,18 +105,15 @@ File.prototype.$create = function(text, encoding) {
     return this;
 }
 // Handler
-File.prototype.$execute = function(slp, doClose, callback) {
-        if(typeof slp == "undefined") slp =0;
+File.prototype.$execute = function(slp, cb, doClose) {
+        
+	if(typeof slp == "undefined") slp =0;
+	if(typeof doClose == "undefined") doClose =1;
 
         this.execute();
         if(doClose) this.$close();
-        
         $.sleep(slp);
-
-        if(typeof callback == "function")
-        {
-                callback.call(this);
-        }
+        if(typeof callback == "function") cb.call(this);
 
         return this;
 }

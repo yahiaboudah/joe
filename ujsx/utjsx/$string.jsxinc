@@ -132,7 +132,7 @@ String.prototype.f = function() {
             );
     }
 
-    return formatted;
+    return frmt;
 }
 
 String.validate = function(str, against){

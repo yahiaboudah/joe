@@ -195,14 +195,6 @@ ShapeLayer.prototype.distances = function(origin){
     return dists;
 }
 
-
-
-// Math.sum = function(){
-//     args = Array.prototype.slice.call(arguments);
-//     for(i=-1, sum=0;++i<args.length;) sum += args[i];
-//     return sum;
-// }
-
 // layer = app.project.activeItem.layer(1);
 // dists = layer.distances("left");
 

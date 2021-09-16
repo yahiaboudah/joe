@@ -112,7 +112,7 @@ app.import = function(fp){
     }));
 }
 
-app.importAndDrop = function(fp, comp){
+app.importAndDrop = function(comp, fp){
 
   var fName = File(fp).name,
       footg = null;
@@ -262,3 +262,5 @@ app.findItemByName = function(namo){
     return i;
   }
 }
+
+

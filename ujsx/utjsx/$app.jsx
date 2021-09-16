@@ -177,7 +177,24 @@ app.getExpression = function(ftName, typ){
     }).body().replace("footageName", ftName).replace("type", typ);
 }
 
-app.numObj = function(comp, typ){
+app.numObjName    = function(comp, typ){
+
+  var comp = comp || app.project.activeItem,
+      i    = 0,
+      n    = 0,
+      name,
+      
+  
+  for(;++i<comp.layers.length+1;)
+  {
+    name = comp.layer(i).name;
+    if(RegExp("{0} \d+".f(typ),"gi").test(name)) n++;
+  }
+
+  return n; 
+}
+
+app.numObjComment = function(comp, typ){
 
   var comp = comp || app.project.activeItem,
       i    = 0,
@@ -185,7 +202,7 @@ app.numObj = function(comp, typ){
   
   for(;++i<comp.layers.length+1;)
   {
-    com = eval(comp.layer(i).comment);
+    com = eval(comp.layer(i)[prop]);
     if(com && com.type == typ) n++;
   }
 

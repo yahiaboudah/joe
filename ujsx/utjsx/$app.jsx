@@ -1,5 +1,3 @@
-const { string } = require("prop-types");
-
 CompItem.prototype.sel = function(p){
   if(typeof p == "undefined") return this.selectedLayers;
   return this.selectedLayers[p];
@@ -251,4 +249,16 @@ app.knob = function(name, comp){
   }).body().replace("compName", comp.name).replace("layerName", layer.name));
   
   return layer;
+}
+
+app.findItemByName = function(namo){
+  
+  var length     = app.project.items.length+1;
+  var i          = 0;
+  
+  for(;++i<length;)
+  {
+    if(app.project.item(i).name != namo) continue;
+    return i;
+  }
 }

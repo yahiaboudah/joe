@@ -271,3 +271,9 @@ app.findItemByName = function(namo){
     return i;
   }
 }
+
+app.wrapUndo = function(fn){
+  app.beginUndoGroup(fn.name);
+  fn.call(this);
+  app.endUndoGroup();
+}

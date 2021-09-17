@@ -14,6 +14,21 @@
 /******************************************************************************/
 
 function Arguments() {};
+
+/*
+* Get a function args (eg. Arguments.getArgs(Arguments.getArgs) => ["c", "nocom"])
+*/
+Arguments.getArgs = function(c, nocom)
+{
+
+  if(typeof nocom == "undefined") nocom =true;
+  return  c.toString().split(/\)\/*/)[0]
+                      .replace(/^[^(]*[(]/, '')  
+                      .replace(/\s+/g, '')
+                      .replace(nocom?/\/\*([\s\S]*?)\*\//g:'','')
+                      .split(',');
+}
+
 /**
  * Extract parameter names and types from a function definition.
  * @param {String} func The function string  

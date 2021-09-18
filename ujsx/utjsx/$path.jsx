@@ -8,7 +8,7 @@ function Path(){
         ln = ag.length,
         id = -1;
     
-    while(++id<ln) Array.prototype.push.apply(this.ps, ag[id].split("/"));
+    while(++id<ln) this.ps.push(ag[id].split("/"));
 }
 
 Path.prototype.py = function(){

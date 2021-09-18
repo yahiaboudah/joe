@@ -24,16 +24,13 @@ Array.prototype.forEach = function(callback, thisArg) {
         len = O.length >>> 0;
     if (arguments.length > 1) T = thisArg;
     k = 0;
-
-
+    
     while (k < len) {
 
             var kValue;
-
             if (k in O) {
-
-                    kValue = O[k];
-                    callback.call(T, kValue, k, O);
+                kValue = O[k];
+                callback.call(T, kValue, k, O);
             }
             k++;
     }
@@ -66,20 +63,21 @@ Array.prototype.indexOf = function(el, fromIdx) {
 };
 Array.prototype.remove = function(k, a) {
 
-    if(typeof a != "boolean") a= false;
+    if(typeof a != "boolean") a = false;
 
 
-    var i = 0,
+    var i = -1,
         len = this.length;
-
     
     while (i < len) {
-            if (this[i] == k) {
-                    this.splice(i, 1);
-                    if(a) len--; else break;
-            } else i++;
+        
+        if (this[i] != k) continue;
+        
+        this.splice(i, 1);
+        if(!a) break;
+        
+        len--;
     }
-
 
     return this;
 }

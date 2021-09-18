@@ -10,7 +10,7 @@
 		Created:        2106 (YYMM)
 		Modified:       2107 (YYMM)
 *******************************************************************************/
-//@include "$string.jsxinc"
+//@include "$string.jsx"
 /******************************************************************************/
 
 function Arguments() {};
@@ -40,10 +40,13 @@ Arguments.params = function( /*String*/ func) {
         for (var k = 0, len = params.length; k < len; k++) {
 
                 var currParam = params[k],
-                    split     = currParam.split("*/");
+                    split     = currParam.split("*/"),
+                    s0        = split[0],
+                    s1        = split[1];
 
-                if (split[0].slice(0, 2) == "/*") params[k] = "{0}:{1}".f(split[0].slice(2), split[1]);
-                else params[k] = "Any:{0}".f(split[0]);
+                params[k] = s0.slice(0, 2) == "/*"?
+                            "{0}:{1}".f(s0.slice(2), s1):
+                            "Any:{0}".f(s0);
         }
 
 
@@ -74,31 +77,34 @@ Arguments.check = function( /*Object*/ args, /*Boolean*/ optArgs, /*Boolean*/ li
         if (!definedAndBool(optArgs))   optArgs   = false;
 
 
-        var stack = $.stack.split("\n"),
-        funcName = stack[stack.length - 3].split("(")[0],
-        funcParams = Arguments.params(eval(funcName).toString()),
-        isGreater = (args.length > funcParams.length),
-        isLess = (args.length < funcParams.length);
+        var stack      = $.stack.split("\n");
+            funcName   = stack[stack.length - 3].split("(")[0],
+            funcParams = Arguments.params(eval(funcName).toString()),
+            isGreater  = (args.length > funcParams.length),
+            isLess     = (args.length < funcParams.length);
 
-        if (isGreater && limitArgs) return { errMsg: errs.extraArgMsg };
-        else if (isLess && !optArgs) return { errMsg: errs.missingArgMsg };
+        if (isGreater && limitArgs) throw Error(ERRS.EXTRA_ARG);
+        if (isLess    && !optArgs ) throw Error(ERRS.MISSING_ARG);
 
         // Args length has priority over params length
         for (var i = 0; i < args.length; i++) {
 
-                var split = funcParams[i].split(":"),
-                    type = split[0].toLowerCase(),
+                var split     = funcParams[i].split(":"),
+                    type      = split[0].toLowerCase(),
                     paramName = split[1],
-                    argValue = args[i],
-                    argValueType;
+                    argValue  = args[i],
+                    argType;
 
-                if (argValue === undefined || argValue === null) continue;
+                if ([null, undefined].includes(argValue)) continue;
 
-                argValueType = argValue.constructor.name.toLowerCase();
-                badArgMsgg   = errs.badArgMsg.repSeq('@',paramName + "[" + i + "]", argValueType, type);
-                if ((argValueType != type) && (type != "any")) return { errMsg: badArgMsgg };
-                else continue;
+                argType = argValue.constructor.name.toLowerCase();
+                if (!["any", argType].includes(type)) 
+                {
+                        throw Error(ERR.BAD_ARG.f(
+                                "{0}[1]".f(paramName, i),
+                                argType,
+                                type
+                        ));
+                }
         }
-
-        return 0;
 }

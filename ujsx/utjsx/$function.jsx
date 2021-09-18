@@ -33,3 +33,10 @@ Function.prototype.body = function(){
 		   .replace(/^[^{]*\{[\s]*/,"    ")
            .replace(/\s*\}[^}]*$/,"");
 }
+
+Function.prototype.time = function(context, args){
+	var func = this;
+	$.hiresTimer;
+	func.apply(context, args);
+	return $.hiresTimer / 1000000;	
+}

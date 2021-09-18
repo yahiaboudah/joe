@@ -1,3 +1,5 @@
+const { array } = require("prop-types");
+
 CompItem.prototype.sel = function(p){
   if(typeof p == "undefined") return this.selectedLayers;
   return this.selectedLayers[p];
@@ -201,17 +203,14 @@ app.numObjName    = function(comp, typ){
   return n; 
 }
 
-app.numObjComment = function(comp, typ){
+app.numObjComment = function(c, t){ //comp, type
 
-  var comp = comp || app.project.activeItem,
-      i    = 0,
-      n    = 0;
+  var c = c || app.project.activeItem,
+      i = 0,
+      n = 0,
+      len = c.layers.length+1;
   
-  for(;++i<comp.layers.length+1;)
-  {
-    com = eval(comp.layer(i)[prop]);
-    if(com && com.type == typ) n++;
-  }
+  for(;++i<len;) if(eval(c.layer(i).comment) == t) n++;
 
   return n; 
 }
@@ -226,12 +225,12 @@ app.makeAnimMarkers = function(animObj){
     
     for(;++i<animObj.length;){
       anim = animObj[i]['Animation'];
-      coms.push("Scene " + i);
-      dur += (animObj[i-1]["Duration"]) || 0;
+      coms.push("Scene {0}: {1}".f(i, anim));
+      
+      dura += (animObj[i-1]["Duration"]) || 0;
       durs.push(dur);
-
     }
-    return [times,comments];
+    return [durs, coms];
 }
 
 app.knob = function(name, comp){
@@ -243,33 +242,45 @@ app.knob = function(name, comp){
   path = "D:/icons/img/sova.png";
   dVal = // default values: 
   {
-    "scale": [10, 10]
+    "Scale": [10, 10]
   }
   // import/drop/ set defaultValues:
   layer = app.importAndDrop(knobPath ,comp);
   for(v in dVal) layer.setProp(v, dVal[v])
   
+  
   // Add slider controls, link to layer props:
-  layer.property("Effects").addProperty("Slider Control");
+  layer.addProp("Effects/Slider Control");
+  
   layer.setProp("rotation:expr", (function(){
-    // or: thisLayer.effect(..
-    comp("compName").layer("layerName").effect("Slider Control")("Slider");
 
-  }).body().replace("compName", comp.name).replace("layerName", layer.name));
+    comp("$compName").layer("$layerName").effect("Slider Control")("Slider");
+
+  }).body()._replace({
+    $compName: comp.name,
+    $layerName: layer.name
+  }))
   
   return layer;
 }
-
+/**
+ * 
+ * @param {*} namo: name of the item 
+ * @returns an array of indicies referencing items
+ * with the relevant name.
+ */
 app.findItemByName = function(namo){
   
   var length     = app.project.items.length+1;
-  var i          = 0;
+  var i          = 0, tmp, idc = [];
   
   for(;++i<length;)
   {
-    if(app.project.item(i).name != namo) continue;
-    return i;
+    tmp = app.project.item(i).name;
+    if(tmp == namo) idc.push(i);
   }
+
+  return idc;
 }
 
 app.wrapUndo = function(fn){

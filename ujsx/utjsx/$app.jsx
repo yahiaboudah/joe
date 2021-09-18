@@ -1,5 +1,9 @@
 const { array } = require("prop-types");
 
+/**
+ * Requires fstring
+ */
+
 CompItem.prototype.sel = function(p){
   if(typeof p == "undefined") return this.selectedLayers;
   return this.selectedLayers[p];

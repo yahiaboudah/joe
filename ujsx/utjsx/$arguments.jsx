@@ -35,18 +35,15 @@ Arguments.getArgs = function(c, nocom)
  */
 Arguments.params = function( /*String*/ func) {
 
-        var paramsList = func.split(/\)\/*/)[0].replace(/^[^(]*[(]/, '') // extract parameters  
-                        .replace(/\s+/g, '').split(',');                // strip space and split
+        var paramsList = Arguments.getArgs(func);
 
+        for (var k = 0, len = params.length; k < len; k++) {
 
-        for (var k = 0, len = paramsList.length; k < len; k++) {
+                var currParam = params[k],
+                    split     = currParam.split("*/");
 
-                var currParam = paramsList[k],
-                    split = currParam.split("*/");
-
-                if (split[0].slice(0, 2) == "/*") paramsList[k] = split[0].slice(2) + ":" + split[1];
-                else paramsList[k] = "Any" + ":" + split[0]
-
+                if (split[0].slice(0, 2) == "/*") params[k] = "{0}:{1}".f(split[0].slice(2), split[1]);
+                else params[k] = "Any:{0}".f(split[0]);
         }
 
 
@@ -58,19 +55,26 @@ Arguments.params = function( /*String*/ func) {
  * @param {Boolean} limitArgs the name of the function: optional parameter.
  * @returns {0}  if params are healthy
  */
-Arguments.paramCheck = function( /*Object*/ args, /*Boolean*/ optArgs, /*Boolean*/ limitArgs) {
+Arguments.check = function( /*Object*/ args, /*Boolean*/ optArgs, /*Boolean*/ limitArgs) {
         
-        if ((limitArgs === undefined) || (limitArgs.constructor.name) != "Boolean") limitArgs = true;
-        if ((optArgs === undefined) || (optArgs.constructor.name) != "Boolean") optArgs = false;
+
+        const ERRS = 
+        {
+            BAD_ARG     :  "Bad Argument Error."
+                          + "Arg type of: {0} was found [{1}] insead of [{2}]",
+            MISSING_ARG : "Missing Argument Error.",
+            EXTRA_ARG   : "Extra Argument Error."
+        }
+
+        var definedAndBool = function(myArg){
+                return (myArg !== undefined) || (myArg.constructor === Boolean);
+        }
+
+        if (!definedAndBool(limitArgs)) limitArgs = true;
+        if (!definedAndBool(optArgs))   optArgs   = false;
 
 
-        var errs = {
-            badArgMsg    : "Bad Argument Error: Argument type of: @ was found [@] insead of [@]",
-            missingArgMsg: "Missing Argument Error: One or more arguments is missing.",
-            extraArgMsg  : "Extra Argument Error: One or more arguments is extra."
-        },
-
-        stack = $.stack.split("\n"),
+        var stack = $.stack.split("\n"),
         funcName = stack[stack.length - 3].split("(")[0],
         funcParams = Arguments.params(eval(funcName).toString()),
         isGreater = (args.length > funcParams.length),

@@ -10,7 +10,8 @@ CompItem.prototype.sel = function(p){
 }
 
 LayerItem.prototype.setProp = function(pp, val){
-  switch (pp) {
+  switch (pp) 
+  {
     case "scale":
       this.transform.scale.setValue(val);
       break;
@@ -287,8 +288,8 @@ app.findItemByName = function(namo){
   return idc;
 }
 
-app.wrapUndo = function(fn){
+app.wrapUndo = function(fn, thisArg){
   app.beginUndoGroup(fn.name);
-  fn.call(this);
+  fn.call(thisArg);
   app.endUndoGroup();
 }

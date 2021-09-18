@@ -1,4 +1,4 @@
 //@include "$clipboard.jsx";
 
 
-$.writeln(ClipBoard.get());
+$.writeln(ClipBoard.set("hello there mf"));

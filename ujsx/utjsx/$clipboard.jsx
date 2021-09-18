@@ -6,7 +6,7 @@
 		Modified:       2107 (YYMM)
 *******************************************************************************/
 /******************************************************************************/
-
+delete($.global.ClipBoard);
 ($.global.hasOwnProperty("ClipBoard") || (function (host, self){
     
     //@include "$fstring.jsx"
@@ -19,8 +19,7 @@
 
     I.load = function()
     {
-        $.writeln("lib:{0}".f(I.libPath)); 
-        return true;
+        if(!I.notLoaded) return;
         I.lib = new ExternalObject("lib:{0}".f(I.libPath));
         I.notLoaded = false; 
     }

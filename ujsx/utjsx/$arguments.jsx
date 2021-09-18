@@ -64,13 +64,13 @@ Arguments.check = function( /*Object*/ args, /*Boolean*/ optArgs, /*Boolean*/ li
         const ERRS = 
         {
             BAD_ARG     :  "Bad Argument Error."
-                          + "Arg type of: {0} was found [{1}] insead of [{2}]",
+                         + "Arg {0} is a {1} and not a {2}",
             MISSING_ARG : "Missing Argument Error.",
             EXTRA_ARG   : "Extra Argument Error."
         }
 
         var definedAndBool = function(myArg){
-                return (myArg !== undefined) || (myArg.constructor === Boolean);
+                return ((myArg !== undefined) || (myArg.constructor === Boolean));
         }
 
         if (!definedAndBool(limitArgs)) limitArgs = true;

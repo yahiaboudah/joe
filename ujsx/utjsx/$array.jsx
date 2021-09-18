@@ -83,9 +83,7 @@ Array.prototype.remove = function(k, a) {
 }
 Array.prototype.println = function() {
     
-    this.forEach(function(k) {
-            $.writeln(k);
-    });
+    $.writeln(this.join("\n"));
 }
 Array.prototype.includes = function(k) {
     return this.indexOf(k) > -1;

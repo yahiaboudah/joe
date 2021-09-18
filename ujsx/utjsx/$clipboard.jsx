@@ -15,11 +15,13 @@
     I = {};
 
     I.notLoaded = true;
-    I.libPath   = "C:/Users/me/desktop/aesys.dll"; 
+    I.libPath   = "C:/pro/joe/ujsx/externalObj/dll/aesyss.dll";
 
     I.load = function()
     {
-        I.lib = new ExternalObject(("lib:{0}".f(I.libPath)));
+        $.writeln("lib:{0}".f(I.libPath)); 
+        return true;
+        I.lib = new ExternalObject("lib:{0}".f(I.libPath));
         I.notLoaded = false; 
     }
     

@@ -16,9 +16,9 @@
         
     host[self] = self;
 
-    var inner     = {};
-    inner.defPath = "C:/Projects/pyjsx/0LOGS";
-    inner.levels  = 
+    I         = {};
+    I.defPath = "C:/Projects/pyjsx/0LOGS";
+    I.levels  = 
     {
         NONSET: 0,
         DEBUG: 10,
@@ -27,16 +27,16 @@
         ERROR: 40,
         CRITICAL: 50
     };
-    inner.dttypes = {
+    I.dttypes = {
         "FULL"    : "toString",
         "TIME"    : "toTimeString",
         "TIMEONLY": "toLocaleTimeString",
         "WEEKDAY" : "toLocaleString"
     }
-    inner.fName   = function(args){
+    I.fName   = function(args){
         return args.callee.toString().split(" ")[1].replace(/\(.*/, "");
     }
-    inner.mkFile  = function(path, str){
+    I.mkFile  = function(path, str){
         
         var ff = new File(path);
         
@@ -45,7 +45,7 @@
 
         return ff;
     }
-    inner.writeMsg = function(str, mode){
+    I.writeMsg = function(str, mode){
         var ff = File(self.path);
         
         ff.open(mode); ff.write(str);
@@ -53,11 +53,11 @@
         ff.close();
         return 0;
     }
-    inner.getMsg = function(msg, lvl, noww){
-        return noww + ":" + lvl + ":" + msg;
+    I.getMsg = function(msg, lvl, noww){
+        return "{0}:{1}:{2}\n".f(noww, lvl, msg);
     }
-    inner.now    = function(){
-        return new Date(Date.now())[inner.dttypes[self.dttype]]();
+    I.now    = function(){
+        return new Date(Date.now())[I.dttypes[self.dttype]]();
     }
 
     self.config = function(cfg){
@@ -66,7 +66,7 @@
 
         self.name  = cfg.name || $.stack.split("\n")[0];
         self.ext   = "/" + self.name + ".log";
-        self.path  = (cfg.path)  || (inner.defPath + self.ext);
+        self.path  = (cfg.path)  || (I.defPath + self.ext);
         
         self.level   = (cfg.level)    || 0;
         self.dttype  = (cfg.dttpye)   || "TIME";
@@ -75,17 +75,20 @@
         self.enabled = (cfg.enabled)  || true;
     }
 
-    self.make = function(){ inner.mkFile(self.path, ""); }
+    self.make = function(){ I.mkFile(self.path, ""); }
 
-    for (k in inner.levels){
+    for (k in I.levels){
         
         if(k == "NONSET") continue;
         self[k.toLowerCase()] = function(msg){
             
-            var lvl = inner.fName(arguments).toUpperCase();
-            var isBelow = (self.level <= inner.levels[lvl]);
+            var lvl = I.fName(arguments).toUpperCase();
+            var isBelow = (self.level <= I.levels[lvl]);
 
-            if(self.enabled && isBelow) inner.writeMsg(inner.getMsg(lvl, msg+"\n" , inner.now()) , "a");
+            if(self.enabled && isBelow)
+            {
+                I.writeMsg(I.getMsg(lvl, msg, I.now()) , "a");
+            }
         }
     }
 

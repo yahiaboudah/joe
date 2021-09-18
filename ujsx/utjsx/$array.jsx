@@ -90,10 +90,14 @@ Array.prototype.includes = function(k) {
 }
 
 Array.prototype.rotate = function(d, i){
+    
     a = this; // eval("["+String(this)+"]");
     
-    if(d == "l")  while(i--) a.push(a.shift());
-    if(d == "r") while(i--) a.unshift(a.pop());
+    switch (d) 
+    {
+        case "l": while(i--)    a.push(a.shift())
+        case "r": while(i-->-1) a.unshift(a.pop())
+    }
 
     return arr;
 }

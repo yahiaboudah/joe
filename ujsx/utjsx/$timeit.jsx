@@ -38,9 +38,6 @@ delete($.global["timeit"]);
             tt += t;
         }
     
-
-        args.length = 0;
-        args = null;
         return {
             func: f.name,
             numPasses: n    ,
@@ -49,7 +46,7 @@ delete($.global["timeit"]);
     }
     self.compare = function(f1, f2 , n/*, arg1, arg2*/)
     {
-        if(typeof f1 == "undefined" || typeof f2 == "undefined") throw Error("No functions passed to compare.");
+        if([typeof f1, typeof f2].includes("undefined")) throw Error("No functions passed to compare.");
         if(typeof n  == "undefined") n = 1;
 
 
@@ -57,9 +54,6 @@ delete($.global["timeit"]);
             t1 = Timeit.time.apply(null, [n, f1].concat(args)).time,
             t2 = Timeit.time.apply(null, [n, f2].concat(args)).time;
         
-            
-        args.length = 0;
-        args = null;
         return {
             func1    :f1.name,
             t1       : t1,

@@ -18,18 +18,6 @@ var include = function include(){
 	args = Array.prototype.slice.call(arguments);
     for(var i=0, len = args.length; i< len; i++)
 	{
-		path = args[i];
-		what = path.checkFF();
-		if(!what) continue;
-		if(what> 0)
-		{// 
-
-		}
-		if(what< 0)
-		{// if folder: try to get all *.jsx files:
-
-		}
-
-		$.evalFile(args[i]);
+		
 	}
 }

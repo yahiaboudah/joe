@@ -10,19 +10,12 @@
 		Created:        2106 (YYMM)
 		Modified:       2107 (YYMM)
 *******************************************************************************/
-//---
+//@include "fstring.jsx"
 /******************************************************************************/
-$.$sleep = function(slept, deb, appn){
+$.$sleep = function(ms, msg){
 
-    if(typeof slept == "undefined") return;
-    if(typeof appn == "undefined") appn = "";
-    else appn = appn.toSource() + ": ";
-    if(typeof deb == "undefined") deb = false;
-
-
-    if(deb) $.writeln(appn  + "Sleeping for " + slept + " ms.." )
-    $.sleep(slept);
-
-
-    return 0;
+    if(typeof ms == "undefined") return;
+    
+    if(!!msg) $.writeln("{0}: Sleeping for {1}..".f(msg, ms))
+    $.sleep(ms);
 }

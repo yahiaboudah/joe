@@ -17,29 +17,37 @@ Function.prototype.bind = Function.prototype.bind || function bind(thisArg) {
 	};
 }
 
-function iconButton(cfg)
+function IconButton(cfg)
 {
-    var img = cfg.img.standard;
-
-    var b = this.add("iconbutton", undefined, 
+    DISTINCT_PROPS:
+    this.img = cfg.img.standard;
     
-    ScriptUI.newImage(
-        img, // default
-        cfg.img.disabled || img, // onDisabled (b.enabled = false)
-        cfg.img.clicked  || img, //onClick
-        cfg.img.hover    || img // mouseOver (rollover state)
-    ),
+    SPECIAL_PROPS:
+    this.specialProps = 
     {
         style: cfg.style
-    });
+    }
 
-    b.onClick = cfg.onClick;
-    b.alignment = cfg.alignment;
-    b.helpTip = cfg.helpTip;
+    ARGS:
+    var b = this.add("iconbutton", undefined, 
+    ScriptUI.newImage(
+        img,
+        cfg.img.disabled || img, 
+        cfg.img.clicked  || img, 
+        cfg.img.hover    || img
+    ), 
+    this.specialProps);
 
-    listen = cfg.eventListeners;
+    PROPS:
+    Object.modify(b,{
+        onClick   : cfg.onClick,
+        alignment : cfg.alignment,
+        helpTip   : cfg.helpTip
+    })
 
-    for(evType in listen) 
+    EVENT_LISTENERS: 
+    var listen = cfg.eventListeners;
+    for(evType in listen)
     {
         if(!listen.hasOwnProperty(evType)) continue;
         for(ev in listen[evType]) 
@@ -50,10 +58,55 @@ function iconButton(cfg)
     }
 }
 
-w = new Window("palette");
 
-iconButton.call(w,{
-    img: 
+function MyHomePage(){
+/*
+    this.state = {
+        title: "MyHomePageTitle"
+    }
+
+    this.helloButtonClicked = function()
+    {
+        this.setState(function(s){
+            s["title"] = "NewHomePageTitle";
+            return s;
+        })
+        alert("Hello Button Clicked!");
+    }
+
+    this.build = function()
+    {
+        return new Scaffold({
+            appBar: new AppBar({
+                title: this.state.title
+            }),
+            body: new Group({
+                children: [
+                    new Button({
+                        text: "Hello Button",
+                        onClick: this.helloButtonClicked
+                    })
+                ]
+            })
+        })
+    }
+
+
+*/}
+
+// w = new Window({
+//     children: [
+//         new myButtonClass()
+//     ]
+// })
+
+function _IconButton(){
+
+}
+
+myButton = new _IconButton({
+    
+    img:
     {
         standard:  "/d/icons/img/sova.png", 
         disabled: "/d/icons/img/kj.png",
@@ -67,14 +120,6 @@ iconButton.call(w,{
     helpTip  :"test iconbutton",
 
     eventListeners: {
-        "mousedown": [
-            function(){
-                app.setTimeout((function(){
-                    alert(this.helpTip);
-                }).bind(this), 2000)
-            }
-        ]
+        "mousedown": []
     }
 })
-
-w.show();

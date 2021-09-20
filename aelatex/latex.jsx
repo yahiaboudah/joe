@@ -7,8 +7,9 @@ String.prototype.replaceAll = function(search, replacement) {
 latex = {
 
   aiSpec: "illustrator-19.032",
-  sourceLink: "http://latex.codecogs.com/png.latex?\\dpi{300}%20\\huge%20",
-  fp: "d:/icons/img/sova.png",
+  link: "http://latex.codecogs.com/png.latex?\\dpi{300}%20\\huge%20",
+  saveFolder: "c:\\wget",
+  saveFile  : "x.png",
   pres: "uuuu",
   
   editEquationIllustrator: (function(){
@@ -34,7 +35,10 @@ latex = {
         return expFile.fsName;
     }
     
-  }).body().replace("$filePath", fp).replace("$presetName", pres)
+  }).body()._replace({
+    $filePath: "{0}\\{1}".f(saveFolder,saveFile),
+    $presetName: pres
+  })
 
 }
 
@@ -44,14 +48,20 @@ function getEquationButtonClicked(){
   if(!BridgeTalk.isRunning(aiSpec)) return "Illustrator not running";
   
   var eqStr0 = equationString.text,
-      eqStr  = eqStr0.replaceAll(" ","%20");
+      eqLink = latex.link + eqStr0.replace(/\s{1,1}/g, "%20");
   
-  var url = [latex.sourceLink, eqStr].join(""),
-      cmd = ["cd ", "C:\\wget", " & wget -O x.png ", url].join("");
+  sys.cmd(
+    "cmd /c \"{0}\"".f(
+      "cd {0} & wget -O {1} {2}".f(
+        
+        latex.saveFolder,
+        latex.saveFile,
+        eqLink
+        )
+    )
+  );
   
-  sys.cmd("cmd /c \"" + cmd + "\"");
-  
-  var file      = File("C:\\wget\\x.png"),
+  var file      = File("{0}\\{1}".f(latex.saveFolder, latex.saveFile)),
       bt        = new BridgeTalk;
       bt.target = latex.aiSpec;
       bt.body   = latex.editEquationIllustrator;

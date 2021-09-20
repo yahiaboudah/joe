@@ -1,4 +1,3 @@
-const { array } = require("prop-types");
 
 /**
  * Requires fstring

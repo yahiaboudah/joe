@@ -292,3 +292,24 @@ app.wrapUndo = function(fn, thisArg){
   fn.call(thisArg);
   app.endUndoGroup();
 }
+
+
+app.colorPicker = function(){
+  return $.colorPicker();
+}
+
+app.hexPicker = function()
+{
+  return app.colorPicker();
+}
+
+app.rgbaPicker = function()
+{
+  var hx = app.hexPicker();
+  return [
+    hx >> 16,
+    (hx & 0x00ff00) >> 8,
+    hx & 0xff,
+    255
+  ] /= 255;
+}

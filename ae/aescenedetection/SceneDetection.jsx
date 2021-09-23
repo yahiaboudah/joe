@@ -30,20 +30,17 @@
         };
     
         return (function(){
-        
-            var targetLayer = thisComp.layer("$layerName");
-            var compDimens  = [thisComp.width, thisComp.height]; 
-            
-            var sampledColor_8bpc = 255 * targetLayer.sampleImage(
-            
+           
+	    var compDimens  = [thisComp.width, thisComp.height]; 
+		
+            Math.round(255 * thisComp.layer("$layerName").sampleImage(
+		    
                 compDimens/2, //samplePoint
                 compDimens,   //sampleRadius
                 true, 
                 time
-            ); 
-            
-            Math.round(sampledColor_8bpc[$RGBValue]);
-        
+            ));
+		
         }).body()._replace(repConfig);
     }
 

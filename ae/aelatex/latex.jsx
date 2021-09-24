@@ -1,8 +1,11 @@
 
-String.prototype.replaceAll = function(search, replacement) {
-  var target = this;
-  return target.split(search).join(replacement);
-}
+(function LatexLib(self){
+
+  //@include "string"
+  host[self] = self;
+
+
+})($.global, {toString: function(){return "LatexLib"}})
 
 latex = {
 
@@ -61,7 +64,7 @@ function getEquationButtonClicked(){
     )
   );
   
-  var file      = File("{0}\\{1}".f(latex.saveFolder, latex.saveFile)),
+  var file      = File("{0}/{1}".f(latex.saveFolder, latex.saveFile)),
       bt        = new BridgeTalk;
       bt.target = latex.aiSpec;
       bt.body   = latex.editEquationIllustrator;

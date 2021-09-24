@@ -1,4 +1,6 @@
+
 w = new _Window({
+  
   title: "Shifter",
   resizeable: true,
   
@@ -13,9 +15,7 @@ w = new _Window({
     new _Button({
       text: "set",
       onClick: function(){
-        this.state.timeShift = $prompt("Enter new timeshift value", function(x){
-          return parseFloat(x);
-        })
+        this.state.timeShift = $prompt("Enter new timeshift value", parseFloat)
       }
     }),
     new _Button({

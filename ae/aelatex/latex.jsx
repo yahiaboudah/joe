@@ -2,6 +2,7 @@
 (function LatexLib(self){
 
   //@include "$string.jsx"
+  //@incldue "$sys.jsx"
   host[self] = self;
 
   I = 
@@ -126,31 +127,22 @@
 
 })($.global, {toString: function(){return "LatexLib"}})
 
-
-function getEquationButtonClicked(){
-
-  bt.onResult = function(pp)
-  {
-
- }   
-  bt.send(); // finally send
-}
-
-
-
-
-
 w = new _Window({
+  
   type: "palette",
   title: "Get Equation!",
   resizeable: true,
+  
   children:[
     new _TextBox({
       text: "x"
     }),
+    
     new _Button({
       text: "GET IT!",
-      onClick: getEquationButtonClicked
+      onClick: function(){
+        LatexLib.get(this.window.state.equationString);
+      }
     })
   ]
 })

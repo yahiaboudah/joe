@@ -9,16 +9,16 @@
 		API:            call(script, func, args), contact(script), build(script),
                         install(), reinstall(), unload()
 		Created:        2106 (YYMM)
-		Modified:       2107 (YYMM)
+		Modified:       2109 (YYMM)
 *******************************************************************************/
-delete($.global.python);
-($.global.hasOwnProperty("python") || (function (host, self){
+(function python(host, self){
 
     /*******************************************************/
-    //@include "../utjsx/$file.jsx"
-    //@include "../utjsx/$object.jsx"
-    //@include "../utjsx/$string.jsx"
-    //@include "../utjsx/$misc.jsx"
+    //@include "$file.jsx"
+    //@include "$object.jsx"
+    //@include "$string.jsx"
+    //@include "$misc.jsx"
+    //@include "$sys.jsx";
     /*******************************************************/
     host[self] = self;
 
@@ -32,32 +32,37 @@ delete($.global.python);
     I.sgnlPath = I.instPath + "/executed.tmp";
     I.pyExts   = ["py", "pyw"];
     I.AR       = "active_req";
+    
     I.contact0 = {
-        "path"    : "",
-        "funcs" : []
+        path    : "",
+        funcs   : []
     }
-    I.request0 = {
-        "path": "",
-        "func": "",
-        "args": ""
+    I.request0 = 
+    {
+        path: "",
+        func: "",
+        args: ""
     }
     I.intf0    = 
     {    
-        "info"      : {
-            "reqs_made":  0,
-            "reqs_exec":  0,
-            "past_reqs": []
+        info: 
+        {
+            reqs_made:  0,
+            reqs_exec:  0,
+            past_reqs: []
         },
         
-        "contacts"  : {},
+        contacts  : {},
         
-        "active_req": {
-            "road": "",
-            "trac": "",
-            "seed": [],
-            "crop": ""
+        active_req: 
+        {
+            road: "",
+            trac: "",
+            seed: [],
+            crop: ""
         }
     };
+
     I.execStr  = 
     "def pyjsx_run():\n"+
         
@@ -112,23 +117,15 @@ delete($.global.python);
     "    return 0\n"+
     "pyjsx_run()";
 
-    I.isPyInstalled = function(){ // terrible method, when implemented in a library
-        
-        var ispy,
-            cmd = "python --version > %temp%/pycheck.txt",
-            chk = File(Folder.temp + "/pycheck.txt").$create(),
-            bat = File(Folder.temp + "/pycheck.bat").$create(cmd);
-        
-        bat.$execute(250);
-        ispy = !!chk.$read();
-
-        File.remove(bat, chk);
-        return ispy; //ispy (buggy at the moment)
+    I.isPyInstalled = function()
+    {
+        return sys.cmd("python --version").split(" ")[0] == "Python";
     }
+
     I.getFuncs = function(p){
         
-        m   = File(p).$read().match(/(([\n]+def)|^def)\s+.+\(.*\)/g);
-        fs  = [];
+        var m   = File(p).$read().match(/(([\n]+def)|^def)\s+.+\(.*\)/g),
+            fs  = [], nameArgs, name, args, aaa;
 
         for(var i=0, len=m.length; i< len;i++)
         {
@@ -140,12 +137,13 @@ delete($.global.python);
             if(args[0]) for(var k=0, klen = args.length; k< klen; k++)
             {
                 arg = args[k].split("=");
-                aaa[(arg.length-1)?"default":"non_default"].push(arg[0]);
+                aaa[(arg.length-1)?"_default":"non_default"].push(arg[0]);
             }
             fs.push({"name": name, "args": aaa});
         }
         return fs;
     }
+
     I.validateIntf = function(intfObj){
 
         return Object.validateKeys(
@@ -161,25 +159,39 @@ delete($.global.python);
             "active_req/seed",
             "active_req/crop"
         );
-    }  
-    I.makeIntf = function(){
+    }
+
+    I.makeIntf = function()
+    {
         return File(I.intfPath).$create(_m.ser(I.intf0, 1));
     }
-    I.setIntf  = function(intfObj){
-        if(!I.validateIntf(intfObj)) throw Error("Passed object does not resemble a pyinterface");
+    I.setIntf  = function(intfObj)
+    {
+        if(!I.validateIntf(intfObj)) throw Error("Invalid PyInterface Obj");
+        
         return File(I.intfPath).$write(_m.ser(intfObj, 1), 'w');
     }
-    I.getIntf  = function(){
+    
+    I.getIntf  = function()
+    {
         return _m.deser(File(I.intfPath).$read());
     }
-    I.modIntf  = function(keysP, newV){
+
+    I.modIntf  = function(keysP, newV)
+    {
         var intf = I.getIntf();
-        if(typeof newV == "function") newV = newV(Object.getValue(intf,keysP));
         
-        Object.modify(intf, keysP, newV);
+        Object.modify(
+            intf,
+            keysP,
+            typeof newV != "function"?
+            newV                     :
+            newV.call(null, Object.getValue(intf, keysP))
+        );
         
         I.setIntf(intf);
     }
+
     I.makeExec = function(){
         return File(I.execPath).$create(I.execStr);
     }
@@ -262,7 +274,7 @@ delete($.global.python);
         if(pp.checkFF() != 1) throw Error("Path argument is not a file path");
         
         contact = _m.fname(pp);
-        I.modIntf("contacts/"+ contact, //display name of py file
+        I.modIntf("contacts/{0}".f(contact), //display name of py file
                  {
                     path  : pp,
                     funcs : I.getFuncs(pp)
@@ -280,38 +292,51 @@ delete($.global.python);
 
         if(!Object.validateKeys(contact, "path", "funcs")) throw Error("Contact is not valid");
 
-        var cSkills = contact.funcs;
+        var cSkills  = contact.funcs,
+            ttSkills = cSkills.length, i=-1;
         
-        for(var i=0, len = cSkills.length; i<len; i++){
+        for(;++i < ttSkills;)
+        {
 
-            var skill = cSkills[i];
-            var fStr  = ""+
-            "var cPath   = \"" + contact.path + "\";\n"+
-            "var name    = \"" + skill.name   + "\";\n"+
-            "var nDefNum = " + skill.args["non_default"].length + ";\n"+
-            "var defNum  = " + skill.args["default"].length + ";\n"+
+            pyo[cSkills[i].name] = Function((function(){
+
+                var cPath   = $contactPath,
+                    name    = $skillName,
+                    nDefNum = nondefLen,
+                    defNum  = defLen;
+                
+                var args    = Array.prototype.slice.call(arguments),
+                    numArgs = args.length,
+                    ttArgs  = (nDefNum + defNum);
             
-            "var args    = Array.prototype.slice.call(arguments);\n"+
-            "var numArgs = args.length;\n"+
-            "var ttArgs  = (nDefNum + defNum);\n"+
-            "var errs    = {\n"+
-            "    extrArgs    : \"Pyjsx:\" + name + \"() takes at most \" + ttArgs + \" but \"+ numArgs +\" were given\",\n"+
-            "    missingArgs : \"Pyjsx:\" + name + \"() takes at least \" + nDefNum + \" non-default args but \"+ numArgs +\" were given\"\n"+
-            "};\n"+
+                const ERRS    = 
+                {
+                    extrArgs    : "Pyjsx:{0}() takes at most  {1} but {2} were given".f(name, ttArgs, numArgs),
+                    missingArgs : "Pyjsx:{0}() takes at least {1} non-default args but {2} were given".f(name, nDefNum, numArgs)
+                };
+            
+                if(numArgs < nDefNum) throw Error(ERRS.missingArgs)
+                if(numArgs > ttArgs ) throw Error(ERRS.extrArgs)
+                
+                return self.call(cPath, name, args);              
 
-            "if(numArgs < nDefNum) {throw Error(errs.missingArgs)}\n"+
-            "if(numArgs > ttArgs ) {throw Error(errs.extrArgs)}\n"+
+            }).body().replace({
+                
+                $contactPath : contact.path,
+                $skillName   : cSkills[i].name,
+                nondefLen    : cSkills[i].args[non_default].length,
+                defLen       : cSkills[i].args[_default].length
+            
+            }));
 
-            "return self.call(cPath, name, args);\n";
-
-            pyo[skill.name] = Function(fStr);
             pyo["functions"].push(skill.name);
         }
             return pyo;
     }
     self.unload   = function(){
-        eval("delete(" + self.toString() + ");");
+        delete(host[self]);
     }
+
     self.install();
 
-})($.global, {"toString": function(){ return "python";}}))
+})($.global, {"toString": function(){ return "python";}})

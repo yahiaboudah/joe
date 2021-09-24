@@ -24,27 +24,24 @@
 
     I.getExpression = function(layerArg, valArg){
         
-        repConfig  = {
-            $layerName: layerArg.name,
-            $RGBValue: valArg
-        };
-    
         return (function(){
         
             var targetLayer = thisComp.layer("$layerName");
             var compDimens  = [thisComp.width, thisComp.height]; 
             
-            var sampledColor_8bpc = 255 * targetLayer.sampleImage(
-            
+            255 * targetLayer.sampleImage(
+
                 compDimens/2, //samplePoint
                 compDimens,   //sampleRadius
                 true, 
                 time
-            ); 
             
-            Math.round(sampledColor_8bpc[$RGBValue]);
+            )[$RGBValue].toFixed();
         
-        }).body()._replace(repConfig);
+        }).body()._replace({
+            $layerName: layerArg.name,
+            $RGBValue: valArg
+        });
     }
 
     I.addRgbNull = function(layer){
@@ -52,16 +49,28 @@
         var comp      = layer.containingComp;
         var rgbLayer  = comp.layers.addNull();
         
-        rgbLayer.addProp("Effects/Slider Control:rSlider").property("Slider").expression = I.getExpression(layer, 0);
-        rgbLayer.addProp("Effects/Slider Control:gSlider").property("Slider").expression = I.getExpression(layer, 1);
-        rgbLayer.addProp("Effects/Slider Control:bSlider").property("Slider").expression = I.getExpression(layer, 2);
-        
+        for(c in ca = ['r', 'g', 'b'])
+        {
+            rgbLayer.addProp("Effects/Slider Control:{0}Slider".f(ca[c])).property("Slider").expression = I.getExpression(layer, c);    
+        }
+
         return rgbLayer;
     }
 
-    I.isFrame = function (OLDVAL, NEWVAL, THRESHOLD)
+    I.isLuma = function (OLDVAL, NEWVAL, THRESHOLD)
     {
         return (OLDVAL / NEWVAL * 100 > THRESHOLD || OLDVAL / NEWVAL * 100 > THRESHOLD)
+    }
+
+    I.getLuma = function(){
+        var rgbLayer = this;
+        return Math.sum.apply(null,
+            [
+                rgbLayer.getProp("Effects/rSlider/Slider").value,
+                rgbLayer.getProp("Effects/gSlider/Slider").value,
+                rgbLayer.getProp("Effects/bSlider/Slider").value
+    
+            ]) / 3;
     }
 
     self.setComp = function(c){
@@ -70,6 +79,7 @@
     }
 
     self.setThreshold = function(nt){
+        if(nt !== parseFloat(nt)) return;
         I.THRESHOLD = nt;
     }
 
@@ -77,40 +87,23 @@
     {
     
         var comp        = layer.containingComp,
-            frameRate   = Math.floor(1/comp.frameDuration),
             rgbLayer    = I.addRgbNull(layer);
     
-        var getLuma = function()
-        {
-            return Math.sum.apply(null, 
-                [
-                    rgbLayer.getProp("Effects/rSlider/Slider").value,
-                    rgbLayer.getProp("Effects/gSlider/Slider").value,
-                    rgbLayer.getProp("Effects/bSlider/Slider").value
-        
-                ]) / 3;
-        }
-    
-        var splitTimes = [];
-        var ogLuma = getLuma(), luma;
-    
-        var timeIncrement  = 1 / frameRate; // 1 = frameIcrement
+        var sTimes = []; //splitTimes
+        var oldLuma = I.getLuma.call(rgbLayer), newLuma;
     
         for(;comp.time < comp.duration
-            ;comp.time += timeIncrement)
+            ;comp.time += comp.frameDuration)
         {
             
-            newLuma = getLuma();
-            if(I.isFrame(ogLuma, newLuma, I.THRESHOLD))
-            {
-                splitTimes.push(comp.time);
-            }
-            ogLuma = newLuma;
+            newLuma = I.getLuma.call(rgbLayer);
+            if(I.isLuma(oldLuma, newLuma, I.THRESHOLD)) sTimes.push(comp.time)
+            oldLuma = newLuma;
         }
     
         rgbLayer.remove();
         comp.time = 0;
-        return (splitTimes.shift(), splitTimes);
+        return (sTimes.shift(), sTimes);
     }
 
     self.splitScenes = function DetectScenes(layer, splitTimes, removOg)
@@ -140,5 +133,21 @@
             self.getSplitTimes(myLayer), // split times
             false //remove original layer
         )();
+    }
+
+    self.unload = function()
+    {
+        //delete lib:
+        delete(host[self]);
+        // delete utils:
+        delete(String.prototype.f);
+        delete(Function.prototype.timeit);
+        delete(Function.prototype.body);
+        delete(String.prototype._replace);
+        delete(AVLayer.prototype.addProp);
+        delete(AVLayer.prototype.getProp);
+        delete(CompItem.prototype.sel);
+        delete(Math.sum);
+        delete(app.wrapUndo);
     }
 }($.global, {toString: function(){return "SceneDetection"}}));

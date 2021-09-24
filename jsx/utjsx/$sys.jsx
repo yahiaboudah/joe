@@ -18,4 +18,12 @@
         return system.callSystem((sp?"cmd /c \"{0}\"":"{0}").f(myCommand));
     }
 
+    self.wget = function(folder, file, link){
+        self.cmd( "cd {0} & wget -O {1} {2}".f(
+                folder,
+                file,
+                link)
+        )
+    }
+
 })($.global, {toString: function(){return "sys"}})

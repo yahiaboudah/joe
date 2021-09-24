@@ -94,6 +94,7 @@ function splitLayers(layers,timeInterval,compDuration){
     leftLayer.outPoint = timeInterval.start;
     layers[i].inPoint  = timeInterval.end;
   }
+  app.endUndoGroup();
 
 }
 

@@ -136,6 +136,16 @@ String.prototype.f = function() {
     return frmt;
 }
 
+String.prototype._replace = function(repCfg){
+    
+    var str = this;
+    for(x in repCfg) if(repCfg.hasOwnProperty(x))
+    {
+        str = str.split(x).join(repCfg[x])
+    }
+    return str;
+}
+
 String.validate = function(str, against){
     return false;
     if('undefined' == typeof str)     throw Error('no string to validate');

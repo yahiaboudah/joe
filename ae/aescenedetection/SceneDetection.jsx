@@ -25,16 +25,25 @@
     I.getExpression = function(layerArg, valArg){
         
         return (function(){
+<<<<<<< HEAD
         
             var targetLayer = thisComp.layer("$layerName");
             var compDimens  = [thisComp.width, thisComp.height]; 
             
             255 * targetLayer.sampleImage(
 
+=======
+           
+	    var compDimens  = [thisComp.width, thisComp.height]; 
+		
+            Math.round(255 * thisComp.layer("$layerName").sampleImage(
+		    
+>>>>>>> f3696529c1f4bab81e2e20d03e799b12bd2d509f
                 compDimens/2, //samplePoint
                 compDimens,   //sampleRadius
                 true, 
                 time
+<<<<<<< HEAD
             
             )[$RGBValue].toFixed();
         
@@ -42,6 +51,11 @@
             $layerName: layerArg.name,
             $RGBValue: valArg
         });
+=======
+            ));
+		
+        }).body()._replace(repConfig);
+>>>>>>> f3696529c1f4bab81e2e20d03e799b12bd2d509f
     }
 
     I.addRgbNull = function(layer){
@@ -134,6 +148,7 @@
             false //remove original layer
         )();
     }
+<<<<<<< HEAD
 
     self.unload = function()
     {
@@ -151,3 +166,6 @@
         delete(app.wrapUndo);
     }
 }($.global, {toString: function(){return "SceneDetection"}}));
+=======
+}($.global, {toString: function(){return "SceneDetection"}}));
+>>>>>>> f3696529c1f4bab81e2e20d03e799b12bd2d509f

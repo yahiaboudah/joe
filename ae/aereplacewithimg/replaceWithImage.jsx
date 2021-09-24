@@ -124,9 +124,7 @@ function dropSnapshot(interval, idx){
   
   app.beginUndoGroup(callee.name);
   var c    = app.project.activeItem;
-  var snap = app.importAndDrop(File(imgPath));
-  app.project.item(app.project.items.length).selected = false; //deselect
-  
+  var snap = app.importAndDrop(File(imgPath));  
   
   snap.inPoint  = interval.start;
   snap.outPoint = interval.end;

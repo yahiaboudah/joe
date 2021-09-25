@@ -64,58 +64,61 @@
     };
 
     I.execStr  = 
-    "def pyjsx_run():\n"+
+    [
+    "def pyjsx_run():",
         
          //import py utils
-    "    import json, sys, os\n"+
+    "    import json, sys, os",
         
         // intializing vars
-    "    inst_path  = '"+  I.instPath + "/'\n"+
-    "    intf_path   =  (inst_path + 'PyIntf.pyintf')\n"+
-    "    exec_signal =  (inst_path + 'executed.tmp')\n"+
+    "    inst_path  = '$instPath/'",
+    "    intf_path   =  (inst_path + 'PyIntf.pyintf')",
+    "    exec_signal =  (inst_path + 'executed.tmp')",
     
          // pythonic args
-    "    def strr(ss):\n"+
-    "        if(ss in ['true', 'false']): return ss.title()\n"+
-    "        if(type(ss) is str):         return '\\\"' + ss + '\\\"'\n"+
-    "        return str(ss)\n"+
+    "    def strr(ss):",
+    "        if(ss in ['true', 'false']): return ss.title()",
+    "        if(type(ss) is str):         return '\\\"' + ss + '\\\"'",
+    "        return str(ss)",
     
          // grab the interface:
-    "    with open(intf_path, 'r') as f:\n"+
-    "        c= f.read()\n"+
-    "    if not c: return 'Python Error: interface corrupt'\n"+
+    "    with open(intf_path, 'r') as f:",
+    "        c= f.read()",
+    "    if not c: return 'Python Error: interface corrupt'",
 
          // interface vars:
-    "    intff = json.loads(c)\n"+
-    "    AR    = intff['active_req']\n"+
-    "    path  = AR   ['road']\n"+
-    "    func  = AR   ['trac']\n"+
-    "    name  = '.'.join(path.split('/')[-1].split('.')[0:-1])\n"+
-    "    args  = ','.join(strr(e) for e in AR['seed'])\n"+
+    "    intff = json.loads(c)",
+    "    AR    = intff['active_req']",
+    "    path  = AR   ['road']",
+    "    func  = AR   ['trac']",
+    "    name  = '.'.join(path.split('/')[-1].split('.')[0:-1])",
+    "    args  = ','.join(strr(e) for e in AR['seed'])",
         
          // include script in sys paths
-    "    sys.path.append(os.path.dirname(path))\n"+
+    "    sys.path.append(os.path.dirname(path))",
         
         // execute
-    "    try:\n"+
-    "        exec('import ' + name + ' as s')\n"+
-    "        result = eval('s.' + func + '(' + args + ')')\n"+
-    "    except Exception as e:\n"+
-    "        result = 'Python Error: ' + str(e).replace('\\\'', '\\\\\\\'')\n"+
+    "    try:",
+    "        exec('import ' + name + ' as s')",
+    "        result = eval('s.' + func + '(' + args + ')')",
+    "    except Exception as e:",
+    "        result = 'Python Error: ' + str(e).replace('\\\'', '\\\\\\\'')",
          
          // store crop:
-    "    intff['active_req']['crop'] = result\n"+
-    "    intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1\n"+
+    "    intff['active_req']['crop'] = result",
+    "    intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1",
         
         // write result, and create temp signal file:
-    "    with open(intf_path, 'w', encoding='utf8') as f:\n"+
-    "        f.write(json.dumps(intff, indent =4))\n"+
-    "    with open(exec_signal, 'w') as execf:\n"+
-    "        execf.write('')\n"+
+    "    with open(intf_path, 'w', encoding='utf8') as f:",
+    "        f.write(json.dumps(intff, indent =4))",
+    "    with open(exec_signal, 'w') as execf:",
+    "        execf.write('')",
         
         // success: return(0)
-    "    return 0\n"+
-    "pyjsx_run()";
+    "    return 0",
+    "pyjsx_run()"
+    
+    ].join("\n").replace("$instPath", I.instPath);
 
     I.isPyInstalled = function()
     {

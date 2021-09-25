@@ -1,3 +1,0 @@
-
-
-$.writeln(Folder.temp.absoluteURI)

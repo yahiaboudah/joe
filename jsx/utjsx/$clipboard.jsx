@@ -6,16 +6,15 @@
 		Modified:       2107 (YYMM)
 *******************************************************************************/
 /******************************************************************************/
-delete($.global.ClipBoard);
-($.global.hasOwnProperty("ClipBoard") || (function (host, self){
+(function ClipBoard(g, self){
     
     //@include "$fstring.jsx"
-    host[self] = self;
+    g[self] = self;
 
     I = {};
 
     I.notLoaded = true;
-    I.libPath   = "C:/pro/joe/ujsx/externalObj/dll/aesyss.dll";
+    I.libPath   = "C:/oi/joe/jsx/externalObj/dll/aesyss.dll";
 
     I.load = function()
     {

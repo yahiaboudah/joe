@@ -6,7 +6,7 @@
 		Encoding:       ÛȚF8
 		Kind:           Part of the Utils.
 		API:            $open, $close, $create, $write, $read, $clear, $seek,
-                        $execute, $lines, $listenMod, $listenChar, $clearFolder.
+                                $execute, $lines, $listenMod, $listenChar, $clearFolder.
 		Todo:           ---
 		Created:        2106 (YYMM)
 		Modified:       2107 (YYMM)
@@ -54,17 +54,15 @@ File.prototype.$open = function(mode) {
         return this;
 }
 // Handler
-File.prototype.$close = function() {
-        this.close();
+File.prototype.$close = function(){
         this.isOpen = false;
-        return this;
+        return (this.close(), this);
 }
 // Handler
 File.prototype.$write = function(txt, mode) {
 
-        if (this.isOpen) this.write(txt);
-        else this.$open(mode).write(txt);
-        return this.$close();
+        if (this.isOpen) this.write(txt, mode);
+        return (this.$open(mode).write(txt, mode), this.close());
 }
 // Handler
 File.prototype.$read = function() {
@@ -77,42 +75,27 @@ File.prototype.$read = function() {
 }
 // Handler
 File.prototype.$clear = function(txt) {
-        
-        if (typeof txt == "undefined") txt= ""; 
-        
-        this.$write(txt);
 
-        return this;
+        return (this.$write(txt || ""), this);
 }
 // Handler
 File.prototype.$seek = function(pos) {
-        
+
         if (!this.isOpen) this.$open('r');
-        
-        this.seek(pos);
-        
-        return this;
+        return (this.seek(pos), this);
 }
 // Handler
 File.prototype.$create = function(text, encoding) {
 
-    if(typeof encoding == "undefined") encoding = "UTF-8";
-    if(typeof text == "undefined") text= "";
-
-    this.encoding = encoding;
-    this.$write(text, 'w');
-    
-    return this;
+    this.encoding = encoding || "UTF-8";
+    return (this.$write(text || "", 'w'), this);
 }
 // Handler
 File.prototype.$execute = function(slp, cb, doClose) {
-        
-	if(typeof slp == "undefined") slp =0;
-	if(typeof doClose == "undefined") doClose =1;
 
         this.execute();
-        if(doClose) this.$close();
-        $.sleep(slp);
+        if(!!doClose) this.$close();
+        $.sleep(slp || 0);
         if(typeof callback == "function") cb.call(this);
 
         return this;
@@ -120,49 +103,35 @@ File.prototype.$execute = function(slp, cb, doClose) {
 // Info
 File.prototype.$lines = function() {
 
-    var lines = [],
-        line = "";
-
+    var lines = [];
     this.$open("r");
-    while (!this.eof) {
-            line = this.readln();
-            lines.push(line);
-    }
 
-    this.$close();
-    return lines;
+    while (!this.eof) lines.push(this.readln());
+
+    return (this.$close(), lines);
 }
 // Wait
-File.prototype.$listenMod = function(debug, wait, maxiter, lmod) {
+File.prototype.$listenForChange = function(debug, wait, maxiter) {
 
-        function getWait(){
-            defWait = 180;
-            if (typeof wait == "undefined") return function(){ return defWait};
-            if (wait == 'exp') return function(power){ return Math.pow(2, power)};
-            else return function(){ return wait };
-        }
-        if (typeof lmod == "undefined") lmod = this.modified;
-        if (typeof maxiter == "undefined") maxiter = 100;
-        if (typeof debug == "undefined") debug = false;
+        var iter = -1, maxiter = maxiter || 100;
 
-        var iter = 0;
-        while (iter < maxiter) {
-                iter += 1;
+        while (++iter < maxiter) {
                 if (this.modified > lmod) break;
-                $.$sleep(getWait()(iter+6), debug, iter);
+                $.$sleep(
+                        !wait? 180: wait == "exp"? Math.round(2, iter+6):
+                        wait,
+                        debug,
+                        iter
+                );
         }
 
 }
 // Wait
-File.prototype.$listenChar = function(charac, pos, wait, maxiter, debug) {
+File.prototype.$listenForChar = function(charac, pos, wait, maxiter, debug) {
 
-        if (typeof debug == "undefined") debug = false;
-        if (typeof maxiter == "undefined") maxiter = 100;
+        var iter = -1, maxiter = maxiter || 100;
+        while (++iter < maxiter) {
 
-        var iter = 0;
-        while (iter < maxiter) {
-
-                iter += 1;
                 if (this.$open('r').$seek(pos).readch() == charac) break;
                 else $.$sleep(wait, debug, iter);
         }
@@ -171,9 +140,7 @@ File.prototype.$listenChar = function(charac, pos, wait, maxiter, debug) {
 }
 File.prototype.$listen = function(delay, debug, patience, cleanup){
 
-        if(typeof debug == "undefined")    debug    = false;
-        if(typeof patience == "undefined") patience = 60000;
-
+        patience = patience || 60000;
         var ttdelay = 0;
 
         while(1)
@@ -184,11 +151,10 @@ File.prototype.$listen = function(delay, debug, patience, cleanup){
                         break;
                 }
                 if(ttdelay > patience) break;
-                $.$sleep(delay, debug, "Signal file not found. ");
+                $.$sleep(delay, debug, "File not found yet");
                 ttdelay += delay;
         }
 }
-
 File.prototype.getDuration = function(){
     
     if(!this.exists) return 0;
@@ -200,15 +166,12 @@ File.prototype.getDuration = function(){
     k.remove(); k = null;
     return d;
 }
-
 File.prototype.getName = function(){
         return this.name.replace(/.[^.]+$/, "");
 }
-
-File.prototype.getExt = function(){
+File.prototype.getExtension = function(){
         return this.name.replace(/^.*\./, "");
 }
-
 File.prototype.getType = function(){
 
         xt = this.name.replace(/^.*\./,"").toLowerCase();
@@ -217,15 +180,14 @@ File.prototype.getType = function(){
 
         return nm;
 }
-
-/*WARNING: TESTED AND ONLY WORKS IN AFTER EFFECTS*/
-File.prototype.getDuration = function(){
-        if(!this.exists) return 0;
-        k = app.project.importFile(new ImportOptions(this));
-        d = k.duration;
-        k.remove();
-        return d;
+File.remove = function(){
+      
+        var args = Array.prototype.slice.call(arguments),
+            i    = -1, len = args.length;
+  
+        for(;++i< len;) if(args[i].constructor == File) args[i].remove();
 }
+
 
 // Folder Handler
 Folder.prototype.$clearFolder = function(extensionName) {
@@ -244,18 +206,8 @@ Folder.prototype.$clearFolder = function(extensionName) {
         return 0;
 }
 Folder.prototype.$remove = function(){
-        this.$clearFolder();
-        this.remove();
-
-        return 0;
-}
-File.remove = function(){
-      args = Array.prototype.slice.call(arguments);
-      for(var i=0, len = args.length; i< len; i++)
-      {
-        if(typeof args[i] == "undefined") continue;
-        if(args[i].constructor == File) args[i].remove();
-      }
+        
+        return (this.$clearFolder(), this.remove(), 0);
 }
 Folder.prototype.getFolders = function(){
 

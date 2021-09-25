@@ -18,21 +18,18 @@
     //@include "$object.jsx"
     //@include "$string.jsx"
     //@include "$misc.jsx"
-    //@include "$sys.jsx";
+    //@include "$sys.jsx"
     /*******************************************************/
     host[self] = self;
+    self.instPath = "C:/Users/me/PYJSX"; //installation path
 
-    I = {};
+    I = P = {};
+
     I.intfExtn = "pyintf";
     I.intfName = "PyIntf";
-    I.instPath = "C:/Users/me/PYJSX"; //installation path
-    I.intfPath = I.instPath + '/' +  I.intfName + "." + I.intfExtn;
-    I.execPath = I.instPath + "/exec.pyw";
-    I.pyExTime = 180;
-    I.sgnlPath = I.instPath + "/executed.tmp";
-    I.pyExts   = ["py", "pyw"];
+    I.intfPath = "{0}/{1}.{2}".f(self.instPath, I.intfName, I.intfExtn);
+    I.sgnlPath = "{0}/executed.tmp".f(self.instPath);
     I.AR       = "active_req";
-    
     I.contact0 = {
         path    : "",
         funcs   : []
@@ -63,7 +60,10 @@
         }
     };
 
-    I.execStr  = 
+    P.execPath = self.instPath + "/exec.pyw";
+    P.pyExTime = 180;
+    P.pyExts   = ["py", "pyw"];
+    P.execStr  = 
     [
     "def pyjsx_run():",
         
@@ -117,15 +117,15 @@
         // success: return(0)
     "    return 0",
     "pyjsx_run()"
-    
-    ].join("\n").replace("$instPath", I.instPath);
 
-    I.isPyInstalled = function()
+    ].join("\n").replace("$instPath", self.instPath);
+
+    P.isInstalled = function()
     {
         return sys.cmd("python --version").split(" ")[0] == "Python";
     }
 
-    I.getFuncs = function(p){
+    P.functions = function(p){
         
         var m   = File(p).$read().match(/(([\n]+def)|^def)\s+.+\(.*\)/g),
             fs  = [], nameArgs, name, args, aaa;
@@ -135,6 +135,7 @@
             nameArgs = m[i].replace(/[\n]+/g, "").replace(/def[\s]+/g, "").split("(");
             name     = nameArgs[0].replace(/\s*$/,"");
             args     = nameArgs[1].slice(0,-1).split(",");
+            
             aaa      = { "default": [], "non_default": []};
 
             if(args[0]) for(var k=0, klen = args.length; k< klen; k++)
@@ -147,7 +148,7 @@
         return fs;
     }
 
-    I.validateIntf = function(intfObj){
+    I.validate = function(intfObj){
 
         return Object.validateKeys(
             intfObj,
@@ -164,25 +165,26 @@
         );
     }
 
-    I.makeIntf = function()
+    I.make = function()
     {
         return File(I.intfPath).$create(_m.ser(I.intf0, 1));
     }
-    I.setIntf  = function(intfObj)
+
+    I.set  = function(intfObj)
     {
         if(!I.validateIntf(intfObj)) throw Error("Invalid PyInterface Obj");
         
         return File(I.intfPath).$write(_m.ser(intfObj, 1), 'w');
     }
     
-    I.getIntf  = function()
+    I.get  = function()
     {
         return _m.deser(File(I.intfPath).$read());
     }
 
-    I.modIntf  = function(keysP, newV)
+    I.mod  = function(keysP, newV)
     {
-        var intf = I.getIntf();
+        var intf = I.get();
         
         Object.modify(
             intf,
@@ -192,21 +194,25 @@
             newV.call(null, Object.getValue(intf, keysP))
         );
         
-        I.setIntf(intf);
+        I.set(intf);
     }
 
-    I.makeExec = function(){
-        return File(I.execPath).$create(I.execStr);
+    P.makeExec = function()
+    {
+        return File(P.execPath).$create(P.execStr);
     }
-    I.runExec  = function(){
+    P.runExec  = function()
+    {
         var sf = File(I.sgnlPath);
         if(sf.exists) sf.remove();
         
         I.modIntf("info/reqs_made", function(v){ return v+1});
-        File(I.execPath).$execute();
-        sf.$listen(I.pyExTime, false, undefined, true/*remove signal file when it appears*/);
+        File(P.execPath).$execute();
+        sf.$listen(P.pyExTime, false, undefined, true/*remove signal file when it appears*/);
     }
-    I.post = function(request){
+
+    I.post = function(request)
+    {
 
         if(!Object.validateKeys(request, "path", "func", "args")) throw Error("Request structure invalid");
         myIntf = I.getIntf();
@@ -217,62 +223,72 @@
 
         I.setIntf(myIntf);
     }
-    I.get = function(clean){
+    I.crop = function(clean)
+    {
         
         if(typeof clean == "undefined") clean = true;
 
-        var intf    = I.getIntf(),
+        var intf    = I.get(),
             output  = intf[I.AR]["crop"];
     
         intf[I.AR] = I.intf0[I.AR];
-        if(clean) I.setIntf(intf);
+        if(clean) I.set(intf);
         
         return output;
     }
-    self.uninstall = function(){
-        var instFolder = Folder(I.instPath);
+
+    self.uninstall = function()
+    {
+        var instFolder = Folder(self.instPath);
         if(!instFolder.exists) return 0;
 
         instFolder.$remove();
         
         return 0;
     }
-    self.install = function(){
+
+    self.install = function()
+    {
         
-        if(!I.instPath.checkFF()) self.reinstall();
+        if(!self.instPath.checkFF()) self.reinstall();
         else return;
 
         if(!I.isPyInstalled())    throw Error ("Python is not installed!"); //python
 
         var ff      = File(I.intfPath),
-            xf      = File(I.execPath),
+            xf      = File(P.execPath),
             ffvalid = I.validateIntf(_m.deser(ff.$read())),
-            xfvalid = Object.validate(I.execStr, xf.$read());
+            xfvalid = Object.validate(P.execStr, xf.$read());
 
         (ff.exists && ff.length && ffvalid) || I.makeIntf();
         (xf.exists && xf.length && xfvalid) || I.makeExec();
 
         return;
     }
-    self.reinstall = function(){
+
+    self.reinstall = function()
+    {
         
-        fd = Folder(I.instPath);
+        fd = Folder(self.instPath);
         if(fd.exists) fd.$remove();   
         
         fd.create();
         I.makeIntf();
         I.makeExec();
     }
+    
     self.call    = function(script, about, talk){
         I.post({
-            "path": script,
-            "func": about,
-            "args": talk
+            path: script,
+            func: about,
+            args: talk
         });
         I.runExec();
         return I.get(false);
     }
-    self.contact = function(pp){
+
+    self.contact = function(pp)
+    {
 
         if(pp.checkFF() != 1) throw Error("Path argument is not a file path");
         
@@ -285,13 +301,14 @@
         return contact;
     }
     // create jsx bindings:
-    self.build   = function(contactName){
+    self.build   = function(contactName)
+    {
         
         if(contactName.checkFF() == 1) contactName = self.contact(contactName);
 
-        var pyo     = {"functions": []};
-        intf    = I.getIntf();
-        contact = intf["contacts"][contactName];
+        var pyo  = {functions: []};
+        intf     = I.getIntf();
+        contact  = intf.contacts[contactName];
 
         if(!Object.validateKeys(contact, "path", "funcs")) throw Error("Contact is not valid");
 
@@ -332,7 +349,7 @@
             
             }));
 
-            pyo["functions"].push(skill.name);
+            pyo.functions.push(skill.name);
         }
             return pyo;
     }

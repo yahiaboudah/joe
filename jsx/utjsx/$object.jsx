@@ -57,6 +57,9 @@ Object.keys = (function () {
         return result;
     };
 }());
+Object.extend  = function(oo, newstuff){
+    for(k in newstuff) if(newstuff.hasOwnProperty(k)) oo[k] = newstuff[k];
+}
 Object.newKeys = function(obj, keys, values){
     for(var i=0,len = keys.length; i< len; i++) obj[keys[i]] = values[i];
     return obj;

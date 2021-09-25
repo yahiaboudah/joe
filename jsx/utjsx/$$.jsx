@@ -10,12 +10,17 @@
 		Created:        2106 (YYMM)
 		Modified:       2107 (YYMM)
 *******************************************************************************/
-//@include "fstring.jsx"
 /******************************************************************************/
-$.$sleep = function(ms, msg){
+(function $$(S)
+{
+	//@include "fstring.jsx"
+	
+	S.$sleep = function(ms, msg){
 
-    if(typeof ms == "undefined") return;
-    
-    if(!!msg) $.writeln("{0}: Sleeping for {1}..".f(msg, ms))
-    $.sleep(ms);
-}
+		if(typeof ms == "undefined") return;
+		
+		if(!!msg) $.writeln("{0}: Sleeping for {1}..".f(msg, ms))
+		$.sleep(ms);
+	}
+
+})($);

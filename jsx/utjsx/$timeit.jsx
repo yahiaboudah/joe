@@ -13,8 +13,7 @@
 *******************************************************************************/
 //---
 /******************************************************************************/
-delete($.global["timeit"]);
-($.global.hasOwnProperty("timeit") || (function (host, self){
+(function timeit(host, self){
 
     host[self] = self;
 
@@ -44,6 +43,7 @@ delete($.global["timeit"]);
             time    : ((tt/n)/mics)
         };
     }
+    
     self.compare = function(f1, f2 , n/*, arg1, arg2*/)
     {
         if([typeof f1, typeof f2].includes("undefined")) throw Error("No functions passed to compare.");
@@ -63,4 +63,4 @@ delete($.global["timeit"]);
             ratio    : .1 * ~~(10*(t1/t2))
         };
     }
-}($.global, {"toString": function(){return "timeit"}})))
+}($.global, {"toString": function(){return "timeit"}}))

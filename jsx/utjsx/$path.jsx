@@ -8,15 +8,16 @@ function Path(){
         ln = ag.length,
         id = -1;
     
-    while(++id<ln) this.ps.push(ag[id].split("/"));
+    while(++id<ln) this.ps = this.ps.concat(ag[id].split("/"));
 }
 
 Path.prototype.py = function(){
-    return [[
-        this.ps.shift(),
-        this.ps.shift()].join("\\\\"),
-        this.ps.join("\\")
-    ].join("\\");
+    var e1, e2, rt, bd;
+    e1 = this.ps.shift();
+    e2 = this.ps.shift();
+    rt = [e1, e2].join("\\\\");
+
+    return [rt, bd].join("\\")
 }
 
 Path.prototype.resolve = function(s/*slash*/){ // 0 => /, 1=> \\
@@ -32,11 +33,14 @@ Path.prototype.mkdir = function(){
     return Folder(this.resolve()).create();
 }
 
-Path.prototype["/"] = function(op){
-    
-    curr = this;
-    cStr = curr.resolve();
-    newPath = [cStr, op].join("/");
+Path.prototype.toString = function(){
+    return this.resolve();
+}
 
-    return new Path(newPath);
+Path.prototype["/"] = function(op){
+
+    return new Path([
+        this.toString(),
+        op
+    ].join('/'));
 }

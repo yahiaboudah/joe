@@ -303,3 +303,19 @@ if (typeof Object.getPrototypeOf != "function")(function(){
 	}
 	
 }());
+
+Object.newObject = function()
+{
+    var oo   = {};
+    var args = Array.prototype.slice.call(arguments);
+
+    for(var i =0; i< args.length; i++)
+    {
+        arg = args[i];
+        if(arg.constructor !== Array) continue;
+
+        oo[arg[0]] = arg[1];
+    }
+
+    return oo;
+}

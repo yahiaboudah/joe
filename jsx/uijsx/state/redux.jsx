@@ -7,9 +7,3 @@
     // R.
 
 })($.global, {toString: function(){return "Redux"}})
-
-
-getState
-combineReducers
-setState
-dispatch

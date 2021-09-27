@@ -11,9 +11,9 @@
 		Created:        2106 (YYMM)
 		Modified:       2107 (YYMM)
 *******************************************************************************/
-//@include "$$.jsxinc"
-//@include "$array.jsxinc"
-//@include "$string.jsxinc"
+//@include "$$.jsx"
+//@include "$array.jsx"
+//@include "$string.jsx"
 /******************************************************************************/
 File.CATEGORIES = 
     [
@@ -206,18 +206,17 @@ Folder.prototype.$clearFolder = function(extensionName) {
         return 0;
 }
 Folder.prototype.$remove = function(){
-        
         return (this.$clearFolder(), this.remove(), 0);
 }
 Folder.prototype.getFolders = function(){
 
-      al = [];
+      var al = [];
       this.getFiles().forEach(function(f){ if(f.constructor == Folder) al.push(f)})
       return al; 
 }
-Folder.prototype.getFiless = function(){
+Folder.prototype.$getFiles = function(){
      
-      al = [];
+      var al = [];
       this.getFiles().forEach(function(f){ if(f.constructor == File) al.push(f)})
       return al; 
 }

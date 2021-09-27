@@ -13,7 +13,7 @@
 /******************************************************************************/
 (function $$(S)
 {
-	//@include "fstring.jsx"
+	//@include "$fstring.jsx"
 	
 	S.$sleep = function(ms, msg){
 

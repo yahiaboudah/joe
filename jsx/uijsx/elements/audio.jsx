@@ -1,12 +1,13 @@
 //@include "../../utjsx/$file.jsx"
 //@include "../../utjsx/$path.jsx"
+//@include "../../utjsx/$fstring.jsx"
 
 function playAudio(pp){    
     
-    File(Folder.temp.fsName + "/ply.pyw").$create([
+    File("{0}/ply.pyw".f(Folder.temp.fsName)).$create([
         
         "from playsound import playsound",
-        "playsound(r\"" + new Path(pp).py() + "\")"
+        "playsound(r\"{0}\")".f(new Path(pp).py())
     
     ].join("\n")).$execute(100,function(){
         this.remove();

@@ -62,7 +62,7 @@ File.prototype.$close = function(){
 File.prototype.$write = function(txt, mode) {
 
         if (this.isOpen) this.write(txt, mode);
-        return (this.$open(mode).write(txt, mode), this.close());
+        return (this.$open(mode).write(txt), this.close());
 }
 // Handler
 File.prototype.$read = function() {
@@ -88,7 +88,7 @@ File.prototype.$seek = function(pos) {
 File.prototype.$create = function(text, encoding) {
 
     this.encoding = encoding || "UTF-8";
-    return (this.$write(text || "", 'w'), this);
+    return (this.$write((text || ""), 'w'), this);
 }
 // Handler
 File.prototype.$execute = function(slp, cb, doClose) {

@@ -37,10 +37,10 @@ Path.prototype.toString = function(){
     return this.resolve();
 }
 
-Path.prototype["/"] = function(op){
+// Path.prototype["/"] = function(op){
 
-    return new Path([
-        this.toString(),
-        op
-    ].join('/'));
-}
+//     return new Path([
+//         this.toString(),
+//         op
+//     ].join('/'));
+// }

@@ -1,28 +1,24 @@
-//@include "../../utjsx/$path.jsx"
-//@include "../../utjsx/$fstring.jsx"
-//@include "../../utjsx/$file.jsx"
 
+//@include "c:/oi/joe/jsx/utjsx/$fstring.jsx"
+//@include "c:/oi/joe/jsx/utjsx/$file.jsx"
 
-function playAudio(pp){    
-    
-    $.writeln(pp);
-    $.writeln([
+function playAudio(pp, dt){    
+
+    File("{0}\\ply.pyw".f(Folder.desktop.fsName)).$create([
         
-        "from playsound import playsound",
-        "playsound(r\"{0}\")".f(new Path(pp).py())
-    
-    ].join("\n"));
-    return;
+        "from pygame import mixer",
+        "from time import sleep",
 
-    File("{0}/ply.pyw".f(Folder.temp.fsName)).$create([
-        
-        "from playsound import playsound",
-        "playsound(r\"{0}\")".f(new Path(pp).py())
-    
-    ].join("\n")).$execute(100,function(){
+        "mixer.init()",
+        "mixer.music.load(\"{0}\")".f(pp),
+        "mixer.music.play()",
+        "sleep({0})".f(dt),
+        "mixer.music.stop()"
+            
+    ].join("\n")).$execute(200,function(){
         this.remove();
     });
 
 }
-    
-playAudio("d:/Cache/sound/sound.mp3");
+
+playAudio("d:/media/sound.mp3", 2);

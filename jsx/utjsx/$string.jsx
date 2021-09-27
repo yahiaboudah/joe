@@ -122,8 +122,8 @@ String.prototype.jumpit = function(str) {
 String.prototype.f = function() {
     
     var frmt = this,
-        args = arguments,
-        i  = 0;
+        args = Array.prototype.slice.call(arguments),
+        i    = -1;
 
     for (;++i < args.length;) 
     {
@@ -146,14 +146,14 @@ String.prototype._replace = function(repCfg){
     return str;
 }
 
-String.validate = function(str, against){
-    return false;
-    if('undefined' == typeof str)     throw Error('no string to validate');
-    if('undefined' == typeof against) throw Error('against arg is undefined');
-    if(against.constructor == File){
-        against.open('r');
-        str = against.read(); against.close();
-    }
+// String.validate = function(str, against){
+//     return false;
+//     if('undefined' == typeof str)     throw Error('no string to validate');
+//     if('undefined' == typeof against) throw Error('against arg is undefined');
+//     if(against.constructor == File){
+//         against.open('r');
+//         str = against.read(); against.close();
+//     }
 
-    return (str == against);
-}
+//     return (str == against);
+// }

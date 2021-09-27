@@ -13,7 +13,7 @@ container.layout = new XYLayout({
 
 function XYLayout(cfg){
     CustomLayout.call(this, cfg.c);
-    this.t = this.c.orientation.charAt(0).toLowerCase();
+    this.t = this.c.orientation.toLowerCase();
     this.x = cfg.x;
     this.y = cfg.y;
 }
@@ -24,27 +24,29 @@ XYLayout.prototype =
     {
         return (this.t == t)?v:0;
     },
+
     layout: function()
     {
     const K  = "children",
           PS = "preferredSize";
 
-    var t = l = w = k = 0;
+    var top = left = kid = 0,
+        i = -1;
 
-    for(i = -1; ++i < this.c[K].length;)
+    for(; ++i <this.c[K].length;)
     {
-        k = this.c[K][i];
-        k.size = k[PS];
-        if(typeof k.layout !== "undefined") k.layout.layout();
+        kid = this.c[K][i];
+        kid.size = k[PS];
+        if(typeof kid.layout !== "undefined") kid.layout.layout();
         
-        k.location = [l, t];
-        t += this.tt(k.size.height, 'c')  + this.y; //top+
-        l += this.tt(k.size.width , 'r')  + this.x; //left+
+        kid.location = [left, top];
+        top  += this.tt(kid.size.height, 'column')  + this.y; //top+
+        left += this.tt(kid.size.width , 'row')  + this.x; //left+
     }
     
-    this.c[PS] = [(l-this.x) + this.tt(k.size.width , 'c'), 
-                  (t-this.y) + this.tt(k.size.height, 'r')
+    this.c[PS] = [(left-this.x) + this.tt(kid.size.width , 'column'), 
+                  (top -this.y) + this.tt(kid.size.height, 'row')
                  ];
-    t = l = w = k = null;
+    kid = top = left = null;
     }
 }

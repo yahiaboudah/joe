@@ -7,7 +7,7 @@ function $http(config)
 		var url    = (/^(.*):\/\/([A-Za-z0-9\-\.]+):?([0-9]+)?(.*)$/).exec(config.url);
         var method = config.method || 'GET';
 		
-        if(url == null)  throw "unable to parse URL";
+        if(url == null)  throw "Unable to parse URL";
 	
 		url = 
         {

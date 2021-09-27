@@ -45,4 +45,4 @@
         return true;
     }
 
-}($.global, {"toString": function(){return "ClipBoard"}})))
+}($.global, {"toString": function(){return "ClipBoard"}}))

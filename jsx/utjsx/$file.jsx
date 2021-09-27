@@ -192,6 +192,7 @@ File.remove = function(){
 // Folder Handler
 Folder.prototype.$clearFolder = function(extensionName) {
 
+        if(this.constructor !== Folder) return;
         if (this.fsName.checkFF() != -1) throw Error("dirPath is not a folder path");
         var isAll = (typeof extensionName == "undefined")? true: false;
 
@@ -206,16 +207,18 @@ Folder.prototype.$clearFolder = function(extensionName) {
         return 0;
 }
 Folder.prototype.$remove = function(){
+        if(this.constructor !== Folder) return;
         return (this.$clearFolder(), this.remove(), 0);
 }
 Folder.prototype.getFolders = function(){
 
+      if(this.constructor !== Folder) return;
       var al = [];
       this.getFiles().forEach(function(f){ if(f.constructor == Folder) al.push(f)})
       return al; 
 }
 Folder.prototype.$getFiles = function(){
-     
+      if(this.constructor !== Folder) return;
       var al = [];
       this.getFiles().forEach(function(f){ if(f.constructor == File) al.push(f)})
       return al; 

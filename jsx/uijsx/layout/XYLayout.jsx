@@ -13,7 +13,7 @@ container.layout = new XYLayout({
 
 function XYLayout(cfg){
     CustomLayout.call(this, cfg.c);
-    this.t = this.c.orientation[0].toLowerCase();
+    this.t = this.c.orientation.charAt(0).toLowerCase();
     this.x = cfg.x;
     this.y = cfg.y;
 }
@@ -38,11 +38,11 @@ XYLayout.prototype =
         if(typeof k.layout !== "undefined") k.layout.layout();
         
         k.location = [l, t];
-        t += this.tt(k.size.height, 'c') + this.y; //top+
-        l += this.tt(k.size.width, 'r')  + this.x; //left+
+        t += this.tt(k.size.height, 'c')  + this.y; //top+
+        l += this.tt(k.size.width , 'r')  + this.x; //left+
     }
     
-    this.c[PS] = [(l-this.x) + this.tt(k.size.width, 'c'), 
+    this.c[PS] = [(l-this.x) + this.tt(k.size.width , 'c'), 
                   (t-this.y) + this.tt(k.size.height, 'r')
                  ];
     t = l = w = k = null;

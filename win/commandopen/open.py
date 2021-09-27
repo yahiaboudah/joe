@@ -1,11 +1,13 @@
 
 import json, argparse, subprocess, os
 
-PROGRAMS = "c:/pro/joe/commandopen/programs.json"
+PROGRAMS = "c:/oi/joe/win/commandopen/programs.json"
 
 class ProgramOpener():
     
     def __init__(self, programs_dir):
+        self.program_name   = "Open"
+        self.desc           = "open a program from the command line"
         self.passed_pr_name = None 
         self.programs_dir   = programs_dir
     
@@ -20,14 +22,12 @@ class ProgramOpener():
             ps = json.loads(ps.read())
         return ps
 
-    def cli(self):
-        my_parser = argparse.ArgumentParser(prog= 'open',
-                                        description= 'open a program from the command line',
-                                        usage='%(prog)s program_name')
+    def cli(self): # Make an args parser
+        my_parser = argparse.ArgumentParser(prog= self.program_name, description= self.desc, usage='%(prog)s program')
 
-        my_parser.add_argument('program', action='store', type=str)
+        my_parser.add_argument('program_name', action='store', type=str)
         
-        self.passed_pr_name = vars(my_parser.parse_args())["program"]
+        self.passed_pr_name = vars(my_parser.parse_args())["program_name"]
     
     def run_cli(self):
         self.cli()
@@ -53,6 +53,5 @@ class ProgramOpener():
 
 
 if __name__ == "__main__":
-    po = ProgramOpener(PROGRAMS)
-    rs = po.run_cli()
+    rs = ProgramOpener(PROGRAMS).run_cli()
     print(rs)

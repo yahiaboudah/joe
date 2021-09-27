@@ -6,18 +6,6 @@ const { func } = require("prop-types");
     g[Redux] = Redux;
 
 
-    STORE = {
-        getState : function()
-        {
-
-        },
-
-        dispatch : function()
-        {
-            
-        }
-    }
-
     Redux.combineReducers = function(reducers)
     {
         var keys = Object.keys(reducers);

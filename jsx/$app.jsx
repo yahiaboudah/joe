@@ -13,6 +13,11 @@
 //@include "$fstring.jsx"
 Object.extend  = function(oo, newstuff){ for(k in newstuff) if(newstuff.hasOwnProperty(k)) oo[k] = newstuff[k]; }
 CompItem.prototype.sel = function(p){ return (p === parseInt(p))?this.selectedLayers[p]:this.selectedLayers; }
+Array.prototype.forEvery = function(cb){
+  var arr = this, len = arr.length;
+  while(len--) if(cb.call(null, arr[len], len) == false) return false;
+  return true;
+}
 //****************************************************************************/
 
 Object.extend(app, {
@@ -126,33 +131,36 @@ Object.extend(app, {
     );
   },
 
+  pitem : function(dd){
+    return app.project.item(dd);
+  },
+
+  pitemByName: function(myName)
+  {
+    var pp = app.project.items;
+
+    for(var i=1; i< pp.length; i++)
+    {
+      if(pp[i].name != myName) pp.splice(i, 1);
+    }
+
+    return pp;
+  },
+
   importAndDrop : function(comp, fp){
 
     var fName = File(fp).name,
-        footg = null;
     
     comp  = comp || app.project.activeItem;
-  
-    var inst = 0,
-        i    = 0,
-        len  = app.project.items.length,
-        idx  = 0;
-      
-    for(;++i<len+1;) if(app.project.item(i).name == fName) (idx=0, inst++);
     
-    if(idx) footg = app.project.item(idx);
-    if(!inst)
-    {
-      footg = app.import({
-          file: filePath,
-          importAs: ImportAsType.FOOTAGE
-      })
-    }
+    var isItem = app.project.items.forEvery(function(t){
+      t.name != fName;
+    })
   
-    var layer = comp.layers.add(footg),
-        len   = app.project.items.length;
-  
-    app.project.item(len).selected = false;
+    var layer = comp.layers.add(
+      isItem? app.pitem(fName):app.$import(fp)
+    );
+    app.pitem(app.project.items.length).selected = false;
     return layer;
   },
 

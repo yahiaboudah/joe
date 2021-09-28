@@ -11,6 +11,7 @@
 		Modified:       2109 (YYMM)
 *******************************************************************************/
 //@include "$fstring.jsx"
+//@include "$itemcollection.jsx"
 Object.extend  = function(oo, newstuff){ for(k in newstuff) if(newstuff.hasOwnProperty(k)) oo[k] = newstuff[k]; }
 CompItem.prototype.sel = function(p){ return (p === parseInt(p))?this.selectedLayers[p]:this.selectedLayers; }
 Array.prototype.forEvery = function(cb){
@@ -135,16 +136,11 @@ Object.extend(app, {
     return app.project.item(dd);
   },
 
-  pitemByName: function(myName)
+  pitemByName: function(itemName)
   {
-    var pp = app.project.items;
-
-    for(var i=1; i< pp.length; i++)
-    {
-      if(pp[i].name != myName) pp.splice(i, 1);
-    }
-
-    return pp;
+    return app.project.items.grab(function(item){
+      item.name == itemName; 
+    });
   },
 
   importAndDrop : function(comp, fp){

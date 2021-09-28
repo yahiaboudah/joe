@@ -33,18 +33,17 @@
         "TIMEONLY": "toLocaleTimeString",
         "WEEKDAY" : "toLocaleString"
     }
-    I.fName   = function(args){
+    
+    I.fName   = function(args)
+    {
         return args.callee.toString().split(" ")[1].replace(/\(.*/, "");
     }
-    I.mkFile  = function(path, str){
-        
-        var ff = new File(path);
-        
-        ff.open('w'); ff.write(str);
-        ff.close();
-
-        return ff;
+    
+    I.mkFile  = function(path, str)
+    {
+        return File(path).$write(str);
     }
+    
     I.writeMsg = function(str, mode){
         var ff = File(self.path);
         
@@ -80,16 +79,17 @@
     for (k in I.levels){
         
         if(k == "NONSET") continue;
-        self[k.toLowerCase()] = function(msg){
-            
-            var lvl = I.fName(arguments).toUpperCase();
-            var isBelow = (self.level <= I.levels[lvl]);
+        
+        self[k.toLowerCase()] = Function("msg", (function(){
 
-            if(self.enabled && isBelow)
+            if(this.enabled && (this.level <= I.levels[$lvl]))
             {
-                I.writeMsg(I.getMsg(lvl, msg, I.now()) , "a");
+                I.writeMsg(I.getMsg($lvl, msg, I.now()) , "a");
             }
-        }
+
+        }).body({
+            $lvl: k
+        }))
     }
 
 }($.global, {toString: function(){ return "logger"}})));

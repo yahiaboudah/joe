@@ -12,3 +12,5 @@ ItemCollection.prototype.grab = function(cb)
     }
     return arr;
 };
+
+LayerCollection.prototype.grab = ItemCollection.prototype.grab;

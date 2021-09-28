@@ -240,21 +240,9 @@ Object.extend(app, {
         
     return comp.layers.grab(function(layer){
 
-      return RegExp("{0} \d+".f(layerName),"gi").test(name);
+      return RegExp("{0} \d+".f(layerName),"gi").test(layer.name);
     
     }).length;
-  },
-
-  numObjComment : function(c, t){ //comp, type
-
-    var c = c || app.project.activeItem,
-        i = 0,
-        n = 0,
-        len = c.layers.length+1;
-    
-    for(;++i<len;) if(eval(c.layer(i).comment) == t) n++;
-  
-    return n; 
   },
 
   makeAnimMarkers : function(animObj){

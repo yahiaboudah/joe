@@ -292,24 +292,22 @@ Object.extend(app, {
 
     return layer;
   },
-  
+
   wrapUndo : function(fn, thisArg){
     app.beginUndoGroup(fn.name);
     fn.call(thisArg);
     app.endUndoGroup();
   },
 
-  colorPicker : function(){ return $.colorPicker()},
-  hexPicker   : function(){ return $.colorPicker()},
-  rgbaPicker  : function(){
-  
-    var hx = app.hexPicker();
-    return [
+  colorPicker  : function(rgba)
+  {
+    var hx = $.colorPicker();
+    return !rgba?hx:
+    [
       hx >> 16,
       (hx & 0x00ff00) >> 8,
       hx & 0xff,
       255
     ] /= 255;
-  
   }
 })

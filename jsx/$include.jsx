@@ -24,6 +24,14 @@
 		var args = Object.toArray(arguments);
 
 		if(args[0] == '*') return $.evalFile(this.fromPath);
+
+		// find the exports variable.
+		// remove anything that is not exported with regex
+		// eval the resulting string!
+
+		args.forEach(function(arg){
+
+		})
 	}
 
 	G.from = function(pp)

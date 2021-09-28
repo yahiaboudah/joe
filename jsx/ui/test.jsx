@@ -1,101 +1,62 @@
-
-Function.prototype.bind = Function.prototype.bind || function bind(thisArg) {
-	var method = this;
-	var args = Array.prototype.slice.call(arguments, 1);
-
-	return function bound() {
-		var _args = args.concat(Array.prototype.slice.call(arguments));
-		if (!(this instanceof bound))
-			return method.apply(thisArg, _args);
-
-		var __args = [];
-		for (var i = 0, len = _args.length; i < len; i++)
-			__args.push('_args[' + i + ']');
-
-		return eval('new method(' + __args.join(',') + ')');
-	};
-}
-
-
-ui = 
+function IconButton(cfg)
 {
-    type: "palette",
-    state: {
-        "statetext": {
-            value: "textvalue",
-            listeners:[
-                [1, "text", function(v){ return v}]
-            ]
-        },
-        "statecounter": {
-            value: 0,
-            listeners:[]
-        }
-    },
-    spacing: 15,
-    margins: 10,
-    orientation: "column",
-    children: [
-        {
-            type: "button",
-            text: "button",
-            onClick: function(){
-                // this.text ="weirdly";
-                this.setState("statetext", function(s){ return "t:" + this.statecounter.value});
-                this.setState("statecounter", function(c){ return c+1})
-            }
-        },
-        {
-            type: "statictext",
-            text: "no worries",
-            onClick: function(){
-
-            }
-        }
-    ]
-}
-
-function StateManager(){}
-StateManager.setState = function(stateVar, newState){
+    DISTINCT_PROPS:
+    this.img = cfg.img.standard;
     
-    // update the state value:
-    oldState = this.state[stateVar].value;
-    if(typeof newState == "function") newState = newState.call(this.state, oldState);
-    this.state[stateVar].value = newState;
-
-    //notify the listeners:
-    ls = this.state[stateVar].listeners;
-    for(var i=0; i<ls.length; i++)
+    SPECIAL_PROPS:
+    this.specialProps = 
     {
-        addr = ls[i][0];
-        prop = ls[i][1];
-        func = ls[i][2];
-        this.children[addr][prop] = newState;
+        style: cfg.style
+    }
+
+    ARGS:
+    var b = this.add("iconbutton", undefined, 
+    ScriptUI.newImage(
+        img,
+        cfg.img.disabled || img, 
+        cfg.img.clicked  || img, 
+        cfg.img.hover    || img
+    ), 
+    this.specialProps);
+
+    PROPS:
+    Object.modify(b,{
+        onClick   : cfg.onClick,
+        alignment : cfg.alignment,
+        helpTip   : cfg.helpTip
+    })
+
+    EVENT_LISTENERS: 
+    var listen = cfg.eventListeners;
+    for(evType in listen)
+    {
+        if(!listen.hasOwnProperty(evType)) continue;
+        for(ev in listen[evType]) 
+        {
+            if(!listen[evType].hasOwnProperty(ev)) continue;
+            b.addEventListener(evType, listen[evType][ev].bind(b))
+        }
     }
 }
 
 
-function parse(tree){
 
-    root = new Window(tree.type);
-    root.spacing = tree.spacing;
-    root.margins = tree.margins;
-    root.orientation = tree.orientation;
-    root.setState = StateManager.setState.bind(root);
-
-    root.state = tree.state;
-
-    children = tree.children;
-
-    for(var i=0; i<children.length;i++)
+myButton = new _IconButton({
+    
+    img:
     {
-        tmp = root.add(children[i].type);
-        tmp.text    = children[i].text;
-        tmp.onClick = children[i].onClick.bind(root);
+        standard:  "/d/icons/img/sova.png", 
+        disabled: "/d/icons/img/kj.png",
+        clicked:  "/d/icons/img/kj.png",
+        hover:    "/d/icons/img/sova.png"
+    },
+    
+    style: "toolbutton",
+    onClick: function(){},
+    alignment: ["center", "top"],
+    helpTip  :"test iconbutton",
+
+    eventListeners: {
+        "mousedown": []
     }
-
-    return root;
-}
-
-rend = parse(ui);
-rend.show();
+})

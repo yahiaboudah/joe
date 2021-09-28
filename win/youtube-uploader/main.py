@@ -9,6 +9,5 @@ data = {
     "keywords": "Video keywords, comma separated"
 }
 
-    
 uploader = Uploader(YoutubeOptions(data), "user_channel", "client_app")
 uploader.upload()

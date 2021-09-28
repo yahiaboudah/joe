@@ -61,24 +61,22 @@
 
         return -1;
     };
-    Array.prototype.remove = function(k, a) {
+    Array.prototype.remove = function(k, all) {
 
-        if(typeof a != "boolean") a = false;
+        if(typeof all != "boolean") all = false;
 
 
-        var i = -1,
+        var i   = -1,
             len = this.length;
         
-        while (i < len) {
-            
-            if (this[i] != k) continue;
+        while (++i < len) 
+        {
+            if(this[i] != k) continue;
             
             this.splice(i, 1);
-            if(!a) break;
-            
+            if(!all) break;    
             len--;
         }
-
         return this;
     }
     Array.prototype.includes = function(k) {

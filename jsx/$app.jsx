@@ -292,21 +292,7 @@ Object.extend(app, {
 
     return layer;
   },
-
-  findItemByName : function(namo){
   
-    var length     = app.project.items.length+1;
-    var i          = 0, tmp, idc = [];
-    
-    for(;++i<length;)
-    {
-      tmp = app.project.item(i).name;
-      if(tmp == namo) idc.push(i);
-    }
-  
-    return idc;
-  },
-
   wrapUndo : function(fn, thisArg){
     app.beginUndoGroup(fn.name);
     fn.call(thisArg);

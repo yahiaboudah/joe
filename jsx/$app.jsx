@@ -98,14 +98,21 @@ Object.extend(app, {
   },
 
   importOptions : function(cfg){
-    opts = new ImportOptions();
-    opts.file = cfg.file;
-    opts.importAs = cfg.importAs;
+    return Object.extend(new ImportOptions(), cfg);
   },
 
-  import : function(fp){ 
+  import: function(cfg){
+    var validateImportConfig = function()
+    {
+
+    }
+    if(!validateImportConfig(cfg)) return;
+    return app.project.importFile(app.importOptions(cfg))
+  },
+
+  $import : function(fp){ 
     return app.project.importFile(app.importOptions({
-        file: new File(fp),
+        file    : new File(fp),
         importAs: ImportAsType.FOOTAGE
     }));
   },

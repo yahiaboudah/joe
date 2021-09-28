@@ -234,6 +234,7 @@ Object.extend(app, {
     });
   },
 
+  // [INFO]
   numObjName    : function(comp, layerName){
 
     comp = comp || app.project.activeItem;
@@ -245,22 +246,37 @@ Object.extend(app, {
     }).length;
   },
 
-  makeAnimMarkers : function(animObj){
-    
-    var anim = "",
-        dura = 0,
-        coms = [],
-        durs = [],
-        i = 0;
-    
-    for(;++i<animObj.length;){
-      anim = animObj[i]['Animation'];
-      coms.push("Scene {0}: {1}".f(i, anim));
-      
-      dura += (animObj[i-1]["Duration"]) || 0;
-      durs.push(dur);
+  // [SETTER]
+  makeAnimMarkers : function(animObj)
+  /**
+   * Convert this: 
+   * [
+    {
+        animation: "move it up",
+        duration : 2
+    },
+    {
+        animation : "move it down",
+        duration  : 3
     }
-    return [durs, coms];
+    ]
+    
+    to this:
+    {
+      "move it up": 2,
+      "move it down": 3
+    }
+
+   */
+  {
+    
+    var oo = {}, i =0;
+
+    oo[animObj[i]["animation"]] = 0;
+    
+    for(;++i<animObj.length;)oo[animObj[i]["animation"]] = animObj[i-1]["duration"]; 
+
+    return oo;
   },
 
   knob: function(name, comp){

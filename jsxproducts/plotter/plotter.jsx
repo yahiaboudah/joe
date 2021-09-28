@@ -6,7 +6,8 @@ var bannerImage  = w.add("image", undefined, "d:/media/plotter.jpg");
 
 
 var scriptControls0 = w.add("panel", undefined, "Controls");
-var funcBox = scriptControls0.add("edittext", undefined, "Math.pow(x, 2)", {multiline: true}); 
+var funcBox = scriptControls0.add("edittext", undefined, "Math.pow(x, 2)", {multiline: true, borderless: true});
+funcBox.preferredSize = [110, 70]; 
 var scriptControls = scriptControls0.add("group", undefined, "Controls");
 scriptControls.orientation = "row";
 var xbasis  = scriptControls.add("edittext", undefined, "100");
@@ -25,7 +26,7 @@ plotButton.onClick = function(){
     parseInt(ybasis.text),
     -10,
     10,
-    20,
+    5,
     parseInt(strokew.text),
     [1,1,1,1]
   )
@@ -95,8 +96,6 @@ function plot(
   
   shapeLayer.addStroke(strokeWidth);
   shapeLayer.name = func;
-
-  alert(shapeLayer.content.property("ADBE Vector Graphic - Stroke").property("ADBE Vector Stroke Color").value);
 
   return shapeLayer;
 }

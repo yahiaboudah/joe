@@ -2,11 +2,13 @@
 //@include "utils.jsx"
 
 var w = new Window("palette", "Plotter");
-var bannerImage  = w.add("image", undefined, "d:/media/plotter.png");
+var bannerImage  = w.add("image", undefined, "d:/media/plotter.jpg");
 
-var scriptControls = w.add("panel", undefined, "Controls");
-scriptControls.orientation = "column";
-var funcBox = scriptControls.add("edittext", undefined, "Math.pow(x, 2)");
+
+var scriptControls0 = w.add("panel", undefined, "Controls");
+var funcBox = scriptControls0.add("edittext", undefined, "Math.pow(x, 2)", {multiline: true}); 
+var scriptControls = scriptControls0.add("group", undefined, "Controls");
+scriptControls.orientation = "row";
 var xbasis  = scriptControls.add("edittext", undefined, "100");
 var ybasis  = scriptControls.add("edittext", undefined, "100");
 var strokew = scriptControls.add("edittext", undefined, "10");
@@ -24,7 +26,7 @@ plotButton.onClick = function(){
     -10,
     10,
     20,
-    10,
+    parseInt(strokew.text),
     [1,1,1,1]
   )
 }

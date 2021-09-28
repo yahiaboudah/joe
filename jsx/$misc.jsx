@@ -31,7 +31,7 @@
         for(var i=0, str = "", ps = $obj.reflect[$type], len = ps.length; i<len; i++)
         {
             k    = ps[i].toString();
-            str += (k + ": " + uneval(win[k]) + "\n");
+            str += "{0}: {1}\n".f(k, uneval(win[k]));
         }   
         
         return str;
@@ -51,8 +51,4 @@
                     "\n"
                     );
     }
-    self.bracket = function(str){
-        return '[' + str + ']';
-    }
-
 }($.global, {toString: function(){return "_m"}}));

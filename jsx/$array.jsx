@@ -170,6 +170,17 @@
         return Math.max.apply(null, a)
     }
 
+    Array.min = function(prop)
+    {
+        if(!prop) return Math.min.apply(null, this);
+        
+        a = eval(this.toSource());
+        k = a.length;
+        while(k--) a[k] = a[k][prop];
+        
+        return Math.min.apply(null, a)
+    }
+
     Array.prototype.sortedIndices = function(){
         a = this;
         return Array.range(a.length).sort(function(x,y){

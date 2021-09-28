@@ -234,18 +234,6 @@ Object.extend(app, {
     });
   },
 
-  // [INFO]
-  numObjName    : function(comp, layerName){
-
-    comp = comp || app.project.activeItem;
-        
-    return comp.layers.grab(function(layer){
-
-      return RegExp("{0} \d+".f(layerName),"gi").test(layer.name);
-    
-    }).length;
-  },
-
   // [SETTER]
   makeAnimMarkers : function(animObj)
   /**
@@ -283,7 +271,7 @@ Object.extend(app, {
     
     comp = comp || app.project.activeItem;
     objN = callee.name;
-    name = name || objN + ": " + app.numObj(comp,objN);
+    name = name || objN + ": " + app.numObjName(comp, objN);
     
     path = "D:/icons/img/sova.png";
     dVal = // default values: 

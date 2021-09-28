@@ -117,7 +117,7 @@ Object.extend(app, {
     }));
   },
 
-  drop : function(c, idx)
+  drop : function(idx, c)
   {
     c = c || app.project.activeItem;
 

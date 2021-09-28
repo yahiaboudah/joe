@@ -1,89 +1,100 @@
-
+/*******************************************************************************
+		Name:           $app
+		Desc:           An extension to after effects app object.
+		Path:           /$app.jsx
+		Require:        ---
+		Encoding:       ÛȚF8
+		Kind:           Part of the Utils.
+		API:            $app
+		Todo:           ---
+		Created:        2109 (YYMM)
+		Modified:       2109 (YYMM)
+*******************************************************************************/
 //@include "$fstring.jsx"
-
-Object.extend  = function(oo, newstuff){
-  for(k in newstuff) if(newstuff.hasOwnProperty(k)) oo[k] = newstuff[k];
-}
-
-CompItem.prototype.sel = function(p)
-{
-  if(typeof p == "undefined") return this.selectedLayers;
-  return this.selectedLayers[p];
-}
+Object.extend  = function(oo, newstuff){ for(k in newstuff) if(newstuff.hasOwnProperty(k)) oo[k] = newstuff[k]; }
+CompItem.prototype.sel = function(p){ return (p === parseInt(p))?this.selectedLayers[p]:this.selectedLayers; }
+//****************************************************************************/
 
 Object.extend(app, {
   
-  setTime : function(t,c, all){
-  
-    all = typeof all == "undefined"?1:all;
-    cmp = cmp || app.project.activeItem;
-    i = 0, n = c.layers.length + 1;
+  // [INFO]:
+  isComp      : function(cc)
+  {
+    return (c && c instanceof CompItem);
+  },
+
+  // [SETTER]
+  setTime : function(t,c, all)
+  {
+    all  = typeof all == "undefined"?1:all;
+    comp = c || app.project.activeItem;
+    n    = comp.layers.length + 1;
   
     //==============/
-    cmp.duration = t;
+    comp.duration = t;
     //==============/
-    for(;++i<n;)
+    while(--n)
     {
-      lyr      = cmp.layer(i);
-      isLocked = lyr.locked;
-      l.locked = false; //unlock
+      layer        = cmp.layer(n);
+      isLocked     = layer.locked;
+      layer.locked = false; //unlock
   
       //=============================================================/
-      lyr.outPoint = t;
-      if(all && lyr.source instanceof CompItem) setTime(t, lyr.source);
+      layer.outPoint = t;
+      if(all && layer.source instanceof CompItem) callee(t, layer.source, all);
       //=============================================================/
   
       lyr.locked = isLocked; //relock
     }
   
     //cleanup:
-    all = cmp = i = n = lyr = isLocked = null;
+    all = comp = n = layer = isLocked = null;
+    return c;
   },
 
+  // [INFO]
     /**
    * {s}: type.
    * {f}: if another type is found in the selLayers, abort.
    * getSelected("text", false) returns all selected text layers.
    */
-  getSelected : function(s, f)
+  getSelected : function(type, except)
   {
 
     const ERRS = {
-      NO_COMP_FOUND: "NO ACTIVE COMPOSITION",
-      NO_SEL_LAYERS_FOUND: "NO SELECTED LAYERS FOUND",
-      BAD_INSTANCE_FOUND: "BAD LAYER INSTANCE WAS FOUND"
+      NO_COMP_FOUND       : "NO ACTIVE COMPOSITION",
+      NO_SEL_LAYERS_FOUND : "NO SELECTED LAYERS FOUND",
+      BAD_INSTANCE_FOUND  : "{0} LAYERS DON'T MATCH THE GIVEN TYPE {1}"
     },
+    
     TYPE = {
-      "*": "*",
-      "text": "TextLayer",
-      "shape": "ShapeLayer",
+      "*"     : "*",
+      "text"  : TextLayer,
+      "shape" : ShapeLayer,
     }
 
-    var c = app.project.activeItem,
-        i = c.selectedLayers.length,
-        s = TYPE[s];
+    var comp = app.project.activeItem,
+        selc = comp.sel(),
+        leng = selc.length,
+        n    = leng,
+        type = TYPE[s];
 
-    if(!c instanceof CompItem || !c) throw Error(ERRS.NO_COMP_FOUND);
-    if(!i)                           throw Error(ERRS.NO_SEL_LAYERS_FOUND);
+    if(!app.isComp(comp)) throw Error(ERRS.NO_COMP_FOUND);
+    if(!leng)             throw Error(ERRS.NO_SEL_LAYERS_FOUND);
 
     
     //========================================
-    if(s == "*") return c.selectedLayers;
+    if(type == '*') return selc;
 
-    l = i;
-    nomatch = 0;
-    tmp = [];
-    while(l--) 
-    {
-      if(c.sel(l).constructor.name == s){
-        tmp.push(c.sel(l))
-      }
-      else nomatch++
-    }
+    while(n--) if(selc[n].constructor != type) selc.splice(n, 1);
     //========================================
 
-    if(f && nomatch) throw Error(ERRS.BAD_INSTANCE_FOUND);
-    return tmp;
+    // return:
+    if(except && (leng != selc.length))
+    {
+      throw Error(ERRS.BAD_INSTANCE_FOUND.f((leng - selc.length), type))
+    }
+    return selc;
   },
 
   importOptions : function(cfg){

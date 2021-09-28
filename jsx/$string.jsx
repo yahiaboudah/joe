@@ -136,6 +136,10 @@ String.prototype.f = function() {
     return frmt;
 }
 
+String.prototype.trim = function(){
+    return this.replace(/^\s*/,"").replace(/\s*$/,"");
+}
+
 String.prototype._replace = function(repCfg){
     
     var str = this;

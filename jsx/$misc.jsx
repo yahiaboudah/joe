@@ -20,32 +20,10 @@
     //@include "$json.jsx"
     host[self] = self;
 
-    self.print = function(){
-        $.writeln(arguments[0]);
-    }
-
-    self.isDef = function(arg){
-        return typeof arg !== "undefined"
-    }
-
-    self.kv = function(k, v){
-        return isDef(v) ? (k + " : " + uneval(v) + "\n") : k + "\n"
-    }
-
-    self.simpletimeit = function(f){
-        $.hiresTimer; 
-        f(); 
-        self.print("T:" + f.name + ": " + $.hiresTimer / 1000000 + "s")
-    }
-
     self.caller = function(){
         var stack = $.stack.split('\n'),
             len   = stack.length;
         return len === 4 ? null : stack[len - 4].split("(")[0];
-    }
-
-    self.trim = function(str){
-        return str.replace(/^\s*/,"").replace(/\s*$/,"");
     }
 
     self.reflect = function($obj, $type){
@@ -57,21 +35,6 @@
         }   
         
         return str;
-    }
-
-    self.fname = function(ff)
-    {
-        var dp = File(ff).displayName.split('.');
-        dp.pop();
-        return dp.join('.')
-    }
-
-    self.ser = function(obb, pretty){
-        return JSON.stringifyy(obb, undefined, pretty?4:0)
-    }
-
-    self.deser = function(obb){
-        return JSON.parse(obb);
     }
 
     self.frame = function(str, size){
@@ -87,14 +50,6 @@
                     block.repeat(size+2)+
                     "\n"
                     );
-    }
-    self.typeof = function(v){
-        
-        if(arguments.length != 1) throw Error("pass 1 variable");
-        if(v === undefined)       return 'undefined';
-        if(v === null)            return 'undefined';
-        if(typeof v == 'xml')     return 'xml';
-        return v.constructor.name.toLowerCase();
     }
     self.bracket = function(str){
         return '[' + str + ']';

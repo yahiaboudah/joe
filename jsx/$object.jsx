@@ -266,6 +266,15 @@ Object.write = function(obj, fName, appnd) {
     return ff.fsName;
 }
 
+Object.typeof = function(v){
+        
+    if(arguments.length != 1) throw Error("pass 1 variable");
+    if(v === undefined)       return 'undefined';
+    if(v === null)            return 'undefined';
+    if(typeof v == 'xml')     return 'xml';
+    return v.constructor.name.toLowerCase();
+}
+
 Object.create = function (proto) {
 
     function F() {}

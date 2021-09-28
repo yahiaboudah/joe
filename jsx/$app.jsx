@@ -234,21 +234,15 @@ Object.extend(app, {
     });
   },
 
-  numObjName    : function(comp, typ){
+  numObjName    : function(comp, layerName){
 
-    var comp = comp || app.project.activeItem,
-        i    = 0,
-        n    = 0,
-        name,
+    comp = comp || app.project.activeItem;
         
+    return comp.layers.grab(function(layer){
+
+      return RegExp("{0} \d+".f(layerName),"gi").test(name);
     
-    for(;++i<comp.layers.length+1;)
-    {
-      name = comp.layer(i).name;
-      if(RegExp("{0} \d+".f(typ),"gi").test(name)) n++;
-    }
-  
-    return n; 
+    }).length;
   },
 
   numObjComment : function(c, t){ //comp, type

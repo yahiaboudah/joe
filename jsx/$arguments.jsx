@@ -35,7 +35,7 @@
         * @param {String} func The function string  
         */
         {
-                var paramsList = Arguments.getArgs(func);
+                var paramsList = A.getArgs(func);
 
                 for (var k = 0, len = params.length; k < len; k++) {
         

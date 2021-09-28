@@ -158,6 +158,16 @@
 
         for(;++i<l;) arr[i] = (i+1);
         return arr;
+    },
+    Array.max = function(prop)
+    {
+        if(!prop) return Math.max.apply(null, this);
+        
+        a = eval(this.toSource());
+        k = a.length;
+        while(k--) a[k] = a[k][prop];
+        
+        return Math.max.apply(null, a)
     }
 
     Array.prototype.sortedIndices = function(){

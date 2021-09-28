@@ -103,10 +103,12 @@ Object.extend(app, {
     return selc;
   },
 
+  // [HELPER]
   importOptions : function(cfg){
     return Object.extend(new ImportOptions(), cfg);
   },
 
+  // [SETTER]
   import: function(cfg){
     var validateImportConfig = function()
     {
@@ -116,6 +118,7 @@ Object.extend(app, {
     return app.project.importFile(app.importOptions(cfg))
   },
 
+  // [SETTER]
   $import : function(fp){ 
     return app.project.importFile(app.importOptions({
         file    : new File(fp),
@@ -123,6 +126,7 @@ Object.extend(app, {
     }));
   },
 
+  // [SETTER]
   drop : function(idx, c)
   {
     c = c || app.project.activeItem;
@@ -132,10 +136,12 @@ Object.extend(app, {
     );
   },
 
+  // [INFO]
   pitem : function(dd){
     return app.project.item(dd);
   },
 
+  // [INFO]
   pitemByName: function(itemName)
   {
     return app.project.items.grab(function(item){
@@ -143,6 +149,7 @@ Object.extend(app, {
     });
   },
 
+  // [SETTER]
   importAndDrop : function(fp, force, comp){
 
     if(typeof fp == "undefined" || !File(fp).exists) throw Error("Invalid file!");
@@ -164,16 +171,15 @@ Object.extend(app, {
     return layer;
   },
 
-  mostRecent : function(dp, typ){
+  // [INFO]
+  mostRecent : function(fp, type){
 
-    var fs = Folder(fp).getFiles(typ || "*"),
+    var fs = Folder(fp).getFiles(type || "*"),
         re = fs[0],
         i  = -1;
     
     if(!re) return;
-    for(;++i<fs.length;) if(fs[i].modified>re.modified) re = fs[i];
-    
-    return re;
+    return Array.min(fs, "modified");
   },
 
   getFileDlg : function(sugg, helptip, type){

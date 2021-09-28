@@ -1,19 +1,18 @@
 
 
 // format: "my name is {0} and my fname is {1}".f(name, fname)
-String.prototype.f = function() 
-{
-    var frmt = this,
+String.prototype.f = function(){
+    
+    var fstr = this,
         args = Array.prototype.slice.call(arguments),
         i    = -1;
 
-    for (;++i < args.length;) 
+    while(++i <args.length)
     {
-        frmt = frmt.replace(
-            RegExp("\\{" + i + "\\}", 'gi'),
+        fstr = fstr.replace( RegExp("\\{" + i + "\\}", "gi"),
             args[i]
-            );
+        );
     }
 
-    return frmt;
+    return fstr;
 }

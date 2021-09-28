@@ -13,7 +13,21 @@
 
 (function FunctionUtils(){
 
-	Function.prototype.bind = Function.prototype.bind || function bind(thisArg) {
+	if(!String.prototype._replace)
+	{
+		String.prototype._replace = function(repCfg){
+    
+			var str = this;
+			for(x in repCfg) if(repCfg.hasOwnProperty(x))
+			{
+				str = str.split(x).join(repCfg[x])
+			}
+			return str;
+		}
+	}
+
+	Function.prototype.bind = Function.prototype.bind || function bind(thisArg) 
+	{
 		var method = this;
 		var args = Array.prototype.slice.call(arguments, 1);
 	
@@ -30,10 +44,11 @@
 		};
 	}
 	
-	Function.prototype.body = function(){
+	Function.prototype.body = function(repConfig)
+	{
 		return this.toString()
 			   .replace(/^[^{]*\{[\s]*/,"    ")
-			   .replace(/\s*\}[^}]*$/,"");
+			   .replace(/\s*\}[^}]*$/,"")._replace(repConfig || {});
 	}
 	
 	Function.prototype.time = function(context, args){

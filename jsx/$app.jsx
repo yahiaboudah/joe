@@ -270,31 +270,26 @@ Object.extend(app, {
   knob: function(name, comp){
     
     comp = comp || app.project.activeItem;
-    objN = callee.name;
-    name = name || objN + ": " + app.numObjName(comp, objN);
+    name = name || "{0} #{1}".f(callee.name, comp.numObjName(callee.name));
     
     path = "D:/icons/img/sova.png";
-    dVal = // default values: 
-    {
-      "Scale": [10, 10]
-    }
+
     // import/drop/ set defaultValues:
-    layer = app.importAndDrop(knobPath ,comp);
-    for(v in dVal) layer.setProp(v, dVal[v])
+    layer = app.importAndDrop(knobPath , comp);
+    layer.transform.scale.setValue([10,10]);
     
     
     // Add slider controls, link to layer props:
-    layer.addProp("Effects/Slider Control");
+    layer.addProp("Effects/Slider Control:rotationSlider"); 
+    layer.getProp("Transform/Rotation").expression = (function()
+    {
+      comp("$compName").layer("$layerName").effect("rotationSlider")("Slider");
     
-    layer.setProp("rotation:expr", (function(){
-  
-      comp("$compName").layer("$layerName").effect("Slider Control")("Slider");
-  
-    }).body()._replace({
-      $compName: comp.name,
-      $layerName: layer.name
-    }))
-    
+    }).body({
+      $compName  : comp.name,
+      $layerName : layer.name
+    })
+
     return layer;
   },
 

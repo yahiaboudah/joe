@@ -45,12 +45,9 @@
 
     CompItem.prototype.getSoloLayers = function(){
         
-        var layers = [];
-        for(var i=1; i<this.layers.length+1; i++)
-        {
-            if(this.layer(i).solo) layers.push(this.layer(i))
-        }
-        return layers;
+        return this.layers.grab(function(layer){
+            return layer.solo;
+        })
     },
 
     // requires ItemCollection.prototype.grab

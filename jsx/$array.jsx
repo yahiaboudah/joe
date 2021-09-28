@@ -82,7 +82,6 @@
     Array.prototype.includes = function(k) {
         return this.indexOf(k) > -1;
     }
-
     Array.prototype.rotate = function(d, i){
         
         a = this; // eval("["+String(this)+"]");
@@ -95,7 +94,6 @@
 
         return arr;
     }
-
     Array.prototype.reduce = function(cb) {
         
         'use strict';
@@ -121,7 +119,6 @@
         
         return value;
     }
-
     Array.prototype.map = function(cb) {
 
         if (this == null) throw TypeError('Map array is null or not defined');
@@ -151,6 +148,14 @@
         
         return A;
     }
+    Array.prototype.forEvery = function(cb){
+        var a = this;
+        for(var i=0; i<a.length; i++)
+        {
+            if(cb.call(null, a[i], i) == false) return false;
+        }
+        return true;
+    }
 
     Array.range = function(l){
         
@@ -158,8 +163,9 @@
 
         for(;++i<l;) arr[i] = (i+1);
         return arr;
-    },
-    Array.max = function(prop)
+    }
+
+    Array.prototype.max = function(prop)
     {
         if(!prop) return Math.max.apply(null, this);
         
@@ -170,7 +176,7 @@
         return Math.max.apply(null, a)
     }
 
-    Array.min = function(prop)
+    Array.prototype.min = function(prop)
     {
         if(!prop) return Math.min.apply(null, this);
         
@@ -182,18 +188,10 @@
     }
 
     Array.prototype.sortedIndices = function(){
-        a = this;
+        var a = this;
         return Array.range(a.length).sort(function(x,y){
             return a[x-1] > a[y-1];
         })
-    }
-
-    Array.prototype.min = function(){
-        return Math.min.apply(null, this);
-    }
-
-    Array.prototype.max = function(){
-        return Math.max.apply(null, this);
     }
 
     Array.prototype.math2D = function(typ, xory)

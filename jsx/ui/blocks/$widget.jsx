@@ -1,4 +1,3 @@
-
 //@include "element.jsx"
 
 _Container = function _Container(cfg){
@@ -14,3 +13,7 @@ _Container.prototype.populate = function(obj, children){
         obj.add(y.type, undefined, y.text);
     }
 }
+
+_Widget = function _Widget(cfg, type){
+    _Element.call(this, cfg, typeof type == "undefined"? "widget": type);
+}; Object.extends(_Widget, _Element);

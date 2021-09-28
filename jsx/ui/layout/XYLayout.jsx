@@ -1,4 +1,7 @@
-//@include "CustomLayout.jsx"
+
+function CustomLayout(c){
+    this.c = c; // c: container
+}
 
 /*
 * Usage: 

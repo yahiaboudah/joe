@@ -11,7 +11,7 @@
 		Created:        2106 (YYMM)
 		Modified:       2109 (YYMM)
 *******************************************************************************/
-(function python(g, self){
+(function(g, self){
 
     /*******************************************************/
     //@include "$file.jsx"
@@ -209,7 +209,7 @@
 
     }
 
-    // [API]: [INSTALL, REINSTALL, CALL, CONTACT, BUILD, UNINSTALL, UNLOAD]
+    // [API]: [INSTALL, REPAIR, CALL, CONTACT, BUILD, UNINSTALL, UNLOAD]
     self.install = function()
     {
         if(!PY.isInstalled()) throw Error("Python not installed!");
@@ -217,24 +217,22 @@
         var fd = Folder(self.instPath);
         if(fd.exists) fd.$remove();   
         
-        fd.create();
-        (I.make(), PY.makeExec())
+        (fd.create(), I.make(), PY.makeExec());
+
+        return 0;
     },
 
-    self.reinstall = function()
+    self.repair = function()
     {
         
-        if(!Folder(self.instPath).exists) self.install();
-        else return;
-
-        if(!PY.isInstalled())    throw Error ("Python not installed!"); //python
+        if(!Folder(self.instPath).exists) throw Error("Pyjsx not installed! (Run pyjsx.install())");
 
         var ff      = File(I.intfPath),
             xf      = File(PY.execPath),
             ffvalid = I.validate(jj.deser(ff.$read())),
             xfvalid = (PY.execStr == xf.$read());
 
-        (ff.exists && ff.length && ffvalid) || I.makeIntf();
+        (ff.exists && ff.length && ffvalid) || I.make();
         (xf.exists && xf.length && xfvalid) || PY.makeExec();
     }
     
@@ -330,4 +328,4 @@
     // (INSTALLATION)
     self.install();
 
-})($.global, {"toString": function(){ return "python";}})
+})($.global, {"toString": function(){ return "pyjsx";}})

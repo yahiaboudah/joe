@@ -182,12 +182,37 @@ Object.extend(app, {
     return Array.min(fs, "modified");
   },
 
+  // [INFO]
   getFileDlg : function(sugg, helptip, type){
     return (new File(sugg)).openDlg(helptip,type);
   },
   
-  getExpression : function(ftName, type){
+  // [SETTER]: [MATCH MARKER KEY TO JSON TEXT VALUE EXPRESSION]
+  matchMarkerToTextExpr : function(ftName, type){
     
+    /**Expression to apply to a text layer source:
+     * 
+     * Example JSON:
+     * 
+     * [
+     * {
+     *    "animation": "move ball up"
+     * },
+     * {
+     *    "animation": "move ball down" 
+     * }
+     * ]
+     * 
+     * On timeline:
+     * 
+     * (text = "move ball up")
+     * |  <>    <>
+     * (text = "move ball up")
+     *  <>  |  <>
+     * (text = "move ball down")
+     * <>   <>   |
+     */
+
     return (function(){
 
         var m = thisLayer.marker;

@@ -2,23 +2,20 @@
 		Name:           $app
 		Desc:           An extension to after effects app object.
 		Path:           /$app.jsx
-		Require:        ---
+		Require:        fstring, itemcollection.grab, compitem.grab, array.forEvery
 		Encoding:       ÛȚF8
 		Kind:           Part of the Utils.
-		API:            $app
-		Todo:           ---
+		API:            app
 		Created:        2109 (YYMM)
 		Modified:       2109 (YYMM)
 *******************************************************************************/
+
 //@include "$fstring.jsx"
 //@include "$itemcollection.jsx"
+//@include "$array.jsx"
+//@include "$compitem.jsx"
 Object.extend  = function(oo, newstuff){ for(k in newstuff) if(newstuff.hasOwnProperty(k)) oo[k] = newstuff[k]; }
-CompItem.prototype.sel = function(p){ return (p === parseInt(p))?this.selectedLayers[p]:this.selectedLayers; }
-Array.prototype.forEvery = function(cb){
-  var arr = this, len = arr.length;
-  while(len--) if(cb.call(null, arr[len], len) == false) return false;
-  return true;
-}
+
 //****************************************************************************/
 
 Object.extend(app, {
@@ -267,6 +264,7 @@ Object.extend(app, {
     return oo;
   },
 
+  // [SETTER]
   knob: function(name, comp){
     
     comp = comp || app.project.activeItem;
@@ -293,12 +291,14 @@ Object.extend(app, {
     return layer;
   },
 
+  // [HELPER]
   wrapUndo : function(fn, thisArg){
     app.beginUndoGroup(fn.name);
     fn.call(thisArg);
     app.endUndoGroup();
   },
 
+  // [HELPER]
   colorPicker  : function(rgba)
   {
     var hx = $.colorPicker();

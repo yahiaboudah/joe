@@ -13,6 +13,14 @@
 
 (function ArrayPolyfills()
 {
+    Array.range = function(l){
+        
+        var arr = [], i = -1;
+
+        while(++i<l) arr[i] = (i+1);
+        return arr;
+    },
+
     Array.prototype.forEach = function(callback, thisArg) {
 
         if (this == null) throw new TypeError('Array.prototype.forEach called on null or undefined');
@@ -156,15 +164,6 @@
         }
         return true;
     }
-
-    Array.range = function(l){
-        
-        arr = [], i   = -1;
-
-        for(;++i<l;) arr[i] = (i+1);
-        return arr;
-    }
-
     Array.prototype.max = function(prop)
     {
         if(!prop) return Math.max.apply(null, this);
@@ -175,7 +174,6 @@
         
         return Math.max.apply(null, a)
     }
-
     Array.prototype.min = function(prop)
     {
         if(!prop) return Math.min.apply(null, this);
@@ -186,88 +184,66 @@
         
         return Math.min.apply(null, a)
     }
-
     Array.prototype.sortedIndices = function(){
         var a = this;
         return Array.range(a.length).sort(function(x,y){
             return a[x-1] > a[y-1];
         })
     }
-
-    Array.prototype.math2D = function(typ, xory)
+    Array.prototype.math2D = function(type, xory)
     {
-        return Math[typ].apply(null, this.map(function(x){
+        return Math[type].apply(null, this.map(function(x){
             return x[xory]
         }))
     }
 
-    Array.prototype.upIndex = function(){
-        return this.indexOf(this.math2D("max", 1));
-    }
-    Array.prototype.bottomIndex = function(){
-        return this.indexOf(this.math2D("min", 1));
-    }
-    Array.prototype.leftIndex = function(){
-        return this.indexOf(this.math2D("min", 0));
-    }
-    Array.prototype.rightIndex = function(){
-        return this.indexOf(this.math2D("max", 0));
-    }
-    Array.prototype.upperLeftIndex = function(){
-        
-        a = this;
-        o = {
-            x: a.math2D("min", 0),
-            y: a.math2D("min", 1)
-        }
-        
-        m = a.map(function(v){
-            return Math.sqrt(Math.pow( v[0] - o.x,2) + Math.pow(v[1] - o.y,2));
-        }).min();
+    /**
+     * 
+     */
+    var tempFunc = "return this.indexOf(this.math2D(\"{0}\", {1}))";
+    Array.prototype.upIndex     =  Function(tempFunc.f("max", 1));
+    Array.prototype.bottomIndex =  Function(tempFunc.f("min", 1));
+    Array.prototype.leftIndex   =  Function(tempFunc.f("min", 0));
+    Array.prototype.rightIndex  =  Function(tempFunc.f("max", 0));
+    /**
+     * 
+     */
 
-        return a.indexOf(m);
-    }
-    Array.prototype.upperRightIndex = function(){
+    
+    /**
+     *
+     *  
+     */
+    var doubleTempFunc = function(ytype, xtype){
         
-        a = this;
-        o = {
-            x: a.math2D("max", 0),
-            y: a.math2D("min", 1)
-        }
-        
-        m = a.map(function(v){
-            return Math.sqrt(Math.pow( v[0] - o.x,2) + Math.pow(v[1] - o.y,2));
-        }).min();
+        return (function(){
 
-        return a.indexOf(m);
+            var a = this;
+            var o = {
+                x: a.math2D(xtype, 0),
+                y: a.math2D(ytype, 1)
+            }
+            
+            var m = a.map(function(v){
+                return Math.sqrt(Math.pow( v[0] - o.x,2) + Math.pow(v[1] - o.y,2));
+            }).min();
+    
+            return a.indexOf(m);    
+        }).body({
+            xtype: xtype,
+            ytype: ytype,
+            xval : xval,
+            yval : yval
+        })
     }
 
-    Array.prototype.bottomRightIndex = function(){
-        
-        a = this;
-        o = {
-            x: a.math2D("max", 0),
-            y: a.math2D("max", 1)
-        }
-        
-        m = a.map(function(v){
-            return Math.sqrt(Math.pow( v[0] - o.x,2) + Math.pow(v[1] - o.y,2));
-        }).min();
-
-        return a.indexOf(m);
-    }
-    Array.prototype.bottomLeftIndex = function(){
-        
-        a = this;
-        o = {
-            x: a.math2D("min", 0),
-            y: a.math2D("max", 1)
-        }
-        
-        m = a.map(function(v){
-            return Math.sqrt(Math.pow( v[0] - o.x,2) + Math.pow(v[1] - o.y,2));
-        }).min();
-
-        return a.indexOf(m);
-    }
+    Array.prototype.upperLeftIndex   = doubleTempFunc("min", "min");
+    Array.prototype.upperRightIndex  = doubleTempFunc("min", "max");
+    Array.prototype.bottomRightIndex = doubleTempFunc("max", "max");
+    Array.prototype.bottomLeftIndex  = doubleTempFunc("max", "min");
+    
+    /*
+    *
+    *
+    */
 })();

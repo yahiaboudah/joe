@@ -24,10 +24,11 @@
 
     CompItem.prototype.snap = function(time, imgPath){
 
-        var oldT  = this.time,
-            cmdID = 2104; // SAVE AS FRAME COMMAND
+        time  = this.time || time;
+        
+        var snapCmdID = 2104; // SAVE AS FRAME COMMAND
 
-        app.executeCommand(cmdID);
+        app.executeCommand(snapCmdID);
 
         app.project.renderQueue.showWindow(false);
         var num = app.project.renderQueue.numItems;

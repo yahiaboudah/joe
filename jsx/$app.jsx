@@ -143,19 +143,23 @@ Object.extend(app, {
     });
   },
 
-  importAndDrop : function(comp, fp){
+  importAndDrop : function(fp, force, comp){
 
-    var fName = File(fp).name,
-    
+    if(typeof fp == "undefined" || !File(fp).exists) throw Error("Invalid file!");
+    force = (typeof force == "undefined") ? false:force;
     comp  = comp || app.project.activeItem;
-    
-    var isItem = app.project.items.forEvery(function(t){
-      t.name != fName;
-    })
+
+    var fName = File(fp).name;
+    var items = app.pitemByName(fName);
   
     var layer = comp.layers.add(
-      isItem? app.pitem(fName):app.$import(fp)
+
+       (items.length && !force)?
+       items[0]:
+       app.$import(fp)
+    
     );
+
     app.pitem(app.project.items.length).selected = false;
     return layer;
   },

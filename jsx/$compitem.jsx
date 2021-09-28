@@ -50,6 +50,16 @@
             if(this.layer(i).solo) layers.push(this.layer(i))
         }
         return layers;
+    },
+
+    // requires ItemCollection.prototype.grab
+    CompItem.prototype.numObjName  = function(myName){
+        
+        return this.layers.grab(function(layer){
+    
+          return RegExp("{0} \d+".f(myName),"gi").test(layer.name);
+        
+        }).length;
     }
 
 })();

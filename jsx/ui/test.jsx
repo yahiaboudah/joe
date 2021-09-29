@@ -1,4 +1,5 @@
-function IconButton(cfg)
+
+function _IconButton(cfg)
 {
     DISTINCT_PROPS:
     this.img = cfg.img.standard;
@@ -40,6 +41,9 @@ function IconButton(cfg)
 }
 
 
+myWindow = new _Window({
+    
+})
 
 myButton = new _IconButton({
     
@@ -52,7 +56,9 @@ myButton = new _IconButton({
     },
     
     style: "toolbutton",
-    onClick: function(){},
+    onClick: function(){
+        alert("hello world");
+    },
     alignment: ["center", "top"],
     helpTip  :"test iconbutton",
 

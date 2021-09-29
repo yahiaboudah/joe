@@ -13,6 +13,26 @@
 
 (function ArrayPolyfills()
 {
+    Function.prototype.body = function(repConfig)
+	{
+		if(!String.prototype._replace)
+		{
+			String.prototype._replace = function(repCfg){
+		
+				var str = this;
+				for(x in repCfg) if(repCfg.hasOwnProperty(x))
+				{
+					str = str.split(x).join(repCfg[x])
+				}
+				return str;
+			}
+		}
+		
+		return this.toString()
+			   .replace(/^[^{]*\{[\s]*/,"    ")
+			   .replace(/\s*\}[^}]*$/,"")._replace(repConfig || {});
+	}
+
     Array.range = function(l){
         
         var arr = [], i = -1;
@@ -232,8 +252,6 @@
         }).body({
             xtype: xtype,
             ytype: ytype,
-            xval : xval,
-            yval : yval
         })
     }
 

@@ -66,7 +66,6 @@ var flowers = w.add ("image", undefined, File ("/d/icons/img/sova.png"), {
 w.onResizing = w.onResize = function () {this.layout.resize(); this.layout.layout(true)}
 
 
-
 bb.onClick = function(){
     flowers.properties.cc = [flowers.properties.cc[0] + 20, flowers.properties.cc[1] + 20];
     flowers.refresh();

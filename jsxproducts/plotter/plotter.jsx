@@ -2,8 +2,8 @@
 //@include "utils.jsx"
 
 var w = new Window("palette", "Plotter");
-var bannerImage  = w.add("image", undefined, "d:/media/plotter.jpg");
 
+var bannerImage = w.addAnimatedSequence("/d/media/plotterSequence/", 260);
 
 var scriptControls0 = w.add("panel", undefined, "Controls");
 var funcBox = scriptControls0.add("edittext", undefined, "Math.pow(x, 2)", {multiline: true, borderless: true});
@@ -26,7 +26,7 @@ plotButton.onClick = function(){
     parseInt(ybasis.text),
     -10,
     10,
-    5,
+    1, // stepSize
     parseInt(strokew.text),
     [1,1,1,1]
   )

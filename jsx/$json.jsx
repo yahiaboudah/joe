@@ -1,5 +1,5 @@
 
-if (typeof JSON !== "object") JSON = {};
+JSON = {};
 
 (function () {
     "use strict";

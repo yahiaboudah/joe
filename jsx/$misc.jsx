@@ -14,9 +14,47 @@
 *******************************************************************************/
 // ---
 /******************************************************************************/
-($.global.hasOwnProperty("_m")) || (function(host, self){
 
-    //@include "$string.jsx"
+(function misctest(host, self){
+
+    I = {
+        T: "✔️",
+        F: "❌",
+        test: function(H, tests)
+        {
+            for(x in tests) if(tests.hasOwnProperty(x))
+            {
+                $.writeln("{0} {1}".f(tests[x].call(H)? this.T: this.F, x));
+            }
+        }
+    }
+
+    var tests = 
+    {
+        "should frame \"hello alien\" properly": function()
+        {
+            var myFrame = [
+                "■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■",
+                "■■                    hello alien                ■■",
+                "■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■"
+            ].join("\n");
+            var heFrame = this.frame("hello alien", undefined, "DEFAULT");
+            $.writeln(heFrame);
+            var cond    = (heFrame == myFrame);
+            return cond;
+        }
+    }
+
+    host[self] = function(){
+        I.test(host, tests);
+    }
+})($.global.misc ,"test");
+
+misc.test();
+
+(function(host, self){
+    
+    //@include "$fstring.jsx"
     //@include "$json.jsx"
     host[self] = self;
 
@@ -37,18 +75,54 @@
         return str;
     }
 
-    self.frame = function(str, size){
-        
-        var size    = typeof size == "undefined"?50: size;
-        var block   = String.fromCharCode(9632); // the block character: ■
+    self.frame = function(str, size, frameChar)
+    {
+        size = typeof size != "number" ? 50: size;
+
+        String.prototype["*"] = function(op)
+        {
+            var str = this;
+            var fstr= [fstr];
+            op = parseInt(op); if(isNaN(op)) return str;
+            while(op--) fstr.push(str);
+            return fstr.join(""); 
+        };
+
+        var strr = function(ss){ return new String(ss);}
+
+        var blocks = 
+        {
+            "DEFAULT": "■",
+            "ROCKET" : "🚀",
+            "FIRE"   : "🔥",
+            "CELEBRATE": "🎉"
+        }
+
+        var B   = strr(blocks[frameChar || "DEFAULT"]),
+            S   = strr(" ");
+
         var entry   = ((size+2) / 2) - (str.length / 2);
-        return      ( 
-                    block.repeat(size+2)+
-                    "\n"+
-                    block.repeat(3)+" ".repeat(entry) + str + " ".repeat(size-entry-str.length-4) +block.repeat(3-str.length%2)+ 
-                    "\n"+
-                    block.repeat(size+2)+
-                    "\n"
-                    );
+
+        var framo   = "{0}\n{1}\n{2}".f(
+
+            B * (size + 2),   
+            
+            "{0}{1}{2}{3}{4}".f(
+         
+                B * 2,
+                S * entry,
+                str,
+                S * (size-entry-str.length-2),
+                B * (3-str.length % 2)
+            ),
+
+            B * (size + 2)
+        );
+
+        delete(String.prototype["*"]);
+        strr = null;
+        return framo;
+
     }
-}($.global, {toString: function(){return "_m"}}));
+
+}($.global, {toString: function(){return "misc"}}))

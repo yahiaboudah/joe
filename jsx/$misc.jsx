@@ -39,7 +39,6 @@
                 "■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■"
             ].join("\n");
             var heFrame = this.frame("hello alien", undefined, "DEFAULT");
-            $.writeln(heFrame);
             var cond    = (heFrame == myFrame);
             return cond;
         }
@@ -50,7 +49,7 @@
     }
 })($.global.misc ,"test");
 
-misc.test();
+// misc.test();
 
 (function(host, self){
     
@@ -77,7 +76,10 @@ misc.test();
 
     self.frame = function(str, size, frameChar)
     {
-        size = typeof size != "number" ? 50: size;
+        if(typeof str == "undefined") str = "undefined";
+        str       = str.toString();
+        size      = typeof size != "number" ? 50: size;
+        frameChar = typeof frameChar == "undefined"?"DEFAULT": frameChar; 
 
         String.prototype["*"] = function(op)
         {
@@ -92,20 +94,20 @@ misc.test();
 
         var blocks = 
         {
-            "DEFAULT": "■",
-            "ROCKET" : "🚀",
-            "FIRE"   : "🔥",
-            "CELEBRATE": "🎉"
+            "DEFAULT": ["■", 1],
+            "ROCKET" : ["🚀", 2.2],
+            "FIRE"   : ["🔥", 1.8],
+            "CELEBRATE": ["🎉", 2.2]
         }
 
-        var B   = strr(blocks[frameChar || "DEFAULT"]),
+        var B   = strr(blocks[frameChar][0]),
             S   = strr(" ");
 
         var entry   = ((size+2) / 2) - (str.length / 2);
 
         var framo   = "{0}\n{1}\n{2}".f(
 
-            B * (size + 2),   
+            B * ((size + 2) / blocks[frameChar][1]),   
             
             "{0}{1}{2}{3}{4}".f(
          
@@ -116,7 +118,7 @@ misc.test();
                 B * (3-str.length % 2)
             ),
 
-            B * (size + 2)
+            B * ((size + 2) / blocks[frameChar][1])
         );
 
         delete(String.prototype["*"]);
@@ -126,3 +128,8 @@ misc.test();
     }
 
 }($.global, {toString: function(){return "misc"}}))
+
+$.writeln(misc.frame("FUCK YOU!", undefined,"ROCKET"));
+$.writeln(misc.frame("HAVE A NICE DAY", undefined,"FIRE"));
+$.writeln(misc.frame("I HAVE MIXED FEELINGS", undefined,"DEFAULT"));
+$.writeln(misc.frame("THESE EMOJIS ARE GREAT!", undefined,"CELEBRATE"));

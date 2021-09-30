@@ -97,7 +97,7 @@
             "DEFAULT": ["■", 1],
             "ROCKET" : ["🚀", 2.2],
             "FIRE"   : ["🔥", 1.8],
-            "CELEBRATE": ["🎉", 2.2]
+            // "CELEBRATE": ["🎉", 2.2]
         }
 
         var B   = strr(blocks[frameChar][0]),

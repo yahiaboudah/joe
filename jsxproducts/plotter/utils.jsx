@@ -58,6 +58,32 @@ Function.prototype.body = function(){
     .replace(/\s*\}[^}]*$/,"")._replace(repConfig || {});
 }
 
+Array.prototype.forEach = function(callback, thisArg) {
+
+    if (this == null) throw new TypeError('Array.prototype.forEach called on null or undefined');
+    if (typeof callback !== "function") throw new TypeError(callback + ' is not a function');
+
+
+    var T, k,
+        O = Object(this);
+        len = O.length >>> 0;
+    if (arguments.length > 1) T = thisArg;
+    k = 0;
+    
+    while (k < len) {
+
+            var kValue;
+            if (k in O) {
+                kValue = O[k];
+                callback.call(T, kValue, k, O);
+            }
+            k++;
+    }
+
+
+    return this;
+};
+
 ShapeLayer.prototype.addStroke = function(swv, scv, expr){
 
     var layer = this;

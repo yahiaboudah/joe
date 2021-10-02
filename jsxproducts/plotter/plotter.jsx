@@ -1,13 +1,16 @@
 
 //@include "utils.jsx"
 
+
+
 var w = new Window("palette", "Plotter");
 
-var bannerImage = w.addAnimatedSequence("/d/media/plotterSequence/", 260);
-
+var bannerImage = w.addAnimatedSequence();
 var scriptControls0 = w.add("panel", undefined, "Controls");
+
 var funcBox = scriptControls0.add("edittext", undefined, "Math.pow(x, 2)", {multiline: true, borderless: true});
 funcBox.preferredSize = [110, 70]; 
+
 var scriptControls = scriptControls0.add("group", undefined, "Controls");
 scriptControls.orientation = "row";
 var xbasis  = scriptControls.add("edittext", undefined, "100");

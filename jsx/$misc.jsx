@@ -14,19 +14,7 @@
 (function unittest(host, self){
 
     if(!host) return;
-
-    I = {
-        T: "✔️",
-        F: "❌",
-        test: function(H, tests)
-        {
-            for(t in tests) if(tests.hasOwnProperty(t))
-            {
-                $.writeln("{0} {1}".f(tests[t].call(H)? this.T: this.F, t));
-            }
-        }
-    }
-
+    
     var tests = 
     {
         "should frame \"hello alien\" properly": function()

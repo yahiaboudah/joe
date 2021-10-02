@@ -1,30 +1,28 @@
 /*******************************************************************************
 		Name:           $misc
-		Desc:           A collection of misc functions to aid with extendscript
-                        development.
+		Desc:           A collection of misc functions.
 		Path:           /utils/$misc.jsx
-		Require:        JSON, String: repeat.
+		Require:        fstring, json
 		Encoding:       ÛȚF8
-		Kind:           Part of the Utils.
-		API:            print, isDef, kv, simpletimeit, caller, trim, serialize,
-                        deserialize
-		Todo:           ---
+		API:            ---
 		Created:        2106 (YYMM)
-		Modified:       2107 (YYMM)
+		Modified:       2110 (YYMM)
 *******************************************************************************/
-// ---
-/******************************************************************************/
 
-(function misctest(host, self){
+// 🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪
+//                                                  UNIT TEST                                                         🧪
+(function unittest(host, self){
+
+    if(!host) return;
 
     I = {
         T: "✔️",
         F: "❌",
         test: function(H, tests)
         {
-            for(t in tests) if(tests.hasOwnProperty(x))
+            for(t in tests) if(tests.hasOwnProperty(t))
             {
-                $.writeln("{0} {1}".f(tests[x].call(H)? this.T: this.F, t));
+                $.writeln("{0} {1}".f(tests[t].call(H)? this.T: this.F, t));
             }
         }
     }
@@ -44,17 +42,20 @@
         }
     }
 
-    host["test"] = function(){
+    host[self] = function(){
         I.test(host, tests);
     }
-})($.global.misc ,"test");
+})($.global.misc, "test");
 
 if($.stack.split("\n")[0] == "[" + $.fileName.split("/").pop() + "]")
 {
     misc.test();
 }
 
-(function(host, self){
+//                                                                                                                    🧪
+// 🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪
+
+(function $misc(host, self){
     
     //@include "$fstring.jsx"
     //@include "$json.jsx"

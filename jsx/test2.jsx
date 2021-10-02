@@ -3,8 +3,9 @@
 
 var ss = "🔥";
 
-$.writeln(ss.charCodeAt(0))
-$.writeln(misc.frame("hw", ss))
+// $.writeln("🔥".charCodeAt(0))
+
+$.writeln(misc.frame("how on earth brother", "#", 10))
 
 // $.writeln(misc.frame("I", "☎️"));
 // $.writeln(misc.frame("I", "🐕"));

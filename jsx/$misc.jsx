@@ -100,18 +100,21 @@ if($.stack.split("\n")[0] == "[" + $.fileName.split("/").pop() + "]")
 
             var cc  = this.charCodeAt(0);
 
-            return ((cc < 10000 && cc > 9500) 
+            return ((cc < 10000 && cc > 9000) 
                 || (cc < 56000 && cc > 55000));
-        }
+        };
 
         var strr = function(ss){ return new String(ss);}
         
-        var B   = strr(frameChar[0]),
+        var B   = strr(frameChar),
             S   = strr(" ");
         
-        var code  = B.charCodeAt(0);
-        var tsize = (entry * 2) + ((str.length+4) / frameChar.length);
+        var EMOJ_WIDTH = B.isEmoji()? 1.8: 1;
+        var tsize = (entry * 2) + (((str.length+4) / frameChar.length));
+        tsize /= EMOJ_WIDTH;
 
+        //####################################################
+        //#
         var framo   = "{0}\n{1}\n{2}".f(
 
             B * tsize,   
@@ -122,12 +125,14 @@ if($.stack.split("\n")[0] == "[" + $.fileName.split("/").pop() + "]")
                 S * entry,
                 str,
                 S * entry,
-                B * 2 // (3-str.length % 2)
+                B * 2
             ),
 
             B * tsize
         );
-        
+        //#
+        //#####################################################
+
         delete(String.prototype["*"]);
         delete(String.prototype.isEmoji);
         strr = str = B = S = entry = null;

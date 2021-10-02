@@ -32,11 +32,11 @@
         "should frame \"hello alien\" properly": function()
         {
             var myFrame = [
-                "■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■",
-                "■■                    hello alien                ■■",
-                "■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■"
+                "■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■",
+                "■■                    hello alien                    ■■",
+                "■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■"
             ].join("\n");
-            var heFrame = this.frame("hello alien", undefined, "DEFAULT");
+            var heFrame = this.frame("hello alien");
             var cond    = (heFrame == myFrame);
             return cond;
         }
@@ -80,12 +80,13 @@ if($.stack.split("\n")[0] == "[" + $.fileName.split("/").pop() + "]")
         return str;
     }
 
-    self.frame = function(str, frameChar, size)
+    self.frame = function(str, frameChar, entry)
     {
         if(typeof str == "undefined") str = "undefined";
         str       = str.toString();
-        size      = typeof size != "number" ? 50: size;
-        frameChar = typeof frameChar == "undefined"?"DEFAULT": frameChar; 
+        entry     = typeof entry != "number" ? 20: entry;
+        frameChar = typeof frameChar == "undefined"?"■": frameChar; 
+        str       = str + ((str.length%2)?" ":"");
 
         String.prototype["*"] = function(op)
         {
@@ -95,40 +96,41 @@ if($.stack.split("\n")[0] == "[" + $.fileName.split("/").pop() + "]")
             while(op--) fstr.push(str);
             return fstr.join(""); 
         };
+        String.prototype.isEmoji = function(){
 
-        var strr = function(ss){ return new String(ss);}
+            var cc  = this.charCodeAt(0);
 
-        var blocks = 
-        {
-            "DEFAULT": ["■", 1],
-            "ROCKET" : ["🚀", 2.2],
-            "FIRE"   : ["🔥", 1.8],
-            "CELEBRATE": ["🎉", 2.2]
+            return ((cc < 10000 && cc > 9500) 
+                || (cc < 56000 && cc > 55000));
         }
 
-        var B   = strr(blocks[frameChar][0]),
+        var strr = function(ss){ return new String(ss);}
+        
+        var B   = strr(frameChar[0]),
             S   = strr(" ");
-
-        var entry   = ((size+2) / 2) - (str.length / 2);
+        
+        var code  = B.charCodeAt(0);
+        var tsize = (entry * 2) + ((str.length+4) / frameChar.length);
 
         var framo   = "{0}\n{1}\n{2}".f(
 
-            B * ((size + 2) / blocks[frameChar][1]),   
+            B * tsize,   
             
             "{0}{1}{2}{3}{4}".f(
          
                 B * 2,
                 S * entry,
                 str,
-                S * (size-entry-str.length-2),
-                B * (3-str.length % 2)
+                S * entry,
+                B * 2 // (3-str.length % 2)
             ),
 
-            B * ((size + 2) / blocks[frameChar][1])
+            B * tsize
         );
-
+        
         delete(String.prototype["*"]);
-        strr = blocks = B = S = entry = null;
+        delete(String.prototype.isEmoji);
+        strr = str = B = S = entry = null;
         return framo;
 
     }

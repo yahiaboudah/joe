@@ -1,5 +1,12 @@
 
-//@include "$misc.jsx";
+//@include "$misc.jsx"
 
-var ff = misc.frame("this shit is amazing", "DEFAULT");
-$.writeln(ff);
+var ss = "🔥";
+
+$.writeln(ss.charCodeAt(0))
+$.writeln(misc.frame("hw", ss))
+
+// $.writeln(misc.frame("I", "☎️"));
+// $.writeln(misc.frame("I", "🐕"));
+// $.writeln(misc.frame("I", "😹"));
+// $.writeln(misc.frame("I", "🐘"));

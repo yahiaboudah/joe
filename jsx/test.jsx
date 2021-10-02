@@ -1,3 +1,3 @@
 
 
-//@include "$misk.jsx"
+$.writeln()

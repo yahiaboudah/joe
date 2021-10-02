@@ -25,11 +25,50 @@ MATCH_NAMES = {
     TRIM_END: "ADBE Vector Trim End",
     TRIM_OFFSET: "ADBE Vector Trim Offset",
 }
-
 Object.extend  = function(oo, newstuff){ for(k in newstuff) if(newstuff.hasOwnProperty(k)) oo[k] = newstuff[k]; }
-
 function $Shape(cfg){ Object.extend(this, cfg)}
 
+function _Window(cfg)
+{
+    var w = new Window(cfg.type || "palette", cfg.title || "untitled");
+
+    if(typeof cfg.banner != "undefined")
+    {
+        switch(cfg.banner.type)
+        {
+            case "ANIMATED":
+                w.addAnimatedSequence(cfg.banner.folder, cfg.banner.idx);
+                break;
+            default: break;
+        }
+    };
+
+    cfg.children.forEach(function(child){
+
+        switch(child.type)
+        {
+            case "edittext":
+                
+                b = w.add("edittext", undefined, child.text, {
+                    multiline : child.multiline  || false,
+                    borderless: child.borderless || false,
+                    name: child.name
+                });
+                b.preferredSize = child.size;
+                break;
+
+            case "button":
+                b = w.add("button", undefined, child.text);
+                b.onClick = child.onClick.bind(b);
+                break;
+
+            default:
+                break;
+        }
+    });
+
+    return w;
+}
 $Shape.prototype.shape = function(){
     
     var shape = new Shape();
@@ -41,7 +80,6 @@ $Shape.prototype.shape = function(){
 
     return shape;
 }
-
 String.prototype._replace = function(repCfg){
     
     var str = this;
@@ -51,13 +89,28 @@ String.prototype._replace = function(repCfg){
     }
     return str;
 }
+Function.prototype.bind = Function.prototype.bind || function bind(thisArg) 
+{
+    var method = this;
+    var args = Array.prototype.slice.call(arguments, 1);
 
+    return function bound() {
+        var _args = args.concat(Array.prototype.slice.call(arguments));
+        if (!(this instanceof bound))
+            return method.apply(thisArg, _args);
+
+        var __args = [];
+        for (var i = 0, len = _args.length; i < len; i++)
+            __args.push('_args[' + i + ']');
+
+        return eval('new method(' + __args.join(',') + ')');
+    };
+}
 Function.prototype.body = function(){
     return this.toString()
     .replace(/^[^{]*\{[\s]*/,"    ")
     .replace(/\s*\}[^}]*$/,"")._replace(repConfig || {});
 }
-
 Array.prototype.forEach = function(callback, thisArg) {
 
     if (this == null) throw new TypeError('Array.prototype.forEach called on null or undefined');
@@ -83,7 +136,6 @@ Array.prototype.forEach = function(callback, thisArg) {
 
     return this;
 };
-
 ShapeLayer.prototype.addStroke = function(swv, scv, expr){
 
     var layer = this;
@@ -110,7 +162,6 @@ ShapeLayer.prototype.addStroke = function(swv, scv, expr){
     return 1;
   
 }
-
 AVLayer.prototype.addProp = function(propPath){
         
     var props = propPath.split("/");
@@ -131,7 +182,6 @@ AVLayer.prototype.addProp = function(propPath){
     if(!!name) currProp.name = name;
     return currProp;
 }
-
 AVLayer.prototype.getProp = function(propPath){
     
     var props = propPath.split("/");
@@ -148,7 +198,6 @@ AVLayer.prototype.getProp = function(propPath){
 
     return currProp;
 }
-
 Window.prototype.addAnimatedSequence = function(imgSeqPath, firstImageIdx)
 {
     var gif = this.add('image');

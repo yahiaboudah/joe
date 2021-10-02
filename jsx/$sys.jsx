@@ -8,61 +8,16 @@
 		Modified:       2109 (YYMM)
 *******************************************************************************/
 
-(function systest(host, self){
-
-    //@include "$file.jsx"
-    //@include "$json.jsx"
-
-    I = {
-        T: "✔️",
-        F: "❌",
-        test: function(H, tests)
-        {
-            for(x in tests) if(tests.hasOwnProperty(x))
-            {
-                $.writeln("{0} {1}".f(tests[x].call(H)? this.T: this.F, x));
-            }
-        }
-    }
-
-    SYSTESTS = 
-    {
-        "should return python version": function()
-        {
-            var outp = this.cmd.call(null, "python --version");
-            var cond = outp.split(" ")[0] == "Python";
-            return cond;
-        },
-
-        "should add to problems list": function()
-        {
-            var outp = this.cmd.call(null, "pro \"new pp\"", 0);
-            var fppp = File(Folder.desktop.fsName + "/pro.txt");
-            var arrr = JSON.parse(fppp.$read());
-            var cond = (arrr.pop() == "new pp");
-            fppp.$write(JSON.stringifyy(arrr), 'w');
-
-            return cond;
-        }
-    }
-
-    host[self] = function(){
-        I.test(host, SYSTESTS);
-    };
-
-})($.global.sys, "test")
-
-sys.test();
-
-(function $sys(host, self){
+(function(host, self){
 
     //@include "$fstring.jsx"
     host[self] = self;
 
     self.cmd = function(myCommand, sp, sleep)
     {
-        return system.callSystem((sp?"cmd /c \"{0}\"":"{0}").f(myCommand));
+        var oo = system.callSystem((sp?"cmd /c \"{0}\"":"{0}").f(myCommand));
         if(typeof sleep == "number") $.sleep(sleep);
+        return oo;
     }
 
     self.wget = function(folder, file, link){
@@ -73,33 +28,41 @@ sys.test();
         )
     }
 
-})($.global, {toString: function(){return "sys"}})
+})($.global, {toString: function(){return "sys"}}); $.sleep(0);
 
+(function(host, self){
 
-// Xester = {};
+    //@include "$file.jsx"
+    //@include "$json.jsx"
+    //@include "$xester.jsx"
 
-// Xester.currFunc = new Function();
-
-// Xester.describe= function(fn, testo){
+    host[self] = function()
+    {
+        Xester.test(host,
+        {
+            "should return python version": function()
+            {
+                var outp = this.cmd.call(null, "python --version");
+                var cond = outp.split(" ")[0] == "Python";
+                return cond;
+            },
     
-//     this.currFunc = fn;
-
-//     for(test in testo) if(testo.hasOwnProperty(test))
-//     {
-//         testf = testo[test];
-//         testf.call(this);        
-//     }
-// }
-
-// Xester.expect = function(inputArr, cb){
+            "should add to problems list": function()
+            {
+                var outp = this.cmd.call(null, "pro \"new pp\"", 0);
+                var fppp = File(Folder.desktop.fsName + "/pro.txt");
+                var arrr = JSON.parse(fppp.$read());
+                var cond = (arrr.pop() == "new pp");
+                fppp.$write(JSON.stringifyy(arrr), 'w');
     
-//     if(typeof cb != "function") cb = function(x){return x};
-    
-//     return {
-//         result: this.currFunc.apply(null, cb.apply(null, inputArr)),
-//         toGive: function(whatGives){
-//             return this.result == whatGives;
-//         }
-//     }
+                return cond;
+            }
+        });
+    };
 
-// }
+})($.global.sys, "test")
+
+if($.stack.split("\n")[0] == "[" + $.fileName.split("/").pop() + "]")
+{
+    sys.test();
+}

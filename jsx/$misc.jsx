@@ -22,9 +22,9 @@
         F: "❌",
         test: function(H, tests)
         {
-            for(x in tests) if(tests.hasOwnProperty(x))
+            for(t in tests) if(tests.hasOwnProperty(x))
             {
-                $.writeln("{0} {1}".f(tests[x].call(H)? this.T: this.F, x));
+                $.writeln("{0} {1}".f(tests[x].call(H)? this.T: this.F, t));
             }
         }
     }
@@ -44,12 +44,15 @@
         }
     }
 
-    host[self] = function(){
+    host["test"] = function(){
         I.test(host, tests);
     }
 })($.global.misc ,"test");
 
-// misc.test();
+if($.stack.split("\n")[0] == "[" + $.fileName.split("/").pop() + "]")
+{
+    misc.test();
+}
 
 (function(host, self){
     
@@ -74,7 +77,7 @@
         return str;
     }
 
-    self.frame = function(str, size, frameChar)
+    self.frame = function(str, frameChar, size)
     {
         if(typeof str == "undefined") str = "undefined";
         str       = str.toString();
@@ -97,7 +100,7 @@
             "DEFAULT": ["■", 1],
             "ROCKET" : ["🚀", 2.2],
             "FIRE"   : ["🔥", 1.8],
-            // "CELEBRATE": ["🎉", 2.2]
+            "CELEBRATE": ["🎉", 2.2]
         }
 
         var B   = strr(blocks[frameChar][0]),
@@ -122,14 +125,9 @@
         );
 
         delete(String.prototype["*"]);
-        strr = null;
+        strr = blocks = B = S = entry = null;
         return framo;
 
     }
 
 }($.global, {toString: function(){return "misc"}}))
-
-$.writeln(misc.frame("FUCK YOU!", undefined,"ROCKET"));
-$.writeln(misc.frame("HAVE A NICE DAY", undefined,"FIRE"));
-$.writeln(misc.frame("I HAVE MIXED FEELINGS", undefined,"DEFAULT"));
-$.writeln(misc.frame("THESE EMOJIS ARE GREAT!", undefined,"CELEBRATE"));

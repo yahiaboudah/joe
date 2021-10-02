@@ -1,12 +1,5 @@
-(function(g, self){
-    
-    //@include "$fstring.jsx"
 
-    g[self] = self;
+//@include "$misc.jsx";
 
-    self.makeF = function(ss){
-        return ss.f("thevalue");
-    }
-
-
-})($.global, {toString: function(){return "neuro"}});
+var ff = misc.frame("this shit is amazing", "DEFAULT");
+$.writeln(ff);

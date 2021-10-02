@@ -929,19 +929,13 @@
                 return  result == "true" ? true:false;
             }
     
-        this.saveSetting = function(name,value){
-                this.settingFile.open("r");
-                var xml= new XML( this.settingFile.read() );
-                this.settingFile.close();
+        this.saveSetting = function(name,value)
+        {
+                var xml = new XML(this.settingFile.$read());
                 var isOk = true;
-                try{
-                    xml[name] = value.toString();
-                }catch(err){
-                    isOk = false;
-                }
-                this.settingFile.open("w");
-                this.settingFile.write(xml);
-                this.settingFile.close();
+                try{ xml[name] = value.toString() }
+                catch(err) { isOk = false }
+                this.settingFile.$write(xml);
                 return isOk;
             }
     

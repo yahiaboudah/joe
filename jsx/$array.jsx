@@ -196,7 +196,8 @@
         
         return A;
     }
-    Array.prototype.forEvery = function(cb){
+    Array.prototype.forEvery = function(cb)
+    {
         var a = this;
         for(var i=0; i<a.length; i++)
         {
@@ -204,6 +205,13 @@
         }
         return true;
     }
+
+    /**
+     * 
+     * Max & Min & some wrapped Math functions:
+     * 
+     */
+
     Array.prototype.max = function(prop)
     {
         if(!prop) return Math.max.apply(null, this);
@@ -238,6 +246,8 @@
     }
 
     /**
+     * 
+     * 2D indcies:
      * 
      */
     var tempFunc = "return this.indexOf(this.math2D(\"{0}\", {1}))";
@@ -284,4 +294,91 @@
     *
     *
     */
+
+    /**
+     * Vector operations/ Array operations:
+     * 
+     * 
+     */
+    // Addition:
+    Array.prototype["+"] = function(v)
+    {
+        if(!v.is("Array")) return;
+
+        var i = this.length,
+            j = v.length,
+            r = this.concat(v.slice(i));
+        
+        if(i > j) i = j;
+        while( i-- )
+        {
+            r[i] += (v[i]);
+        }
+        
+        return r;
+    }
+
+    // Subtract
+    Array.prototype["-"] = function(v)
+    {
+        var sign = "-";
+
+        if(!v.is("Array")) return;
+
+        var i = this.length,
+            j = v.length,
+            r = this.concat(v.slice(i));
+        
+        if(i > j) i = j;
+        while( i-- )
+        {
+            r[i] -= (v[i]);
+        }
+        
+        return r;
+    } 
+
+    // Component-wise multiplication:
+    Array.prototype["^"] = function dotMultiply(v) // Hadmard product
+    {
+        if(!v.is("Array")) return;
+
+        var i = this.length,
+            j = v.length,
+            r = this.concat(v.slice(i));
+        
+        if(i > j) i = j;
+        while( i-- )
+        {
+            r[i] *= (v[i]);
+        }
+        
+        return r;
+    } 
+
+    // Scalar multiplication:
+    Array.prototype['*'] = function(/*operand*/k)
+    {
+        if(!k.is("Number")) return;
+        
+        var i = this.length,
+            r = this.concat();
+        
+        while( i-- ) r[i] *= k;
+        return r;
+    }
+    
+    // Dividing operation:
+    Array.prototype['/'] = function(/*operand*/k, /*reversed*/rev)
+    {
+        return (k.is("Number") && !rev)?
+            this * (1/k):
+            undefined; 
+    }
+    /**
+     * 
+     * 
+     * 
+     */
+
 })();

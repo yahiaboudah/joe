@@ -1,12 +1,26 @@
 
+/*******************************************************************************
+		
+    Name:           Plotter
+    Version:        1.31
+		Desc:           plots functions.
+		Path:           plotter.jsx
+		API:            plot
+		Created:        2109 (YYMM)
+		Modified:       2110 (YYMM)
+
+*******************************************************************************/
 //@include "utils.jsx"
-//@include "plotter-ui.js"
+//@include "plotter.js"
+/*****************************************************************************/
 
-var w = PlotterScript.getWindow();
-
-(function(h, s){
+//📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈
+//                                                                              📈
+(function Plotter(h, s){
   
-  var plot = function plot(
+  h[s] = s;
+
+  s.plot = function plot(
     /*CompItem*/c/*=app.project.activeItem*/
     ,/*str*/func/*="x"*/
     ,/*bool*/optimized/*=true*/
@@ -72,9 +86,12 @@ var w = PlotterScript.getWindow();
     return shapeLayer;
   }
 
-  h[s] = s;
-  s.plot = plot;
+})(PlotterScript, {toString: function(){return "Plotter"}});
+//                                                                                📈
+//📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈📈
 
-})(w, {toString: function(){return "Plotter"}});
 
-w.show();
+if($.stack.split("\n")[0] == "[" + $.fileName.split("/").pop() + "]")
+{
+  PlotterScript.getWindow().show();
+}

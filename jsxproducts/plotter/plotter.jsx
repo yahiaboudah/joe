@@ -3,11 +3,11 @@
 		
     Name:           Plotter
     Version:        1.31
-		Desc:           plots functions.
-		Path:           plotter.jsx
-		API:            plot
-		Created:        2109 (YYMM)
-		Modified:       2110 (YYMM)
+    Desc:           plots functions.
+    Path:           plotter.jsx
+    API:            plot
+    Created:        2109 (YYMM)
+    Modified:       2110 (YYMM)
 
 *******************************************************************************/
 //@include "utils.jsx"

@@ -9,19 +9,21 @@
 		Created:        2109 (YYMM)
 		Modified:       2109 (YYMM)
 *******************************************************************************/
-/**
- * Calculates the area of the given shape layer..
- * @param {CompItem} c 
- * @returns the area of "this" shapelayer.
- */
-ShapeLayer.prototype.area = function(c){
 
-    if(!c || !c instanceof CompItem) c = app.project.activeItem;
+Object.prototype.is  = function(cns){
+    return this.constructor.name == cns;
+};
 
-    sr = this.sourceRectAtTime(c.time, false); //sourceRect
+ShapeLayer.prototype.area = function(c, t){
+
+    c = c.is("CompItem")?c:app.project.activeItem;
+    t = t.is("Number")?t:c.time;
+
+    sr = this.sourceRectAtTime(t, false); //sourceRect
     sc = this.transform.scale.value; //scale
     
-    return sr.width * sr.height * sc[0] * sc[1] / 10000;
+    return [sr.width, sr.height] * (sc/100);
+    // return sr.width * sr.height * sc[0] * sc[1] / 10000;
 }
 /**
  * Get the alpha value for a shape layer by writing an expression
@@ -179,8 +181,3 @@ ShapeLayer.prototype.distances = function(origin){
 
     return dists;
 }
-
-// layer = app.project.activeItem.layer(1);
-// dists = layer.distances("left");
-
-// $.writeln(dists);

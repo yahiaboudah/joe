@@ -21,7 +21,7 @@ Object.extend  = function(oo, newstuff){ for(k in newstuff) if(newstuff.hasOwnPr
 Object.extend(app, {
   
   // [INFO]:
-  isComp      : function(cc)
+  isComp      : function(c)
   {
     return (c && c instanceof CompItem);
   },
@@ -47,7 +47,7 @@ Object.extend(app, {
       if(all && layer.source instanceof CompItem) callee(t, layer.source, all);
       //=============================================================/
   
-      lyr.locked = isLocked; //relock
+      layr.locked = isLocked; //relock
     }
   
     //cleanup:

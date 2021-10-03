@@ -18,35 +18,9 @@
 {
     //@include "$avlayer.jsx";
     //@include "$array.jsx";
-
-    Math.mult = function(){
-        var args = Array.prototype.slice.call(arguments);
-        
-        var i = args.length, mm = 1;
-        while(i--) mm *= args[i];
-
-        return mm
-    }
-
-    Function.prototype.body = function(repConfig)
-	{
-		if(!String.prototype._replace)
-		{
-			String.prototype._replace = function(repCfg){
-		
-				var str = this;
-				for(x in repCfg) if(repCfg.hasOwnProperty(x))
-				{
-					str = str.split(x).join(repCfg[x])
-				}
-				return str;
-			}
-		}
-		
-		return this.toString()
-			   .replace(/^[^{]*\{[\s]*/,"    ")
-			   .replace(/\s*\}[^}]*$/,"")._replace(repConfig || {});
-	};
+    //@include "$function.jsx"
+    //@include "$math.jsx"
+    
     ShapeLayer.prototype.addProp = AVLayer.prototype.addProp;
     ShapeLayer.prototype.getProp = AVLayer.prototype.getProp;
     ShapeLayer.prototype.removeProp = AVLayer.prototype.removeProp;
@@ -131,9 +105,9 @@
     
         for(;++i<n;) c.property(i).moveFirstVertex(idx);
     }
-    ShapeLayer.prototype.distances = function(origin){
-    
-    
+
+    ShapeLayer.prototype.distances = function(origin)
+    {
         Number.prototype["^"] = function(op){
             return Math.pow(this, op);
         }

@@ -1,4 +1,12 @@
-(function(g, s)
+/*******************************************************************************
+		Name:           $math
+		Desc:           Math extensions and utils.
+		Path:           /utjsx/$math.jsx
+		Created:        2109 (YYMM)
+		Modified:       2110 (YYMM)
+*******************************************************************************/
+
+(function ComplexNumbers(g, s)
 {
     // UTILITIES
     // ---------------------------
@@ -129,3 +137,16 @@
     g[s] = cstr;
 
 })($.global, "Complex");
+
+(function MathExtens(){
+    
+    Math.mult = function(){
+        var args = Array.prototype.slice.call(arguments);
+        
+        var i = args.length, mm = 1;
+        while(i--) mm *= args[i];
+    
+        return mm
+    }
+
+})();

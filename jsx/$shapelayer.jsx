@@ -16,32 +16,20 @@ Object.prototype.is  = function(cns){
 
 ShapeLayer.prototype.area = function(c, t){
 
-    c = c.is("CompItem")?c:app.project.activeItem;
-    t = t.is("Number")?t:c.time;
+    c = c.is("CompItem")? c :app.project.activeItem;
+    t = t.is("Number")  ? t :c.time;
 
     sr = this.sourceRectAtTime(t, false); //sourceRect
     sc = this.transform.scale.value; //scale
     
-    return [sr.width, sr.height] * (sc/100);
-    // return sr.width * sr.height * sc[0] * sc[1] / 10000;
+    return [sr.width, sr.height] ^ (sc/100);
 }
-/**
- * Get the alpha value for a shape layer by writing an expression
- * and grabbing the result from a temporary Color Control.
- * @returns float
- */
-ShapeLayer.prototype.alpha = function(){
 
-    Function.prototype.body = function(){
-        return this.toString()
-               .replace(/^[^{]*\{[\s]*/,"")
-               .replace(/\s*\}[^}]*$/,"");
-    }
+ShapeLayer.prototype.alpha = function(t){
 
-    var cc = this.property("Effects").addProperty("Color Control"); // color control
-        cp = cc.property("Color"); // color prop
+    t = t.is("Number")? (app.project.activeItem.time = t, t): t;
 
-    cp.expression = (function(){
+    this.addProp("Effects/Color Control:cc").property("Color").expression = (function(){
 
         sr = thisLayer.sourceRectAtTime();
         sc = transform.scale;
@@ -53,10 +41,9 @@ ShapeLayer.prototype.alpha = function(){
         thisLayer.sampleImage(p,[w,h])
     
     }).body();
-    rgba = cp.value;
-
-    cc.remove();
-    delete(Function.prototype.body);
+    
+    var rgba = this.getProp("Effects/cc").value;
+    this.removeProp("Effects/cc")
     return rgba[3];
 }
 /**

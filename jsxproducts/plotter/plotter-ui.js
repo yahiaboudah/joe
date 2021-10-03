@@ -2,6 +2,7 @@
 (function(h,s){
 
     h[s] = s;
+    s.version   = 1.3;
     s.getWindow = function(){
         
         return new _Window({
@@ -29,10 +30,14 @@
                 text  : "Plot",
                 onClick: function(){
                     
+                    $.log("Clicked");
+                    $.log(this.window.Plotter.toSource(), 1);
+                    $.log(this.window.children["functionbox"].text, 1)
+                    
                     this.window.Plotter.plot(
                         
                         app.project.activeItem,
-                        this.window.children["functionbox"],
+                        this.window.children["functionbox"].text,
                         false,
                         100,
                         100,

@@ -2,10 +2,10 @@
 
 (function PlotterUtils(gg){
 
-    $.log = function(msg){
+    $.log = function(msg, a){
         var fr = File($.fileName);
         var ff = File(Folder(fr.parent).fsName + "/" + fr.displayName + ".log");
-        return (ff.open("w"), ff.write(msg + "\n"), ff.close());
+        return (ff.open(a?'a':'w'), ff.write(msg + "\n"), ff.close());
     }
 
     gg.MATCH_NAMES = {
@@ -37,9 +37,12 @@
 
     Object.extend  = function(oo, newstuff){ for(k in newstuff) if(newstuff.hasOwnProperty(k)) oo[k] = newstuff[k]; }
 
-    function $Shape(cfg){ Object.extend(this, cfg)}
-    function _Window(cfg)
-    {
+    gg.$Shape  = function $Shape(cfgr){ Object.extend(this, cfgr);};
+    
+    gg._Window = function _Window(cfg){
+        
+        $.log("win Cfg: " + cfg.toSource())
+
         var ww = new Window(cfg.type || "palette", cfg.title || "untitled");
 
         if(typeof cfg.banner != "undefined")
@@ -59,7 +62,7 @@
             {
                 case "edittext":
                     
-                    b = w.add("edittext", undefined, child.text, {
+                    b = ww.add("edittext", undefined, child.text, {
                         multiline : child.multiline  || false,
                         borderless: child.borderless || false,
                         name: child.name
@@ -68,7 +71,7 @@
                     break;
 
                 case "button":
-                    b = w.add("button", undefined, child.text);
+                    b = ww.add("button", undefined, child.text);
                     b.onClick = child.onClick.bind(b);
                     break;
 
@@ -77,8 +80,8 @@
             }
         });
 
-        return w;
-    }
+        return ww;
+    };
 
     (function StrExtens(){
 

@@ -16,7 +16,7 @@ var strokew = scriptControls.add("edittext", undefined, "10");
 
 var execControls = w.add("group");
 var plotButton   = execControls.add("button", undefined, "PLOT");
-
+alert(typeof w);
 plotButton.onClick = function(){
   plot(
     app.project.activeItem,

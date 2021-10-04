@@ -39,20 +39,23 @@
     }
     ShapeLayer.prototype.alpha = function(t){
     
-        t = t || this.containingComp.time;
-    
-        this.addProp("Effects/Color Control:cc").property("Color").expression = (function(){
-    
-            sr = thisLayer.sourceRectAtTime();
-            sc = transform.scale;
-    
-            w = sc[0] * sr.width  / 200;
-            h = sc[1] * sr.height / 200;
-            p = [toWorld([sr.left,0])[0] + w,toWorld([0,sr.top])[1]+h];
-    
-            thisLayer.sampleImage(p,[w,h])
+        c = this.containingComp;
+        t = t || c.time;
+
+        var sr = this.sourceRectAtTime(t, false),
+        sc = this.transform.scale;
+
+        var wh = (sc/100) * ([sr.width, sr.height] /2)
+
+        p = [
+            c.toWorld(this, [sr.left, 0])[0], 
+            c.toWorld(this, [0, sr.top])[1]
+        ] + wh;
         
-        }).body();
+        this.addProp("Effects/Color Control:cc").property("Color").expression = (function()
+        {
+            thisLayer.sampleImage($p,$wh)
+        }).body({$p: p, $wh:wh});
         
         var rgba = this.getProp("Effects/cc").property("Color").value;
         this.removeProp("Effects/cc");
@@ -105,12 +108,8 @@
     
         for(;++i<n;) c.property(i).moveFirstVertex(idx);
     }
-
     ShapeLayer.prototype.distances = function(origin)
     {
-        Number.prototype["^"] = function(op){
-            return Math.pow(this, op);
-        }
     
         prop = function(c, n, pp)
         {
@@ -162,16 +161,36 @@
     
         for(i=0;++i<numProps+1;) positions.push(prop(contents,i, "Position"))
     
-        dists = positions.map(funcs[origin]);
-    
-        /**************************/
-        delete(Array.prototype.map);
-        delete(Number.prototype["^"]);
-        funcs = prop = num = positions 
-        = origin = contents = numProps
-        = src = wd = ht = null;
-        /*************************/
-    
-        return dists;
+        return positions.map(funcs[origin]);    
     }
+    ShapeLayer.prototype.grabProps = function()
+    // layer.grabProps("Group", "Shape"); => Group 1, Rectangle 1
+    {
+
+        var _TYPES = 
+        [
+            "Group",
+            "Shape",
+            "Graphic",
+            "Filter"
+        ];
+    
+        var types = Array.prototype.slice.call(arguments);
+    
+        types.forEach(function(type, idx){
+            if(!_TYPES.includes(type)) this.remove(idx);
+        })
+    
+        var allProps = [];
+    
+        for(var i = 1; i<this.content.numProperties+1; i++)
+        {
+            prop = this.content.property(i);
+            mn = prop.matchName.split('-')[0].trim().split(" ").pop();
+            if(types.includes(mn)) allProps.push(prop);
+        }
+    
+        return allProps;
+    }
+
 })();

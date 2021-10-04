@@ -6,7 +6,7 @@
 		Modified:       2110 (YYMM)
 *******************************************************************************/
 
-(function ComplexNumbers(g, s)
+var Complex = (function ComplexNumbers()
 {
     // UTILITIES
     // ---------------------------
@@ -130,13 +130,13 @@
     
     // CONSTANTS
     // ---------------------------
-    cstr.zero = new cstr(0,0);
+    cstr.zero  = new cstr(0,0);
     cstr.unity = new cstr(1,0);
-    cstr.i = new cstr(0,1);
+    cstr.i     = new cstr(0,1);
 
-    g[s] = cstr;
+    return cstr;
 
-})($.global, "Complex");
+})();
 
 (function MathExtens(){
     
@@ -147,6 +147,10 @@
         while(i--) mm *= args[i];
     
         return mm
+    }
+
+    Number.prototype["^"] = function(v){
+        return Math.pow(this, v);
     }
 
 })();

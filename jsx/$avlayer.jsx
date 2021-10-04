@@ -5,57 +5,59 @@
 		Created:        2109 (YYMM)
 		Modified:       2110 (YYMM)
 *******************************************************************************/
-AVLayer.prototype.addProp = function(propPath)
-{            
-    var props = propPath.split("/");
-    var lastProp  = props[props.length-1].split(':');
-    var layer = this;
+(function(){
+    AVLayer.prototype.addProp = function(propPath)
+    {            
+        var props = propPath.split("/");
+        var lastProp  = props[props.length-1].split(':');
+        var layer = this;
 
-    props[props.length-1] = lastProp[0];
-    var name = lastProp[1]; 
+        props[props.length-1] = lastProp[0];
+        var name = lastProp[1]; 
 
-    currProp = layer;
-    for(i in props) if(props.hasOwnProperty(i))
-    {
-        currProp = currProp.hasOwnProperty(props[i])?
-                currProp.property(props[i]):
-                currProp.addProperty(props[i]);
+        currProp = layer;
+        for(i in props) if(props.hasOwnProperty(i))
+        {
+            currProp = currProp.hasOwnProperty(props[i])?
+                    currProp.property(props[i]):
+                    currProp.addProperty(props[i]);
+        }
+
+        if(!!name) currProp.name = name;
+        return currProp;
     }
 
-    if(!!name) currProp.name = name;
-    return currProp;
-}
+    AVLayer.prototype.getProp = function(propPath)
+    {    
+        var props = propPath.split("/");
+        var layer = this;
 
-AVLayer.prototype.getProp = function(propPath)
-{    
-    var props = propPath.split("/");
-    var layer = this;
+        currProp = layer;
+        for(i in props) if(props.hasOwnProperty(i))
+        {
+            currProp = currProp.hasOwnProperty(props[i])?
+                    currProp.property(props[i]):0;
+            
+            if(!currProp) return undefined;
+        }
 
-    currProp = layer;
-    for(i in props) if(props.hasOwnProperty(i))
-    {
-        currProp = currProp.hasOwnProperty(props[i])?
-                currProp.property(props[i]):0;
-        
-        if(!currProp) return undefined;
+        return currProp;
     }
 
-    return currProp;
-}
+    AVLayer.prototype.removeProp = function(propPath)
+    {    
+        var props = propPath.split("/");
+        var layer = this;
 
-AVLayer.prototype.removeProp = function(propPath)
-{    
-    var props = propPath.split("/");
-    var layer = this;
+        currProp = layer;
+        for(i in props) if(props.hasOwnProperty(i))
+        {
+            currProp = currProp.hasOwnProperty(props[i])?
+                    currProp.property(props[i]):0;
+            
+            if(!currProp) return undefined;
+        }
 
-    currProp = layer;
-    for(i in props) if(props.hasOwnProperty(i))
-    {
-        currProp = currProp.hasOwnProperty(props[i])?
-                currProp.property(props[i]):0;
-        
-        if(!currProp) return undefined;
+        return currProp.remove();
     }
-
-    return currProp.remove();
-}
+})();

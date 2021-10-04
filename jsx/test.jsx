@@ -1,26 +1,26 @@
 
-
-(function(){
-    String.prototype.trim = function(){
-        return this.replace(/^\s*/,"").replace(/\s*$/,"");
-    }
-})();
-
 //@include "$array.jsx"
 
-// simple explode/implode
+ShapeLayer.prototype.explode = function()
+{
+    var allProps = [];
+    for(var i =1; i<this.content.numProperties+1; i++)
+    {
+        myProp = this.content.property(i);
+        allProps.push(myProp)
+    }
 
+    allProps.forEach(function(prop){
 
+    })
+
+    return 0;
+}
 
 try
 {    
     var layer = app.project.activeItem.layer(1);
-    var ss = layer.grabProps("Filter");
-
-    for(var i = 0; i<ss.length; i++)
-    {
-        $.writeln(ss[i].name)
-    }
+    var ss = layer.explode();
 }
 catch(e)
 {

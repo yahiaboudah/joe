@@ -1,6 +1,6 @@
 
-
 //@include "$table.jsx"
+
 var comp  = app.project.activeItem;
 var layer = comp.layer(1);
 
@@ -11,16 +11,19 @@ ShapeLayer.prototype.getit = function()
         "All, I, want, to, say, here"
     ]))
 
-    $.writeln(table.show())
+    table.write();
+    table.show();
     // $.writeln(this.reflect.properties.join("\n"))
 }
 
+layer.getit();
 
-try{
-    layer.getit();
-}
+// try{
+//     layer.getit();
+// }
 
-catch(e)
-{
-    $.writeln(e.line);
-}
+// catch(e)
+// {
+//     $.write(e);
+//     $.writeln(" => " + e.line)
+// }

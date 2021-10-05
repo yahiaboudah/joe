@@ -8,7 +8,7 @@
 		API:            forEach, indexOf, includes, remove, println
 		Todo:           ---
 		Created:        2106 (YYMM)
-		Modified:       2107 (YYMM)
+		Modified:       2110 (YYMM)
 *******************************************************************************/
 
 (function ArrayPolyfills()
@@ -30,6 +30,24 @@
             }
 
             return fstr;
+        }
+    }
+
+    if(!Math.sum)
+    {
+        Math.sum = function()
+        {
+            var args = Array.prototype.slice.call(arguments);
+            var s = 0;
+            
+            for(var i=0; i<args.length; i++)
+            {
+                arg = args[i];
+                if(isNaN(parseInt(arg))) continue;
+                s += parseInt(arg);
+            }
+
+            return s;      
         }
     }
     
@@ -243,6 +261,10 @@
         return Math[type].apply(null, this.map(function(x){
             return x[xory]
         }))
+    }
+    Array.prototype.sum = function()
+    {
+        return Math.sum.apply(null, this);
     }
 
     /**

@@ -12,9 +12,11 @@
 //@include "$file.jsx"
 /******************************************************************************/
 
-var Table = (function(){
+(function(){
     
-    var cstr = function Tabla(table, margin, VD, HD)
+    //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ TABLE ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+    function Table(table, margin, VD, HD)
     {
         this.VD     = VD || "▓";
         this.HD     = HD || "■";
@@ -27,7 +29,13 @@ var Table = (function(){
         this.maxRowSizes = this.getMaxRowSizes();
     }
 
-    cstr.prototype = 
+    //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+    //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    //                                                                                 ■■■
+
+    Table.prototype = 
     {
         maxColumnSizes : function(){
     
@@ -100,12 +108,12 @@ var Table = (function(){
                     bKid = bKids[k];
                     
                     if(!bKid) {
-                        bKids[k] = (str(" ") * (cSize + 2*mg)) + this.VD;
+                        bKids[k] = (strr(" ") * (cSize + 2*mg)) + this.VD;
                         continue;
                     }
         
-                    lPad = str(" ") * Math.floor(((cSize - bKid.length)/2) + mg);
-                    rPad = str(" ") * Math.ceil (((cSize - bKid.length)/2) + mg);
+                    lPad = strr(" ") * Math.floor(((cSize - bKid.length)/2) + mg);
+                    rPad = strr(" ") * Math.ceil (((cSize - bKid.length)/2) + mg);
             
                     bKids[k] = lPad + bKid + rPad + this.VD; // block = "   block    |"
                 }
@@ -126,10 +134,10 @@ var Table = (function(){
                 JL  = "\n",
                 rs  = this.maxRowSizes,
                 cs  = this.maxColSizes,
-                of  = typeof offset == "undefined"?" ":(str(" ") * offset),
+                of  = typeof offset == "undefined"?" ":(strr(" ") * offset),
                 mg  = this.margin,
                 rw  = cs.sum() + (2 * mg * cs.length) + cs.length;
-                fs  = of + str(this.HD) * (rw+1) + JL;
+                fs  = of + strr(this.HD) * (rw+1) + JL;
                 
             for(var r=0; r< tb.length; r++)
             {
@@ -142,13 +150,14 @@ var Table = (function(){
                         rr += tb[r][c].split(JL)[k]; // running split (csize) times not efficient.
                     }   rr += JL;
                 }
-                fs += rr + of +(str(this.HD) * (rw+1)) + "\n";
+                fs += rr + of +(strr(this.HD) * (rw+1)) + "\n";
             }
             return fs;
         },
 
-        write : function(path, pad){
+        write : function(removePrev ,pad, path){
     
+            if(removePrev) Tabla.removeAll(path);
             path = path || Folder(File($.fileName).path).fsName;
             pad  = pad || 8;
             patt = Table.fNamePatt;
@@ -158,12 +167,13 @@ var Table = (function(){
             len  = txtf.length;
             while(len--) if(!!(txtf[len].displayName.match(patt))) num++;
         
-            name = ("table [&1x&2](&3)").fstr(this.maxRowSizes.length, this.maxColSizes.length, num);
+            var name = ("table [{0}x{1}]({2})").f(this.maxRowSizes.length, this.maxColSizes.length, num);
         
-            file = File(path + "\\" + name + ".txt");
-            file._write(this.render(pad));
-        
-            return file.fsName;
+            return File(
+            
+                "{0}\\{1}.txt".f(path, name)
+            
+            ).$write(this.render(pad)).fsName;
         },
         
         show : function(){
@@ -171,17 +181,22 @@ var Table = (function(){
         }
     }
 
-    // constants:
-    cstr.fNamePatt = /^(table)\s+\[\d+(x)\d+\]\(\d+\)/g;
-    cstr.removeAll = function(path)
+    //                                                                            ■■■■■■■
+    //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+    //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    //                                                                                 ■■■
+    
+    Table.fNamePatt = /^(table)\s+\[\d+(x)\d+\]\(\d+\)/g;
+    Table.removeAll = function(path)
     {
         fs = Folder(path || File($.fileName).path).getFiles("*.txt");
         i  = fs.length;
-        while(i--) if(fs[i].displayName.match(Table.fNamePatt)) fs[i].remove();
+        while(i--) if(fs[i].displayName.match(Tabla.fNamePatt)) fs[i].remove();
     }
-    cstr.process = function(sign)
+    Table.process = function(arr, sign)
     {
-        arr  = Array.prototype.slice.call(arguments);
         fArr = [];
         sign = (sign || ",");
         behN = 35;
@@ -201,7 +216,6 @@ var Table = (function(){
         }
         return fArr;
     }
-
-    return cstr;
-
+    //                                                                            ■■■■■
+    //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 })();

@@ -14,7 +14,10 @@
 //@include "$array.jsx"
 /******************************************************************************/
 
-(function StringExtens(){
+(function StringExtens()
+{
+
+    $.global.strr = function(s){return new String(s)};
     
     String.prototype.inspectFF = function() {
 

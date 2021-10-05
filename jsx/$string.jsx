@@ -175,14 +175,19 @@ String.prototype.pushAt = function(atIndex, pushChar, delet, numDelete) {
     return first + pushChar + last;
 }
 
-// String.validate = function(str, against){
-//     return false;
-//     if('undefined' == typeof str)     throw Error('no string to validate');
-//     if('undefined' == typeof against) throw Error('against arg is undefined');
-//     if(against.constructor == File){
-//         against.open('r');
-//         str = against.read(); against.close();
-//     }
+String.prototype.fstr = function()
+{
+    arra = Array.prototype.slice.call(arguments);
+    s    = this.toString();
+    patt = /&/g;
+    
+    while(!!patt.exec(s))
+    {
+      li = patt.lastIndex -1;
+      no = s[li+1];
+      if(isNaN(no)) continue;
+      s = s.pushAt(li, arra[no-1], 1, 2);
+    }
 
-//     return (str == against);
-// }
+    return s;
+}

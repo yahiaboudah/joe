@@ -1,37 +1,6 @@
 
 function TableUtils()
 {
-    this.unload = function()
-    {
-        delete(Array.prototype.max)
-        delete(Array.prototype.sum)
-        delete(String.prototype["*"])
-        delete(String.prototype.pushAt)
-        delete(String.prototype.fstr)
-        delete(File.prototype._write)
-        $.global["str"] = null;
-    }
-
-    Array.prototype.sum = function(){
-        return Math.sum.apply(null, this);
-    }
-
-    String.prototype.fstr = function()
-    {
-        arra = Array.prototype.slice.call(arguments);
-        s    = this.toString();
-        patt = /&/g;
-        
-        while(!!patt.exec(s))
-        {
-          li = patt.lastIndex -1;
-          no = s[li+1];
-          if(isNaN(no)) continue;
-          s = s.pushAt(li, arra[no-1], 1, 2);
-        }
-    
-        return s;
-    }
 
     File.prototype._write = function(c){
         this.encoding = "UTF-8";

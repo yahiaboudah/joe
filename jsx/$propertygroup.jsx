@@ -11,12 +11,33 @@
 
 PropertyGroup.prototype.is = function()
 {
-    var _args = Array.prototype.slice.call(arguments),
-        match = this.matchName.split(" ")[2], i = -1;
+    var _args = Array.prototype.slice.call(arguments), i = -1;
     
-    while(++i<_args.length) if(match == args[i]) return true;
+    // matchName processing:
+    var match = this.matchName.split(" ")[2];
+    
+    while(++i<_args.length)
+    {
+      if(match == args[i])
+      {
+        return true;
+      }
+    }
 
     return false;
+}
+
+PropertyGroup.prototype.isnt = function()
+{
+  return !this.is.apply(this, Array.prototype.slice.call(arguments));
+}
+
+
+PropertyGroup.prototype.properties = function()
+{
+  var props = [], i = -1;
+  for(;++i<this.numProperties+1;) props = this.property(i); 
+  return props;
 }
 
 PropertyGroup.prototype.moveFirstVertex = function(index)
@@ -26,33 +47,17 @@ PropertyGroup.prototype.moveFirstVertex = function(index)
       PROP_INVALID = "Property needs to be a shape, path group, or path"
     }
 
-    // const MATCH_NAMES = {
-    //     group: "ADBE Vector Group",
-    //     pathGroup: "ADBE Vector Shape - Group",
-    //     path: "ADBE Vector Shape",
-    // };
+    if(this.isnt("Group", "Path", "PathGroup")) throw Error(ERRS.PROP_INVALID)
 
-    // var indexGetter = new IndexGetter();
-  
-    switch (this.matchName) 
+    if(this.is("Group"))
     {
-        case MATCH_NAMES.GROUP:
-            for(var i=1;i<this.numProperties+1;i++){
-                
-                if(this.property(i).matchName == MATCH_NAMES.pathGroup){
-                    foundPath = this.property(i).path;
-                    this.mFirstVertex(foundPath,index,indexGetter);
-                }
-            }
-            break;
-
-        case MATCH_NAMES.PATH:
-        case MATCH_NAMES.PATH_GROUP:   
-            this.mFirstVertex(this,index,indexGetter);
-            break;
-        
-        default: throw TypeError(ERRS.PROP_INVALID);
+      return this.properties().forEach(function(prop)
+      {
+        if(prop.is("Path")) prop.mFirstVertex(index);
+      });
     }
+
+    return this.mFirstVertex(index);
 }
 
 PropertyGroup.prototype.mFirstVertex = function(path,index,indexGetter){

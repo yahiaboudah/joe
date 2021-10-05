@@ -42,25 +42,26 @@
         frameChar = typeof frameChar == "undefined"?"■": frameChar; 
         str       = str + ((str.length%2)?" ":"");
 
-        String.prototype["*"] = function(op)
+        String.prototype["*"] = function(op, joinChar)
         {
-            var str = this;
-            var fstr= [fstr];
-            op = parseInt(op); if(isNaN(op)) return str;
+            if(!$.global.strr)
+            {
+                $.global.strr = function(s){return new String(s)};
+            }
+
+            var str = this, fstr = [fstr];
+            if(isNaN(op = Math.floor(op))) return str;
+            
             while(op--) fstr.push(str);
-            return fstr.join(""); 
-        };
-        String.prototype.isEmoji = function(){
+            return fstr.join(joinChar); 
+        }
 
-            return this.length == 2;
-        };
-
-        var strr = function(ss){ return new String(ss);}
+        var isEmoji = function(ss){ return ss.length == 2 }
         
         var B   = strr(frameChar),
             S   = strr(" ");
         
-        var EMOJ_WIDTH = B.isEmoji()? 1.8: 1;
+        var EMOJ_WIDTH = isEmoji(B)? 1.8: 1;
         var tsize = (entry * 2) + (((str.length+4) / frameChar.length));
         tsize /= EMOJ_WIDTH;
 

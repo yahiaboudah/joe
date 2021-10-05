@@ -9,9 +9,15 @@
 		Created:        2109 (YYMM)
 		Modified:       2110 (YYMM)
 *******************************************************************************/
-// Object.prototype.is = function(ss){
-//     return this.constructor.name == ss;
-// }
+Object.prototype.is = function()
+{
+    var _args = Array.prototype.slice.call(arguments),
+    match = this.constructor, i =-1;
+
+    while(++i<_args.length) if(match == _args[i]) return true;
+
+    return false;
+}
 /*****************************************************************************/
 
 (function ShapeLayerExtens()
@@ -21,8 +27,8 @@
     //@include "$function.jsx"
     //@include "$math.jsx"
     
-    ShapeLayer.prototype.addProp = AVLayer.prototype.addProp;
-    ShapeLayer.prototype.getProp = AVLayer.prototype.getProp;
+    ShapeLayer.prototype.addProp    = AVLayer.prototype.addProp;
+    ShapeLayer.prototype.getProp    = AVLayer.prototype.getProp;
     ShapeLayer.prototype.removeProp = AVLayer.prototype.removeProp;
     
     ShapeLayer.prototype.area = function(t){

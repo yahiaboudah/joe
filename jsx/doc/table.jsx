@@ -24,10 +24,7 @@ function TableUtils()
     }
 
     Array.prototype.sum = function(){
-        var s = 0,
-            i = this.length; 
-        while(i--) s += this[i]
-        return s;
+        return Math.sum.apply(null, this);
     }
 
     String.prototype["*"] = function(n){

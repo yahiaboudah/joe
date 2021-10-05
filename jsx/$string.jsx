@@ -150,6 +150,20 @@ String.prototype._replace = function(repCfg){
     return str;
 }
 
+String.prototype["*"] = function(op, joinChar)
+{
+    if(!$.global.strr)
+    {
+        $.global.strr = function(s){return new String(s)};
+    }
+
+    var str = this, fstr = [fstr];
+    if(isNaN(op = Math.floor(op))) return str;
+    
+    while(op--) fstr.push(str);
+    return fstr.join(joinChar); 
+}
+
 // String.validate = function(str, against){
 //     return false;
 //     if('undefined' == typeof str)     throw Error('no string to validate');

@@ -1,10 +1,20 @@
+/*******************************************************************************
+		Name:           $table
+		Desc:           Create a table/ draw a table.
+        API :           format, render, write, show, getMaxColSizes, 
+                        getMaxRowSizes
+		
+        Created:        2106 (YYMM)
+		Modified:       2110 (YYMM)
+*******************************************************************************/
 //@include "$array.jsx"
 //@include "$string.jsx"
 //@include "$file.jsx"
+/******************************************************************************/
 
-var FuckingTable = (function(){
+var Table = (function(){
     
-    var cstr = function Table(table, margin, VD, HD)
+    var cstr = function Tabla(table, margin, VD, HD)
     {
         this.VD     = VD || "▓";
         this.HD     = HD || "■";

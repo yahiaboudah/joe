@@ -12,36 +12,9 @@ function TableUtils()
         $.global["str"] = null;
     }
 
-    Array.prototype.max = function(prop)
-    {
-        if(!prop) return Math.max.apply(null, this);
-        
-        a = eval(this.toSource());
-        k = a.length;
-        while(k--) a[k] = a[k][prop];
-        
-        return Math.max.apply(null, a)
-    }
-
     Array.prototype.sum = function(){
         return Math.sum.apply(null, this);
     }
-
-    String.prototype["*"] = function(n){
-        fs = "";
-        while(n--) fs += this.toString();
-        return fs;
-    };
-
-    String.prototype.pushAt = function(i, p, d, n) {
-    
-        d = (typeof d == "undefined")? true: d;
-        n = (typeof d == "undefined")? 1: n;
-        f = this.substring(0,i);
-        l = this.substring(d? (i+n): i);
-
-        return f + p + l;
-    };
 
     String.prototype.fstr = function()
     {

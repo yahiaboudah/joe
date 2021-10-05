@@ -328,3 +328,24 @@ Object.newObject = function()
 
     return oo;
 }
+
+Object.fromEntries = function(arr)
+{
+    var oo = {};
+    arr.forEach(function(e){
+        oo[e] = "";
+    })
+
+    return oo;
+}
+
+Object.prototype.inspect = function(what)
+{
+    var props = Object.fromEntries(this.reflect.properties);
+    var funcs = Object.fromEntries(this.reflect.methods);
+
+    for(x in props) if(props.has(x)) props[x] = this[x];
+    for(y in funcs) if(funcs.has(y)) funcs[y] = app.doUndo(this[y]);
+
+    return [props, funcs];
+}

@@ -17,7 +17,6 @@ PropertyGroup.prototype.containingComp = function()
   
   return currProp.containingComp;
 }
-
 PropertyGroup.prototype.is = function()
 {
     var _args = Array.prototype.slice.call(arguments), i = -1;
@@ -35,20 +34,16 @@ PropertyGroup.prototype.is = function()
 
     return false;
 }
-
 PropertyGroup.prototype.isnt = function()
 {
   return !this.is.apply(this, Array.prototype.slice.call(arguments));
 }
-
-
 PropertyGroup.prototype.properties = function()
 {
   var props = [], i = -1;
   for(;++i<this.numProperties+1;) props = this.property(i); 
   return props;
 }
-
 PropertyGroup.prototype.moveFirstVertex = function(index)
 {    
     const ERRS = 
@@ -68,7 +63,6 @@ PropertyGroup.prototype.moveFirstVertex = function(index)
 
     return this.mFirstVertex(index);
 }
-
 PropertyGroup.prototype.mFirstVertex = function(index)
 {
     const ERRS = 
@@ -95,21 +89,17 @@ PropertyGroup.prototype.mFirstVertex = function(index)
       isClosed    : path.isClosed
     })
 
-    keyTime = path.getRightKeyTime(); 
-    if( keyTime == false ){
-      path.setValue(shape);
-    }else{
-      path.setValueAtTime(keyTime,shape);
-    }
+    !key?
+    path.setValue(shape):
+    path.setValueAtTime(this.keyTime(key), shape);
 }
-
+PropertyGroup.prototype.$nearestKeyIndex = function(lr, t)
 // nearest after -t- or before -t-: (lr: "R" = "RIGHT", "L" = "LEFT"):
-PropertyGroup.prototype.$nearestKeyIndex = function(t, lr)
 {  
   t = (t || this.containingComp().time);
 
   if(this.isnt("Path")) throw TypeError("{0} only works for Path".f(callee.name));
-  if(!this.numKeys) return false;
+  if(!this.numKeys) return 0;
   
   keyIndex = this.nearestKeyIndex(t);
   keyTime  = this.keyTime(keyIndex);

@@ -1,38 +1,57 @@
-#include "../lib/indexGetter.jsx";
-#include "array.jsx";
+/*******************************************************************************
+		Name:           $propertygroup
+		Desc:           Property group extensions.
+		Path:           /jsx/$propertygroup.jsx
+		Created:        2109 (YYMM)
+		Modified:       2110 (YYMM)
+*******************************************************************************/
+//@include "$array.jsx"
+//@include "^MATCH_NAMES.jsx"
+/******************************************************************************/
 
-PropertyGroup.prototype.moveFirstVertex = function(index){
+PropertyGroup.prototype.is = function()
+{
+    var _args = Array.prototype.slice.call(arguments),
+        match = this.matchName.split(" ")[2], i = -1;
     
-    const ERR_MSG_SELECTED_PROP_INVALID = "Can't move first vertex.\n"
-    +"The selected property is not a shape layer group"
-    +"a path group, nor is it a path";
+    while(++i<_args.length) if(match == args[i]) return true;
 
-    const MATCH_NAMES = {
-        group: "ADBE Vector Group",
-        pathGroup: "ADBE Vector Shape - Group",
-        path: "ADBE Vector Shape",
-    };
+    return false;
+}
 
-    var indexGetter = new IndexGetter();
+PropertyGroup.prototype.moveFirstVertex = function(index)
+{    
+    const ERRS = 
+    {
+      PROP_INVALID = "Property needs to be a shape, path group, or path"
+    }
+
+    // const MATCH_NAMES = {
+    //     group: "ADBE Vector Group",
+    //     pathGroup: "ADBE Vector Shape - Group",
+    //     path: "ADBE Vector Shape",
+    // };
+
+    // var indexGetter = new IndexGetter();
   
-    switch (this.matchName) {
-        case MATCH_NAMES.group:
+    switch (this.matchName) 
+    {
+        case MATCH_NAMES.GROUP:
             for(var i=1;i<this.numProperties+1;i++){
+                
                 if(this.property(i).matchName == MATCH_NAMES.pathGroup){
                     foundPath = this.property(i).path;
                     this.mFirstVertex(foundPath,index,indexGetter);
                 }
             }
             break;
-        case MATCH_NAMES.pathGroup:
-            this.mFirstVertex(this.path,index,indexGetter);
-            break;   
-        case MATCH_NAMES.path:
+
+        case MATCH_NAMES.PATH:
+        case MATCH_NAMES.PATH_GROUP:   
             this.mFirstVertex(this,index,indexGetter);
             break;
-        default:
-            alert(ERR_MSG_SELECTED_PROP_INVALID);
-            break;
+        
+        default: throw TypeError(ERRS.PROP_INVALID);
     }
 }
 

@@ -1,5 +1,26 @@
 
 //@include "$array.jsx"
+//@include "$shapelayer.jsx"
+
+Object.prototype.is = function()
+{
+    var _args = Array.prototype.slice.call(arguments),
+    match = this.constructor, i =-1;
+
+    while(++i<_args.length) if(match == _args[i]) return true;
+
+    return false;
+}
+
+PropertyGroup.prototype.is = function()
+{
+    var _args = Array.prototype.slice.call(arguments),
+        match = this.matchName.split(" ")[2], i = -1;
+    
+    while(++i<_args.length) if(match == _args[i]) return true;
+
+    return false;
+}
 
 ShapeLayer.prototype.explode = function()
 {
@@ -11,7 +32,6 @@ ShapeLayer.prototype.explode = function()
     }
 
     allProps.forEach(function(prop){
-
     })
 
     return 0;

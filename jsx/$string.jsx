@@ -164,6 +164,17 @@ String.prototype["*"] = function(op, joinChar)
     return fstr.join(joinChar); 
 }
 
+String.prototype.pushAt = function(atIndex, pushChar, delet, numDelete) {
+    
+    d = (typeof d == "undefined")? 1: d;
+    n = (typeof d == "undefined")? 1: n;
+    
+    first = this.substring(0, atIndex);
+    last  = this.substring(delet? (atIndex+numDelete): atIndex);
+
+    return first + pushChar + last;
+}
+
 // String.validate = function(str, against){
 //     return false;
 //     if('undefined' == typeof str)     throw Error('no string to validate');

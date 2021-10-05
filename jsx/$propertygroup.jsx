@@ -9,6 +9,15 @@
 //@include "^MATCH_NAMES.jsx"
 /******************************************************************************/
 
+PropertyGroup.prototype.containingComp = function()
+{
+  var depth = this.propertyDepth, currProp = this;
+
+  while(depth--) currProp = currProp.parentProperty;
+  
+  return currProp.containingComp;
+}
+
 PropertyGroup.prototype.is = function()
 {
     var _args = Array.prototype.slice.call(arguments), i = -1;
@@ -60,45 +69,31 @@ PropertyGroup.prototype.moveFirstVertex = function(index)
     return this.mFirstVertex(index);
 }
 
-PropertyGroup.prototype.mFirstVertex = function(path,index,indexGetter){
-    
-    if(index == "Default"){
-      return;
-    }
-    
-    pathValue = path.value;
-    vert = pathValue.vertices;
-    intan = pathValue.inTangents;
-    outtan = pathValue.outTangents;
-    isClosed = pathValue.closed;
-    
-    shape = new Shape();
-    direc = "";
-    num = 0;
-
-    try{
-    index = indexGetter.getIndex(vert,index);
-    }catch(e){
-      if(e instanceof IndexError){
-        alert(e.toString());
-      }else{
-        alert("UNKNOWN INDEXGETTER ERROR");
-      }
-    }
-       
-    midpoint = parseInt(vert.length/2);
-    if(index < midpoint){
-      direc = "LEFT";
-      num = index;
-    }else{
-      direc = "RIGHT";
-      num = vert.length - index;
+PropertyGroup.prototype.mFirstVertex = function(index)
+{
+    const ERRS = 
+    {
+      INVALID_INDEX: "The index \"{0}\" is invalid".f(index)
     }
 
-    shape.vertices = vert.rotate(direc,num);
-    shape.inTangents = intan.rotate(direc,num);
-    shape.outTangents = outtan.rotate(direc,num);
-    shape.closed = isClosed;
+    var func  = Array.prototype[index + "Index"];
+    if(!func) throw Error(ERRS.INVALID_INDEX);
+
+    var path = this.path.value;
+
+    var i = func.call (path.vertices, index),    //index   
+        m = Math.floor(path.vertices.length/2); //midpoint
+
+    var dirRota = (i < m)? "L": "R", 
+        numRota = (i < m)?  i : (path.vertices.length - i);
+
+    var shape = new $Shape(
+    {
+      vertices    : path.vertices   .rotate(dirRota, numRota),
+      inTangents  : path.inTangents .rotate(dirRota, numRota),
+      outTangents : path.outTangents.rotate(dirRota, numRota),
+      isClosed    : path.isClosed
+    })
 
     keyTime = path.getRightKeyTime(); 
     if( keyTime == false ){
@@ -108,30 +103,20 @@ PropertyGroup.prototype.mFirstVertex = function(path,index,indexGetter){
     }
 }
 
-PropertyGroup.prototype.getRightKeyTime = function (){
-  
-  compTime = app.project.activeItem.time;
+// nearest after -t- or before -t-: (lr: "R" = "RIGHT", "L" = "LEFT"):
+PropertyGroup.prototype.$nearestKeyIndex = function(t, lr)
+{  
+  t = (t || this.containingComp().time);
 
-  if(this.matchName != "ADBE Vector Shape"){
-    throw new TypeError("getRightKeyTime is only for path property.");
-  }
-  
+  if(this.isnt("Path")) throw TypeError("{0} only works for Path".f(callee.name));
   if(!this.numKeys) return false;
   
-  nearestKeyIndex = this.nearestKeyIndex(compTime);
-  nearestKeyIndexTime = this.keyTime(nearestKeyIndex);
-  
-  if(nearestKeyIndexTime > compTime){
-    if(nearestKeyIndex == 1){
-      return false;
-    }
-    rightKey = nearestKeyIndex - 1;
-  }
-  
-  else{
-    rightKey = nearestKeyIndex;
-  }
+  keyIndex = this.nearestKeyIndex(t);
+  keyTime  = this.keyTime(keyIndex);
 
-  rightKeyTime = this.keyTime(rightKey);
-  return rightKeyTime;
+  if(keyIndex == 1) return keyIndex;
+  if((keyTime > t) && lr == "R") return keyIndex;
+  if((keyTime > t) && lr == "L") return keyIndex-1;
+  if((keyTime < t) && lr == "L") return keyIndex;
+  if((keyTime < t) && lr == "R") return keyIndex+1;
 }

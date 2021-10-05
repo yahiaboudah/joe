@@ -21,7 +21,14 @@ PropertyGroup.prototype.is = function()
 
     return false;
 }
+PropertyGroup.prototype.containingComp = function()
+{
+  var depth = this.propertyDepth, currProp = this;
 
+  while(depth--) currProp = currProp.parentProperty;
+  
+  return currProp.containingComp;
+}
 ShapeLayer.prototype.explode = function()
 {
     var allProps = [];
@@ -32,6 +39,7 @@ ShapeLayer.prototype.explode = function()
     }
 
     allProps.forEach(function(prop){
+        
     })
 
     return 0;

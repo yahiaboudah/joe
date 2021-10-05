@@ -298,6 +298,10 @@ Object.extend(app, {
     app.endUndoGroup();
   },
 
+  doUndo   : function(fn){
+
+  },
+
   // [HELPER]
   colorPicker  : function(rgba)
   {

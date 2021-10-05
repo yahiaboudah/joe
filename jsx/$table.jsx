@@ -10,26 +10,37 @@
 //@include "$array.jsx"
 //@include "$string.jsx"
 //@include "$file.jsx"
+$.log = (function(){
+    return function(mm)
+    {
+        var fn = $.fileName.split("/").pop();
+        var ff = Folder(File($.fileName).parent).fsName + "/" + fn + ".log";
+        var fr = File(ff);
+        return (fr.encoding = "UTF-8", fr.open('w'), fr.write(mm + "\n"), fr.close())
+    }
+})();
 /******************************************************************************/
 
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ TABLE ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+function Table(table, margin, VD, HD)
+{
+    this.VD     = VD || "▓"; //Vertical Divider
+    this.HD     = HD || "■"; //Horizont Divider
+    
+    this.table  = table || [];
+    this.ftable = [];       // formatted table
+    this.margin = margin || 5;
+
+    this.maxColSizes = this.maxColumnSizes();
+    this.maxRowSizes = this.getMaxRowSizes();
+    $.log(this.maxColSizes);
+    $.log(this.maxRowSizes);
+}
+
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
 (function(){
-    
-    //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ TABLE ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
-
-    function Table(table, margin, VD, HD)
-    {
-        this.VD     = VD || "▓";
-        this.HD     = HD || "■";
-        
-        this.table  = table || [];
-        this.ftable = []; // formatted table
-        this.margin = margin || 5;
-    
-        this.maxColSizes = this.maxColumnSizes();
-        this.maxRowSizes = this.getMaxRowSizes();
-    }
-
-    //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
     //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
@@ -37,6 +48,10 @@
 
     Table.prototype = 
     {
+        toString: function(){
+            return this.render();
+        },
+
         // -------------------- Max Column Sizes -----------------------------
         //--------------------------------------------------------------------
         maxColumnSizes : function(){
@@ -146,7 +161,7 @@
                 mg  = this.margin,
                 rw  = cs.sum() + (2 * mg * cs.length) + cs.length;
                 fs  = of + strr(this.HD) * (rw+1) + JL;
-                
+
             for(var r=0; r< tb.length; r++)
             {
                 rr = "";
@@ -167,7 +182,7 @@
         // ---------------------------------------------------------------------
         write : function(removePrev ,pad, path){
     
-            if(removePrev) Tabla.removeAll(path);
+            if(removePrev) Table.removeAll(path);
             path = path || Folder(File($.fileName).path).fsName;
             pad  = pad || 8;
             patt = Table.fNamePatt;
@@ -189,7 +204,7 @@
         // ----------------------------- SHOW ----------------------------
         show : function(){
             $.writeln(this.render())
-        }
+        },
     }
 
     //                                                                            ■■■■■■■
@@ -204,7 +219,8 @@
     {
         fs = Folder(path || File($.fileName).path).getFiles("*.txt");
         i  = fs.length;
-        while(i--) if(fs[i].displayName.match(Tabla.fNamePatt)) fs[i].remove();
+        $.writeln(i);
+        while(i--) if(fs[i].displayName.match(Table.fNamePatt)) fs[i].remove();
     }
     Table.process = function(arr, sign)
     {

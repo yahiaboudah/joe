@@ -1,18 +1,13 @@
 /*******************************************************************************
 		Name:           $array
-		Desc:           Some polyfills for the Array class.
+		Desc:           Array extensions.
 		Path:           /utils/$array.jsx
-		Require:        ---
-		Encoding:       ÛȚF8
-		Kind:           Part of the Utils.
-		API:            forEach, indexOf, includes, remove, println
-		Todo:           ---
 		Created:        2106 (YYMM)
 		Modified:       2110 (YYMM)
 *******************************************************************************/
 
-(function ArrayPolyfills()
-{
+(function ArrayUtils(){
+    
     if(!String.prototype.f)
     {
         // format: "my name is {0} and my fname is {1}".f(name, fname)
@@ -51,6 +46,16 @@
         }
     }
     
+    Object.prototype.is = function()
+    {
+        var _args = Array.prototype.slice.call(arguments), i = -1;
+        var what = this.constructor;
+
+        while(++i<_args.length) if(what == _args[i]) return true;
+    
+        return false;
+    }
+    
     Function.prototype.body = function(repConfig)
 	{
 		if(!String.prototype._replace)
@@ -71,14 +76,17 @@
 			   .replace(/\s*\}[^}]*$/,"")._replace(repConfig || {});
 	}
 
+})();
+
+(function ArrayPolyfills()
+{
     Array.range = function(l){
         
         var arr = [], i = -1;
 
         while(++i<l) arr[i] = (i+1);
         return arr;
-    },
-
+    }
     Array.prototype.forEach = function(callback, thisArg) {
 
         if (this == null) throw new TypeError('Array.prototype.forEach called on null or undefined');
@@ -103,7 +111,7 @@
 
 
         return this;
-    };
+    }
     Array.prototype.indexOf = function(el, fromIdx) {
 
         "use strict";
@@ -126,7 +134,7 @@
 
 
         return -1;
-    };
+    }
     Array.prototype.remove = function(k, all) {
 
         if(typeof all != "boolean") all = false;
@@ -325,7 +333,7 @@
     // Addition:
     Array.prototype["+"] = function(v)
     {
-        if(!v.is("Array")) return;
+        if(!v.is(Array)) return;
 
         var i = this.length,
             j = v.length,
@@ -345,7 +353,7 @@
     {
         var sign = "-";
 
-        if(!v.is("Array")) return;
+        if(!v.is(Array)) return;
 
         var i = this.length,
             j = v.length,
@@ -363,7 +371,7 @@
     // Component-wise multiplication:
     Array.prototype["^"] = function dotMultiply(v) // Hadmard product
     {
-        if(!v.is("Array")) return;
+        if(!v.is(Array)) return;
 
         var i = this.length,
             j = v.length,
@@ -381,7 +389,7 @@
     // Scalar multiplication:
     Array.prototype['*'] = function(/*operand*/k)
     {
-        if(!k.is("Number")) return;
+        if(!k.is(Number)) return;
         
         var i = this.length,
             r = this.concat();
@@ -393,7 +401,7 @@
     // Dividing operation:
     Array.prototype['/'] = function(/*operand*/k, /*reversed*/rev)
     {
-        return (k.is("Number") && !rev)?
+        return (k.is(Number) && !rev)?
             this * (1/k):
             undefined; 
     }

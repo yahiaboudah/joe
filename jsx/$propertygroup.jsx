@@ -26,10 +26,7 @@ PropertyGroup.prototype.is = function()
     
     while(++i<_args.length)
     {
-      if(match == args[i])
-      {
-        return true;
-      }
+      if(match == args[i]) return true;
     }
 
     return false;

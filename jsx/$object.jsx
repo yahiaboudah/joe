@@ -339,6 +339,11 @@ Object.fromEntries = function(arr)
     return oo;
 }
 
+Object.prototype.has = function(h)
+{
+    return this.hasOwnProperty(h);
+}
+
 Object.prototype.inspect = function(what)
 {
     var props = Object.fromEntries(this.reflect.properties);

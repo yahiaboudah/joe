@@ -267,8 +267,6 @@ function copyProperty(name, origin, target) {
     target[name].setValue( origin[name].value );
 }
 
-
-
 function copyPropertyShape(origin, target) {
     target.property('ADBE Vector Shape').setValue( origin.property('ADBE Vector Shape').value );
 }

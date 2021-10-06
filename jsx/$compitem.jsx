@@ -24,18 +24,18 @@
         return this.selectedLayers[idx];
     }
 
-    CompItem.prototype.snap = function(time, imgPath){
+    CompItem.prototype.snap = function(t, pp)
+    // snap(1.5, "~/Desktop/MySnaps/snapit.png") => A screenshot of compo at -1.5s-
+    {
 
-        time  = this.time || time;
-        
-        var snapCmdID = 2104; // SAVE AS FRAME COMMAND
+        t = t.is(Number)? t: this.time;
 
-        app.executeCommand(snapCmdID);
+        app.executeCommand(AECMD.SAVE_AS_FRAME);
 
         app.project.renderQueue.showWindow(false);
         var num = app.project.renderQueue.numItems;
         // app.project.renderQueue.item(num).outputModule(1).applyTemplate("SnapShotSettings");
-        app.project.renderQueue.item(num).outputModule(1).file = File(imgPath || "~/Images/AESnap.png");
+        app.project.renderQueue.item(num).outputModule(1).file = File(pp || "~/Images/AESnap.png");
         app.project.renderQueue.render();
         app.project.renderQueue.showWindow(false);
     }

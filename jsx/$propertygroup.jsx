@@ -57,20 +57,22 @@ PropertyGroup.prototype.moveFirstVertex = function(index)
         if(prop.is("Path")) prop.mFirstVertex(index);
     })
 }
-PropertyGroup.prototype.mFirstVertex = function(index)
+PropertyGroup.prototype.mFirstVertex = function(index, t)
 {
     const ERRS = 
     {
       INVALID_INDEX: "The index \"{0}\" is invalid".f(index)
     }
 
-    var func  = Array.prototype[index + "Index"];
-    if(!func) throw Error(ERRS.INVALID_INDEX);
+    t = t.is(Number)? t: this.containingComp().time;
+
+    var getIndex = Array.prototype[index + "Index"];
+    if(getIndex.isnt(Function)) throw Error(ERRS.INVALID_INDEX);
 
     var path = this.path.value;
 
-    var i = func.call (path.vertices, index),    //index   
-        m = Math.floor(path.vertices.length/2); //midpoint
+    var i = getIndex.call (path.vertices, index),    //index   
+        m = Math.floor    (path.vertices.length/2); //midpoint
 
     var dirRota = (i < m)? "L": "R", 
         numRota = (i < m)?  i : (path.vertices.length - i);
@@ -83,14 +85,14 @@ PropertyGroup.prototype.mFirstVertex = function(index)
       isClosed    : path.isClosed
     })
 
-    !key?
+    !this.path.numKeys?
     path.setValue(shape):
-    path.setValueAtTime(this.keyTime(key), shape);
+    path.setValueAtTime(this.$nearestKeyIndex("L", t), shape);
 }
 PropertyGroup.prototype.$nearestKeyIndex = function(lr, t)
 // nearest after -t- or before -t-: (lr: "R" = "RIGHT", "L" = "LEFT"):
 {  
-  t = (t || this.containingComp().time);
+  t = t.is(Number)? t: this.containingComp().time;
 
   if(this.isnt("Path")) throw TypeError("{0} only works for Path".f(callee.name));
   if(!this.numKeys) return 0;

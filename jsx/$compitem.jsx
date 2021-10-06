@@ -9,13 +9,15 @@
 
 (function CompItemUtils(){
 
-    CompItem.prototype.setResolution = function(newRes){
+    CompItem.prototype.setResolution = function(newRes)
+    {
         var rs = this.resolutionFactor;
         this.resolutionFactor = newRes;
         return rs;
     }
 
-    CompItem.prototype.getResolution = function(){
+    CompItem.prototype.getResolution = function()
+    {
         return this.resolutionFactor;
     }
 
@@ -42,8 +44,8 @@
         app.project.renderQueue.showWindow(false);
     }
 
-    CompItem.prototype.getLayersWith = function(prop, val){
-
+    CompItem.prototype.getLayersWith = function(prop, val)
+    {
         if(val.is(undefined)) val = true;
 
         return this.layers.grab(function(layer)

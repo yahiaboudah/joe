@@ -3,9 +3,6 @@
 		Desc:           Comp utils.
 		Path:           /utjsx/$compitem.jsx
 		Require:        ---
-		Encoding:       ÛȚF8
-		Kind:           Part of the Utils.
-		API:            ---
 		Created:        2109 (YYMM)
 		Modified:       2110 (YYMM)
 *******************************************************************************/
@@ -43,12 +40,21 @@
         app.project.renderQueue.showWindow(false);
     }
 
+    CompItem.prototype.getLayersWith = function(prop, val){
+
+        if(val.is(undefined)) val = true;
+        return this.layers.grab(function(layer)
+        {
+            return layer[prop] == val;
+        })
+    }
+
     CompItem.prototype.getSoloLayers = function(){
-        
+
         return this.layers.grab(function(layer){
             return layer.solo;
         })
-    },
+    }
 
     // requires ItemCollection.prototype.grab
     CompItem.prototype.numObjName  = function(myName){

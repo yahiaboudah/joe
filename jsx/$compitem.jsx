@@ -43,27 +43,26 @@
     CompItem.prototype.getLayersWith = function(prop, val){
 
         if(val.is(undefined)) val = true;
+
         return this.layers.grab(function(layer)
         {
-            return layer[prop] == val;
+            var oldVal = layer[prop]; 
+
+            if(oldVal.is(undefined)) return false;
+            if(oldVal.is(String) && val.is(RegExp)) return val.test(oldVal);
+            
+            return oldVal == val;
         })
     }
 
-    CompItem.prototype.getSoloLayers = function(){
-
-        return this.layers.grab(function(layer){
-            return layer.solo;
-        })
+    CompItem.prototype.getSoloLayers = function()
+    {
+        return this.getLayersWith("solo");
     }
 
-    // requires ItemCollection.prototype.grab
-    CompItem.prototype.numObjName  = function(myName){
-        
-        return this.layers.grab(function(layer){
-    
-          return RegExp("{0} \d+".f(myName),"gi").test(layer.name);
-        
-        }).length;
+    CompItem.prototype.numObjName  = function(myName)
+    {
+        return this.getLayersWith("name", RegExp("{0} \d+".f(myName),"gi")).length;
     }
 
 })();

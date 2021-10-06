@@ -57,12 +57,12 @@
 
     CompItem.prototype.getSoloLayers = function()
     {
-        return this.getLayersWith("solo");
+        return this.getLayersWith("solo", true);
     }
 
-    CompItem.prototype.numObjName  = function(myName)
+    CompItem.prototype.numLayersWithName = function(name)
     {
-        return this.getLayersWith("name", RegExp("{0} \d+".f(myName),"gi")).length;
+        return this.getLayersWith("name", RegExp("{0} \d+".f(name),"gi")).length;
     }
 
 })();

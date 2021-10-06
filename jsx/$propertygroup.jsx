@@ -87,7 +87,7 @@ PropertyGroup.prototype.mFirstVertex = function(index, t)
 
     !this.path.numKeys?
     path.setValue(shape):
-    path.setValueAtTime(this.$nearestKeyIndex("L", t), shape);
+    path.setValueAtTime(this.keyTime(this.$nearestKeyIndex("L", t)), shape);
 }
 PropertyGroup.prototype.$nearestKeyIndex = function(lr, t)
 // nearest after -t- or before -t-: (lr: "R" = "RIGHT", "L" = "LEFT"):

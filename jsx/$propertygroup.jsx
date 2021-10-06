@@ -11,11 +11,11 @@
 
 PropertyGroup.prototype.containingComp = function()
 {
-  var depth = this.propertyDepth, currProp = this;
+  var depth = this.propertyDepth, pp = this;
 
-  while(depth--) currProp = currProp.parentProperty;
+  while(depth--) pp = pp.parentProperty;
   
-  return currProp.containingComp;
+  return pp.containingComp;
 }
 PropertyGroup.prototype.is = function()
 {

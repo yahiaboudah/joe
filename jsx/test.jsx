@@ -1,56 +1,7 @@
 
-var configs = {
-    title: 'Explode layer tool',
-    debug : false,
-    log : true,
-    itemAmountWarning : 50,
-    dryRun : false,
-};
-
-function cLog(text) {
-    if (configs.log)
-        $.writeln(text);
-}
-
-function cDebug(text) {
-    if (configs.debug)
-        $.writeln(text);
-}
-
-function listMatchNames(object) {
-
-    for(var i=1; i <= object.numProperties; i++) {
-
-        var prop = object.property(i);
-        consLog(prop.matchName + '('+ prop.name +')');
-
-    }
-
-}
-
-function ExecutionTime() {
-
-    var startTime;
-    var endTime;
-    var execTime;
-
-    this.constructor = function () {}
-
-    this.start = function () {
-        startTime = new Date().getTime();
-    }
-
-    this.stop = function () {
-        endTime = new Date().getTime()
-        execTime = endTime - startTime;
-    }
-
-    this.time = function () {
-        return 'Execution time : ' + Math.floor(execTime / 1000) + 's ' + (execTime % 1000) + 'ms';
-    }
-
-}
-
+//====================================================================================================================================
+//====================================================================================================================================
+//============================================ PROGRESS BAR ==========================================================================
 function ProgressBar(min, max, current) {
 
     var _window,
@@ -133,12 +84,41 @@ function ProgressBar(min, max, current) {
 
 }
 
-// this.bar.value = Math.round(( (this.barProps.step) * 100) / this.barProps.max)
+// ====================================================================================================================================
+// ====================================================================================================================================
 
-/*
- * @requires utils.jsx
- * @requires progressBar.jsx
-*/
+(function(){
+
+    var configs = 
+    {
+        title             : 'Explode layer tool',
+        debug             : false,
+        log               : true,
+        itemAmountWarning : 50,
+        dryRun            : false,
+    },
+
+    dev = {
+        
+        cLog: function(txt){ if(configs.log) $.writeln(txt) },
+        cDebug: function(txt) { if(configs.debug) $.writeln(txt) }
+    }
+
+    var utils= 
+    {
+        listMatchNames: function(){
+            
+            oo.grabProps().forEach(function(prop){
+                consLog("{0}({1})".f(prop.matchName, prop.name))
+            })
+        },
+
+
+    }
+
+
+})();
+
 
 function explodeLayer(layer) {
 
@@ -247,6 +227,8 @@ function emptyDuplicateLayer(layer) {
 
     var new_layer = layer.containingComp.layers.addShape();
 
+    layer.copy("position").to(new_layer);
+    
     copyProperty('anchorPoint', layer, new_layer);
     copyProperty('position', layer, new_layer);
     copyProperty('scale', layer, new_layer);
@@ -326,6 +308,8 @@ function copyProperties(origin, target, prefix) {
 function copyProperty(name, origin, target) {
     target[name].setValue( origin[name].value );
 }
+
+
 
 function copyPropertyShape(origin, target) {
     target.property('ADBE Vector Shape').setValue( origin.property('ADBE Vector Shape').value );

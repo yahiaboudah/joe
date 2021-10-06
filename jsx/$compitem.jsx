@@ -7,7 +7,7 @@
 		Kind:           Part of the Utils.
 		API:            ---
 		Created:        2109 (YYMM)
-		Modified:       2109 (YYMM)
+		Modified:       2110 (YYMM)
 *******************************************************************************/
 
 (function CompItemUtils(){
@@ -20,6 +20,11 @@
 
     CompItem.prototype.getResolution = function(){
         return this.resolutionFactor;
+    }
+
+    CompItem.prototype.sel = function(idx){
+        if(typeof idx == "undefined") return this.selectedLayers;
+        return this.selectedLayers[idx];
     }
 
     CompItem.prototype.snap = function(time, imgPath){
@@ -36,11 +41,6 @@
         app.project.renderQueue.item(num).outputModule(1).file = File(imgPath || "~/Images/AESnap.png");
         app.project.renderQueue.render();
         app.project.renderQueue.showWindow(false);
-    }
-
-    CompItem.prototype.sel = function(idx){
-        if(typeof idx == "undefined") return this.selectedLayers;
-        return this.selectedLayers[idx];
     }
 
     CompItem.prototype.getSoloLayers = function(){

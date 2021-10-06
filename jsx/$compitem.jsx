@@ -19,9 +19,11 @@
         return this.resolutionFactor;
     }
 
-    CompItem.prototype.sel = function(idx){
-        if(typeof idx == "undefined") return this.selectedLayers;
-        return this.selectedLayers[idx];
+    CompItem.prototype.sel = function(idx)
+    {
+        return idx.is(Number)?
+               this.selectedLayers[idx]:
+               this.selectedLayers;
     }
 
     CompItem.prototype.snap = function(t, pp)

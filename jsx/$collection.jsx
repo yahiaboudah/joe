@@ -7,47 +7,41 @@
 *******************************************************************************/
 
 function CollectionInterface(){};
-
 Object.extend(CollectionInterface, {
 
     toArray: function()
     {
-        return this.map(function(prop){return prop});
+        var arr = [], i =0, tts = this;
+        while(++i < tts.length) arr.push(tts[i])
+        return arr;
     },
 
-    grab   : function()
+    grab   : function(cb) // cb()
     {
-        if(cb.isnt(Function)) return this.toArray();
-
+        var items = this.toArray();
+        
+        return cb.is(Function)?
+               items.select(cb):
+               items;
     }
-})
-
-CollectionInterface.toArray = function()
-{
-    return this.map(function(prop){return prop})
-}
-
-CollectionInterface.grab = function(cb)
-{
-    if(cb.isnt(Function)) return this.toArray();
-
-    var items = this, arr = [];
-
-    items.forEach(function(item, idx){
-        if(cb.call(items, item, idx)) arr.push(item);
-    })
-
-    return arr;
-}
+});
 
 (function ExtendItemCollection()
 {
-    ItemCollection.prototype.toArray = CollectionInterface.toArray;
-    ItemCollection.prototype.grab    = CollectionInterface.grab;
+    Object.extend(ItemCollection.prototype, 
+    {
+        toArray: CollectionInterface.toArray,
+        grab   : CollectionInterface.grab
+    })
+
 })();
 
 (function ExtendLayerCollection()
 {
-    LayerCollection.prototype.toArray = CollectionInterface.toArray;
-    LayerCollection.prototype.grab    = CollectionInterface.grab;
+    Object.extend(LayerCollection.prototype,
+    {
+        toArray: CollectionInterface.toArray,
+        grab   : CollectionInterface.grab
+    })
+
 })();

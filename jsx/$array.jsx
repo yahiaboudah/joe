@@ -231,7 +231,7 @@
         }
         return true;
     }
-    Array.prototype.filter = function(func, thiss)
+    Array.prototype.filter = Array.prototype.select = function(func, thiss)
     {
         if(this.is(null)) throw new TypeError();
 
@@ -244,12 +244,11 @@
 
         while(++i < len) if(i in obj)
         {
-            if(func.call(thiss, val, i, obj)) res.push(t[i]); 
+            if(func.call(thiss, t[i], i, obj)) res.push(t[i]); 
         }
 
         return arr;
     }
-    Array.prototype.select = Array.prototype.filter;
 
     /**
      * 

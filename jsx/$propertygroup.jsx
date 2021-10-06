@@ -38,7 +38,7 @@ PropertyGroup.prototype.isnt = function()
 PropertyGroup.prototype.properties = function()
 {
   var props = [], i = -1;
-  for(;++i<this.numProperties+1;) props = this.property(i); 
+  for(;++i<=this.numProperties;) props.push(this.property(i)); 
   return props;
 }
 PropertyGroup.prototype.moveFirstVertex = function(index)
@@ -50,15 +50,12 @@ PropertyGroup.prototype.moveFirstVertex = function(index)
 
     if(this.isnt("Group", "Path", "PathGroup")) throw Error(ERRS.PROP_INVALID)
 
-    if(this.is("Group"))
-    {
-      return this.properties().forEach(function(prop)
-      {
-        if(prop.is("Path")) prop.mFirstVertex(index);
-      });
-    }
+    if(this.isnt("Group")) return this.mFirstVertex(index);
 
-    return this.mFirstVertex(index);
+    return this.properties().forEach(function(prop){
+
+        if(prop.is("Path")) prop.mFirstVertex(index);
+    })
 }
 PropertyGroup.prototype.mFirstVertex = function(index)
 {

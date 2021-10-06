@@ -231,6 +231,25 @@
         }
         return true;
     }
+    Array.prototype.filter = function(func, thiss)
+    {
+        if(this.is(null)) throw new TypeError();
+
+        var obj = Object(this),
+            len = obj.length >>> 0;
+        
+        if(func.isnt(Function)) throw new TypeError();
+
+        var arr = [], i = -1;
+
+        while(++i < len) if(i in obj)
+        {
+            if(func.call(thiss, val, i, obj)) res.push(t[i]); 
+        }
+
+        return arr;
+    }
+    Array.prototype.select = Array.prototype.filter;
 
     /**
      * 

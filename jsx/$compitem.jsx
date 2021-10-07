@@ -21,11 +21,32 @@
         return this.resolutionFactor;
     }
 
-    CompItem.prototype.sel = function(idx)
+    c.sel(ShapeLayer)
+
+    CompItem.prototype.sel = function()
     {
-        return idx.is(Number)?
-               this.selectedLayers[idx]:
-               this.selectedLayers;
+        LAYER_TYPES = [ShapeLayer, Textlayer, LightLayer, CameraLayer, AVLayer];
+
+        var args = Object.toArray(arguments);
+
+        var ss = this.selectedLayers;
+        var os = [];
+
+        args.forEach(function(arg)
+        {
+            if(arg.is(Number)) os.push(ss[arg]); //if (2) ==> comp.layer(2)
+
+            if(LAYER_TYPES.includes(arg))
+            {
+                Array.prototype.push.apply(os, ss.grab(function(layer){
+                    return layer.constructor == arg;
+                }));
+            }
+        })
+
+        return os.length == 1?
+               os[0]:
+               os;
     }
 
     CompItem.prototype.snap = function(t, pp)
@@ -93,5 +114,7 @@
       
       return this;
     }
+
+
 
 })();

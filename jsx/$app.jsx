@@ -19,40 +19,33 @@ Object.extend  = function(oo, newstuff){ for(k in newstuff) if(newstuff.hasOwnPr
 //****************************************************************************/
 
 Object.extend(app, {
-  
-  // [INFO]:
-  isComp      : function(c)
-  {
-    return (c && c instanceof CompItem);
-  },
 
   // [SETTER]
   setTime : function(t,c, all)
   {
-    all  = typeof all == "undefined"?1:all;
-    comp = c || app.project.activeItem;
-    n    = comp.layers.length + 1;
-  
+    all  = all.is(undefined)? 1:all;
+    comp = c.is(CompItem)?c: app.project.activeItem;
+    
+    var n    = comp.layers.length + 1;
+
     //==============/
     comp.duration = t;
     //==============/
     while(--n)
     {
-      layer        = cmp.layer(n);
+      layer        = comp.layer(n);
       isLocked     = layer.locked;
       layer.locked = false; //unlock
   
       //=============================================================/
       layer.outPoint = t;
-      if(all && layer.source instanceof CompItem) callee(t, layer.source, all);
+      if(all && layer.source.is(CompItem)) callee(t, layer.source, all);
       //=============================================================/
   
       layr.locked = isLocked; //relock
     }
   
-    //cleanup:
-    all = comp = n = layer = isLocked = null;
-    return c;
+    return comp;
   },
 
   // [INFO]

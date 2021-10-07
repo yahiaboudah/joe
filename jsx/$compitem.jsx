@@ -69,4 +69,29 @@
         return this.getLayersWith("name", RegExp("{0} \d+".f(name),"gi")).length;
     }
 
+    CompItem.prototype.setTime = function(t, all)
+    {
+      if(t.isnt(Number)) return this;
+      all  = all.is(undefined)? 1:all;
+
+      //==============/
+      this.duration = t;
+      //==============/
+  
+      this.layers.grab().forEach(function(layer){
+        
+        var isLocked = layer.locked;
+        layer.locked = false;
+  
+        //-----------------------------------------------------------
+        layer.outPoint = t;
+        if(all && layer.source.is(CompItem)) setTime(t, layer.source);
+        //------------------------------------------------------------
+  
+        layer.locked = isLocked;
+      })
+      
+      return this;
+    }
+
 })();

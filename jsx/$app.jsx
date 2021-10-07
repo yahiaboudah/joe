@@ -20,34 +20,6 @@ Object.extend  = function(oo, newstuff){ for(k in newstuff) if(newstuff.hasOwnPr
 
 Object.extend(app, {
 
-  // [SETTER]
-  setTime : function(t,c, all)
-  {
-    all  = all.is(undefined)? 1:all;
-    comp = c.is(CompItem)?c: app.project.activeItem;
-    
-    var n    = comp.layers.length + 1;
-
-    //==============/
-    comp.duration = t;
-    //==============/
-    while(--n)
-    {
-      layer        = comp.layer(n);
-      isLocked     = layer.locked;
-      layer.locked = false; //unlock
-  
-      //=============================================================/
-      layer.outPoint = t;
-      if(all && layer.source.is(CompItem)) callee(t, layer.source, all);
-      //=============================================================/
-  
-      layr.locked = isLocked; //relock
-    }
-  
-    return comp;
-  },
-
   // [INFO]
     /**
    * {s}: type.

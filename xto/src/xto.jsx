@@ -9,6 +9,11 @@
 
 (function xto()
 {
+    CSTR = 
+    {
+        ""
+    }
+
     EXTN = 
     {
         "$":
@@ -26,6 +31,19 @@
             "body",
             "bind",
             "timeme"
+        ],
+
+        "Object":
+        [
+            "keys", "newKeys", "extend", "size",
+            "dcKeys", "validate", "validateKeys",
+            "modify", "getValue",
+            "print", "write", 
+            "typeof",
+            "create",
+            "getPrototypeOf", 
+            "newObject", "fromEntries",
+            "has", "inspect"
         ],
 
         "Array":

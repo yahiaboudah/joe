@@ -21,6 +21,14 @@
 		
 		if(!!msg) $.writeln("{0}: Sleeping for {1}..".f(msg, ms))
 		$.sleep(ms);
-	}
+	},
 
+	$.log = function(mm)
+    {
+        var fn = $.fileName.split("/").pop();
+        var ff = Folder(File($.fileName).parent).fsName + "/" + fn + ".log";
+        var fr = File(ff);
+        return (fr.encoding = "UTF-8", fr.open('w'), fr.write(mm + "\n"), fr.close())
+    }
+	
 })($);

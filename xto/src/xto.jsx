@@ -11,6 +11,14 @@
 {
     EXTN = 
     {
+        
+        "Function.prototype":
+        [
+            "body",
+            "bind",
+            "time"
+        ],
+
         "Math": 
         [
             "sum",
@@ -22,12 +30,61 @@
             "$sleep"
         ],
 
+        "File.prototype":
+        [
+            "$open", "$write", "$read", "$close", "$clear",
+            "$seek", "$create",
+            "$execute",
+            "$lines",
+            
+            "$listenForChange", "$listenForChar", "$listen",
+
+            "getDuration", "getName", "getExtension", "getType"
+        ],
+
+        "Folder.prototype":
+        [
+            "$clearFolder", "$remove",
+            "getFolders", "$getFiles"
+        ],
+
         "CompItem.prototype": 
         [
-            
+            "setResolution", "getResolution",
+            "getLayersWith", "numLayersWithName",
+            "snap",
+            "sel",
+            "setTime"
+        ],
+
+        "ItemCollection.prototype":
+        [
+            "toArray", "grab"
+        ],
+
+        "LayerCollection.prototype":
+        [
+            "toArray", "grab"
+        ],
+
+        "ShapeLayer.prototype":
+        [
+            "addProp", "getProp", "removeProp",
+            "alpha",
+            "area", "areas",
+            "distances",
+            "moveFirstVertex",
+            "grabProps"
+        ],
+
+        "PropertyGroup.prototype":
+        [
+            "is", "isnt",
+            "containingComp",
+            "properties",
+            "moveFirstVertex", "mFirstIndex",
+            "$nearestKeyIndex"
         ]
-
-
 
     }
 })();

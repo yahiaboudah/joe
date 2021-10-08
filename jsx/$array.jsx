@@ -298,11 +298,20 @@
      * 2D indcies:
      * 
      */
-    var tempFunc = "return this.indexOf(this.math2D(\"{0}\", {1}))";
-    Array.prototype.upIndex     =  Function(tempFunc.f("max", 1));
-    Array.prototype.bottomIndex =  Function(tempFunc.f("min", 1));
-    Array.prototype.leftIndex   =  Function(tempFunc.f("min", 0));
-    Array.prototype.rightIndex  =  Function(tempFunc.f("max", 0));
+    Array.oneDimIndexFunc = function(maxormin, HorV)
+    {
+        return function()
+        {
+            return this.indexOf(this.math2D(mm, hv));
+        }.body({
+            mm: maxormin,
+            hv: HorV
+        })
+    }
+    Array.prototype.upIndex     =  Function(Array.oneDimIndexFunc("max", 1));
+    Array.prototype.bottomIndex =  Function(Array.oneDimIndexFunc("min", 1));
+    Array.prototype.leftIndex   =  Function(Array.oneDimIndexFunc("min", 0));
+    Array.prototype.rightIndex  =  Function(Array.oneDimIndexFunc("max", 0));
     /**
      * 
      */
@@ -312,7 +321,7 @@
      *
      *  
      */
-    var doubleTempFunc = function(ytype, xtype){
+    Array.twoDimIndexFunc = function(ytype, xtype){
         
         return (function(){
 
@@ -333,10 +342,10 @@
         })
     }
 
-    Array.prototype.upperLeftIndex   = doubleTempFunc("min", "min");
-    Array.prototype.upperRightIndex  = doubleTempFunc("min", "max");
-    Array.prototype.bottomRightIndex = doubleTempFunc("max", "max");
-    Array.prototype.bottomLeftIndex  = doubleTempFunc("max", "min");
+    Array.prototype.upperLeftIndex   = Function(Array.twoDimIndexFunc("min", "min"));
+    Array.prototype.upperRightIndex  = Function(Array.twoDimIndexFunc("min", "max"));
+    Array.prototype.bottomRightIndex = Function(Array.twoDimIndexFunc("max", "max"));
+    Array.prototype.bottomLeftIndex  = Function(Array.twoDimIndexFunc("max", "min"));
     
     /*
     *

@@ -25,7 +25,13 @@
         [
             "body",
             "bind",
-            "time"
+            "timeme"
+        ],
+
+        "Array":
+        [
+            "range",
+            "oneDimIndexFunc", "twoDimIndexFunc"
         ],
 
         "Array.prototype":

@@ -52,10 +52,10 @@
 			   .replace(/\s*\}[^}]*$/,"")._replace(repConfig || {});
 	}
 	
-	Function.prototype.time = function(context, args){
-		var func = this;
+	Function.prototype.timeme = function(thisArg, args)
+	{
 		$.hiresTimer;
-		func.apply(context, args);
-		return $.hiresTimer / 1000000;	
+		this.apply(thisArg, args);
+		return ($.hiresTimer / 1000000);	
 	}
 })

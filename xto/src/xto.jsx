@@ -11,6 +11,15 @@
 {
     EXTN = 
     {
+        "$":
+        [
+            "$sleep"
+        ],
+
+        "$.global":
+        [
+            "strr"
+        ],
         
         "Function.prototype":
         [
@@ -19,15 +28,16 @@
             "time"
         ],
 
+        "String.prototype":
+        [
+            "inspectFF", 
+            "startsWith", "padding", ""
+        ],
+
         "Math": 
         [
             "sum",
             "mult"
-        ],
-
-        "$":
-        [
-            "$sleep"
         ],
 
         "File.prototype":
@@ -84,7 +94,9 @@
             "properties",
             "moveFirstVertex", "mFirstIndex",
             "$nearestKeyIndex"
-        ]
+        ],
+
+        ""
 
     }
 })();

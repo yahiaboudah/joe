@@ -49,27 +49,16 @@
     
         return inspection;
     }
-    String.prototype.startsWith = function(search, rawPos) {
+    String.prototype.startsWith = function(search, rawPos)
+    {
     
         var pos = rawPos > 0 ? rawPos | 0 : 0;
         
         return this.substring(pos, pos + search.length) === search;
     }
-    String.prototype.repeat = function(n) {
-        
-        var rep = this.toString(),
-            str = "",
-            c   = 0;
-        
-        while ((c < n) && ++c) str += rep;
-    
-        return str;
-    }
     String.prototype.padding = function() {
-        var pad = /^\s*/;
-    
-        pad.exec(this);
         
+        (pad = /^\s*/).exec(this);
         return pad.lastIndex;
     }
     String.prototype.checkFF = function() {

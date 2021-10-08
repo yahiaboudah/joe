@@ -21,8 +21,6 @@
         return this.resolutionFactor;
     }
 
-    c.sel(ShapeLayer)
-
     CompItem.prototype.sel = function()
     {
         LAYER_TYPES = [ShapeLayer, Textlayer, LightLayer, CameraLayer, AVLayer];
@@ -79,12 +77,7 @@
             return oldVal == val;
         })
     }
-
-    CompItem.prototype.getSoloLayers = function()
-    {
-        return this.getLayersWith("solo", true);
-    }
-
+    
     CompItem.prototype.numLayersWithName = function(name)
     {
         return this.getLayersWith("name", RegExp("{0} \d+".f(name),"gi")).length;

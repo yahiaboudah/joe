@@ -11,18 +11,23 @@
 {
     EXTN = 
     {
-        Math: 
+        "Math": 
         [
             "sum",
             "mult"
         ],
 
-        $:
+        "$":
         [
             "$sleep"
         ],
 
-        
+        "CompItem.prototype": 
+        [
+            
+        ]
+
+
 
     }
 })();

@@ -282,19 +282,15 @@ Object.extend(app, {
     app.setTimeout(function(){
         app.executeCommand(app.findMenuCommandId("Undo " + func.name));
     }, sTime || 0);
-    
+
   },
 
   // [HELPER]
   colorPicker  : function(rgba)
   {
     var hx = $.colorPicker();
-    return !rgba?hx:
-    [
-      hx >> 16,
-      (hx & 0x00ff00) >> 8,
-      hx & 0xff,
-      255
-    ] /= 255;
+    return rgba?
+           [/*r*/hx >> 16, /*g*/(hx & 0x00ff00) >> 8,/*b*/ hx & 0xff, /*a*/255] /= 255:
+           hx;
   }
 })

@@ -1,9 +1,23 @@
 
-var cc = app.project.activeItem;
+Object.toArray = function(oo, num){
+    return Array.prototype.slice.call(oo, num);
+}
 
-for(var  i=1; i<= cc.numLayers; i++)
-{
-    var layer = cc.layer(i)
-    $.write(layer.name + ": ")
-    $.writeln(layer.constructor.name);
+
+var oo = {
+  wrapUndo : function(fn, thisArg)
+  {
+    var _args = Object.toArray(arguments, 2);
+    return function()
+    {
+      app.beginUndoGroup(fn.name);
+      fn.apply(thisArg, _args);
+      app.endUndoGroup();
+    }
+  },
+
+  doUndo   : function(func, sTime, thisArg)
+  {
+
+  }
 }

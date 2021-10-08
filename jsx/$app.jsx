@@ -272,14 +272,17 @@ Object.extend(app, {
   doUndo   : function(func, thisArg)
   {
     // execute function:
-    app.wrapUndo(
+    this.wrapUndo(
       func,
-      thisArg,
-      Object.toArray(arguments, 2)
+      thisArg || {},
+      Object.toArray(arguments, 3)
     )();
     
-    // undo:
-    app.executeCommand(app.findMenuCommandId("Undo {0}".f(funcName)))
+    // undo with an offset time:
+    app.setTimeout(function(){
+        app.executeCommand(app.findMenuCommandId("Undo " + func.name));
+    }, sTime || 0);
+    
   },
 
   // [HELPER]

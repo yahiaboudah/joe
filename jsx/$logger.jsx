@@ -12,8 +12,8 @@
 *******************************************************************************/
 //---
 /******************************************************************************/
-($.global.hasOwnProperty("logger") || (function (host, self){
-        
+(function (host, self)
+{        
     host[self] = self;
 
     I         = {};
@@ -76,9 +76,7 @@
 
     self.make = function(){ I.mkFile(self.path, ""); }
 
-    for (k in I.levels){
-        
-        if(k == "NONSET") continue;
+    for (k in I.levels) if(k != "NONSET"){
         
         self[k.toLowerCase()] = Function("msg", (function(){
 

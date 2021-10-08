@@ -9,10 +9,12 @@
 
 (function xto()
 {
+
     CSTR = 
-    {
-        ""
-    }
+    [
+        "Table",
+        "Path"
+    ]
 
     EXTN = 
     {
@@ -23,6 +25,11 @@
 
         "$.global":
         [
+            "-MATCH_NAMES",
+            "-AECMD",
+            "-ClipBoard",
+            "-PYJSX",
+            "-logger",
             "strr"
         ],
         
@@ -85,6 +92,7 @@
 
         "File.prototype":
         [
+            "-isOpen"
             ["$open", "$write", "$read", "$close", "$clear"],
             ["$seek", "$create"],
             "$execute",
@@ -143,5 +151,27 @@
             ["moveFirstVertex", "mFirstIndex"],
             "$nearestKeyIndex"
         ],
+
+        "Table":
+        [
+            "-fNamePatt",
+            "process", 
+            "removeAll"
+        ],
+
+        "Table.prototype":
+        [
+            "toString",
+            "getMaxRowSizes", "maxColumnSizes",
+            "format", "render",
+            "write", "show"
+        ],
+
+        "ClipBoard":
+        [
+            ["get", "set", "clear"],
+            "unload"
+        ],
+
     }
 })();

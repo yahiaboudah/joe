@@ -26,44 +26,45 @@ Object.extend(app, {
    * {f}: if another type is found in the selLayers, abort.
    * getSelected("text", false) returns all selected text layers.
    */
-  getSelected : function(type, except)
-  {
+  // deprecated:: CompItem: var selText = comp.sel(TextLayer);
+  // getSelected : function(type, except)
+  // {
 
-    const ERRS = {
-      NO_COMP_FOUND       : "NO ACTIVE COMPOSITION",
-      NO_SEL_LAYERS_FOUND : "NO SELECTED LAYERS FOUND",
-      BAD_INSTANCE_FOUND  : "{0} LAYERS DON'T MATCH THE GIVEN TYPE {1}"
-    },
+  //   const ERRS = {
+  //     NO_COMP_FOUND       : "NO ACTIVE COMPOSITION",
+  //     NO_SEL_LAYERS_FOUND : "NO SELECTED LAYERS FOUND",
+  //     BAD_INSTANCE_FOUND  : "{0} LAYERS DON'T MATCH THE GIVEN TYPE {1}"
+  //   },
     
-    TYPE = {
-      "*"     : "*",
-      "text"  : TextLayer,
-      "shape" : ShapeLayer,
-    }
+  //   TYPE = {
+  //     "*"     : "*",
+  //     "text"  : TextLayer,
+  //     "shape" : ShapeLayer,
+  //   }
 
-    var comp = app.project.activeItem,
-        selc = comp.sel(),
-        leng = selc.length,
-        n    = leng,
-        type = TYPE[s];
+  //   var comp = app.project.activeItem,
+  //       selc = comp.sel(),
+  //       leng = selc.length,
+  //       n    = leng,
+  //       type = TYPE[s];
 
-    if(!app.isComp(comp)) throw Error(ERRS.NO_COMP_FOUND);
-    if(!leng)             throw Error(ERRS.NO_SEL_LAYERS_FOUND);
+  //   if(!app.isComp(comp)) throw Error(ERRS.NO_COMP_FOUND);
+  //   if(!leng)             throw Error(ERRS.NO_SEL_LAYERS_FOUND);
 
     
-    //========================================
-    if(type == '*') return selc;
+  //   //========================================
+  //   if(type == '*') return selc;
 
-    while(n--) if(selc[n].constructor != type) selc.splice(n, 1);
-    //========================================
+  //   while(n--) if(selc[n].constructor != type) selc.splice(n, 1);
+  //   //========================================
 
-    // return:
-    if(except && (leng != selc.length))
-    {
-      throw Error(ERRS.BAD_INSTANCE_FOUND.f((leng - selc.length), type))
-    }
-    return selc;
-  },
+  //   // return:
+  //   if(except && (leng != selc.length))
+  //   {
+  //     throw Error(ERRS.BAD_INSTANCE_FOUND.f((leng - selc.length), type))
+  //   }
+  //   return selc;
+  // },
 
   // [HELPER]
   importOptions : function(cfg){
@@ -257,14 +258,28 @@ Object.extend(app, {
   },
 
   // [HELPER]
-  wrapUndo : function(fn, thisArg){
-    app.beginUndoGroup(fn.name);
-    fn.call(thisArg);
-    app.endUndoGroup();
+  wrapUndo : function(fn, thisArg)
+  {
+    var _args = Object.toArray(arguments, 2);
+    return function()
+    {
+      app.beginUndoGroup(fn.name);
+      fn.apply(thisArg, _args);
+      app.endUndoGroup();
+    }
   },
 
-  doUndo   : function(fn){
-
+  doUndo   : function(func, thisArg)
+  {
+    // execute function:
+    app.wrapUndo(
+      func,
+      thisArg,
+      Object.toArray(arguments, 2)
+    )();
+    
+    // undo:
+    app.executeCommand(app.findMenuCommandId("Undo {0}".f(funcName)))
   },
 
   // [HELPER]

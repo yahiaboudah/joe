@@ -36,7 +36,7 @@
         {
             if(arg.is(Number)) os.push(ss[arg]); //if (2) ==> comp.layer(2)
 
-            if(LAYER_TYPES.includes(arg))
+            if(LAYER_TYPES.includes(arg)) // if(ShapeLayer) ==> comp shape layers!
             {
                 Array.prototype.push.apply(os, ss.grab(function(layer){
                     return layer.constructor == arg;

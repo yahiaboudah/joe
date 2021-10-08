@@ -1,32 +1,63 @@
 
-w = new _Window({
+(function(h, s){
   
-  title: "Shifter",
-  resizeable: true,
-  
-  children: [
-    new _Button({
-      text: "<-",
-      onClick: function(){
-        if(c.time <= this.state.timeShift) c.time =0;
-        else c.time = c.time + this.state.timeShift;
-      }
-    }),
-    new _Button({
-      text: "set",
-      onClick: function(){
-        this.state.timeShift = $prompt("Enter new timeshift value", parseFloat)
-      }
-    }),
-    new _Button({
-      text: "->",
-      onClick: function(){
-        fTime = c.time + this.state.timeShift;
-        if(fTime > c.duration) c.time = c.duration;
-        else c.time = fTime;
-      }
-    }),
-  ]
-})
+  h[s] = s;
+  s.version = "1.0";
 
-w.show();
+  s.getWindow = function()
+  {
+    return new _Window({
+
+      type: "palette",
+      title: "Shifter",
+      resizeable: true,
+
+      children: 
+      [
+        {
+          type: "button",
+          text: "⬅️",
+          onClick: function(){
+            
+            var c = app.project.activeItem,
+                n = this.window.properties.state.timeShift;
+            
+            c.time = (c.time <= n)?
+                     0:
+                     c.time + n;
+          }
+        },
+
+        {
+          type: "button",
+          text: "🖊️ set",
+          onClick: function(){
+            this.window.properties.state.timeShift = $prompt("New timeshift value:", parseFloat);
+          }
+        },
+
+        {
+          type: "button",
+          text: "➡️",
+          onClick: function(){
+
+            var c = app.project.activeItem,
+                n = this.window.properties.state.timeShift;  
+            
+            var f = c.time + n;
+
+            c.time = (f > c.duration)?
+                     c.duration:
+                     f;
+          }
+        }
+      ]
+    })
+  }
+
+})($.global, {toString: function(){return "MoveCursor"}});
+
+if($.stack.split("\n")[0] == "[" + $.fileName.split("/").pop() + "]")
+{
+  MoveCursor.getWindow().show();
+}

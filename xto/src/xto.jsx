@@ -30,8 +30,11 @@
 
         "String.prototype":
         [
-            "inspectFF", 
-            "startsWith", "padding", ""
+            ["inspectFF", "checkFF"],
+            ["startsWith", "padding"],
+            ["replaceSeq", "f", "fstr", "_replace"],
+            ["title", "trim", "pushAt"],
+            "*"
         ],
 
         "Math": 
@@ -42,26 +45,26 @@
 
         "File.prototype":
         [
-            "$open", "$write", "$read", "$close", "$clear",
-            "$seek", "$create",
+            ["$open", "$write", "$read", "$close", "$clear"],
+            ["$seek", "$create"],
             "$execute",
             "$lines",
             
-            "$listenForChange", "$listenForChar", "$listen",
+            ["$listenForChange", "$listenForChar", "$listen"],
 
-            "getDuration", "getName", "getExtension", "getType"
+            ["getDuration", "getName", "getExtension", "getType"]
         ],
 
         "Folder.prototype":
         [
-            "$clearFolder", "$remove",
-            "getFolders", "$getFiles"
+            ["$clearFolder", "$remove"],
+            ["getFolders", "$getFiles"]
         ],
 
         "CompItem.prototype": 
         [
-            "setResolution", "getResolution",
-            "getLayersWith", "numLayersWithName",
+            ["setResolution", "getResolution"],
+            ["getLayersWith", "numLayersWithName"],
             "snap",
             "sel",
             "setTime"
@@ -69,19 +72,24 @@
 
         "ItemCollection.prototype":
         [
-            "toArray", "grab"
+            ["toArray", "grab"],
         ],
 
         "LayerCollection.prototype":
         [
-            "toArray", "grab"
+            ["toArray", "grab"],
+        ],
+
+        "AVLayer.prototype":
+        [
+            ["addProp", "getProp", "removeProp"]
         ],
 
         "ShapeLayer.prototype":
         [
-            "addProp", "getProp", "removeProp",
+            ["addProp", "getProp", "removeProp"],
             "alpha",
-            "area", "areas",
+            ["area", "areas"],
             "distances",
             "moveFirstVertex",
             "grabProps"
@@ -89,14 +97,11 @@
 
         "PropertyGroup.prototype":
         [
-            "is", "isnt",
+            ["is", "isnt"],
             "containingComp",
             "properties",
-            "moveFirstVertex", "mFirstIndex",
+            ["moveFirstVertex", "mFirstIndex"],
             "$nearestKeyIndex"
         ],
-
-        ""
-
     }
 })();

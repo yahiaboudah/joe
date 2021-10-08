@@ -56,8 +56,8 @@
         
         return this.substring(pos, pos + search.length) === search;
     }
-    String.prototype.padding = function() {
-        
+    String.prototype.padding = function()
+    {    
         (pad = /^\s*/).exec(this);
         return pad.lastIndex;
     }

@@ -1,8 +1,8 @@
 /*******************************************************************************
-    Name:           plotter
-    Desc:           Plotter Script (info + UI).
-    Path:           plotter.js
-    Created:        2109 (YYMM)
+    Name:           latex
+    Desc:           Latex Getter (info + UI).
+    Path:           latex.js
+    Created:        2107 (YYMM)
     Modified:       2110 (YYMM)
 *******************************************************************************/
 
@@ -11,25 +11,21 @@
 (function(h,s){
 
     h[s] = s;
-    s.version   = 1.32;
+    s.version   = 1.0;
     s.getWindow = function(){
         
         return new _Window({
 
-            title : "Plotter",
-            banner: {
-                type  : "ANIMATED",
-                folder: "/d/media/plotterSequence/",
-                idx   : 260 
-            },
-        
+            type  : "palette",
+            title : "Get Equation!",
+
             children: [
                 
                 {   // TEXTBOX:
 
                     type: "edittext",
-                    name: "functionbox",
-                    text: "Math.pow(x, 2)",
+                    name: "latexbox",
+                    text: "x",
                     multiline: true,
                     borderless: true,
                     size: [110, 70]
@@ -37,21 +33,12 @@
 
                 {
                     type  : "button",
-                    text  : "Plot",
+                    text  : "GET!",
                     onClick: function(){
                         
-                        s.Plotter.plot(
-                            
-                            app.project.activeItem,
-                            this.window.children["functionbox"].text,
-                            false,
-                            100,
-                            100,
-                            -10,
-                            10,
-                            1, // stepSize
-                            5,
-                            [1,1,1,1]
+                        s.LatexLib.get(
+
+                            this.window.children["latexbox"].text
                         )
                     }
                 }
@@ -59,6 +46,6 @@
         })
     }
 
-})($.global, {toString: function(){return "PlotterScript"}}); $.sleep(0);
+})($.global, {toString: function(){return "LatexScript"}}); $.sleep(0);
 //                                                                                📜
 //📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜

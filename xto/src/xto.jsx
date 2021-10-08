@@ -13,7 +13,9 @@
     CSTR = 
     [
         "Table",
-        "Path"
+        "Path",
+        "CollectionInterface",
+        "$Shape"
     ]
 
     EXTN = 
@@ -109,6 +111,11 @@
             ["getFolders", "$getFiles"]
         ],
 
+        "Window.prototype":
+        [
+            "addAnimatedSequence"
+        ],
+
         "CompItem.prototype": 
         [
             ["setResolution", "getResolution"],
@@ -116,6 +123,11 @@
             "snap",
             "sel",
             "setTime"
+        ],
+
+        "CollectionInterface":
+        [
+            ["toArray", "grab"]
         ],
 
         "ItemCollection.prototype":
@@ -140,7 +152,9 @@
             ["area", "areas"],
             "distances",
             "moveFirstVertex",
-            "grabProps"
+            "grabProps",
+
+            ["addStroke", "addFill"]
         ],
 
         "PropertyGroup.prototype":

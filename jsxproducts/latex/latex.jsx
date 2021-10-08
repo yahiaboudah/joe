@@ -1,5 +1,7 @@
 
-(function LatexLib(self){
+//@include "latex.js"
+
+(function LatexLib(host, self){
 
   //@include "$string.jsx"
   //@incldue "$sys.jsx"
@@ -8,8 +10,7 @@
   I = 
   {
     sourceURL  : "http://latex.codecogs.com/png.latex?\\dpi{300}%20\\huge%20",
-    saveFolder : "C:/wget",
-    saveFile   : "x.png",
+    savePath   : "C:/wget/x.png",
   }
   Afterfx     = 
   {
@@ -99,8 +100,9 @@
         doc.saveAs(expFile, new EPSSaveOptions());
         return expFile.fsName;
 
-      }).toString()._replace({
-        $filePath: "{0}/{1}".f(I.saveFolder, I.saveFile),
+      }).body({
+        
+        $filePath: "{0}/{1}".f(I.savePath),
         $presetName: Illustrator.presetName
       }) + "trace();";
     }
@@ -112,7 +114,7 @@
     var NO_TRACING = !(BridgeTalk.isRunning(Illustrator.specifier) && enableTracing);
     var EQ_LINK    = "{0}{1}".f(I.sourceURL, eqStr.replace(/\s{1,1}/g, "%20"));
 
-    sys.wget(I.saveFolder, I.saveFile, EQ_LINK);
+    sys.wget(I.saveFile, EQ_LINK);
 
     BridgeTalk.bringToFront(Afterfx.specifier);
 
@@ -125,26 +127,10 @@
     BT.send();
   }
 
-})($.global, {toString: function(){return "LatexLib"}})
+})(LatexScript, {toString: function(){return "LatexLib"}})
 
-w = new _Window({
-  
-  type: "palette",
-  title: "Get Equation!",
-  resizeable: true,
-  
-  children:[
-    new _TextBox({
-      text: "x"
-    }),
-    
-    new _Button({
-      text: "GET IT!",
-      onClick: function(){
-        LatexLib.get(this.window.state.equationString);
-      }
-    })
-  ]
-})
 
-w.show();
+if($.stack.split("\n")[0] == "[" + $.fileName.split("/").pop() + "]")
+{
+  LatexScript.getWindow().show();
+}

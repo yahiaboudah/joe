@@ -47,7 +47,7 @@
     gg.$Shape  = function $Shape(cfgr){ Object.extend(this, cfgr);};
     gg._Window = function _Window(cfg){
         
-        $.log("win Cfg: " + cfg.toSource())
+        // $.log("win Cfg: " + cfg.toSource())
 
         var ww = new Window(cfg.type || "palette", cfg.title || "untitled");
 

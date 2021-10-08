@@ -87,7 +87,30 @@ function ProgressBar(min, max, current) {
 // ====================================================================================================================================
 // ====================================================================================================================================
 
-const PROPS = 
+MATCH_NAMES = 
+{
+    // GRAPHIC PROPERTIES
+    stroke: "ADBE Vector Graphic - Stroke",
+    fill  : "ADBE Vector Graphic - Fill",
+
+    // TRANSFORM
+    transform: "ADBE Vector Transform Group",
+
+    // SHAPES
+    rect: "ADBE Vector Shape - Rect",
+    ellipse: "ADBE Vector Shape - Ellipse",
+    star: "ADBE Vector Shape - Star",
+
+    // FILTER
+    merge: "ADBE Vector Filter - Merge",
+
+    // GROUP:
+    group: "ADBE Root Vectors Group",
+    pathGroup: 'ADBE Vectors Group',
+    path: "'ADBE Vector Group'"
+}
+
+PROPS = 
 {
     stroke    : ["composite", "color", "strokeWidth", "lineCap", "lineJoin", "miterLimit"],
     fill      : ["composite", "fillRule", "color"],
@@ -209,17 +232,25 @@ function copyProperties(origin, target, prefix) {
 
         var prop = target.addProperty(_prop.matchName);
 
-        switch (_prop.matchName) {
+        var copyProp = copyProperty.bind({origin: _prop, target: prop});
+
+        PROPS[MATCH_NAMES.find(_prop.matchName)].forEach(function(prop){
+            copyProp(prop);
+        })
+
+        switch (_prop.matchName) 
+        {
+            case 'ADBE Vector Materials Group':
+            // skip
+            break;
 
             case 'ADBE Vector Filter - Merge':
             copyProperty('mode', _prop, prop)
             break;
 
-            case 'ADBE Vector Materials Group':
-            cDebug(prefix + '-- skipped');
-            break;
-
+            //=================================================
             case 'ADBE Vector Graphic - Stroke':
+            PROPS.stroke.forEach(function(pp){copyProp(pp)})
             copyPropertyStroke(_prop, prop);
             break;
 
@@ -243,12 +274,6 @@ function copyProperties(origin, target, prefix) {
             copyPropertyStar(_prop, prop);
             break;
 
-            case 'ADBE Root Vectors Group':
-            case 'ADBE Vectors Group':
-            case 'ADBE Vector Group':
-            copyProperties(_prop, prop, prefix += '    ')
-            break;
-
             case 'ADBE Vector Shape - Group':
             copyPropertyShape(_prop, prop);
             break;
@@ -257,14 +282,20 @@ function copyProperties(origin, target, prefix) {
             prop.setValue( _prop.value );
             break;
 
+            case 'ADBE Root Vectors Group':
+            case 'ADBE Vectors Group':
+            case 'ADBE Vector Group':
+            copyProperties(_prop, prop, prefix += '    ')
+            break;
+
         }
 
     }
 
 }
 
-function copyProperty(name, origin, target) {
-    target[name].setValue( origin[name].value );
+function copyProperty(name) {
+    this.target[name].setValue(this.origin[name].value);
 }
 
 function copyPropertyShape(origin, target) {
@@ -301,18 +332,14 @@ function copyPropertyFill(origin, target) {
     copyProperty('color', origin, target);
 
 }
-function copyPropertyTransform(origin, target) {
-
-    copyProperty('anchorPoint', origin, target);
-    copyProperty('position', origin, target);
-    copyProperty('scale', origin, target);
-    copyProperty('skew', origin, target);
-    copyProperty('skewAxis', origin, target);
-    copyProperty('rotation', origin, target);
-    copyProperty('opacity', origin, target);
-
+function copyPropertyTransform(origin, target)
+{
+    PROPS.transform.forEach(copyProperty.bind({origin: origin, target: target}));
 }
-function copyPropertyRect(origin, target) {
+
+function copyPropertyRect(origin, target)
+{
+    PROPS.rect.forEach(function(prop))
     copyProperty('shapeDirection', origin, target)
     copyProperty('size', origin, target)
     copyProperty('position', origin, target)
@@ -334,15 +361,14 @@ function copyPropertyStar(origin, target) {
     copyProperty('innerRoundness', origin, target)
     copyProperty('outerRoundness', origin, target)
 }
-function createWindow() 
-{
+
+(function createWindow(){
+
     w = new Window("palette", "EXPLODE SHAPE!");
     b = w.add("iconbutton", undefined, "/d/media/explode.png");;
     b.text = "EXPLODE!";
     b.onClick = explode;
 
     return w;
-}
 
-
-createWindow().show();
+})().show();

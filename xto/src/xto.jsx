@@ -28,6 +28,22 @@
             "time"
         ],
 
+        "Array.prototype":
+        [
+            ["forEach", "forEvery"],
+            ["indexOf", "remove", "includes"], 
+            "rotate", 
+            ["reduce", "map"], 
+            ["fliter", "select"],
+
+            ["max", "min", "sortedIndices", "math2D", "sum"],
+
+            ["upIndex", "bottomIndex", "leftIndex", "rightIndex",
+            "upperLeftIndex", "upperRightIndex", "bottomRightIndex", "bottomLeftIndex"],
+
+            ["+", "-", "*", "/", "^"]
+        ],
+
         "String.prototype":
         [
             ["inspectFF", "checkFF"],

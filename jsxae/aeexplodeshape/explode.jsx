@@ -121,7 +121,6 @@ PROPS =
                 ]    
 }
 
-
 function explodeLayer(layer) 
 {
     var layers   = [], newLayer,

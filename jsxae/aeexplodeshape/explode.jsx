@@ -2,8 +2,8 @@
 //====================================================================================================================================
 //====================================================================================================================================
 //============================================ PROGRESS BAR ==========================================================================
-function ProgressBar(min, max, current) {
-
+function ProgressBar(min, max, current)
+{
     var _window,
         _progressBar,
         _infos,
@@ -11,10 +11,10 @@ function ProgressBar(min, max, current) {
         _cursor,
         _isVisible;
 
-    this.testInfos = 'Processing element :current on :max';
+    this.testInfos = 'Processing element $current/$max';
 
-    this.constructor = function(min, max, current) {
-
+    this.constructor = function(min, max, current)
+    {
         _this = this;
         _isVisible = false;
 
@@ -24,7 +24,7 @@ function ProgressBar(min, max, current) {
         _cursor.max = (_real.max - _real.min) + 1;
 
         // Instanciate the window
-        _window = new Window('palette', configs.title, undefined, {
+        _window = new Window('palette', "configs.title", undefined, {
             resizeable : false,
             borderless : 'not quite true',
         });
@@ -63,14 +63,13 @@ function ProgressBar(min, max, current) {
         _real.current = step;
         _cursor.current = (_real.current + 1) - _real.min;
 
-        var infos = this.testInfos
-        .replace(':current', _cursor.current)
-        .replace(':max', _cursor.max);
+        var infos = this.testInfos._replace({
+            $current: _cursor.current,
+            $max    : _cursor.max
+        });
 
         _progressBar.value = _cursor.current;
         _infos.text = infos;
-
-        cDebug(infos);
 
         updateGraphics();
     }

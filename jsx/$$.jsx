@@ -23,12 +23,16 @@
 		$.sleep(ms);
 	},
 
-	$.log = function(mm)
+	S.log = function(mm)
     {
         var fn = $.fileName.split("/").pop();
-        var ff = Folder(File($.fileName).parent).fsName + "/" + fn + ".log";
-        var fr = File(ff);
+        var fr = File(Folder(File($.fileName).parent).fsName + "/" + fn + ".log");
         return (fr.encoding = "UTF-8", fr.open('w'), fr.write(mm + "\n"), fr.close())
     }
+
+	S.inside = function(ff)
+	{
+		return $.stack.split("\n")[0] == "[" + ff.split("/").pop() + "]";
+	}
 	
 })($);

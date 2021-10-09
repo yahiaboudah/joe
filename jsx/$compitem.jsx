@@ -106,8 +106,16 @@
       })
       
       return this;
-    }
+    },
 
+    CompItem.prototype.workAreaDomain = function(){
+    
+        return {
+            
+            start: this.workAreaStart,
+            end  : this.workAreaStart + this.workAreaDuration 
+        }
+    }
 
 
 })();

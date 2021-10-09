@@ -30,6 +30,8 @@ numFiles   = saveFolder.getFiles(function(x){
 
 imgPath    = new Path(saveFolder, "staticImage #{0}".f(numFiles));
 
+
+// c.getLayersWith("solo", true)
 function getSoloLayers(c)
 {
   var c = c || app.project.activeItem,
@@ -47,6 +49,7 @@ function getSoloLayers(c)
   return layers;
 }
 
+// c.workAreaDomain
 function workAreaDomain(c){
 
   var c = c || app.project.activeItem;
@@ -78,8 +81,6 @@ function splitLayers(layers,timeInterval,compDuration){
     return;
   }
   
-  
-  
   else if(timeInterval.end == compDuration)
   {
     for(i=-1;++i<layers.length;) layers[i].outPoint = timeInterval.start;
@@ -95,9 +96,9 @@ function splitLayers(layers,timeInterval,compDuration){
     layers[i].inPoint  = timeInterval.end;
   }
   app.endUndoGroup();
-
 }
 
+// rs = c.setResolution([1,1])
 function setResolutionToFull(c)
 {
   c  = c || app.project.activeItem;
@@ -106,6 +107,7 @@ function setResolutionToFull(c)
   return rs;
 }
 
+// c.snap(t)
 function snap(c, t){
   
   c = c || app.project.activeItem;
@@ -120,6 +122,7 @@ function snap(c, t){
   app.project.renderQueue.render();
   app.project.renderQueue.showWindow(false);
 }
+
 
 function dropSnapshot(interval, idx){
   
@@ -196,11 +199,15 @@ function parentSnap(snap, origLayer,  startTime){
   }
 }
 
+/**
+ * c.layers.grab().forEach(function(layer){layer.solo = false;})
+ */
+
 function unSoloAll(c){
 
   c = c || app.project.activeItem;
 
-  for(var i=0;++i<c.layers.length;) c.layer(i).solo = true;
+  for(var i=0;++i<c.layers.length;) c.layer(i).solo = false;
 }
 
 function main(c){

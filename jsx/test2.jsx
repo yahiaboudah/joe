@@ -1,25 +1,8 @@
 
-//@include "$misk.jsx"
-//@include "$array.jsx"
+//@include "test.jsx"
 
-
-var comp  = app.project.activeItem;
-var layer = comp.layer(1);
-
-ShapeLayer.prototype.getit = function()
-{
-    $.writeln(s)
-    $.writeln(this.reflect.methods.join("\n"))
+function test2function(){
+    $.writeln("hello from test2");
 }
 
-layer.getit();
-
-// try{
-//     layer.getit();
-// }
-
-// catch(e)
-// {
-//     $.write(e);
-//     $.writeln(" => " + e.line)
-// }
+if(inside($.fileName)) test2function();

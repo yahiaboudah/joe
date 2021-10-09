@@ -222,15 +222,19 @@ function cloneLayer(layer) {
 
 function copyProperties(origin, target, prefix) {
 
+    origin.properties().forEach(function(_prop){
+
+        if(!(_prop.enabled && target.canAddProperty(_prop.matchName))) return;
+        
+        var prop = target.addProperty(_prop.matchName),
+            copy = copyProperty.bind({origin: _prop, target: prop});
+        
+        
+    })
+
     for(var i=1; i <= origin.numProperties; i++) {
 
-        var _prop = origin.property(i);
-
-        if(!_prop.enabled || !target.canAddProperty(_prop.matchName)) return;
-
-        cDebug(prefix + _prop.matchName);
-
-        var prop = target.addProperty(_prop.matchName);
+        
 
         var copyProp = copyProperty.bind({origin: _prop, target: prop});
 

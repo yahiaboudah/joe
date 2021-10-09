@@ -9,6 +9,10 @@
 
 (function xto()
 {
+    TODO = 
+    [
+        "ShapeLayer.prototype.clone",
+    ]
 
     CSTR = 
     [
@@ -32,7 +36,8 @@
             "-ClipBoard",
             "-PYJSX",
             "-logger",
-            "strr"
+            "strr",
+            "inside"
         ],
         
         "Function.prototype":
@@ -122,7 +127,8 @@
             ["getLayersWith", "numLayersWithName"],
             "snap",
             "sel",
-            "setTime"
+            "setTime",
+            "workAreaDomain"
         ],
 
         "CollectionInterface":

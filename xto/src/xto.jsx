@@ -11,6 +11,9 @@
 {
     TODO = 
     [
+        "Object.getKeyByValue",
+        "Object.getKeysByValue",
+        "ShapeLayer.prototype.reverseEngineer",
         "ShapeLayer.prototype.clone",
     ]
 
@@ -26,7 +29,8 @@
     {
         "$":
         [
-            "$sleep"
+            "$sleep",
+            "inside"
         ],
 
         "$.global":
@@ -37,7 +41,6 @@
             "-PYJSX",
             "-logger",
             "strr",
-            "inside"
         ],
         
         "Function.prototype":

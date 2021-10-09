@@ -99,12 +99,13 @@
         if (arguments.length > 1) T = thisArg;
         k = 0;
         
-        while (k < len) {
+        while (k < len){
 
                 var kValue;
-                if (k in O) {
+                if (k in O)
+                {
                     kValue = O[k];
-                    callback.call(T, kValue, k, O);
+                    callback.call(T, [kValue, k, O].concat(Object.toArray(arguments)));
                 }
                 k++;
         }

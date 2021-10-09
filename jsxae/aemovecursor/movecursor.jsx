@@ -57,7 +57,4 @@
 
 })($.global, {toString: function(){return "MoveCursor"}});
 
-if($.stack.split("\n")[0] == "[" + $.fileName.split("/").pop() + "]")
-{
-  MoveCursor.getWindow().show();
-}
+if($.inside($.fileName)) MoveCursor.getWindow().show();

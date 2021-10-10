@@ -53,10 +53,41 @@
 (function(H, S)
 {
 
+    var yolo = "youwillneverguessthispassword"; 
+
     H[S] = S;
-    
+
+    S.funcsIn = function(something)
+    {
+        var arr  = [];
+
+        var efun = EXTN[something];
+        if(efun === undefined) return; 
+
+        for(var i=-1, len = efun.length; ++i<len;)
+        {
+            curr = efun[i];
+            curr = (curr[0] == '-')? curr.shift(): curr;
+            jcur = [something, efun[i]].join('.');
+
+            arr.push(jcurr);
+        }
+    }
+
+    S.allFuncs = function()
+    {
+        var totalArr = [];
+        for(x in EXTN) if(EXTN.hasOwnProperty(x))
+        {
+            Array.prototype.push.apply(totalArr, S.funcsIn(x));
+        }
+        return totalArr;
+    }
+
     S.load = function(something)
     {
+        if(something == "*") for(mod in FUNS) FUNS[mod]();
+
         var fun = FUNS[something];
         if(fun === undefined) return;
         
@@ -65,22 +96,37 @@
 
     S.unload = function(something)
     {
-        var fun  = FUNS[something];
-        var efun = EXTN[something],
-            curr;
-
-        if((fun === undefined) || (efun === undefined)) return;
-
-        for(var i=-1, len = efun.length; ++i<len;)
+        if(something == "*")
         {
-            curr = efun[i];
-            curr = (curr[0] == '-')? curr.shift(): curr;
-            jcur = [something, efun[i]].join('.');
-
-            eval("delete " + jcur);
+            var allFuncs = S.allFuncs(), i = allFuncs.length;
+            while(--i) eval("delete(" + allFuncs[i] + ")");
         }
 
-        eval(something + "= null;")
+        var funcs = S.funcsIn(something), i = -1;
+        while(++i < funcs.length) eval("delete(" + funcs[i] + ")");
+        eval(something + " = null;")
+    }
+
+    S.code = function(something)
+    {
+        if(FUNS[something] === undefined) return;
+        // write this into the caller file:
+        var callerFile = File(File($.stack).fsName);
+        callerFile.open("a");
+        callerFile.write("\n\n\n\n");
+        callerFile.write("var " + something.split('.').join('') + "= ");
+        callerFile.write(FUNS[something].toString());
+        callerFile.close();
+    }
+
+    S.updateLib = function(something, fn, pass)
+    {
+        if(pass !== yolo) return;
+
+        if(EXTN[something] === undefined) return;
+        if(typeof fn !== "function") return;
+
+        EXTN[something] = fn;
     }
 
     TODO = 

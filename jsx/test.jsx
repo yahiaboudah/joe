@@ -1,84 +1,81 @@
 
 
-
-
-
-function ProgressBar(min, max, current)
+function FileInterface()
 {
-    var _window,
-        _progressBar,
-        _infos,
-        _real,
-        _cursor,
-        _isVisible;
-
-    this.testInfos = 'Processing element $current/$max';
-
-    this.constructor = function(min, max, current)
-    {
-        _this = this;
-        _isVisible = false;
-
-        _real = { min : min, max : max, current : current };
-        _cursor = { min : 0, max : 100, current : 0 };
-
-        _cursor.max = (_real.max - _real.min) + 1;
-
-        // Instanciate the window
-        _window = new Window('palette', "progress bar", undefined, {
-            resizeable : false,
-            borderless : 'not quite true',
-        });
-        _window.preferredSize = [420, 40];
-
-        // Instanciate the progress bar
-        _progressBar = _window.add("progressbar", undefined, _cursor.min, _cursor.max);
-        _progressBar.preferredSize.width = 400;
-        _progressBar.show();
-
-        // Instanciate text infos
-        _infos = _window.add("statictext", undefined, 'Loading, please wait', {
-            justify: 'center'
-        });
-        _infos.preferredSize = [400, 17];
-
-        this.update(current);
+    this.extension = cfg.extension;
+    this.path      = cfg.filePath;
+    this.fileName  = File(this.path).name;
+    this.structure = cfg.structure;
+    this.signal    = "{0}/executed.tmp".f(this.path)
+}
 
 
-        return this;
+FileInterface.prototype.validate = function(intfObj)
+{
+    return Object.validateKeys(
+        intfObj,
+        "info",
+        "contacts",
+        "active_req",
+        "info/reqs_made",
+        "info/reqs_exec",
+        "info/past_reqs",
+        "active_req/road",
+        "active_req/trac",
+        "active_req/seed",
+        "active_req/crop"
+    );
+}
 
-    }
+FileInterface.prototype.make = function()
+{
+    return File(I.intfPath).$create(jj.ser(I.intf0, 1));
+}
 
-    this.start = function () {
-        _isVisible = true;
-        this.update(_real.current)
-        _window.show();
-    }
+FileInterface.prototype.set = function()
+{
+    if(!this.validateIntf(intfObj)) throw Error("Invalid PyInterface Obj");
 
-    this.end = function () {
-        _window.hide();
-    }
+    return File(this.intfPath).$write(jj.ser(intfObj, 1), 'w');
+}
 
-    this.update = function(step) {
+FileInterface.prototype.get = function()
+{
+    return jj.deser(File(this.intfPath).$read());
+}
 
-        _real.current = step;
-        _cursor.current = (_real.current + 1) - _real.min;
+FileInterface.prototype.modify = function(keysP, newV)
+{
+    var intf = this.get();
 
-        var infos = this.testInfos
-            .replace("$current", _cursor.current)
-            .replace("$max",     _cursor.max);
+    Object.modify(
+        intf,
+        keysP,
+        typeof newV == "function"?
+        newV.call(null, Object.getValue(intf, keysP)):
+        newV
+    );
+    
+    this.set(intf);
+}
 
-        _progressBar.value = _cursor.current;
-        _infos.text = infos;
+FileInterface.prototype.post = function(request)
+{
+    if(!Object.validateKeys(request, "path", "func", "args")) throw Error("Request structure invalid");
 
-        updateGraphics();
-    }
+    this.modify("active_req", request);
+    return PY;
+}
 
-    function updateGraphics() {
-        if(!_isVisible) return;
-        _window.update();
-    }
+FileInterface.prototype.crop = function(clean)
+{
+    if(typeof clean == "undefined") clean = true;
 
-    return this.constructor(min, max, current);
+    var intf    = this.get(),
+        output  = intf.active_req.crop; //crop
 
+    intf.active_req = this.intf0.active_req;
+    if(clean) this.set(intf);
+    
+    return output;
 }

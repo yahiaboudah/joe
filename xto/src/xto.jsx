@@ -203,25 +203,37 @@
         // REQUIRES: [String.prototype.f, Object.prototype.is,]
         "$": (function(){
             
-            $.$sleep = function(ms, msg){
+            Object.extend($,{
 
-                if(ms.is(undefined)) return;
+                $sleep: function(ms, msg){
+                    
+                    if(ms.is(undefined)) return;
                 
-                if(msg.is(String)) $.writeln("{0}: Sleeping for {1}..".f(msg, ms))
-                $.sleep(ms);
-            },
-        
-            $.log = function(mm)
-            {
-                var fn = $.fileName.split("/").pop();
-                var fr = File(Folder(File($.fileName).parent).fsName + "/" + fn + ".log");
-                return (fr.encoding = "UTF-8", fr.open('w'), fr.write(mm + "\n"), fr.close())
-            }
-        
-            $.inside = function(ff)
-            {
-                return ($.stack.split("\n")[0] == "[{0}]".f(ff.split("/").pop()));
-            }
+                    if(msg.is(String)) $.writeln("{0}: Sleeping for {1}..".f(msg, ms))
+                    $.sleep(ms);
+                },
+
+                log: function(){
+
+                    var fn = $.fileName.split("/").pop();
+                    var fr = File(Folder(File($.fileName).parent).fsName + "/" + fn + ".log");
+                    return (fr.encoding = "UTF-8", fr.open('w'), fr.write(mm + "\n"), fr.close())
+                },
+
+                inside: function(ff)
+                {
+                    return ($.stack.split("\n")[0] == "[{0}]".f(ff.split("/").pop()));
+                },
+
+                colorPicker  : function(rgba)
+                {
+                    var hx = $.colorPicker();
+                    return  rgba?
+                            [/*r*/hx >> 16, /*g*/(hx & 0x00ff00) >> 8,/*b*/ hx & 0xff, /*a*/255] /= 255:
+                            hx;
+                }
+            })
+            
         }),
 
         "$.global": (function(){
@@ -263,16 +275,6 @@
                     }, sTime || 0);
               
                 },
-              
-                // [HELPER]
-                colorPicker  : function(rgba)
-                {
-                    var hx = $.colorPicker();
-                    return  rgba?
-                            [/*r*/hx >> 16, /*g*/(hx & 0x00ff00) >> 8,/*b*/ hx & 0xff, /*a*/255] /= 255:
-                            hx;
-                }
-
             })
         }),
         

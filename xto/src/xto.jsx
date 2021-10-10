@@ -231,6 +231,50 @@
             $.global.ClipBoard = {toString: function(){return "ClipBoard"}};
 
         }),
+
+        "app": (function(){
+            
+            Object.extend(app,
+            {  
+                // [HELPER]
+                wrapUndo : function(fn, thisArg)
+                {
+                    var _args = Object.toArray(arguments, 2);
+                    return function()
+                    {
+                        app.beginUndoGroup(fn.name);
+                        fn.apply(thisArg, _args);
+                        app.endUndoGroup();
+                    }
+                },
+              
+                doUndo   : function(func, thisArg)
+                {
+                    // execute function:
+                    app.wrapUndo(
+                        func,
+                        thisArg || {},
+                        Object.toArray(arguments, 3)
+                    )();
+                  
+                    // undo with an offset time:
+                    app.setTimeout(function(){
+                        app.executeCommand(app.findMenuCommandId("Undo " + func.name));
+                    }, sTime || 0);
+              
+                },
+              
+                // [HELPER]
+                colorPicker  : function(rgba)
+                {
+                    var hx = $.colorPicker();
+                    return  rgba?
+                            [/*r*/hx >> 16, /*g*/(hx & 0x00ff00) >> 8,/*b*/ hx & 0xff, /*a*/255] /= 255:
+                            hx;
+                }
+
+            })
+        }),
         
         // REQUIRES: [String.prototype.f, Object.prototype.is,]
         "CompItem.prototype": (function()

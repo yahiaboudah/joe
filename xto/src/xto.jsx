@@ -1,10 +1,8 @@
 /***********************************************************************************
-		
-        Name:           xto
+		Name:           xto
 		Desc:           A mini-framework for Extendscript in after effects.
 		Created:        2110 (YYMM)
 		Modified:       2110 (YYMM)
-        Author: Banana69
 
     =================================== XTO ========================================
     (                                                                              (

@@ -274,43 +274,45 @@ Object.typeof = function(v){
     return v.constructor.name.toLowerCase();
 }
 
-Object.create = function (proto) {
-
+Object.create = function (proto)
+{
     function F() {}
     F.prototype = proto;
 
     return new F();
 };
 
-if (typeof Object.getPrototypeOf != "function")(function(){
+// [REVIST GETPROTOTYPEOF]
+
+// if (typeof Object.getPrototypeOf != "function")(function(){
 	
-	Object.getPrototypeOf =
-		(typeof "".__proto__ == "object")
-		? function(object){
-			return getPrototypeValue(object, '__proto__');
-		}
-		: function(object){
-			return getPrototypeValue(object, 'constructor').prototype;
-		}
-	;
+// 	Object.getPrototypeOf =
+// 		(typeof "".__proto__ == "object")
+// 		? function(object){
+// 			return getPrototypeValue(object, '__proto__');
+// 		}
+// 		: function(object){
+// 			return getPrototypeValue(object, 'constructor').prototype;
+// 		}
+// 	;
 	
-	var hasOwnProperty = Object.prototype.hasOwnProperty;
+// 	var hasOwnProperty = Object.prototype.hasOwnProperty;
 	
-	function getPrototypeValue(object, propertyName){
-		try{
-			if (hasOwnProperty.call(object, propertyName)){
-				var ownValue = object[propertyName];
-				delete object[propertyName];
-			}
-			return object[propertyName];
-		}
-		catch(e){throw e}
-		finally{
-			object[propertyName] = ownValue;
-		}
-	}
+// 	function getPrototypeValue(object, propertyName){
+// 		try{
+// 			if (hasOwnProperty.call(object, propertyName)){
+// 				var ownValue = object[propertyName];
+// 				delete object[propertyName];
+// 			}
+// 			return object[propertyName];
+// 		}
+// 		catch(e){throw e}
+// 		finally{
+// 			object[propertyName] = ownValue;
+// 		}
+// 	}
 	
-}());
+// }());
 
 Object.newObject = function()
 {

@@ -15,6 +15,8 @@
         "Object.getKeysByValue",
         "ShapeLayer.prototype.reverseEngineer",
         "ShapeLayer.prototype.clone",
+        "Object.getPrototypeOf",
+
     ]
 
     CSTR = 
@@ -200,7 +202,7 @@
 
     FUNS = 
     {
-        // REQUIRES: [String.prototype.f, Object.prototype.is,]
+        // REQUIRES: [String.prototype.f, Object.prototype.is, File.prototype]
         "$": (function(){
             
             Object.extend($,{
@@ -231,8 +233,81 @@
                     return  rgba?
                             [/*r*/hx >> 16, /*g*/(hx & 0x00ff00) >> 8,/*b*/ hx & 0xff, /*a*/255] /= 255:
                             hx;
-                }
+                },
+
+                //===========================================================================
+
+                python : {toString: function(){return "python"}}
             })
+
+            Object.extend($["python"], {
+                
+                isInstalled: function()
+                {
+                    return sys.cmd("python --version").split(" ")[0] == "Python";
+                },
+
+                functions: function(p)
+                {
+                    var m   = File(p).$read().match(/(([\n]+def)|^def)\s+.+\(.*\)/g),
+                    fs  = [], nameArgs, name, args, aaa;
+        
+                    for(var i=0, len=m.length; i< len;i++)
+                    {
+                        nameArgs = m[i].replace(/[\n]+/g, "").replace(/def[\s]+/g, "").split("(");
+                        name     = nameArgs[0].replace(/\s*$/,"");
+                        args     = nameArgs[1].slice(0,-1).split(",");
+                        
+                        aaa      = { "default": [], "non_default": []};
+        
+                        if(args[0]) for(var k=0, klen = args.length; k< klen; k++)
+                        {
+                            arg = args[k].split("=");
+                            aaa[(arg.length-1)?"_default":"non_default"].push(arg[0]);
+                        }
+                        fs.push({"name": name, "args": aaa});
+                    }
+                    return fs;
+                },
+
+                makeExec: function()
+                {
+                    return File(this.execPath).$create(this.execStr);
+                },        
+                
+                runExec: function()
+                {
+                    var sf = File(I.sgnlPath);
+                    if(sf.exists) sf.remove();
+                    
+                    I.modIntf("info/reqs_made", function(v){ return v+1});
+                    File(this.execPath).$execute();
+                    sf.$listen(this.pyExTime, false, undefined, true/*remove signal file once it appears*/);
+                    
+                    return I;
+                },
+                
+                viewExec   : function(editor)
+                {
+                    sys.cmd("{1} {0}".f(File(this.execPath).fsName), editor || "notepad");
+                },
+
+                editExec   : function(fs)
+                {
+                    if(fs.constructor == File) fs = fs.$read();
+                    this.execStr = fs;
+                },
+
+                //========================================
+
+                execStr: "def pyjsx_run():\n    import json, sys, os\n    inst_path  = '"+self.instPath+"/'\n    intf_path   =  (inst_path + 'PyIntf.pyintf')\n    exec_signal =  (inst_path + 'executed.tmp')\n    def strr(ss):\n        if(ss in ['true', 'false']): return ss.title()\n        if(type(ss) is str):         return '\"' + ss + '\"'\n        return str(ss)\n    with open(intf_path, 'r') as f:\n        c= f.read()\n    if not c: return 'Python Error: interface corrupt'\n    intff = json.loads(c)\n    AR    = intff['active_req']\n    path  = AR   ['road']\n    func  = AR   ['trac']\n    name  = '.'.join(path.split('/')[-1].split('.')[0:-1])\n    args  = ','.join(strr(e) for e in AR['seed'])\n    sys.path.append(os.path.dirname(path))\n    try:\n        exec('import ' + name + ' as s')\n        result = eval('s.' + func + '(' + args + ')')\n    except Exception as e:\n        result = 'Python Error: ' + str(e).replace('\'', '\\\'')\n    intff['active_req']['crop'] = result\n    intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1\n    with open(intf_path, 'w', encoding='utf8') as f:\n        f.write(json.dumps(intff, indent =4))\n    with open(exec_signal, 'w') as execf:\n        execf.write('')\n    return 0\npyjsx_run()",
+
+                execPath   : "{0}/exec.pyw".f(self.instPath),
+                execTime   : 180,
+                extensions : ["py", "pyw"]
+
+            })
+
             
         }),
 
@@ -748,6 +823,45 @@
              * 
              * 
              */
+        }),
+
+        // REQUIRES: [String.prototype._replace,]
+        "Function.prototype": (function(){
+            
+            // myFunc.bind({some: "some", shit: "shit"}) => boundFunc (function)
+            Function.prototype.bind = function(thisArg) 
+            {
+                var method = this;
+                var args = Array.prototype.slice.call(arguments, 1);
+            
+                return function bound() {
+                    var _args = args.concat(Array.prototype.slice.call(arguments));
+                    if (!(this instanceof bound))
+                        return method.apply(thisArg, _args);
+            
+                    var __args = [];
+                    for (var i = 0, len = _args.length; i < len; i++)
+                        __args.push('_args[' + i + ']');
+            
+                    return eval('new method(' + __args.join(',') + ')');
+                };
+            }
+            // myFunc.body() => "var shit = 0;\nreturn shit;"
+            Function.prototype.body = function(repConfig)
+            {   
+                return this.toString()
+                       .replace(/^[^{]*\{[\s]*/,"    ")
+                       .replace(/\s*\}[^}]*$/,"")._replace(repConfig || {});
+            }
+            
+            // myFunc.timeme({some: "some", shit: "shit"}, [arg1, arg2, arg3,..]) => 3.22254424 (ms)
+            Function.prototype.timeme = function(thisArg, args)
+            {
+                $.hiresTimer;
+                this.apply(thisArg, args);
+                return ($.hiresTimer / 1000000);	
+            }
+
         }),
 
         "File.prototype": (function(){
@@ -1306,6 +1420,302 @@
                 });
             })();
                   
+        }),
+        // REQUIRES : [,]
+        // NEEDS SERIOUS REFORM!!
+        "Object": (function(){
+
+            Object.extend  = function(oo, newstuff){
+                for(k in newstuff) if(newstuff.hasOwnProperty(k)) oo[k] = newstuff[k];
+            }
+
+            Object.extend(Object, {
+
+                keys: (function () {
+                    'use strict';
+                    var hasOwnProperty = Object.prototype.hasOwnProperty,
+                        hasDontEnumBug = !({ toString: null }).propertyIsEnumerable('toString'),
+                        dontEnums = [
+                            'toString',
+                            'toLocaleString',
+                            'valueOf',
+                            'hasOwnProperty',
+                            'isPrototypeOf',
+                            'propertyIsEnumerable',
+                            'constructor'
+                        ],
+                        dontEnumsLength = dontEnums.length;
+                
+                    return function (obj) {
+                        if (typeof obj !== 'function' && (typeof obj !== 'object' || obj === null)) {
+                            throw new TypeError('Object.keys called on non-object');
+                        }
+                
+                        var result = [], prop, i;
+                
+                        for (prop in obj) {
+                            if (hasOwnProperty.call(obj, prop)) {
+                                result.push(prop);
+                            }
+                        }
+                
+                        if (hasDontEnumBug) {
+                            for (i = 0; i < dontEnumsLength; i++) {
+                                if (hasOwnProperty.call(obj, dontEnums[i])) {
+                                    result.push(dontEnums[i]);
+                                }
+                            }
+                        }
+                        return result;
+                    };
+                }()),
+
+                newKeys: function(obj, keys, values){
+                    for(var i=0,len = keys.length; i< len; i++) obj[keys[i]] = values[i];
+                    return obj;
+                },
+
+                size: function(o){
+                    var s = 0;
+                    for (ky in o) if (o.hasOwnProperty(ky)) s++;
+                    return s;
+                },
+
+                dcKeys: function cKeys(a, b){
+
+                    if(typeof a != 'object' || typeof b != 'object') throw TypeError("bad arguments");
+                
+                    if(Object.size(a) != Object.size(b)) return false;
+                
+                    for (x in a){
+                        if(!a.hasOwnProperty(x)) continue;
+                        if(!b.hasOwnProperty(x)) return false; // also check for type?
+                        if(typeof a[x] == 'object')
+                        {
+                            if(typeof b[x] != 'object') return false;
+                            if (!cKeys(a[x], b[x])) return false;
+                        }
+                    }
+                    return true;
+                },
+
+                validate:  function(o, a)
+                {
+                    function type(v){
+                
+                        if(arguments.length != 1) throw Error("pass 1 variable");
+                        if(v === undefined)       return 'undefined';
+                        if(v === null)            return 'undefined';
+                        if(typeof v == 'xml')     return 'xml';
+                        return v.constructor.name.toLowerCase();
+                    }
+                
+                    if(type(o) != type(a))     return false; 
+                    if(type(o) == 'object')    return Object.dcKeys(o, a);
+                    if(type(o) == 'array')     return !(a<b || b<a);
+                
+                    return (o == a);
+                },
+
+                validateKeys: function(obj)
+                {
+                    var args = Array.prototype.slice.call(arguments,1);
+                    for(var i=0, len = args.length; i< len; i++)
+                    {
+                        if(typeof Object.getValue(obj, args[i]) == "undefined") return false;
+                    }
+                    return true;
+                },
+
+                modify: function(oo, pp, v)
+                {
+                    var ks = pp.split("/"),
+                        seq= "oo",
+                        i  = 0,
+                        len= ks.length;
+                
+                    for(; i<len; i++) seq += "[\"" + ks[i] + "\"]";
+                    
+                    eval(seq + "="  + JSON.stringifyy(v) + ";");
+                },
+
+                getValue: function(oo, pp)
+                {
+                    var ks = pp.split("/"),
+                    seq= "oo",
+                    i  = 0,
+                    len= ks.length,
+                    myVal;
+                
+                    for(; i<len; i++) seq += "[\"" + ks[i] + "\"]";
+                
+                    eval("myVal = " + seq + ";");
+                    return myVal;
+                },
+
+                info: function()
+                {
+                
+                    var o = {
+                        prop: "properties",
+                        func: "methods",
+                        errMsg: "Can inspect properties or methods only! (prop/func)"
+                    }
+                
+                    if (chk = Arguments.paramCheck(arguments, true)) throw Error(chk.errMsg);
+                    if (["prop", "func"].indexOf(info) < 0)          throw Error(o.errMsg);
+                    if (typeof obj == "undefined")                   throw Error("An undefined value was passed");
+                    if (typeof exec == "undefined")   exec   = false;
+                    if (typeof objSrc == "undefined") objSrc = false;
+                    if (typeof cr == "undefined")     cr     = false; 
+                    if (typeof info == "undefined")   info   = "prop";
+                
+                
+                    info = o[info];
+                    var props = obj.reflect[info];
+                        str   = "";
+                
+                
+                    if (info == o.prop) {
+                            props.forEach(function(prop) {
+                                    val = objSrc ? thiss[prop].toSource() : thiss[prop];
+                                    str += prop + " : " + uneval(val) + "\n";
+                            })
+                    }
+                
+                    if (info === o.func) {
+                            props.forEach(function(prop) {
+                                    val = "";
+                                    if (exec) {
+                                            prop = prop.toString();
+                                            if (!prop.startsWith("set")) {
+                                                    eval("try {val = thiss." + prop + "();}" +
+                                                            "catch(e) { val = e; }");
+                                            }
+                                    }
+                                    str += (prop + " : " + (val));
+                            })
+                    }
+                
+                
+                    if (cf) new File($.fileName.replace(/\.[a-zA-Z]+/, ".info.txt")).$create(str);
+                    return str;
+                },
+
+                print: function(obj, lvl, writeit)
+                {
+                    if(typeof obj == "undefined") return "undefined";
+                    if(typeof lvl  == "undefined") lvl = Math.pow(2, 10);
+                    if(typeof noprint == "undefined") writeit = false;
+                
+                    var str = "",
+                        hdr = "",
+                        max = 50;
+                    
+                    function frame(str, size){
+                
+                        var size    = typeof size == "undefined"?50:size;
+                        var block   = String.fromCharCode(9632); // the block character: ■
+                        var entry   = ((size+2) / 2) - (str.length / 2);
+                        return      ( 
+                                    block.repeat(size+2)+
+                                    "\n"+
+                                    block.repeat(3)+" ".repeat(entry) + str + " ".repeat(size-entry-str.length-4) +block.repeat(3-str.length%2)+ 
+                                    "\n"+
+                                    block.repeat(size+2)+
+                                    "\n"
+                                    );
+                    }
+                
+                    hdr = "["+obj.constructor.name+"]: w/len: " + Object.size(obj);
+                    str    = (frame(hdr, max) + Object.stringify(obj, lvl));
+                
+                
+                    if (writeit) $.writeln(str);
+                    return str;
+                },
+
+                write: function(obj, fName, appnd) {
+
+                    var defaultWPath = Folder.desktop.fsName + "\\";
+                
+                    if(typeof obj   == "undefined") throw Error("Type of obj is undefined");
+                    if(typeof appnd == "undefined") appnd = true;
+                    if(typeof fName == "undefined") fName = defaultWPath;
+                
+                
+                    var sName = $.stack.split("\n")[0].slice(1, -1),
+                        fName = (fName + sName).replace(/\.jsx/, ".md"),
+                        ff    = new File(fName),
+                        wr    = Object.print(obj, true, false);
+                
+                    
+                    if (ff.exists && apnd) ff.$write(wr, 'a');
+                    else ff.$create(wr);
+                    return ff.fsName;
+                },
+
+                typeof: function(v){
+        
+                    if(arguments.length != 1) throw Error("pass 1 variable");
+                    if(v === undefined)       return 'undefined';
+                    if(v === null)            return 'undefined';
+                    if(typeof v == 'xml')     return 'xml';
+                    return v.constructor.name.toLowerCase();
+                },
+
+                create: function (proto)
+                {
+                    function F() {}
+                    F.prototype = proto;
+                
+                    return new F();
+                },
+
+                newObject: function()
+                {    
+                    var oo   = {};
+                    var args = Array.prototype.slice.call(arguments);
+                
+                    for(var i =0; i< args.length; i++)
+                    {
+                        arg = args[i];
+                        if(arg.constructor !== Array) continue;
+                
+                        oo[arg[0]] = arg[1];
+                    }
+                
+                    return oo;
+                },
+
+                fromEntries: function(arr)
+                {
+                    var oo = {};
+                    arr.forEach(function(e){
+                        oo[e] = "";
+                    })
+                
+                    return oo;
+                },
+
+                has: function(h)
+                {
+                    return this.hasOwnProperty(h);
+                },
+
+                inspect: function()
+                {
+                    var props = Object.fromEntries(this.reflect.properties);
+                    var funcs = Object.fromEntries(this.reflect.methods);
+                
+                    for(x in props) if(props.has(x)) props[x] = this[x];
+                    for(y in funcs) if(funcs.has(y)) funcs[y] = app.doUndo(this[y]);
+                
+                    return [props, funcs];
+                }
+
+            })
+
         }),
     }
 })();

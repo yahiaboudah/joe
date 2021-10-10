@@ -50,8 +50,39 @@
 ************************************************************************************/
 /**********************************************************************************/
 
-(function xto()
+(function(H, S)
 {
+
+    H[S] = S;
+    
+    S.load = function(something)
+    {
+        var fun = FUNS[something];
+        if(fun === undefined) return;
+        
+        fun();
+    }
+
+    S.unload = function(something)
+    {
+        var fun  = FUNS[something];
+        var efun = EXTN[something],
+            curr;
+
+        if((fun === undefined) || (efun === undefined)) return;
+
+        for(var i=-1, len = efun.length; ++i<len;)
+        {
+            curr = efun[i];
+            curr = (curr[0] == '-')? curr.shift(): curr;
+            jcur = [something, efun[i]].join('.');
+
+            eval("delete " + jcur);
+        }
+
+        eval(something + "= null;")
+    }
+
     TODO = 
     [
         "Object.getKeyByValue",
@@ -2065,4 +2096,5 @@
             //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
         })
     }
-})();
+
+})($.global, "xto");

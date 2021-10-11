@@ -233,12 +233,6 @@ function copyProperties(origin, target)
         __propsList.forEach(copyProp, {origin: _prop, target:prop})
     })
 }
-
-function copyPropertyShape(origin, target)
-{
-    
-}
-
 (function createWindow(){
 
     w = new Window("palette", "EXPLODE SHAPE!");

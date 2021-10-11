@@ -12,9 +12,9 @@
 *******************************************************************************/
 //---
 /******************************************************************************/
-(function (host, self)
+(function (H, S)
 {        
-    host[self] = self;
+    H[S] = S;
 
     I         = {};
     I.defPath = "C:/Projects/pyjsx/0LOGS";
@@ -27,16 +27,13 @@
         ERROR: 40,
         CRITICAL: 50
     };
-    I.dttypes = {
-        "FULL"    : "toString",
-        "TIME"    : "toTimeString",
-        "TIMEONLY": "toLocaleTimeString",
-        "WEEKDAY" : "toLocaleString"
-    }
     
-    I.fName   = function(args)
+    I.dttypes = 
     {
-        return args.callee.toString().split(" ")[1].replace(/\(.*/, "");
+        FULL     : "toString",
+        TIME     : "toTimeString",
+        TIMEONLY : "toLocaleTimeString",
+        WEEKDAY  : "toLocaleString"
     }
     
     I.mkFile  = function(path, str)
@@ -44,14 +41,11 @@
         return File(path).$write(str);
     }
     
-    I.writeMsg = function(str, mode){
-        var ff = File(self.path);
-        
-        ff.open(mode); ff.write(str);
-        
-        ff.close();
-        return 0;
+    I.writeMsg = function(str, mode)
+    {
+        File(self.path).$write(str, mode || "a");
     }
+
     I.getMsg = function(msg, lvl, noww){
         return "{0}:{1}:{2}\n".f(noww, lvl, msg);
     }

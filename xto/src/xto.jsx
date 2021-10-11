@@ -136,7 +136,6 @@
         "ShapeLayer.prototype.reverseEngineer",
         "ShapeLayer.prototype.clone",
         "Object.getPrototypeOf",
-
     ]
 
     CSTR = 
@@ -329,11 +328,11 @@
                     $.sleep(ms);
                 },
 
-                log: function(){
-
+                log: function(msg)
+                {
                     var fn = $.fileName.split("/").pop();
-                    var fr = File(Folder(File($.fileName).parent).fsName + "/" + fn + ".log");
-                    return (fr.encoding = "UTF-8", fr.open('w'), fr.write(mm + "\n"), fr.close())
+                    var fr = File("{0}/{1}.log".f(Folder(File($.fileName).parent).fsName, fn));
+                    return (fr.encoding = "UTF-8", fr.open('a'), fr.write("\n{0}".f(msg)), fr.close())
                 },
 
                 inside: function(ff)
@@ -354,7 +353,7 @@
                 python : {toString: function(){return "python"}}
             })
 
-            Object.extend($["python"], {
+            Object.extend($.python, {
                 
                 installed: function()
                 {

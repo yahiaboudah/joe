@@ -195,50 +195,48 @@ function copyProperties(origin, target)
     }
 
     origin.properties().forEach(function(_prop){
-
+        
         if(!(_prop.enabled && target.canAddProperty(_prop.matchName))) return;
         
         var prop = target.addProperty(_prop.matchName);
+
+        //------------------------------------------------
+
+        switch (_prop.matchName) 
+        {
+
+            case MATCH_NAMES.merge:
+                prop["mode"].setValue(_prop["mode"].value);
+                return;
+
+            case MATCH_NAMES.blendMode:
+                prop.setValue(_prop.value);
+                return;
+
+            case MATCH_NAMES.shapeGroup:
+                prop.property(MATCH_NAMES.shape)
+                    .setValue(_prop.property(MATCH_NAMES.shape).value);
+                return;
+
+            case MATCH_NAMES.group:
+            case MATCH_NAMES.pathGroup:
+            case MATCH_NAMES.path:
+                copyProperties(_prop, prop);
+                return;
+        }
+
+        //------------------------------------------------
         
         var __propsList = PROPS[Object.getKeyByValue(MATCH_NAMES, _prop.matchName)];
         if(!__propsList) return;
 
         __propsList.forEach(copyProp, {origin: _prop, target:prop})
     })
-
-    for(var i=1; i <= origin.numProperties; i++) 
-    {
-
-        switch (_prop.matchName) 
-        {
-
-            case 'ADBE Vector Filter - Merge':
-            copyProperty('mode', _prop, prop)
-            break;
-
-            case 'ADBE Vector Blend Mode':
-            prop.setValue( _prop.value );
-            break;
-            
-            case 'ADBE Vector Shape - Group':
-            copyPropertyShape(_prop, prop);
-            break;
-
-            case 'ADBE Root Vectors Group':
-            case 'ADBE Vectors Group':
-            case 'ADBE Vector Group':
-            copyProperties(_prop, prop, prefix += '    ')
-            break;
-
-        }
-
-    }
-
 }
 
 function copyPropertyShape(origin, target)
 {
-    target.property('ADBE Vector Shape').setValue( origin.property('ADBE Vector Shape').value );
+    
 }
 
 (function createWindow(){

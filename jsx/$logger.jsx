@@ -46,26 +46,34 @@
         File(self.path).$write(str, mode || "a");
     }
 
-    I.getMsg = function(msg, lvl, noww){
+    I.getMsg = function(msg, lvl, noww)
+    {
         return "{0}:{1}:{2}\n".f(noww, lvl, msg);
     }
-    I.now    = function(){
+
+    I.now    = function()
+    {
         return new Date(Date.now())[I.dttypes[self.dttype]]();
     }
 
-    self.config = function(cfg){
+    I.getScriptName = function(){
+        return $.stack.split("\n")[0].replace(/\[|\]/g, "");
+    }
 
-        ( 'object' == typeof cfg ) || (cfg={});
+    I.getScriptPath = function(){
+        return File($.stack).fsName;
+    }
 
-        self.name  = cfg.name || $.stack.split("\n")[0];
-        self.ext   = "/" + self.name + ".log";
-        self.path  = (cfg.path)  || (I.defPath + self.ext);
-        
-        self.level   = (cfg.level)    || 0;
-        self.dttype  = (cfg.dttpye)   || "TIME";
-        self.format  = cfg.format     || "*time:*level:*message";
+    self.config = function(cfg)
+    {
+        if(cfg.isnt(Object)) cfg = {};
 
-        self.enabled = (cfg.enabled)  || true;
+        if(cfg.name.isnt(String))     cfg.name    = I.getScriptName();
+        if(cfg.path.isnt("Path"))     cfg.path    = I.getScriptPath();
+        if(cfg.level.isnt(Number))    cfg.level   = 0;
+        if(cfg.dttype.isnt(String))   cfg.dttptye = "TIME";
+        if(cfg.format.isnt(String))   cfg.format  = "*time:*level:*message";  
+        if(cfg.enabled.isnt(Boolean)) cfg.enabeld = true;
     }
 
     self.make = function(){ I.mkFile(self.path, ""); }
@@ -78,10 +86,7 @@
             {
                 I.writeMsg(I.getMsg($lvl, msg, I.now()) , "a");
             }
-
-        }).body({
-            $lvl: k
-        }))
+        }).replace("$lvl", k));
     }
 
 }($.global, {toString: function(){ return "logger"}})));

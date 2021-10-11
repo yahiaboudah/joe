@@ -4,27 +4,39 @@ function $http(config)
 {
     return function(config) {
 
-		var url    = (/^(.*):\/\/([A-Za-z0-9\-\.]+):?([0-9]+)?(.*)$/).exec(config.url);
-        var method = config.method || 'GET';
-		
-        if(url == null)  throw "Unable to parse URL";
-	
-		url = 
+		var socket      = new Socket(),
+			URL_PATTERN = (/^(.*):\/\/([A-Za-z0-9\-\.]+):?([0-9]+)?(.*)$/);
+
+		var url    = URL_PATTERN.exec(config.url),
+        	method = config.method || 'GET';
+
+		//----------------------------------------------------------
+		if(!url)			 throw Error("UNABLE to parse URL"); //|
+		if(url[1] != "http") throw Error("ONLY scheme is HTTP"); //|
+		//----------------------------------------------------------
+
+		url =
         {
 			scheme: url[1],
 			host  : url[2],
 			port  : url[3] || (url[1] == "https" ? 443 : 80),
 			path  : url[4]
-		};
+		}
 
-		if(url.scheme != "http") throw "non-http url's not supported yet!";
+		var linkStr = "{0}:{1}".f(url.host, url.port),
+			isOpen  = socket.open(linkStr, "binary");
+		
+		//-------------------------------------------------------------
+		if(!isOpen) throw Error("Can't connect to {0}".f(linkStr)); //|
+		//-------------------------------------------------------------
 
-		var s = new Socket();
-
-		if(!s.open("{0}:{1}".f(url.host, url.port), "binary")) throw "Can\'t connect to {0}:{}".f(url.host, url.port);
-
-		var request = "{0} {1} HTTP/1.0\r\nConnection: close\r\nHost: {2}".f(method, url.path, url.host),
-            header;
+		var request = 
+		[
+			"{0} {1} HTTP/1.0".f(method, url.path),
+			"Connection: close",
+			"Host: {0}".f(url.host)
+		
+		].join("\r\n");
 
 		if(config.payload) 
         {

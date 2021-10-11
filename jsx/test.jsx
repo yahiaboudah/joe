@@ -1,13 +1,5 @@
-// //@include "xto.jsxlib" 
 
-// xto.load([
-//     "CompItem.prototype.getLayersWith",
-//     "String.prototype.f",
-//     "$.global"
-// ]);
+url = "https://www.facebook.com";
+iss = (/^(.*):\/\/([A-Za-z0-9\-\.]+):?([0-9]+)?(.*)$/).exec(url);
 
-// alert(comp.getLayersWith('solo').map(function(layer){
-//     return layer.name;
-// }))
-
-// xto.unload('*');
+$.writeln(iss.join("\n"))

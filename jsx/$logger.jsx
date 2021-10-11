@@ -17,7 +17,6 @@
     H[S] = S;
 
     I         = {};
-    I.defPath = "C:/Projects/pyjsx/0LOGS";
     I.levels  = 
     {
         NONSET: 0,

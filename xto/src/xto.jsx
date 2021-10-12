@@ -415,9 +415,20 @@
 
         WRPR:
         {
-            $Shape:[""],
-            $TextLayer:[""],
-            $Window:[""]
+            $Shape:
+            [
+                ""
+            ],
+
+            $TextLayer:
+            [
+                ""
+            ],
+            
+            $Window:
+            [
+                ""
+            ]
         }
     }
 

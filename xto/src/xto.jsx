@@ -53,7 +53,7 @@
 (function(H, S)
 {
 
-    var yolo = "youwillneverguessthispassword"; 
+    const YOLO = "youwillneverguessthispassword"; 
 
     H[S] = S;
 
@@ -126,7 +126,7 @@
 
     S.updateLib = function(something, fn, pass)
     {
-        if(pass !== yolo) return;
+        if(pass !== YOLO) return;
 
         if(EXTN[something] === undefined) return;
         if(typeof fn !== "function") return;
@@ -143,176 +143,16 @@
         "Object.getPrototypeOf",
     ]
 
-    EXTN = 
-    {
-
-        "$":
-        [
-            "$sleep",
-            "inside"
-        ],
-
-        "$.global":
-        [
-            "-MATCH_NAMES",
-            "-AECMD",
-            "-ClipBoard",
-            "-PYJSX",
-            "-logger",
-            "strr",
-        ],
-        
-        "Function.prototype":
-        [
-            "body",
-            "bind",
-            "timeme"
-        ],
-
-        "Object":
-        [
-            "keys", "newKeys", "extend", "size",
-            "dcKeys", "validate", "validateKeys",
-            "modify", "getValue",
-            "print", "write", 
-            "typeof",
-            "create",
-            "getPrototypeOf", 
-            "newObject", "fromEntries",
-            "has", "inspect"
-        ],
-
-        "Array":
-        [
-            "range",
-            "oneDimIndexFunc", "twoDimIndexFunc"
-        ],
-
-        "Array.prototype":
-        [
-            ["forEach", "forEvery"],
-            ["indexOf", "remove", "includes"], 
-            "rotate", 
-            ["reduce", "map"], 
-            ["fliter", "select"],
-
-            ["max", "min", "sortedIndices", "math2D", "sum"],
-
-            ["upIndex", "bottomIndex", "leftIndex", "rightIndex",
-            "upperLeftIndex", "upperRightIndex", "bottomRightIndex", "bottomLeftIndex"],
-
-            ["+", "-", "*", "/", "^"]
-        ],
-
-        "String.prototype":
-        [
-            ["inspectFF", "checkFF"],
-            ["startsWith", "padding"],
-            ["replaceSeq", "f", "fstr", "_replace"],
-            ["title", "trim", "pushAt"],
-            "*"
-        ],
-
-        "Math": 
-        [
-            "sum",
-            "mult"
-        ],
-
-        "File.prototype":
-        [
-            "-isOpen"
-            ["$open", "$write", "$read", "$close", "$clear"],
-            ["$seek", "$create"],
-            "$execute",
-            "$lines",
-            
-            ["$listenForChange", "$listenForChar", "$listen"],
-
-            ["getDuration", "getName", "getExtension", "getType"]
-        ],
-
-        "Folder.prototype":
-        [
-            ["$clearFolder", "$remove"],
-            ["getFolders", "$getFiles"]
-        ],
-
-        "Window.prototype":
-        [
-            "addAnimatedSequence"
-        ],
-
-        "CompItem.prototype": 
-        [
-            ["setResolution", "getResolution"],
-            ["getLayersWith", "numLayersWithName"],
-            "snap",
-            "sel",
-            "setTime",
-            "workAreaDomain"
-        ],
-
-        "CollectionInterface":
-        [
-            ["toArray", "grab"]
-        ],
-
-        "ItemCollection.prototype":
-        [
-            ["toArray", "grab"],
-        ],
-
-        "LayerCollection.prototype":
-        [
-            ["toArray", "grab"],
-        ],
-
-        "AVLayer.prototype":
-        [
-            ["addProp", "getProp", "removeProp"]
-        ],
-
-        "ShapeLayer.prototype":
-        [
-            ["addProp", "getProp", "removeProp"],
-            "alpha",
-            ["area", "areas"],
-            "distances",
-            "moveFirstVertex",
-            "grabProps",
-
-            ["addStroke", "addFill"]
-        ],
-
-        "PropertyGroup.prototype":
-        [
-            ["is", "isnt"],
-            "containingComp",
-            "properties",
-            ["moveFirstVertex", "mFirstIndex"],
-            "$nearestKeyIndex"
-        ],
-
-        "Table":
-        [
-            ["-fNamePatt", "process", "removeAll"],
-            "prototype.toString",
-            "prototype.getMaxRowSizes", "prototype.maxColumnSizes",
-            "prototype.format", "prototype.render",
-            "prototype.write", "prototype.show"
-        ],
-
-        "ClipBoard":
-        [
-            ["get", "set", "clear"],
-            "unload"
-        ],
-
-    }
-
     EXTO = 
     {
+        GLOB:
+        {
+            STRR: 
+            [
+                "str"
+            ]   
+        },
+
         $$$$: 
         {
             "DATA":
@@ -441,7 +281,10 @@
             "app":
             [
                 "wrapUndo",
-                "doUndo"
+                "doUndo",
+
+                "-MATCH_NAMES",
+                "-AECMD"
             ],
 
             "CompItem.prototype":
@@ -494,6 +337,78 @@
             [
                 ""
             ],
+        },
+
+        SCUI:
+        {
+            "Window.prototype":
+            [
+                "addAnimatedSequence"
+            ]
+        },
+
+        CSTR:
+        {
+            Table:
+            [            
+                "-fNamePatt", "process", "removeAll",
+                "prototype.toString",
+                "prototype.getMaxRowSizes", "prototype.maxColumnSizes",
+                "prototype.format", "prototype.render",
+                "prototype.write", "prototype.show"
+            ],
+
+            Path:
+            [
+                "prototype.py",
+                "prototype.resolve",
+                "prototype.exists", "prototype.mkdir",
+                "prototype.toString",
+                "prototype[\'/\']"
+            ],
+
+            Python:
+            [
+                "installed",
+
+                "-execStr",
+                "-execPath",
+                "-extensions",
+                
+                "prototype.execTime",
+                "prototype.functions",
+                
+                "prototype.makeExec",
+                "prototype.viewExec",
+                "prototype.editExec",
+                "prototype.runExec",
+                
+                "prototype.install",
+                "prototype.repair",
+                "prototype.uninstall",
+                
+                "prototype.call",
+                "prototype.contact",
+                "prototype.build",               
+            ],
+
+            FileInterface:
+            [
+                "prototype.validate",
+                "prototype.make",
+                "prototype.set",
+                "prototype.get",
+                "prototype.modify",
+                "prototype.post",
+                "prototype.crop" 
+            ],
+        },
+
+        WRPR:
+        {
+            $Shape:[""],
+            $TextLayer:[""],
+            $Window:[""]
         }
     }
 

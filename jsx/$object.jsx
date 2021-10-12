@@ -13,10 +13,10 @@
 		Created:        2106 (YYMM)
 		Modified:       2107 (YYMM)
 *******************************************************************************/
-//@include "$array.jsxinc"
-//@include "$arguments.jsxinc"
-//@include "$file.jsxinc"
-//@include "$json.jsxinc"
+//@include "$array.jsx"
+//@include "$arguments.jsx"
+//@include "$file.jsx"
+//@include "$json.jsx"
 /******************************************************************************/
 
 Object.keys = (function () {

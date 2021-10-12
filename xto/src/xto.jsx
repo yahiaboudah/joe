@@ -402,6 +402,15 @@
                 "prototype.post",
                 "prototype.crop" 
             ],
+
+            Logger:
+            [
+                "prototype.debug",
+                "prototype.info",
+                "prototype.warning",
+                "prototype.error",
+                "prototype.critical"
+            ]
         },
 
         WRPR:

@@ -112,10 +112,15 @@
         if(FUNS[something] === undefined) return;
         // write this into the caller file:
         var callerFile = File(File($.stack).fsName);
+        
         callerFile.open("a");
-        callerFile.write("\n\n\n\n");
-        callerFile.write("var " + something.split('.').join('') + "= ");
-        callerFile.write(FUNS[something].toString());
+        callerFile.write([
+            
+            "\n\n\n\n",
+            "var " + something.split('.').join('') + "= ",
+            FUNS[something].toString()
+
+        ].join(""))
         callerFile.close();
     }
 
@@ -138,16 +143,9 @@
         "Object.getPrototypeOf",
     ]
 
-    CSTR = 
-    [
-        "Table",
-        "Path",
-        "CollectionInterface",
-        "$Shape"
-    ]
-
     EXTN = 
     {
+
         "$":
         [
             "$sleep",
@@ -311,6 +309,192 @@
             "unload"
         ],
 
+    }
+
+    EXTO = 
+    {
+        $$$$: 
+        {
+            "DATA":
+            [
+                "log",
+                "ser",
+                "deser",
+                "http"
+            ],
+
+            "DBUG":
+            [
+                "inside",
+                "scan",
+                "inspect",
+            ],
+
+            "MISC":
+            [
+                "/colorPicker",
+                "/sleep",
+                "getClipbaord", "setClipboard", "clearClipboard",
+                "cmd", "wget"
+            ]
+        },
+
+        PRIM:
+        {
+            "String.prototype":
+            [
+                "inspectFF", "checkFF",
+                "startsWith", "padding",
+                "replaceSeq", "fstr", "_replace",
+                "title", "trim", "pushAt",
+                "*"
+            ],
+
+            "Array":
+            [
+                "range",
+                "oneDimIndexFunc", "twoDimIndexFunc"
+            ],
+
+            "Array.prototype":
+            [
+                "forEach", "forEvery",
+                "indexOf", "remove", "includes", 
+                "rotate", 
+                "reduce", "map", 
+                "fliter", "select",
+    
+                "max", "min", "sortedIndices", "math2D", "sum",
+    
+                "upIndex", "bottomIndex", "leftIndex", "rightIndex",
+                "upperLeftIndex", "upperRightIndex", "bottomRightIndex", "bottomLeftIndex",
+    
+                "+", "-", "*", "/", "^"
+            ],
+
+            "Function.prototype":
+            [
+                "bind",
+                "body",
+                "time",
+                "getArgs",
+                "params",
+                "check"
+            ],
+
+            "Number.prototype":
+            [
+                "isOdd", "isEven",
+                "floor", "ceiling"
+            ],
+
+            "Object.prototype":
+            [
+                "f",
+                "in",
+                "is", "isnt"
+            ],
+
+            "Object":
+            [
+                "keys", "newKeys", "extend", "size",
+                "dcKeys", "validate", "validateKeys",
+                "modify", "getValue",
+                "print", "write", 
+                "typeof",
+                "create",
+                "getPrototypeOf", 
+                "newObject", "fromEntries",
+                "has", "inspect"
+            ]
+        },
+
+        DATA:
+        {
+            "File.prototype":
+            [
+                "-isOpen",
+                "/open", "/write", "/read", "/close", "clear",
+                "/seek", "create",
+                "/execute",
+                "lines",
+                
+                "listenForChange", "listenForChar", "listen",
+    
+                "getDuration", "getName", "getExtension", "getType"
+            ],
+
+            "Folder.prototype":
+            [
+                "clearFolder", "/remove",
+                "getFolders", "/getFiles"
+            ],
+
+            "Socket.prototype":
+            [
+                ""
+            ]
+        },
+
+        AFFX:
+        {
+            "app":
+            [
+                "wrapUndo",
+                "doUndo"
+            ],
+
+            "CompItem.prototype":
+            [
+                "setResolution", "getResolution",
+                "getLayersWith", "numLayersWithName",
+                "snap",
+                "sel",
+                "setTime",
+                "workAreaDomain"
+            ],
+
+            "ItemCollection.prototype":
+            [
+                "toArray", "grab"
+            ],
+
+            "LayerCollection.prototype":
+            [
+                "toArray", "grab"
+            ],
+
+            "AVLayer.prototype":
+            [
+                "addProp", "getProp", "removeProp"
+            ],
+
+            "ShapeLayer.prototype":
+            [
+                "addProp", "getProp", "removeProp",
+                "alpha",
+                "area", "areas",
+                "distances",
+                "moveFirstVertex",
+                "grabProps",
+    
+                "stroke", "fill"
+            ],
+
+            "PropertyGroup.prototype":
+            [
+                "is", "isnt",
+                "containingComp",
+                "properties",
+                "moveFirstVertex", "mFirstIndex",
+                "$nearestKeyIndex"
+            ],
+
+            "TextLayer.prototype":
+            [
+                ""
+            ],
+        }
     }
 
     FUNS = 
@@ -579,6 +763,9 @@
             }
 
         }),
+
+        
+        
 
         // REQUIRES: [String.prototype.f, Object.prototype.is, Function.prototype.body, Math.sum]
         "Array.prototype": (function()
@@ -1339,6 +1526,9 @@
                 return s;
             }
         }),
+
+
+
 
         // REQUIRES: [String.prototype,]
         "$.global.Arguments": (function(){
@@ -2141,5 +2331,27 @@
             //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
         })
     }
-
 })($.global, "xto");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

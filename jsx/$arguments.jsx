@@ -81,7 +81,7 @@
 
                 var stack      = $.stack.split("\n");
                 funcName   = stack[stack.length - 3].split("(")[0],
-                funcParams = Arguments.params(eval(funcName).toString()),
+                funcParams = A.params(eval(funcName).toString()),
                 isGreater  = (args.length > funcParams.length),
                 isLess     = (args.length < funcParams.length);
 

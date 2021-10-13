@@ -57,6 +57,11 @@
 
     H[S] = S;
 
+    // BY-DEFAULT: load the BASC functions when XTO is included:
+    //-----------------------------
+    FUNS["BASC"].call($.global);//|
+    //-----------------------------
+
     S.funcsIn = function(something)
     {
         var arr  = [];

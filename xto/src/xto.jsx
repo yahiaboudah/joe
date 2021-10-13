@@ -421,17 +421,17 @@
 
         WRPR:
         {
-            $Shape:
+            SShape:
             [
                 ""
             ],
 
-            $TextLayer:
+            TTextLayer:
             [
                 ""
             ],
 
-            $Window:
+            WWindow:
             [
                 ""
             ]
@@ -2762,7 +2762,18 @@
 
         //------- WRPR -----------------
         WRPR$$Shape: (function(){
-
+            
+            $.global.SShape = function SShape(cfg)
+            {
+                var shape = new Shape();
+            
+                shape.inTangents  = cfg.inTangents;
+                shape.outTangents = cfg.outTangents;
+                shape.vertices    = cfg.vertices;
+                shape.closed      = cfg.closed;
+            
+                return shape;
+            };
         }),
 
         WRPR$$TextLayer: (function(){

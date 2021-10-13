@@ -1088,6 +1088,13 @@
 
         AFFX$TextLayer_prototype: (function(){
 
+            TextLayer.prototype.xt({
+
+                style: function()
+                {
+                    
+                }
+            });
         }),
 
         AFFX$PropertyGroup_prototype: (function(){

@@ -649,8 +649,11 @@
                             hx;
                 },
 
-                cmd: function(msg){
-
+                cmd: function(myCommand, sp)
+                {
+                    var oo = system.callSystem((sp?"cmd /c \"{0}\"":"{0}").f(myCommand));
+                    if(typeof sleep == "number") $.sleep(sleep);
+                    return oo;
                 },
                 //===========================================================================
             })

@@ -74,6 +74,8 @@
 
     S.xt({
 
+        version: '1.0.0',
+
         funcsIn: function(something)
         {
             var arr  = [];

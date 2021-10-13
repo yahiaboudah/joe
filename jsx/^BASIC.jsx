@@ -1,5 +1,20 @@
 
-//@include "$object.jsx";
+Object.prototype.toSource = function()
+{
+    var oo = [];
+    var kk = [];
+    for(x in this) if(this.hasOwnProperty(x))
+    {
+        kk.push(x); oo.push(this[x]);
+    }
+    
+    var str = [];
+    for(var i = 0; i<kk.length;i++)
+    {
+        str.push(kk[i].toString() + ": " + oo[i].toSource());
+    }
+    return str.join("\n");
+}
 
 // replace {0} {1} {2} with args[0] args[1] args[2]..
 Object.prototype.f = function(/*reps*/)
@@ -11,6 +26,7 @@ Object.prototype.f = function(/*reps*/)
     var ff = 
     {
         pat: function(k)
+        // the pattern to look for:
         {
             return RegExp("\\{" + k + "\\}", "gi");
         },
@@ -30,26 +46,29 @@ Object.prototype.f = function(/*reps*/)
                        oo.constructor == Object?
                        {}:
                        undefined;
-            k;
+            var k;
 
-            for(x in oo) if(oo.hasOwnProperty(x))
+             for(x in oo) if(oo.hasOwnProperty(x))
             {
                 k = oo[x];
                 switch (k.constructor)
                 {   
                     case String:
-                        newo[x] = this.str(k, argsArr);
+                        newo[x] = ff.str(k, argsArr);
                         break;
 
                     case Object:
                     case Array:
-                        newo[x] = this.obj(k, argsArr);
+                        newo[x] = callee(k, argsArr);
                         break;
 
-                    default: newo[x] = k;
+                    default: 
+                        newo[x] = k;
+                        break;
                 }
             }
 
+            $.writeln(newo.toSource())
             return newo;
         }
     }
@@ -67,7 +86,7 @@ Object.prototype.f = function(/*reps*/)
     }
 }
 
-$.writeln({
+$.writeln("yoyo ---> ", {
     some: "{0}",
     thiss: "{1} {2} {3}",
     stuff: ["{0} hello", "{3} darlin"],
@@ -79,7 +98,7 @@ $.writeln({
     {
         hima: "{3} yesman!"
     }
-}.f("one", "two", "three", "four").yolo);
+}.f("one", "two", "three", "four").yoyo);
 
 
 // IS, IN, RE

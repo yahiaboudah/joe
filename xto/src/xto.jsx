@@ -573,7 +573,7 @@
                     var folder = Folder(File(file).path).fsName.replace(/\\/gi, "/");
                     file = file.replace(/\\/gi, "/");
             
-                    self.cmd("cd {0} & wget -O {1} {2}".f(
+                    system.callSystem("cd {0} & wget -O {1} {2}".re(
                             folder,
                             file,
                             link

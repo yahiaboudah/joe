@@ -544,6 +544,9 @@
 
             $.xt({
                 
+                clipboardLoaded: false,
+                clipboardLib: 0,
+
                 ser: function(type){
 
                 },

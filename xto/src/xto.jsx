@@ -143,7 +143,7 @@
             callerFile.close();
         },
 
-        updateLib: function(something, fn, pass)
+        updateLib: function(pass, something, fn)
         {
             if(pass !== YOLO) return;
     

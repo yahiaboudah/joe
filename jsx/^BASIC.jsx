@@ -17,105 +17,54 @@ Object.prototype.f = function(/*reps*/)
 
         str: function(ss, argsArr)
         {
-            var fstr = ss,
-                args = argsArr,
-                i    = -1;
-    
-            while(++i <args.length)
-            {
-                fstr = fstr.replace(this.pat(i), args[i]);
-            }
-    
-            return fstr;
-        },
+            var i = -1;
 
-        arr: function(a, argsArr)
-        {
-            var oa = []; //output array
-            for(var i=0; i<a.length; i++)
-            {
-                var k = a[i];
-                switch (k.constructor)
-                {
-                    case String:
-                        oa.push(this.str(k, argsArr));
-                        break;
-
-                    case Array:
-                        oa.push(this.arr(k, argsArr));
-                        break;
-                    
-                    case Object:
-                        oa.push(this.obj(k, argsArr));
-                        break;
-                
-                    default: oa.push(k);
-                }
-            }
-
-            return oa;
+            while(++i <argsArr.length) ss = ss.replace(this.pat(i), argsArr[i]);
+            return ss;
         },
 
         obj: function(oo, argsArr)
         {
-            var newo = {}, k;
+            var newo = (oo.constructor == Array)?
+                       []:
+                       oo.constructor == Object?
+                       {}:
+                       undefined;
+            k;
+
             for(x in oo) if(oo.hasOwnProperty(x))
             {
                 k = oo[x];
                 switch (k.constructor)
-                {
-                    case Array:
-                        newo[x] = this.arr(k, argsArr);
-                        break;
-                    
+                {   
                     case String:
                         newo[x] = this.str(k, argsArr);
                         break;
-                    
+
                     case Object:
+                    case Array:
                         newo[x] = this.obj(k, argsArr);
-                        $.writeln("---> " + Object.keys(newo[x]))
                         break;
 
-                    default: 
-                        newo[x] = k;
-                        break;
+                    default: newo[x] = k;
                 }
             }
 
-            $.writeln(newo.hasOwnProperty("yoyo"))
             return newo;
         }
     }
-    
+
     switch (this.constructor)
     {
         case String:
             return ff.str(this, fargs);
 
-        case Array:
-            return ff.arr(this, fargs);
-        
         case Object:
+        case Array:
             return ff.obj(this, fargs);
 
         default: return this;
     }
-}
-
-Object.prototype.in = function()
-{
-
-}
-
-Object.prototype.is = function()
-{
-
-}
-
-Object.prototype.isnt = function()
-{
-
 }
 
 $.writeln({
@@ -131,3 +80,6 @@ $.writeln({
         hima: "{3} yesman!"
     }
 }.f("one", "two", "three", "four").yolo);
+
+
+// IS, IN, RE

@@ -2610,40 +2610,7 @@
 
         }),
 
-        CSTR$Python: (function(){
-
-        }),
-
-        CSTR$FileInterface: (function(){
-
-        }),
-        
-        CSTR$Logger: (function(){
-
-        }),
-
-        CSTR$Xester: (function(){
-   
-            $.global.Xester = function Xester(){}
-
-            Xester.T =  "✔️";
-            Xester.F =  "❌";
-            
-            Xester.test =  function(H, tests)
-            {
-                for(t in tests) if(tests.hasOwnProperty(t))
-                {
-                    $.writeln("{0} {1}".re(tests[t].call(H)? Xester.T: Xester.F, t));
-                }
-            }
-        }),
-
-        // REQUIRES: [$.global, String.prototype.f,]
-        "$.global.Xester": (function(){
-         
-        }),
-
-        "FileInterface": (function()
+        CSTR$FileInterface: (function()
         {
             
             $.global.FileInterface = function FileInterface()
@@ -2726,7 +2693,28 @@
             }
         }),
 
-        "Table": (function(){
-        })
+        CSTR$Python: (function(){
+
+        }),
+
+        CSTR$Logger: (function(){
+
+        }),
+
+        CSTR$Xester: (function(){
+   
+            $.global.Xester = function Xester(){}
+
+            Xester.T =  "✔️";
+            Xester.F =  "❌";
+            
+            Xester.test =  function(H, tests)
+            {
+                for(t in tests) if(tests.hasOwnProperty(t))
+                {
+                    $.writeln("{0} {1}".re(tests[t].call(H)? Xester.T: Xester.F, t));
+                }
+            }
+        }),
     }
 })($.global, {toString: function(){return "xto"}});

@@ -152,107 +152,17 @@
 
     EXTO = 
     {
-
-        BASC: (function()
-        {    
-
-            delete(Object.prototype.in);
-            Object.prototype.in = function(oo)
-            {
-                switch(oo.constructor)
-                {
-                    case Object:
-                        return oo.hasOwnProperty(this);
-                }
-            }
-
-            delete(Object.prototype.re);
-            Object.prototype.re = function(/*reps*/)
-            {
-                // get reps, convert to string:
-                var fargs = Array.prototype.slice.call(arguments);
-                for(var g = -1; ++g<fargs.length;) fargs[g] = fargs[g].toString();
-            
-                var ff = 
-                {
-                    pat: function(k)
-                    // the pattern to look for:
-                    {
-                        return RegExp("\\{" + k + "\\}", "gi");
-                    },
-            
-                    str: function(ss, argsArr)
-                    {
-                        var i = -1;
-            
-                        while(++i <argsArr.length) ss = ss.replace(this.pat(i), argsArr[i]);
-                        return ss;
-                    },
-            
-                    obj: function(oo, argsArr)
-                    {
-                        var newo = {Array: [], Object: {}}[oo.constructor.name],
-                            k;
-                        
-                        for(x in oo) if(oo.hasOwnProperty(x))
-                        {
-                            k = oo[x];
-                            switch (k.constructor)
-                            {   
-                                case String:
-                                    newo[x] = ff.str(k, argsArr);
-                                    break;
-            
-                                case Object:
-                                case Array:
-                                    newo[x] = ff.obj(k, argsArr);
-                                    break;
-            
-                                default: 
-                                    newo[x] = k;
-                                    break;
-                            }
-                        }
-            
-                        return newo;
-                    }
-                }
-            
-                switch (this.constructor)
-                {
-                    case String:
-                        return ff.str(this, fargs);
-            
-                    case Object:
-                    case Array:
-                        return ff.obj(this, fargs);
-            
-                    default: return this;
-                }
-            }
-            
-            delete(Object.prototype.xt);
-            Object.prototype.xt = function(oo)
-            {
-                for(x in oo) if(oo.hasOwnProperty(x)) this[x] = oo[x];
-            }
-            
-            delete(Object.prototype.is);
-            Object.prototype.is = function()
-            {
-                var _args = Array.prototype.slice.call(arguments), i = -1;
-                var what = this.constructor;
-            
-                while(++i<_args.length) if(what == _args[i]) return true;
-            
-                return false;
-            }
-            
-        }),
+        BASC: 
+        {
+            Object_prototype:
+            [
+                ""
+            ]
+        },
 
         $$$$: 
         {
-            "DATA":
+            DATA:
             [
                 "log",
                 "ser",
@@ -260,14 +170,14 @@
                 "http"
             ],
 
-            "DBUG":
+            DBUG:
             [
                 "inside",
                 "scan",
                 "inspect",
             ],
 
-            "MISC":
+            MISC:
             [
                 "/colorPicker",
                 "/sleep",
@@ -278,7 +188,7 @@
 
         PRIM:
         {
-            "String.prototype":
+            String_prototype:
             [
                 "inspectFF", "checkFF",
                 "startsWith", "padding",
@@ -524,6 +434,110 @@
 
     FUNS = 
     {
+
+        //********************* *******/
+        //*********** BASC ***********/
+
+        BASC: (function()
+        {    
+
+            delete(Object.prototype.in);
+            Object.prototype.in = function(oo)
+            {
+                switch(oo.constructor)
+                {
+                    case Object:
+                        return oo.hasOwnProperty(this);
+                }
+            }
+
+            delete(Object.prototype.re);
+            Object.prototype.re = function(/*reps*/)
+            {
+                // get reps, convert to string:
+                var fargs = Array.prototype.slice.call(arguments);
+                for(var g = -1; ++g<fargs.length;) fargs[g] = fargs[g].toString();
+            
+                var ff = 
+                {
+                    pat: function(k)
+                    // the pattern to look for:
+                    {
+                        return RegExp("\\{" + k + "\\}", "gi");
+                    },
+            
+                    str: function(ss, argsArr)
+                    {
+                        var i = -1;
+            
+                        while(++i <argsArr.length) ss = ss.replace(this.pat(i), argsArr[i]);
+                        return ss;
+                    },
+            
+                    obj: function(oo, argsArr)
+                    {
+                        var newo = {Array: [], Object: {}}[oo.constructor.name],
+                            k;
+                        
+                        for(x in oo) if(oo.hasOwnProperty(x))
+                        {
+                            k = oo[x];
+                            switch (k.constructor)
+                            {   
+                                case String:
+                                    newo[x] = ff.str(k, argsArr);
+                                    break;
+            
+                                case Object:
+                                case Array:
+                                    newo[x] = ff.obj(k, argsArr);
+                                    break;
+            
+                                default: 
+                                    newo[x] = k;
+                                    break;
+                            }
+                        }
+            
+                        return newo;
+                    }
+                }
+            
+                switch (this.constructor)
+                {
+                    case String:
+                        return ff.str(this, fargs);
+            
+                    case Object:
+                    case Array:
+                        return ff.obj(this, fargs);
+            
+                    default: return this;
+                }
+            }
+            
+            delete(Object.prototype.xt);
+            Object.prototype.xt = function(oo)
+            {
+                for(x in oo) if(oo.hasOwnProperty(x)) this[x] = oo[x];
+            }
+            
+            delete(Object.prototype.is);
+            Object.prototype.is = function()
+            {
+                var _args = Array.prototype.slice.call(arguments), i = -1;
+                var what = this.constructor;
+            
+                while(++i<_args.length) if(what == _args[i]) return true;
+            
+                return false;
+            }
+            
+        }),
+
+        //**************************** */
+        //*************************** */
+
         //---------- $$$$ -------------
         $$$$$DATA: (function(){
 

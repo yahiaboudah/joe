@@ -2716,5 +2716,20 @@
                 }
             }
         }),
+
+        //------ END CSTR --------------
+
+        //------- WRPR -----------------
+        WRPR$$Shape: (function(){
+
+        }),
+
+        WRPR$$TextLayer: (function(){
+
+        }),
+
+        WRPR$Wwindow: (function(){
+            
+        })
     }
 })($.global, {toString: function(){return "xto"}});

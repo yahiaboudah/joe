@@ -81,3 +81,26 @@ Object.prototype.re = function(/*reps*/)
         default: return this;
     }
 }
+
+Object.prototype.xt = function(oo)
+{
+    for(x in oo) if(oo.hasOwnProperty(x)) this[x] = oo[x];
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -26,6 +26,27 @@ Object.extend(CollectionInterface, {
     }
 });
 
+// $.global.CollectionInterface = function CollectionInterface(){};
+// $.global.CollectionInterface.xt({
+
+//     toArray: function()
+//     {
+//         var arr = [], i =0, tts = this;
+//         while(++i < tts.length) arr.push(tts[i])
+//         return arr;
+//     },
+
+//     grab   : function(cb) // cb()
+//     {
+//         var items = this.toArray();
+        
+//         return cb.is(Function)?
+//                items.select(cb):
+//                items;
+//     }
+
+// })
+
 (function ExtendItemCollection()
 {
     Object.extend(ItemCollection.prototype, 

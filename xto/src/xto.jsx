@@ -333,13 +333,6 @@
                 "floor", "ceiling"
             ],
 
-            "Object.prototype":
-            [
-                "f",
-                "in",
-                "is", "isnt"
-            ],
-
             "Object":
             [
                 "keys", "newKeys", "extend", "size",
@@ -1248,7 +1241,12 @@
         //------ END AFFX ----------------------
         
 
-        //------- PRIM ----------------
+        //------- PRIM ---------------
+
+        PRIM$Object: (function(){
+            
+        }),
+        
         PRIM$Array_prototype: (function()
         {
             Array.range = function(l){
@@ -1604,6 +1602,10 @@
              * 
              * 
              */
+        }),
+        
+        PRIM$Array: (function(){
+
         }),
 
         PRIM$Function_prototype: (function(){

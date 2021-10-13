@@ -281,13 +281,16 @@
 
         AFFX:
         {
+            $global:
+            [
+                "MATCH_NAMES",
+                "AECMD"
+            ],
+
             app:
             [
                 "wrapUndo",
                 "doUndo",
-
-                "-MATCH_NAMES",
-                "-AECMD"
             ],
 
             CompItem_prototype:
@@ -725,6 +728,11 @@
         //-----------------------------
 
         //----------- AFFX ------------
+
+        AFFX$$global: (function(){
+            
+        }),
+
         AFFX$app: (function(){
             
             app.xt(
@@ -2729,7 +2737,7 @@
         }),
 
         WRPR$Wwindow: (function(){
-            
+
         })
     }
 })($.global, {toString: function(){return "xto"}});

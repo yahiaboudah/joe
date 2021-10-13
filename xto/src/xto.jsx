@@ -2022,7 +2022,7 @@
                 I = {};
         
                 I.notLoaded = true;
-                I.libPath   = new String("{0}/clipboardjsx/clipboard.dll").re(Folder.userData);
+                I.libPath   = ("{0}/clipboardjsx/clipboard.dll").re(Folder.userData);
                 I.libHex    = "(libcode here): hexa";
             
                 I.make = function(){

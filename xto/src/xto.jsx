@@ -2649,6 +2649,54 @@
 
         CSTR$Path: (function(){
 
+            $.global.Path = function Path()
+            {
+                this.ps = [];
+                
+                var ag = Array.prototype.slice.call(arguments),
+                    ln = ag.length,
+                    id = -1;
+                
+                while(++id<ln) this.ps = this.ps.concat(ag[id].split("/"));
+            }
+            
+            Path.prototype.xt({
+                
+                py : function(){
+                    var e1, e2, rt, bd;
+                    e1 = this.ps.shift();
+                    e2 = this.ps.shift();
+                    rt = [e1, e2].join("\\\\");
+                
+                    return [rt, bd].join("\\")
+                },
+                
+                resolve : function(s/*slash*/){ // 0 => /, 1=> \\
+                    return this.ps.join(!s? "/": "\\");
+                },
+                
+                exists : function(){
+                    return Folder(this.resolve()).exists;
+                },
+                
+                mkdir : function(){
+                    if(this.exists()) return false;
+                    return Folder(this.resolve()).create();
+                },
+                
+                toString : function(){
+                    return this.resolve();
+                },
+                
+                "/" : function(op){
+                
+                    return new Path([
+                        this.toString(),
+                        op
+                    ].join('/'));
+                }
+            })
+            
         }),
 
         CSTR$FileInterface: (function()
@@ -2740,6 +2788,7 @@
 
         CSTR$Logger: (function(){
 
+            $.global.Logger = function Logger(){};
         }),
 
         CSTR$Xester: (function(){

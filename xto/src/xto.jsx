@@ -2623,12 +2623,9 @@
         }),
 
         CSTR$Xester: (function(){
+   
+            $.global.Xester = function Xester(){}
 
-        }),
-
-        // REQUIRES: [$.global, String.prototype.f,]
-        "$.global.Xester": (function(){
-            
             Xester.T =  "✔️";
             Xester.F =  "❌";
             
@@ -2639,6 +2636,11 @@
                     $.writeln("{0} {1}".re(tests[t].call(H)? Xester.T: Xester.F, t));
                 }
             }
+        }),
+
+        // REQUIRES: [$.global, String.prototype.f,]
+        "$.global.Xester": (function(){
+         
         }),
 
         "FileInterface": (function()

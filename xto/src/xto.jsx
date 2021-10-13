@@ -579,6 +579,16 @@
 
                 setClipboard: function(){
 
+                    var path = Folder.userData + "/xto$clipboard.dll";
+                    if(!$.clipboardLibFile)
+                    {
+                        var ff = File(path);
+                        (ff.encoding = "UTF-8", ff.open('w'), ff.write($.clipboardLib), ff.close()); 
+                        $.clipboardLibFile = true;
+                        $.clipBoardLib = 0;
+                    }
+
+                    return (new ExternalObject("lib:" + path)).setClipboard();
                 }
             })
         }),

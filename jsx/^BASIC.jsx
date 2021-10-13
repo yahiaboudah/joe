@@ -17,10 +17,11 @@ Object.prototype.toSource = function()
 }
 
 // replace {0} {1} {2} with args[0] args[1] args[2]..
-Object.prototype.f = function(/*reps*/)
+var f = function(/*reps*/)
 {
     // get reps, convert to string:
     var fargs = Array.prototype.slice.call(arguments);
+    var thiss = fargs[0]; fargs.shift();
     for(var g = -1; ++g<fargs.length;) fargs[g] = fargs[g].toString();
 
     var ff = 
@@ -68,38 +69,32 @@ Object.prototype.f = function(/*reps*/)
         }
     }
 
-    switch (this.constructor)
+    switch (thiss.constructor)
     {
         case String:
-            return ff.str(this, fargs);
+            return ff.str(thiss, fargs);
 
         case Object:
         case Array:
-            return ff.obj(this, fargs);
+            return ff.obj(thiss, fargs);
 
         default: return this;
     }
 }
 
-$.writeln('---> ',
-[
-    "{0} hello friend {1}",
-    "fuck {1}, he so trash"
-].f("yo", "sam").toSource())
-
-$.writeln("---> ", {
+$.writeln("---> ", f({
     some: "{0}",
     thiss: "{1} {2} {3}",
-    // stuff: ["{0} hello", "{3} darlin"],
+    stuqsdff: ["{0} hello", "{3} darlin"],
     heyy: "{2}",
-    // yolo: {
-    //     obj: "{0} himalaya"
-    // },
-    // yoyo:
-    // {
-    //     hima: "{3} yesman!"
-    // }
-}.f("one", "two", "three", "four").toSource());
+    sdsd: {
+        obj: "{0} himalaya"
+    },
+    azeaez:
+    {
+        hima: "{3} yesman!"
+    }
+},"one", "two", "three", "four").toSource());
 
 
 // IS, IN, RE

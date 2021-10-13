@@ -41,14 +41,10 @@ Object.prototype.f = function(/*reps*/)
 
         obj: function(oo, argsArr)
         {
-            var newo = (oo.constructor == Array)?
-                       []:
-                       oo.constructor == Object?
-                       {}:
-                       undefined;
-            var k;
-
-             for(x in oo) if(oo.hasOwnProperty(x))
+            var newo = {Array: [], Object: {}}[oo.constructor.name],
+                k;
+            
+            for(x in oo) if(oo.hasOwnProperty(x))
             {
                 k = oo[x];
                 switch (k.constructor)
@@ -68,7 +64,6 @@ Object.prototype.f = function(/*reps*/)
                 }
             }
 
-            $.writeln(newo.toSource())
             return newo;
         }
     }
@@ -86,19 +81,25 @@ Object.prototype.f = function(/*reps*/)
     }
 }
 
-$.writeln("yoyo ---> ", {
+$.writeln('---> ',
+[
+    "{0} hello friend {1}",
+    "fuck {1}, he so trash"
+].f("yo", "sam").toSource())
+
+$.writeln("---> ", {
     some: "{0}",
     thiss: "{1} {2} {3}",
-    stuff: ["{0} hello", "{3} darlin"],
+    // stuff: ["{0} hello", "{3} darlin"],
     heyy: "{2}",
-    yolo: {
-        obj: "{0} himalaya"
-    },
-    yoyo:
-    {
-        hima: "{3} yesman!"
-    }
-}.f("one", "two", "three", "four").yoyo);
+    // yolo: {
+    //     obj: "{0} himalaya"
+    // },
+    // yoyo:
+    // {
+    //     hima: "{3} yesman!"
+    // }
+}.f("one", "two", "three", "four").toSource());
 
 
 // IS, IN, RE

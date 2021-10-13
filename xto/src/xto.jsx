@@ -156,7 +156,10 @@
         {
             Object_prototype:
             [
-                ""
+                "is",
+                "in",
+                "re",
+                "xt"
             ]
         },
 
@@ -197,13 +200,13 @@
                 "*"
             ],
 
-            "Array":
+            Array:
             [
                 "range",
                 "oneDimIndexFunc", "twoDimIndexFunc"
             ],
 
-            "Array.prototype":
+            Array_prototype:
             [
                 "forEach", "forEvery",
                 "indexOf", "remove", "includes", 
@@ -219,7 +222,7 @@
                 "+", "-", "*", "/", "^"
             ],
 
-            "Function.prototype":
+            Function_prototype:
             [
                 "bind",
                 "body",
@@ -229,13 +232,13 @@
                 "check"
             ],
 
-            "Number.prototype":
+            Number_prototype:
             [
                 "isOdd", "isEven",
                 "floor", "ceiling"
             ],
 
-            "Object":
+            Object:
             [
                 "keys", "newKeys", "extend", "size",
                 "dcKeys", "validate", "validateKeys",
@@ -251,7 +254,7 @@
 
         DATA:
         {
-            "File.prototype":
+            File_prototype:
             [
                 "-isOpen",
                 "/open", "/write", "/read", "/close", "clear",
@@ -264,13 +267,13 @@
                 "getDuration", "getName", "getExtension", "getType"
             ],
 
-            "Folder.prototype":
+            Folder_prototype:
             [
                 "clearFolder", "/remove",
                 "getFolders", "/getFiles"
             ],
 
-            "Socket.prototype":
+            Socket_prototype:
             [
                 ""
             ]
@@ -341,7 +344,7 @@
 
         SCUI:
         {
-            "Window.prototype":
+            Window_prototype:
             [
                 "addAnimatedSequence"
             ]

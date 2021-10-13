@@ -544,8 +544,8 @@
 
             $.xt({
                 
-                clipboardLoaded: false,
-                clipboardLib: 0,
+                clipboardLibFile: false,
+                clipboardLib : 0,
 
                 ser: function(type){
 
@@ -564,7 +564,17 @@
                 },
 
                 getClipboard: function(){
+                    
+                    var path = Folder.userData + "/xto$clipboard.dll";
+                    if(!$.clipboardLibFile)
+                    {
+                        var ff = File(path);
+                        (ff.encoding = "UTF-8", ff.open('w'), ff.write($.clipboardLib), ff.close()); 
+                        $.clipboardLibFile = true;
+                        $.clipBoardLib = 0;
+                    }
 
+                    return (new ExternalObject("lib:" + path)).getClipboard();
                 },
 
                 setClipboard: function(){

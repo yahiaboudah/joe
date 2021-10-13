@@ -1246,7 +1246,7 @@
         PRIM$Object: (function(){
             
         }),
-        
+
         PRIM$Array_prototype: (function()
         {
             Array.range = function(l){
@@ -2042,64 +2042,6 @@
             }
         }),
 
-        // REQUIRES: [$.global? String.prototype.f, File.prototype, Folder.prototype,]
-        "$.global.ClipBoard": (function()
-        {
-
-            (function(){
-
-                I = {};
-        
-                I.notLoaded = true;
-                I.libPath   = ("{0}/clipboardjsx/clipboard.dll").re(Folder.userData);
-                I.libHex    = "(libcode here): hexa";
-            
-                I.make = function(){
-            
-                    var dllF = File(I.libPath);
-                    if(!dllF.exists) dllF.$create(I.libHex, "BINARY");
-                }
-            
-                I.load = function()
-                {
-                    if(!I.notLoaded) return;
-                    if(!File(I.libPath).exists) I.make();
-                    I.lib = new ExternalObject("lib:{0}".re(I.libPath));
-                    I.notLoaded = false; 
-                }
-            
-
-                Object.extend($.global["ClipBoard"], 
-                {
-                    unload : function(del)
-                    {
-                        var ff = File(I.libPath);
-                        if(del && ff.exists) ff.remove();
-                        I.lib.unload();
-                        I.notLoaded = true;
-                    },
-                    get : function()
-                    {
-                        if(I.notLoaded) I.load();
-                        c = I.lib.getClipboard();
-                        return c;
-                    },
-                    set : function(cc)
-                    {
-                        if(I.notLoaded) I.load();
-                        I.lib.setClipboard(cc);
-                        return true;
-                    },
-                    clear : function()
-                    {
-                        if(I.notLoaded) I.load();
-                        I.lib.clearClipboard();
-                        return true;
-                    }  
-                });
-            })();
-                  
-        }),
         // REQUIRES : [,]
         // NEEDS SERIOUS REFORM!!
         "Object": (function(){

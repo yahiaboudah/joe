@@ -1990,8 +1990,12 @@
         }),
 
         DATA$Socket_prototype: (function(){
-            
-        })
+
+            Socket.prototype.xt({
+
+
+            })
+        }),
         //--------- END DATA-----------
 
 

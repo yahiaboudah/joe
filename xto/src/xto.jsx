@@ -547,12 +547,16 @@
                 clipboardLibFile: false,
                 clipboardLib : 0,
 
-                ser: function(type){
-
+                ser: function(type)
+                {
+                    if(typeof type == "undefined") type = "JSON";
+                    if(type != "JSON") return;
                 },
 
-                deser: function(type){
-
+                deser: function(type)
+                {
+                    if(typeof type == "undefined") type = "JSON";
+                    if(type != "JSON") return;
                 },
 
                 http: function(type, link, body){

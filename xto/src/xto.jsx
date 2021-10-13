@@ -383,7 +383,7 @@
 
         AFFX:
         {
-            "app":
+            app:
             [
                 "wrapUndo",
                 "doUndo",
@@ -392,7 +392,7 @@
                 "-AECMD"
             ],
 
-            "CompItem.prototype":
+            CompItem_prototype:
             [
                 "setResolution", "getResolution",
                 "getLayersWith", "numLayersWithName",
@@ -402,22 +402,22 @@
                 "workAreaDomain"
             ],
 
-            "ItemCollection.prototype":
+            ItemCollection_prototype:
             [
                 "toArray", "grab"
             ],
 
-            "LayerCollection.prototype":
+            LayerCollection_prototype:
             [
                 "toArray", "grab"
             ],
 
-            "AVLayer.prototype":
+            AVLayer_prototype:
             [
                 "addProp", "getProp", "removeProp"
             ],
 
-            "ShapeLayer.prototype":
+            ShapeLayer_prototype:
             [
                 "addProp", "getProp", "removeProp",
                 "alpha",
@@ -429,7 +429,7 @@
                 "stroke", "fill"
             ],
 
-            "PropertyGroup.prototype":
+            PropertyGroup_prototype:
             [
                 "is", "isnt",
                 "containingComp",
@@ -438,9 +438,9 @@
                 "$nearestKeyIndex"
             ],
 
-            "TextLayer.prototype":
+            TextLayer_prototype:
             [
-                ""
+                "style"
             ],
         },
 
@@ -540,9 +540,44 @@
     FUNS = 
     {
         //---------- $$$$ -------------
-        $$$$: (function(){
-            
+        $$$$$DATA: (function(){
+
             $.xt({
+                
+                ser: function(type){
+
+                },
+
+                deser: function(type){
+
+                },
+
+                http: function(type, link, body){
+
+                },
+
+                wget: function(file, link){
+
+                },
+
+                getClipboard: function(){
+
+                },
+
+                setClipboard: function(){
+
+                }
+            })
+        }),
+
+        $$$$$DEBG: (function(){
+
+            $.xt({
+
+                inside: function(ff)
+                {
+                    return ($.stack.split("\n")[0] == "[{0}]".re(ff.split("/").pop()));
+                },
 
                 sleep: function(ms, msg){
                     
@@ -563,26 +598,16 @@
 
                 },
 
-                ser: function(type){
-
-                },
-
-                deser: function(type){
-
-                },
-
-                http: function(type, link, body){
-
-                },
-        
                 scan: function(){
 
-                },
+                }
+            })
 
-                inside: function(ff)
-                {
-                    return ($.stack.split("\n")[0] == "[{0}]".re(ff.split("/").pop()));
-                },
+        }),
+
+        $$$$$MISC: (function(){
+            
+            $.xt({
 
                 colorPicker  : function(rgba)
                 {
@@ -595,19 +620,6 @@
                 cmd: function(msg){
 
                 },
-
-                wget: function(file, link){
-
-                },
-
-                getClipboard: function(){
-
-                },
-
-                setClipboard: function(){
-
-                }
-
                 //===========================================================================
             })
 

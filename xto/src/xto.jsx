@@ -2331,108 +2331,65 @@
         //--------- END DATA-----------
 
 
-        // REQUIRES: [$.global, String.prototype.f,]
-        "$.global.Xester": (function(){
-            
-            Xester.T =  "✔️";
-            Xester.F =  "❌";
-            
-            Xester.test =  function(H, tests)
-            {
-                for(t in tests) if(tests.hasOwnProperty(t))
+        //--------- SCUI ----------------
+        SCUI$Window_prototype: (function(){
+
+            Window.prototype.xt({
+                
+                addAnimatedSequence : function (imgSeqPath, firstImageIdx)
                 {
-                    $.writeln("{0} {1}".re(tests[t].call(H)? Xester.T: Xester.F, t));
+                    var win = this;
+        
+                    var gif = win.add("image");
+        
+                    gif.imgSeq = Folder(imgSeqPath).getFiles().sort(function(x,y){
+                        
+                        x = parseInt(x.displayName.split('.')[0], 10);
+                        y = parseInt(y.displayName.split('.')[0], 10);
+                        
+                        return x > y
+                    });
+                    gif.idx = 0;
+                    gif.max = gif.imgSeq.length;
+                    
+                    //stop
+                    gif.addEventListener('mouseout', function(){
+                        
+                        if(this.delay)
+                        {
+                            app.cancelTimeout(this.delay);
+                            this.idx  = firstImageIdx;
+                            this.icon = ScriptUI.newImage(this.imgSeq[this.idx]);
+                        }
+                        
+                    });
+        
+                    //play
+                    gif.addEventListener('mouseover',function(){
+                        
+                        var e = this;
+                        var c = callee;
+        
+                        e.idx = (e.idx + 1) % e.max; //% for reset
+                        e.icon = ScriptUI.newImage(e.imgSeq[e.idx]);
+                    
+                        e.delay = app.setTimeout(function() {
+                            c.call(e);
+                        }, 2);
+                    });
+        
+                    gif.icon = ScriptUI.newImage(gif.imgSeq[firstImageIdx]);
+        
+                    return gif;
                 }
-            }
+            })
         }),
+        //-------- END SCUI----------------
 
-        "FileInterface": (function()
-        {
-            
-            $.global.FileInterface = function FileInterface()
-            {
-                this.extension = cfg.extension;
-                this.path      = cfg.filePath;
-                this.fileName  = File(this.path).name;
-                this.structure = cfg.structure;
-                this.signal    = "{0}/executed.tmp".re(this.path)
-            }
-
-            FileInterface.prototype.validate = function(intfObj)
-            {
-                return Object.validateKeys(
-                    intfObj,
-                    "info",
-                    "contacts",
-                    "active_req",
-                    "info/reqs_made",
-                    "info/reqs_exec",
-                    "info/past_reqs",
-                    "active_req/road",
-                    "active_req/trac",
-                    "active_req/seed",
-                    "active_req/crop"
-                );
-            }
-            
-            FileInterface.prototype.make = function()
-            {
-                return File(I.intfPath).$create(jj.ser(I.intf0, 1));
-            }
-            
-            FileInterface.prototype.set = function()
-            {
-                if(!this.validateIntf(intfObj)) throw Error("Invalid PyInterface Obj");
-            
-                return File(this.intfPath).$write(jj.ser(intfObj, 1), 'w');
-            }
-            
-            FileInterface.prototype.get = function()
-            {
-                return jj.deser(File(this.intfPath).$read());
-            }
-            
-            FileInterface.prototype.modify = function(keysP, newV)
-            {
-                var intf = this.get();
-            
-                Object.modify(
-                    intf,
-                    keysP,
-                    typeof newV == "function"?
-                    newV.call(null, Object.getValue(intf, keysP)):
-                    newV
-                );
-                
-                this.set(intf);
-            }
-            
-            FileInterface.prototype.post = function(request)
-            {
-                if(!Object.validateKeys(request, "path", "func", "args")) throw Error("Request structure invalid");
-            
-                this.modify("active_req", request);
-                return PY;
-            }
-            
-            FileInterface.prototype.crop = function(clean)
-            {
-                if(typeof clean == "undefined") clean = true;
-            
-                var intf    = this.get(),
-                    output  = intf.active_req.crop; //crop
-            
-                intf.active_req = this.intf0.active_req;
-                if(clean) this.set(intf);
-                
-                return output;
-            }
-        }),
-
-        "Table": (function(){
-            
-            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ TABLE ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
-
+        //-------- CSTR -----------------
+        CSTR$Table: (function(){
+                        
+            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ TABLE ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
             $.global.Table = function Table(table, margin, VD, HD)
             {
                 this.VD     = VD || "▓"; //Vertical Divider
@@ -2447,15 +2404,10 @@
                 $.log(this.maxColSizes);
                 $.log(this.maxRowSizes);
             }
-            
-            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-            
-        
             //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
             //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
             //                                                                                 ■■■
-        
-            Table.prototype = 
+            Table.prototype.xt( 
             {
                 toString: function(){
                     return this.render();
@@ -2614,46 +2566,145 @@
                 show : function(){
                     $.writeln(this.render())
                 },
-            }
-        
+            });
             //                                                                            ■■■■■■■
             //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-        
-            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-            //                                    CONSTANTS                                    ■■■
-            
-            Table.fNamePatt = /^(table)\s+\[\d+(x)\d+\]\(\d+\)/g;
-            Table.removeAll = function(path)
-            {
-                fs = Folder(path || File($.fileName).path).getFiles("*.txt");
-                i  = fs.length;
-                $.writeln(i);
-                while(i--) if(fs[i].displayName.match(Table.fNamePatt)) fs[i].remove();
-            }
-            Table.process = function(arr, sign)
-            {
-                fArr = [];
-                sign = (sign || ",");
-                behN = 35;
+
+            Table.xt({
+
+                fNamePatt : /^(table)\s+\[\d+(x)\d+\]\(\d+\)/g,
                 
-                for(i=0; i<arr.length; i++)
+                removeAll : function(path)
                 {
-                    tmp = [];
-                    row = arr[i];
-                    spt = row.split(sign);
-                    for(k = 0; k<spt.length; k++)
+                    fs = Folder(path || File($.fileName).path).getFiles("*.txt");
+                    i  = fs.length;
+                    $.writeln(i);
+                    while(i--) if(fs[i].displayName.match(Table.fNamePatt)) fs[i].remove();
+                },
+
+                process : function(arr, sign)
+                {
+                    fArr = [];
+                    sign = (sign || ",");
+                    behN = 35;
+                    
+                    for(i=0; i<arr.length; i++)
                     {
-                        tmp.push(spt[k]
-                                .replace(/^\s*|\s*$/g, "")
-                                .replace(RegExp("(.{"+behN+"})", "g"), "$1\n"));
+                        tmp = [];
+                        row = arr[i];
+                        spt = row.split(sign);
+                        for(k = 0; k<spt.length; k++)
+                        {
+                            tmp.push(spt[k]
+                                    .replace(/^\s*|\s*$/g, "")
+                                    .replace(RegExp("(.{"+behN+"})", "g"), "$1\n"));
+                        }
+                        fArr.push(tmp);
                     }
-                    fArr.push(tmp);
+                    return fArr;
                 }
-                return fArr;
+            })
+        }),
+
+        // REQUIRES: [$.global, String.prototype.f,]
+        "$.global.Xester": (function(){
+            
+            Xester.T =  "✔️";
+            Xester.F =  "❌";
+            
+            Xester.test =  function(H, tests)
+            {
+                for(t in tests) if(tests.hasOwnProperty(t))
+                {
+                    $.writeln("{0} {1}".re(tests[t].call(H)? Xester.T: Xester.F, t));
+                }
             }
-            //                                                                            ■■■■■
-            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+        }),
+
+        "FileInterface": (function()
+        {
+            
+            $.global.FileInterface = function FileInterface()
+            {
+                this.extension = cfg.extension;
+                this.path      = cfg.filePath;
+                this.fileName  = File(this.path).name;
+                this.structure = cfg.structure;
+                this.signal    = "{0}/executed.tmp".re(this.path)
+            }
+
+            FileInterface.prototype.validate = function(intfObj)
+            {
+                return Object.validateKeys(
+                    intfObj,
+                    "info",
+                    "contacts",
+                    "active_req",
+                    "info/reqs_made",
+                    "info/reqs_exec",
+                    "info/past_reqs",
+                    "active_req/road",
+                    "active_req/trac",
+                    "active_req/seed",
+                    "active_req/crop"
+                );
+            }
+            
+            FileInterface.prototype.make = function()
+            {
+                return File(I.intfPath).$create(jj.ser(I.intf0, 1));
+            }
+            
+            FileInterface.prototype.set = function()
+            {
+                if(!this.validateIntf(intfObj)) throw Error("Invalid PyInterface Obj");
+            
+                return File(this.intfPath).$write(jj.ser(intfObj, 1), 'w');
+            }
+            
+            FileInterface.prototype.get = function()
+            {
+                return jj.deser(File(this.intfPath).$read());
+            }
+            
+            FileInterface.prototype.modify = function(keysP, newV)
+            {
+                var intf = this.get();
+            
+                Object.modify(
+                    intf,
+                    keysP,
+                    typeof newV == "function"?
+                    newV.call(null, Object.getValue(intf, keysP)):
+                    newV
+                );
+                
+                this.set(intf);
+            }
+            
+            FileInterface.prototype.post = function(request)
+            {
+                if(!Object.validateKeys(request, "path", "func", "args")) throw Error("Request structure invalid");
+            
+                this.modify("active_req", request);
+                return PY;
+            }
+            
+            FileInterface.prototype.crop = function(clean)
+            {
+                if(typeof clean == "undefined") clean = true;
+            
+                var intf    = this.get(),
+                    output  = intf.active_req.crop; //crop
+            
+                intf.active_req = this.intf0.active_req;
+                if(clean) this.set(intf);
+                
+                return output;
+            }
+        }),
+
+        "Table": (function(){
         })
     }
 })($.global, {toString: function(){return "xto"}});

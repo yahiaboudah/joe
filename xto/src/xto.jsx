@@ -237,17 +237,6 @@
                 for(x in oo) if(oo.hasOwnProperty(x)) this[x] = oo[x];
             }
             
-            delete(Object.rm);
-            Object.rm = function(mo)
-            {
-                eval([
-                    
-                    mo + "= undefined",
-                    "delete( " + mo + ")"
-            
-                ].join(";"))
-            }
-            
             delete(Object.prototype.is);
             Object.prototype.is = function()
             {
@@ -257,14 +246,6 @@
                 while(++i<_args.length) if(what == _args[i]) return true;
             
                 return false;
-            }
-
-            delete(Object.prototype.isnt);
-            Object.prototype.isnt = function()
-            {
-                return !Object.prototype.is.apply(this, 
-                    Array.prototype.slice.call(arguments)
-                );
             }
             
         }),

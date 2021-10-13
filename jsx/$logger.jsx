@@ -88,4 +88,4 @@
         }).replace("$lvl", k));
     }
 
-}($.global, {toString: function(){ return "logger"}})));
+}($.global, {toString: function(){ return "logger"}}));

@@ -16,7 +16,6 @@ Object.prototype.toSource = function()
     return str.join("\n");
 }
 
-// replace {0} {1} {2} with args[0] args[1] args[2]..
 delete(Object.prototype.re);
 Object.prototype.re = function(/*reps*/)
 {
@@ -82,11 +81,13 @@ Object.prototype.re = function(/*reps*/)
     }
 }
 
+delete(Object.prototype.xt);
 Object.prototype.xt = function(oo)
 {
     for(x in oo) if(oo.hasOwnProperty(x)) this[x] = oo[x];
 }
 
+delete(Object.rm);
 Object.rm = function(mo)
 {
     eval([
@@ -97,6 +98,7 @@ Object.rm = function(mo)
     ].join(";"))
 }
 
+delete(Object.prototype.is);
 Object.prototype.is = function()
 {
     var _args = Array.prototype.slice.call(arguments), i = -1;

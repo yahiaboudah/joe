@@ -53,8 +53,7 @@
 (function(H, S)
 {
 
-    const YOLO = "youwillneverguessthispassword"; 
-
+    YOLO = "youwillneverguessthispassword"; 
     H[S] = S;
 
     // BY-DEFAULT: load the BASC functions when XTO is included:
@@ -62,82 +61,85 @@
     FUNS["BASC"].call($.global);//|
     //-----------------------------
 
-    S.funcsIn = function(something)
-    {
-        var arr  = [];
+    S.xt({
 
-        var efun = EXTN[something];
-        if(efun === undefined) return; 
-
-        for(var i=-1, len = efun.length; ++i<len;)
+        funcsIn: function(something)
         {
-            curr = efun[i];
-            curr = (curr[0] == '-')? curr.shift(): curr;
-            jcur = [something, efun[i]].join('.');
+            var arr  = [];
+    
+            var efun = EXTN[something];
+            if(efun === undefined) return; 
+    
+            for(var i=-1, len = efun.length; ++i<len;)
+            {
+                curr = efun[i];
+                curr = (curr[0] == '-')? curr.shift(): curr;
+                jcur = [something, efun[i]].join('.');
+    
+                arr.push(jcurr);
+            }
+        },
 
-            arr.push(jcurr);
-        }
-    }
-
-    S.allFuncs = function()
-    {
-        var totalArr = [];
-        for(x in EXTN) if(EXTN.hasOwnProperty(x))
+        allFuncs: function()
         {
-            Array.prototype.push.apply(totalArr, S.funcsIn(x));
-        }
-        return totalArr;
-    }
+            var totalArr = [];
+            for(x in EXTN) if(EXTN.hasOwnProperty(x))
+            {
+                Array.prototype.push.apply(totalArr, S.funcsIn(x));
+            }
+            return totalArr;
+        },
 
-    S.load = function(something)
-    {
-        if(something == "*") for(mod in FUNS) FUNS[mod]();
-
-        var fun = FUNS[something];
-        if(fun === undefined) return;
-        
-        fun();
-    }
-
-    S.unload = function(something)
-    {
-        if(something == "*")
+        load: function(something)
         {
-            var allFuncs = S.allFuncs(), i = allFuncs.length;
-            while(--i) eval("delete(" + allFuncs[i] + ")");
-        }
-
-        var funcs = S.funcsIn(something), i = -1;
-        while(++i < funcs.length) eval("delete(" + funcs[i] + ")");
-        eval(something + " = null;")
-    }
-
-    S.code = function(something)
-    {
-        if(FUNS[something] === undefined) return;
-        // write this into the caller file:
-        var callerFile = File(File($.stack).fsName);
-        
-        callerFile.open("a");
-        callerFile.write([
+            if(something == "*") for(mod in FUNS) FUNS[mod]();
+    
+            var fun = FUNS[something];
+            if(fun === undefined) return;
             
-            "\n\n\n\n",
-            "var " + something.split('.').join('') + "= ",
-            FUNS[something].toString()
+            fun();
+        },
 
-        ].join(""))
-        callerFile.close();
-    }
+        unload: function(something)
+        {
+            if(something == "*")
+            {
+                var allFuncs = S.allFuncs(), i = allFuncs.length;
+                while(--i) eval("delete(" + allFuncs[i] + ")");
+            }
+    
+            var funcs = S.funcsIn(something), i = -1;
+            while(++i < funcs.length) eval("delete(" + funcs[i] + ")");
+            eval(something + " = null;")
+        },
 
-    S.updateLib = function(something, fn, pass)
-    {
-        if(pass !== YOLO) return;
+        code: function(something)
+        {
+            if(FUNS[something] === undefined) return;
+            // write this into the caller file:
+            var callerFile = File(File($.stack).fsName);
+            
+            callerFile.open("a");
+            callerFile.write([
+                
+                "\n\n\n\n",
+                "var " + something.split('.').join('') + "= ",
+                FUNS[something].toString()
+    
+            ].join(""))
+            callerFile.close();
+        },
 
-        if(EXTN[something] === undefined) return;
-        if(typeof fn !== "function") return;
-
-        EXTN[something] = fn;
-    }
+        updateLib: function(something, fn, pass)
+        {
+            if(pass !== YOLO) return;
+    
+            if(EXTN[something] === undefined) return;
+            if(typeof fn !== "function") return;
+    
+            EXTN[something] = fn;
+        }
+    })
 
     TODO = 
     [

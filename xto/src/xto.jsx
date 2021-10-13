@@ -568,8 +568,16 @@
 
                 },
 
-                wget: function(file, link){
-
+                wget: function(file, link)
+                {   // get images from the web with cmd utility: [WGET]    
+                    var folder = Folder(File(file).path).fsName.replace(/\\/gi, "/");
+                    file = file.replace(/\\/gi, "/");
+            
+                    self.cmd("cd {0} & wget -O {1} {2}".f(
+                            folder,
+                            file,
+                            link
+                    ));
                 },
 
                 getClipboard: function(){

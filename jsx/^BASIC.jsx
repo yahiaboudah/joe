@@ -96,3 +96,13 @@ Object.rm = function(mo)
 
     ].join(";"))
 }
+
+Object.prototype.is = function()
+{
+    var _args = Array.prototype.slice.call(arguments), i = -1;
+    var what = this.constructor;
+
+    while(++i<_args.length) if(what == _args[i]) return true;
+
+    return false;
+}

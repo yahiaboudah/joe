@@ -155,6 +155,17 @@
 
         BASC: (function()
         {    
+
+            delete(Object.prototype.in);
+            Object.prototype.in = function(oo)
+            {
+                switch(oo.constructor)
+                {
+                    case Object:
+                        return oo.hasOwnProperty(this);
+                }
+            }
+
             delete(Object.prototype.re);
             Object.prototype.re = function(/*reps*/)
             {
@@ -859,10 +870,10 @@
                 }
             }
         }),
-
-        // [REQUIRES COLLECTION INTERFACE]
-        AFFX$ItemCollection_prototype: (function(){
-
+        
+        AFFX$ItemCollection_prototype: (function()
+        // [REQURES COLLECTION INTERFACE]
+        {
             ("function" != typeof CollectionInterface) || (function()
             {
                 ItemCollection.prototype.xt(
@@ -873,8 +884,9 @@
             })();
         }),
 
-        AFFX$LayerCollection_prototype: (function(){
-            
+        AFFX$LayerCollection_prototype: (function()
+        // [REQUIRES COLLECTION INTERFACE]
+        {    
             ("function" != typeof CollectionInterface) || (function()
             {
                 LayerCollection.prototype.xt(
@@ -2315,7 +2327,7 @@
         }),
         //--------- END DATA-----------
 
-        
+
         // REQUIRES: [$.global, String.prototype.f,]
         "$.global.Xester": (function(){
             

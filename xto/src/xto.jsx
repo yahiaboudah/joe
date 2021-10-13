@@ -1218,9 +1218,10 @@
                 }
             })
         }),
-        //-----------------------------
+        //------ END AFFX ----------------------
         
 
+        //------- PRIM ----------------
         PRIM$Array_prototype: (function()
         {
             Array.range = function(l){
@@ -1629,370 +1630,369 @@
             })
         }),
 
-        "File.prototype": (function(){
-            
-            File.prototype.isOpen = false;
-            
-            File.prototype.$open = function(mode)
-            {
-                    var cases = ["r", "w", "a", "e"];
-                    idx = cases.indexOf(mode);
-    
-                    if (idx == -1) {
-                            if (this.fsName.checkFF()) with(this) {
-                                    open("e");
-                                    isOpen = true
-                            }
-                            else with(this) {
-                                    open("w");
-                                    isOpen = true
-                            };
-                            return this;
-                    } // throw Error("File open mode is invalid");
-    
-                    this.open(cases[idx]);
-                    this.isOpen = true;
-                    return this;
-            }
-            
-            File.prototype.$close = function()
-            {
-                    this.isOpen = false;
-                    return (this.close(), this);
-            }
-            
-            File.prototype.$write = function(txt, mode)
-            {
-                    if (this.isOpen) this.write(txt, mode);
-                    return (this.$open(mode).write(txt), this.close());
-            }
-            
-            File.prototype.$read = function()
-            {
-                    if (!this.exists) throw Error("Can't read a non-existent file!");
-                    
-                    var d = this.$open("r").read();
-                    this.$close();
-                    return d;
-            }
-            
-            File.prototype.$clear = function(txt)
-            {
-    
-                    return (this.$write(txt || ""), this);
-            }
-            // Handler
-            File.prototype.$seek = function(pos) {
-    
-                    if (!this.isOpen) this.$open('r');
-                    return (this.seek(pos), this);
-            }
-            
-            File.prototype.$create = function(text, encoding)
-            {
-    
-                    this.encoding = encoding || "UTF-8";
-                    return (this.$write((text || ""), 'w'), this);
-            }
-            
-            File.prototype.$execute = function(slp, cb, doClose)
-            {
-                    this.execute();
-                    if(!!doClose) this.$close();
-                    $.sleep(slp || 0);
-                    if(typeof callback == "function") cb.call(this);
-    
-                    return this;
-            }
-            
-            File.prototype.$lines = function()
-            {
-                    var lines = [];
-                    this.$open("r");
-    
-                    while (!this.eof) lines.push(this.readln());
-    
-                    return (this.$close(), lines);
-            }
-            
-            File.prototype.$listenForChange = function(debug, wait, maxiter)
-            {
-                    var iter = -1, maxiter = maxiter || 100;
-    
-                    while (++iter < maxiter) {
-                            if (this.modified > lmod) break;
-                            $.$sleep(
-                                    !wait? 180: wait == "exp"? Math.round(2, iter+6):
-                                    wait,
-                                    debug,
-                                    iter
-                            );
-                    }
-    
-            }
-            
-            File.prototype.$listenForChar = function(charac, pos, wait, maxiter, debug)
-            {
-    
-                    var iter = -1, maxiter = maxiter || 100;
-                    while (++iter < maxiter) {
-    
-                            if (this.$open('r').$seek(pos).readch() == charac) break;
-                            else $.$sleep(wait, debug, iter);
-                    }
-                    
-                    this.$close();
-            }
-            
-            File.prototype.$listen = function(delay, debug, patience, cleanup)
-            {
-    
-                    patience = patience || 60000;
-                    var ttdelay = 0;
-    
-                    while(1)
-                    {       
-                            if(this.exists)
-                            {
-                                    (!cleanup) || (this.remove());
-                                    break;
-                            }
-                            if(ttdelay > patience) break;
-                            $.$sleep(delay, debug, "File not found yet");
-                            ttdelay += delay;
-                    }
-            }
-            
-            File.prototype.getDuration = function()
-            {
-                    if(!this.exists) return 0;
-                    if(!["video", "audio"].includes(this.getType())) return 0;
-                    
-                    k = app.project.importFile(new ImportOptions(this));
-                    d = k.duration;
-                    
-                    k.remove(); k = null;
-                    return d;
-            }
-            
-            File.prototype.getName = function()
-            {
-                    return this.name.replace(/.[^.]+$/, "");
-            }
-            
-            File.prototype.getExtension = function()
-            {
-                    return this.name.replace(/^.*\./, "");
-            }
-            
-            File.prototype.getType = function()
-            {
-                    xt = this.name.replace(/^.*\./,"").toLowerCase();
-                    tp = File.TYPES_BY_EXTENSION[xt] || 7;
-                    nm = File.CATEGORIES[tp].toLowerCase();
-    
-                    return nm;
-            }
-
-        }),
-
-        "Folder.prototype": (function()
+        PRIM$String_prototype: (function()
         {
-            Folder.prototype.$clearFolder = function(extensionName)
-            {
-                if(this.constructor !== Folder) return;
-                if (this.fsName.checkFF() != -1) throw Error("dirPath is not a folder path");
-                var isAll = (typeof extensionName == "undefined")? true: false;
+            String.prototype.xt({
 
-                var ffs = this.getFiles();
+                inspectFF : function() {
 
-                ffs.forEach(function(f) {
-                        var ext = f.fsName.split('.');
-                        ext = ext[ext.length-1];
-                        if (f.constructor == File && (isAll || (ext == extensionName)) ) f.remove();
-                })
-
-                return 0;
-            }
-            
-            Folder.prototype.$remove = function()
-            {
-                    if(this.constructor !== Folder) return;
-                    return (this.$clearFolder(), this.remove(), 0);
-            }
-            
-            Folder.prototype.getFolders = function()
-            {
-                    if(this.constructor !== Folder) return;
-                    var al = [];
-                    this.getFiles().forEach(function(f){ if(f.constructor == Folder) al.push(f)})
-                    return al; 
-            }
-            
-            Folder.prototype.$getFiles = function()
-            {        
-                    if(this.constructor !== Folder) return;
+                    var inspection = {},
+                        parts = this.split('/'),
+                        lastPart = parts.pop(),
+                        numParts = parts.length,
+                        fStr0 = this[0],
+                        fStr1 = this[1];
+                
+                    inspection.folderDepth = numParts;
+                    inspection.drive = (fStr1 == ':') ? fStr0 : null;
+                    inspection.isFile = false;
+                    inspection.isFolder = false;
+                    inspection.extension = "";
+                
+                    /**
+                     * if last part contains a dot: file
+                     * if not: check numParts: if 0: invalid path string
+                     * if numParts > 0: folder
+                     */
+                
+                    if (lastPart.indexOf('.') > -1) 
+                            Object.newKeys(inspection,["valid", "isFile", "isFolder","extension"],
+                                                      [true,true,false,lastPart.split('.').pop()]);
+                
+                    else Object.newKeys(inspection, ["valid", "isFolder"], [!!numParts, !!numParts]);
+                
+                
+                    return inspection;
+                },
+    
+                startsWith : function(search, rawPos)
+                {
+                
+                    var pos = rawPos > 0 ? rawPos | 0 : 0;
                     
-                    var al = [];
-                    this.getFiles().forEach(function(f){ if(f.constructor == File) al.push(f)})
-                    return al; 
-            }
+                    return this.substring(pos, pos + search.length) === search;
+                },
+                
+                padding : function()
+                {    
+                    (pad = /^\s*/).exec(this);
+                    return pad.lastIndex;
+                },
+                
+                checkFF : function() {
+                
+                    var ff = Folder(this);
+                
+                    if (!ff.exists) return 0;
+                    return (ff.constructor == File)? 1: -1;
+                },
+                
+                replaceSeq : function(specialChar/*, str1, str2..*/) {
+                
+                    startIdx = 1;
+                    if (typeof specialChar == "undefined"){
+                        specialChar = '@';
+                        startIdx    =  0;  
+                    }
+                
+                    var thiss = this, 
+                        args  = Array.prototype.slice.call(arguments, startIdx),
+                        patt  = new RegExp(specialChar),    
+                        i     = 0;
+                    
+                    while (thiss.search(patt) != -1) thiss = thiss.replace(patt, args[i++] || specialChar);
+                
+                
+                    return thiss;
+                },
+                
+                title : function() {
+                    return this[0].toUpperCase() + this.slice(1);
+                },
+                
+                trim : function(){
+                    return this.replace(/^\s*/,"").replace(/\s*$/,"");
+                },
+                
+                _replace : function(repCfg){
+                    
+                    var str = this;
+                    for(x in repCfg) if(repCfg.hasOwnProperty(x))
+                    {
+                        str = str.split(x).join(repCfg[x])
+                    }
+                    return str;
+                },
+                
+                "*" : function(op, joinChar)
+                {
+                    if(!$.global.strr)
+                    {
+                        $.global.strr = function(s){return new String(s)};
+                    }
+                
+                    var str = this, fstr = [fstr];
+                    if(isNaN(op = Math.floor(op))) return str;
+                    
+                    while(op--) fstr.push(str);
+                    return fstr.join(joinChar); 
+                },
+                
+                pushAt : function(atIndex, pushChar, delet, numDelete) {
+                    
+                    delet     = (typeof delet == "undefined")? 1: delet;
+                    numDelete = (typeof delet == "undefined")? 1: numDelete;
+                    
+                    first = this.substring(0, atIndex);
+                    last  = this.substring(delet? (atIndex+numDelete): atIndex);
+                
+                    return first + pushChar + last;
+                },
+                
+                fstr : function()
+                {
+                    arra = Array.prototype.slice.call(arguments);
+                    s    = this.toString();
+                    patt = /&/g;
+                    
+                    while(!!patt.exec(s))
+                    {
+                      li = patt.lastIndex -1;
+                      no = s[li+1];
+                      if(isNaN(no)) continue;
+                      s = s.pushAt(li, arra[no-1], 1, 2);
+                    }
+                
+                    return s;
+                }
+            })
         }),
 
-        // REQUIRES: [,]
-        "String.prototype": (function()
+        PRIM$Number_prototype: (function(){
+
+        }),
+        //-------- END PRIM -------------
+
+        //----------- DATA-------------
+        DATA$File_prototype: (function(){
+
+            File.prototype.xt({
+
+                isOpen : false,
+            
+                open : function(mode)
+                {
+                        var cases = ["r", "w", "a", "e"];
+                        idx = cases.indexOf(mode);
+        
+                        if (idx == -1) {
+                                if (this.fsName.checkFF()) with(this) {
+                                        open("e");
+                                        isOpen = true
+                                }
+                                else with(this) {
+                                        open("w");
+                                        isOpen = true
+                                };
+                                return this;
+                        } // throw Error("File open mode is invalid");
+        
+                        this.open(cases[idx]);
+                        this.isOpen = true;
+                        return this;
+                },
+                
+                close = function()
+                {
+                        this.isOpen = false;
+                        return (this.close(), this);
+                },
+                
+                write : function(txt, mode)
+                {
+                        if (this.isOpen) this.write(txt, mode);
+                        return (this.$open(mode).write(txt), this.close());
+                },
+                
+                read : function()
+                {
+                        if (!this.exists) throw Error("Can't read a non-existent file!");
+                        
+                        var d = this.$open("r").read();
+                        this.$close();
+                        return d;
+                },
+                
+                clear : function(txt)
+                {
+        
+                        return (this.$write(txt || ""), this);
+                },
+                
+                seek : function(pos) {
+        
+                        if (!this.isOpen) this.$open('r');
+                        return (this.seek(pos), this);
+                },
+                
+                create : function(text, encoding)
+                {
+        
+                        this.encoding = encoding || "UTF-8";
+                        return (this.$write((text || ""), 'w'), this);
+                },
+                
+                execute = function(slp, cb, doClose)
+                {
+                        this.execute();
+                        if(!!doClose) this.$close();
+                        $.sleep(slp || 0);
+                        if(typeof callback == "function") cb.call(this);
+        
+                        return this;
+                },
+                
+                lines : function()
+                {
+                        var lines = [];
+                        this.$open("r");
+        
+                        while (!this.eof) lines.push(this.readln());
+        
+                        return (this.$close(), lines);
+                },
+                
+                listenForChange : function(debug, wait, maxiter)
+                {
+                        var iter = -1, maxiter = maxiter || 100;
+        
+                        while (++iter < maxiter) {
+                                if (this.modified > lmod) break;
+                                $.$sleep(
+                                        !wait? 180: wait == "exp"? Math.round(2, iter+6):
+                                        wait,
+                                        debug,
+                                        iter
+                                );
+                        }
+        
+                },
+                
+                listenForChar : function(charac, pos, wait, maxiter, debug)
+                {
+        
+                        var iter = -1, maxiter = maxiter || 100;
+                        while (++iter < maxiter) {
+        
+                                if (this.$open('r').$seek(pos).readch() == charac) break;
+                                else $.$sleep(wait, debug, iter);
+                        }
+                        
+                        this.$close();
+                },
+                
+                listen : function(delay, debug, patience, cleanup)
+                {
+        
+                        patience = patience || 60000;
+                        var ttdelay = 0;
+        
+                        while(1)
+                        {       
+                                if(this.exists)
+                                {
+                                        (!cleanup) || (this.remove());
+                                        break;
+                                }
+                                if(ttdelay > patience) break;
+                                $.$sleep(delay, debug, "File not found yet");
+                                ttdelay += delay;
+                        }
+                },
+                
+                getDuration : function()
+                {
+                        if(!this.exists) return 0;
+                        if(!["video", "audio"].includes(this.getType())) return 0;
+                        
+                        k = app.project.importFile(new ImportOptions(this));
+                        d = k.duration;
+                        
+                        k.remove(); k = null;
+                        return d;
+                },
+                
+                getName : function()
+                {
+                        return this.name.replace(/.[^.]+$/, "");
+                },
+                
+                getExtension : function()
+                {
+                        return this.name.replace(/^.*\./, "");
+                },
+                
+                getType : function()
+                {
+                        xt = this.name.replace(/^.*\./,"").toLowerCase();
+                        tp = File.TYPES_BY_EXTENSION[xt] || 7;
+                        nm = File.CATEGORIES[tp].toLowerCase();
+        
+                        return nm;
+                }
+            })
+        }),
+
+        DATA$Folder_prototype: (function()
         {
-            String.prototype.inspectFF = function() {
-
-                var inspection = {},
-                    parts = this.split('/'),
-                    lastPart = parts.pop(),
-                    numParts = parts.length,
-                    fStr0 = this[0],
-                    fStr1 = this[1];
-            
-                inspection.folderDepth = numParts;
-                inspection.drive = (fStr1 == ':') ? fStr0 : null;
-                inspection.isFile = false;
-                inspection.isFolder = false;
-                inspection.extension = "";
-            
-                /**
-                 * if last part contains a dot: file
-                 * if not: check numParts: if 0: invalid path string
-                 * if numParts > 0: folder
-                 */
-            
-                if (lastPart.indexOf('.') > -1) 
-                        Object.newKeys(inspection,["valid", "isFile", "isFolder","extension"],
-                                                  [true,true,false,lastPart.split('.').pop()]);
-            
-                else Object.newKeys(inspection, ["valid", "isFolder"], [!!numParts, !!numParts]);
-            
-            
-                return inspection;
-            }
-
-            String.prototype.startsWith = function(search, rawPos)
-            {
-            
-                var pos = rawPos > 0 ? rawPos | 0 : 0;
+            Folder.prototype.xt({
                 
-                return this.substring(pos, pos + search.length) === search;
-            }
-            
-            String.prototype.padding = function()
-            {    
-                (pad = /^\s*/).exec(this);
-                return pad.lastIndex;
-            }
-            
-            String.prototype.checkFF = function() {
-            
-                var ff = Folder(this);
-            
-                if (!ff.exists) return 0;
-                return (ff.constructor == File)? 1: -1;
-            }
-            
-            String.prototype.replaceSeq = function(specialChar/*, str1, str2..*/) {
-            
-                startIdx = 1;
-                if (typeof specialChar == "undefined"){
-                    specialChar = '@';
-                    startIdx    =  0;  
-                }
-            
-                var thiss = this, 
-                    args  = Array.prototype.slice.call(arguments, startIdx),
-                    patt  = new RegExp(specialChar),    
-                    i     = 0;
-                
-                while (thiss.search(patt) != -1) thiss = thiss.replace(patt, args[i++] || specialChar);
-            
-            
-                return thiss;
-            }
-            
-            String.prototype.title = function() {
-                return this[0].toUpperCase() + this.slice(1);
-            }
-            
-            String.prototype.f = function() {
-                
-                var frmt = this,
-                    args = Array.prototype.slice.call(arguments),
-                    i    = -1;
-            
-                for (;++i < args.length;) 
+                clearFolder : function(extensionName)
                 {
-                    frmt = frmt.replace(
-                        RegExp("\\{" + i + "\\}", 'gi'),
-                        args[i]
-                        );
-                }
-            
-                return frmt;
-            }
-            
-            String.prototype.trim = function(){
-                return this.replace(/^\s*/,"").replace(/\s*$/,"");
-            }
-            
-            String.prototype._replace = function(repCfg){
+                    if(this.constructor !== Folder) return;
+                    if (this.fsName.checkFF() != -1) throw Error("dirPath is not a folder path");
+                    var isAll = (typeof extensionName == "undefined")? true: false;
+    
+                    var ffs = this.getFiles();
+    
+                    ffs.forEach(function(f) {
+                            var ext = f.fsName.split('.');
+                            ext = ext[ext.length-1];
+                            if (f.constructor == File && (isAll || (ext == extensionName)) ) f.remove();
+                    })
+    
+                    return 0;
+                },
                 
-                var str = this;
-                for(x in repCfg) if(repCfg.hasOwnProperty(x))
+                remove : function()
                 {
-                    str = str.split(x).join(repCfg[x])
-                }
-                return str;
-            }
-            
-            String.prototype["*"] = function(op, joinChar)
-            {
-                if(!$.global.strr)
+                        if(this.constructor !== Folder) return;
+                        return (this.$clearFolder(), this.remove(), 0);
+                },
+                
+                getFolders : function()
                 {
-                    $.global.strr = function(s){return new String(s)};
+                        if(this.constructor !== Folder) return;
+                        var al = [];
+                        this.getFiles().forEach(function(f){ if(f.constructor == Folder) al.push(f)})
+                        return al; 
+                },
+                
+                $getFiles : function()
+                {        
+                        if(this.constructor !== Folder) return;
+                        
+                        var al = [];
+                        this.getFiles().forEach(function(f){ if(f.constructor == File) al.push(f)})
+                        return al; 
                 }
-            
-                var str = this, fstr = [fstr];
-                if(isNaN(op = Math.floor(op))) return str;
-                
-                while(op--) fstr.push(str);
-                return fstr.join(joinChar); 
-            }
-            
-            String.prototype.pushAt = function(atIndex, pushChar, delet, numDelete) {
-                
-                delet     = (typeof delet == "undefined")? 1: delet;
-                numDelete = (typeof delet == "undefined")? 1: numDelete;
-                
-                first = this.substring(0, atIndex);
-                last  = this.substring(delet? (atIndex+numDelete): atIndex);
-            
-                return first + pushChar + last;
-            }
-            
-            String.prototype.fstr = function()
-            {
-                arra = Array.prototype.slice.call(arguments);
-                s    = this.toString();
-                patt = /&/g;
-                
-                while(!!patt.exec(s))
-                {
-                  li = patt.lastIndex -1;
-                  no = s[li+1];
-                  if(isNaN(no)) continue;
-                  s = s.pushAt(li, arra[no-1], 1, 2);
-                }
-            
-                return s;
-            }
+            })
         }),
 
-
+        DATA$Socket_prototype: (function(){
+            
+        })
+        //--------- END DATA-----------
 
 
         // REQUIRES: [String.prototype,]

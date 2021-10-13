@@ -1507,11 +1507,6 @@
                     return oo;
                 },
 
-                has: function(h)
-                {
-                    return this.hasOwnProperty(h);
-                },
-
                 inspect: function()
                 {
                     var props = Object.fromEntries(this.reflect.properties);
@@ -1521,6 +1516,16 @@
                     for(y in funcs) if(funcs.has(y)) funcs[y] = app.doUndo(this[y]);
                 
                     return [props, funcs];
+                },
+
+                rm : function(mo)
+                {
+                    eval([
+                        
+                        mo + "= undefined",
+                        "delete( " + mo + ")"
+                
+                    ].join(";"))
                 }
 
             })

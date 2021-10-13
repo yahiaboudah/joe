@@ -2606,6 +2606,26 @@
             })
         }),
 
+        CSTR$Path: (function(){
+
+        }),
+
+        CSTR$Python: (function(){
+
+        }),
+
+        CSTR$FileInterface: (function(){
+
+        }),
+        
+        CSTR$Logger: (function(){
+
+        }),
+
+        CSTR$Xester: (function(){
+
+        }),
+
         // REQUIRES: [$.global, String.prototype.f,]
         "$.global.Xester": (function(){
             

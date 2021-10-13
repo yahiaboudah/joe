@@ -1578,43 +1578,55 @@
              */
         }),
 
-        // REQUIRES: [String.prototype._replace,]
-        "Function.prototype": (function(){
+        PRIM$Function_prototype: (function(){
             
-            // myFunc.bind({some: "some", shit: "shit"}) => boundFunc (function)
-            Function.prototype.bind = function(thisArg) 
-            {
-                var method = this;
-                var args = Array.prototype.slice.call(arguments, 1);
-            
-                return function bound() {
-                    var _args = args.concat(Array.prototype.slice.call(arguments));
-                    if (!(this instanceof bound))
-                        return method.apply(thisArg, _args);
-            
-                    var __args = [];
-                    for (var i = 0, len = _args.length; i < len; i++)
-                        __args.push('_args[' + i + ']');
-            
-                    return eval('new method(' + __args.join(',') + ')');
-                };
-            }
-            // myFunc.body() => "var shit = 0;\nreturn shit;"
-            Function.prototype.body = function(repConfig)
-            {   
-                return this.toString()
-                       .replace(/^[^{]*\{[\s]*/,"    ")
-                       .replace(/\s*\}[^}]*$/,"")._replace(repConfig || {});
-            }
-            
-            // myFunc.timeme({some: "some", shit: "shit"}, [arg1, arg2, arg3,..]) => 3.22254424 (ms)
-            Function.prototype.timeme = function(thisArg, args)
-            {
-                $.hiresTimer;
-                this.apply(thisArg, args);
-                return ($.hiresTimer / 1000000);	
-            }
+            Function.prototype.xt({
+                
+                bind : function(thisArg) 
+                {
+                    var method = this;
+                    var args = Array.prototype.slice.call(arguments, 1);
+                
+                    return function bound() {
+                        var _args = args.concat(Array.prototype.slice.call(arguments));
+                        if (!(this instanceof bound))
+                            return method.apply(thisArg, _args);
+                
+                        var __args = [];
+                        for (var i = 0, len = _args.length; i < len; i++)
+                            __args.push('_args[' + i + ']');
+                
+                        return eval('new method(' + __args.join(',') + ')');
+                    };
+                },
+                
+                body : function(repConfig)
+                {   
+                    return this.toString()
+                        .replace(/^[^{]*\{[\s]*/,"    ")
+                        .replace(/\s*\}[^}]*$/,"")._replace(repConfig || {});
+                },
+                
+                timeme : function(thisArg, args)
+                {
+                    $.hiresTimer;
+                    this.apply(thisArg, args);
+                    return ($.hiresTimer / 1000000);	
+                },
 
+                getArgs : function(){
+
+                },
+
+                params: function(){
+
+                },
+
+                check : function(){
+
+                },
+
+            })
         }),
 
         "File.prototype": (function(){

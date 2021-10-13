@@ -87,20 +87,12 @@ Object.prototype.xt = function(oo)
     for(x in oo) if(oo.hasOwnProperty(x)) this[x] = oo[x];
 }
 
+Object.rm = function(mo)
+{
+    eval([
+        
+        mo + "= undefined",
+        "delete( " + mo + ")"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    ].join(";"))
+}

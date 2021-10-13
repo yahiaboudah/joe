@@ -60,6 +60,8 @@
         "ShapeLayer.prototype.reverseEngineer",
         "ShapeLayer.prototype.clone",
         "Object.getPrototypeOf",
+        "$.ser",
+        "$.deser"
     ]
     
     YOLO = "youwillneverguessthispassword"; 
@@ -665,76 +667,6 @@
                 },
                 //===========================================================================
             })
-
-            Object.extend($.python, {
-                
-                installed: function()
-                {
-                    return sys.cmd("python --version").split(" ")[0] == "Python";
-                },
-
-                functions: function(p)
-                {
-                    var m   = File(p).$read().match(/(([\n]+def)|^def)\s+.+\(.*\)/g),
-                    fs  = [], nameArgs, name, args, aaa;
-        
-                    for(var i=0, len=m.length; i< len;i++)
-                    {
-                        nameArgs = m[i].replace(/[\n]+/g, "").replace(/def[\s]+/g, "").split("(");
-                        name     = nameArgs[0].replace(/\s*$/,"");
-                        args     = nameArgs[1].slice(0,-1).split(",");
-                        
-                        aaa      = { "default": [], "non_default": []};
-        
-                        if(args[0]) for(var k=0, klen = args.length; k< klen; k++)
-                        {
-                            arg = args[k].split("=");
-                            aaa[(arg.length-1)?"_default":"non_default"].push(arg[0]);
-                        }
-                        fs.push({"name": name, "args": aaa});
-                    }
-                    return fs;
-                },
-
-                makeExec: function()
-                {
-                    return File(this.execPath).$create(this.execStr);
-                },        
-                
-                runExec: function()
-                {
-                    var sf = File(I.sgnlPath);
-                    if(sf.exists) sf.remove();
-                    
-                    I.modIntf("info/reqs_made", function(v){ return v+1});
-                    File(this.execPath).$execute();
-                    sf.$listen(this.pyExTime, false, undefined, true/*remove signal file once it appears*/);
-                    
-                    return I;
-                },
-                
-                viewExec   : function(editor)
-                {
-                    sys.cmd("{1} {0}".re(File(this.execPath).fsName), editor || "notepad");
-                },
-
-                editExec   : function(fs)
-                {
-                    if(fs.constructor == File) fs = fs.$read();
-                    this.execStr = fs;
-                },
-
-                //========================================
-
-                execStr: "def pyjsx_run():\n    import json, sys, os\n    inst_path  = '"+self.instPath+"/'\n    intf_path   =  (inst_path + 'PyIntf.pyintf')\n    exec_signal =  (inst_path + 'executed.tmp')\n    def strr(ss):\n        if(ss in ['true', 'false']): return ss.title()\n        if(type(ss) is str):         return '\"' + ss + '\"'\n        return str(ss)\n    with open(intf_path, 'r') as f:\n        c= f.read()\n    if not c: return 'Python Error: interface corrupt'\n    intff = json.loads(c)\n    AR    = intff['active_req']\n    path  = AR   ['road']\n    func  = AR   ['trac']\n    name  = '.'.join(path.split('/')[-1].split('.')[0:-1])\n    args  = ','.join(strr(e) for e in AR['seed'])\n    sys.path.append(os.path.dirname(path))\n    try:\n        exec('import ' + name + ' as s')\n        result = eval('s.' + func + '(' + args + ')')\n    except Exception as e:\n        result = 'Python Error: ' + str(e).replace('\'', '\\\'')\n    intff['active_req']['crop'] = result\n    intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1\n    with open(intf_path, 'w', encoding='utf8') as f:\n        f.write(json.dumps(intff, indent =4))\n    with open(exec_signal, 'w') as execf:\n        execf.write('')\n    return 0\npyjsx_run()",
-
-                execPath   : "{0}/exec.pyw".re(self.instPath),
-                execTime   : 180,
-                extensions : ["py", "pyw"]
-
-            })
-
-
         }),
         //-----------------------------
 
@@ -2795,6 +2727,75 @@
 
         CSTR$Python: (function(){
 
+            $.global.Python = function Python(){};
+
+            Python.xt({
+                
+                installed: function()
+                {
+                    return sys.cmd("python --version").split(" ")[0] == "Python";
+                },
+
+                functions: function(p)
+                {
+                    var m   = File(p).$read().match(/(([\n]+def)|^def)\s+.+\(.*\)/g),
+                    fs  = [], nameArgs, name, args, aaa;
+        
+                    for(var i=0, len=m.length; i< len;i++)
+                    {
+                        nameArgs = m[i].replace(/[\n]+/g, "").replace(/def[\s]+/g, "").split("(");
+                        name     = nameArgs[0].replace(/\s*$/,"");
+                        args     = nameArgs[1].slice(0,-1).split(",");
+                        
+                        aaa      = { "default": [], "non_default": []};
+        
+                        if(args[0]) for(var k=0, klen = args.length; k< klen; k++)
+                        {
+                            arg = args[k].split("=");
+                            aaa[(arg.length-1)?"_default":"non_default"].push(arg[0]);
+                        }
+                        fs.push({"name": name, "args": aaa});
+                    }
+                    return fs;
+                },
+
+                makeExec: function()
+                {
+                    return File(this.execPath).$create(this.execStr);
+                },        
+                
+                runExec: function()
+                {
+                    var sf = File(I.sgnlPath);
+                    if(sf.exists) sf.remove();
+                    
+                    I.modIntf("info/reqs_made", function(v){ return v+1});
+                    File(this.execPath).$execute();
+                    sf.$listen(this.pyExTime, false, undefined, true/*remove signal file once it appears*/);
+                    
+                    return I;
+                },
+                
+                viewExec   : function(editor)
+                {
+                    sys.cmd("{1} {0}".re(File(this.execPath).fsName), editor || "notepad");
+                },
+
+                editExec   : function(fs)
+                {
+                    if(fs.constructor == File) fs = fs.$read();
+                    this.execStr = fs;
+                },
+
+                //========================================
+
+                execStr: "def pyjsx_run():\n    import json, sys, os\n    inst_path  = '"+self.instPath+"/'\n    intf_path   =  (inst_path + 'PyIntf.pyintf')\n    exec_signal =  (inst_path + 'executed.tmp')\n    def strr(ss):\n        if(ss in ['true', 'false']): return ss.title()\n        if(type(ss) is str):         return '\"' + ss + '\"'\n        return str(ss)\n    with open(intf_path, 'r') as f:\n        c= f.read()\n    if not c: return 'Python Error: interface corrupt'\n    intff = json.loads(c)\n    AR    = intff['active_req']\n    path  = AR   ['road']\n    func  = AR   ['trac']\n    name  = '.'.join(path.split('/')[-1].split('.')[0:-1])\n    args  = ','.join(strr(e) for e in AR['seed'])\n    sys.path.append(os.path.dirname(path))\n    try:\n        exec('import ' + name + ' as s')\n        result = eval('s.' + func + '(' + args + ')')\n    except Exception as e:\n        result = 'Python Error: ' + str(e).replace('\'', '\\\'')\n    intff['active_req']['crop'] = result\n    intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1\n    with open(intf_path, 'w', encoding='utf8') as f:\n        f.write(json.dumps(intff, indent =4))\n    with open(exec_signal, 'w') as execf:\n        execf.write('')\n    return 0\npyjsx_run()",
+
+                execPath   : "{0}/exec.pyw".re(self.instPath),
+                execTime   : 180,
+                extensions : ["py", "pyw"]
+
+            })
         }),
 
         CSTR$Logger: (function(){

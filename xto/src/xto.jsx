@@ -78,7 +78,7 @@
         {
             var arr  = [];
     
-            var efun = EXTN[something];
+            var efun = EXTO[something];
             if(efun === undefined) return; 
     
             for(var i=-1, len = efun.length; ++i<len;)
@@ -94,7 +94,7 @@
         allFuncs: function()
         {
             var totalArr = [];
-            for(x in EXTN) if(EXTN.hasOwnProperty(x))
+            for(x in EXTO) if(EXTO.hasOwnProperty(x))
             {
                 Array.prototype.push.apply(totalArr, S.funcsIn(x));
             }
@@ -145,10 +145,10 @@
         {
             if(pass !== YOLO) return;
     
-            if(EXTN[something] === undefined) return;
+            if(EXTO[something] === undefined) return;
             if(typeof fn !== "function") return;
     
-            EXTN[something] = fn;
+            EXTO[something] = fn;
         }
     })
 
@@ -2861,7 +2861,7 @@
             $.global.Logger = function Logger(){};
 
             (function (self){
-                        
+
                 I         = {};
                 I.levels  = 
                 {

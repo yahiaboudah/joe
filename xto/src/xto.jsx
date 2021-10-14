@@ -78,12 +78,10 @@
 
         funcsIn: function(something)
         {
+            if(!(efun = EXTO[something])) return;
             var arr  = [];
-    
-            var efun = EXTO[something];
-            if(efun === undefined) return; 
-    
-            for(var i=-1, len = efun.length; ++i<len;)
+
+            for(var i=0; i< efun.length; i++)
             {
                 curr = efun[i];
                 curr = (curr[0] == '-')? curr.shift(): curr;
@@ -91,16 +89,18 @@
     
                 arr.push(jcurr);
             }
+
+            return arr;
         },
 
         allFuncs: function()
         {
-            var totalArr = [];
-            for(x in EXTO) if(EXTO.hasOwnProperty(x))
+            var arr = [];
+            for(x in EXTO) if(x.in(EXTO))
             {
-                Array.prototype.push.apply(totalArr, S.funcsIn(x));
+                Array.prototype.push.apply(arr, S.funcsIn(x));
             }
-            return totalArr;
+            return arr;
         },
 
         load: function(something)

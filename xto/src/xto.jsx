@@ -103,14 +103,18 @@
             return arr;
         },
 
-        load: function(something)
+        load: function(what)
         {
-            if(something == "*") for(mod in FUNS) FUNS[mod]();
-    
-            var fun = FUNS[something];
-            if(fun === undefined) return;
-            
-            fun();
+            if(what != '*')
+            {
+                if(!(fun = FUNS[what])) return;
+                fun.call($.global);
+            }
+
+            for(fun in FUNS) if(fun.in(FUNS))
+            {
+                FUNS[fun].call($.global);
+            }
         },
 
         unload: function(something)

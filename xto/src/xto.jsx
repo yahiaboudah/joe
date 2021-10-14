@@ -130,21 +130,21 @@
         },
         // [LOADERS]
 
-        code: function(something)
+        code: function(what, where)
         {
-            if(FUNS[something] === undefined) return;
-            // write this into the caller file:
-            var callerFile = File(File($.stack).fsName);
+            if(!(fun = FUNS[what])) return;
+
+            var callerFile = File(File($.stack).fsName || where);
             
             callerFile.open("a");
             callerFile.write([
                 
                 "\n\n\n\n",
-                "var " + something.split('.').join('') + "= ",
-                FUNS[something].toString()
+                "var " + what.split('.').join('') + "= ",
+                fun.toString()
     
-            ].join(""))
-            callerFile.close();
+            ].join(""));
+            return callerFile.close();
         },
 
         updateLib: function(pass, something, fn)

@@ -76,6 +76,7 @@
 
         version: '1.0.0',
 
+        // [GETTERS]
         funcsIn: function(something)
         {
             if(!(efun = EXTO[something])) return;
@@ -92,7 +93,6 @@
 
             return arr;
         },
-
         allFuncs: function()
         {
             var arr = [];
@@ -102,7 +102,9 @@
             }
             return arr;
         },
+        // [GETTERS]
 
+        // [LOADERS]
         load: function(what)
         {
             if(what != '*')
@@ -116,19 +118,17 @@
                 FUNS[fun].call($.global);
             }
         },
-
-        unload: function(something)
+        unload: function(what)
         {
-            if(something == "*")
-            {
-                var allFuncs = S.allFuncs(), i = allFuncs.length;
-                while(--i) eval("delete(" + allFuncs[i] + ")");
-            }
-    
-            var funcs = S.funcsIn(something), i = -1;
-            while(++i < funcs.length) eval("delete(" + funcs[i] + ")");
-            eval(something + " = null;")
+            var a     = (what == '*');
+            var funcs = a? S.allFuncs(): S.funcsIn(what);
+            var i     = funcs.length;
+
+            while(--i) eval("delete(" + funcs[i] + ")");
+
+            (!a || (eval(what + "=null;")))
         },
+        // [LOADERS]
 
         code: function(something)
         {

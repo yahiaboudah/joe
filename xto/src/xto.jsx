@@ -77,9 +77,9 @@
         version: '1.0.0',
 
         // [GETTERS]
-        funcsIn: function(something)
+        functionsOf: function(what)
         {
-            if(!(efun = EXTO[something])) return;
+            if(!(efun = EXTO[what])) return;
             var arr  = [];
 
             for(var i=0; i< efun.length; i++)
@@ -93,7 +93,7 @@
 
             return arr;
         },
-        allFuncs: function()
+        functions: function()
         {
             var arr = [];
             for(x in EXTO) if(x.in(EXTO))

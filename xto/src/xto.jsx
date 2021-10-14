@@ -147,14 +147,15 @@
             return callerFile.close();
         },
 
-        updateLib: function(pass, something, fn)
+        update: function(pass, what, fn)
         {
-            if(pass !== YOLO) return;
+            if(
+                   (pass !== YOLO)
+                || (!EXTO[what])
+                || fn.isnt(Function)
+            ) return;
     
-            if(EXTO[something] === undefined) return;
-            if(typeof fn !== "function") return;
-    
-            EXTO[something] = fn;
+            EXTO[what] = fn;
         }
     })
 

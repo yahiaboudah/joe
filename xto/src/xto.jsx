@@ -98,7 +98,7 @@
             var arr = [];
             for(x in EXTO) if(x.in(EXTO))
             {
-                Array.prototype.push.apply(arr, S.funcsIn(x));
+                Array.prototype.push.apply(arr, S.functionsOf(x));
             }
             return arr;
         },
@@ -121,7 +121,7 @@
         unload: function(what)
         {
             var a     = (what == '*');
-            var funcs = a? S.allFuncs(): S.funcsIn(what);
+            var funcs = a? S.functions(): S.functionsOf(what);
             var i     = funcs.length;
 
             while(--i) eval("delete(" + funcs[i] + ")");

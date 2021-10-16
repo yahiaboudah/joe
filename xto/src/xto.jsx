@@ -129,7 +129,6 @@
             (!a || (eval(what + "=null;")))
         },
         // [LOADERS]
-
         code: function(what, where)
         {
             if(!(fun = FUNS[what])) return;
@@ -146,7 +145,6 @@
             ].join(""));
             return callerFile.close();
         },
-
         update: function(pass, what, fn)
         {
             if(

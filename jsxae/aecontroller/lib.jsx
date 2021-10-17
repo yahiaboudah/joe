@@ -195,7 +195,20 @@ function kfit(){ //keyframe it
     return;
   }
 
-  for(var i=-1;i<selLayers.length;)
+  comp.sel().forEach(function(layer){
+    
+    layer.contents.properties().forEach(function(group){
+      
+      var prop  = group.getProp("Transform/{0}".re(this.prop)),
+          value = [prop.value[0], prop.value[1], prop.value[2]];
+      
+      prop.setValueAtTime(comp.time, valu);
+      prop.setTemporalEaseAtKey(prop.numKeys, [easeIn, easeOut])
+    
+    })
+  })
+
+  for(var i=-1;++i<selLayers.length;)
   {  
       var c = selLayers.property("Contents"),
           n = c.numProperties + 1;

@@ -2125,23 +2125,23 @@
                 
                 $read : function()
                 {
-                        if (!this.exists) throw Error("Can't read a non-existent file!");
+                    if(!this.exists) throw Error("Can't read a non-existent file!");
                         
-                        var d = this.$open("r").read();
-                        this.$close();
-                        return d;
+                    var d = this.$open("r").read();
+                    this.$close();
+                    return d;
                 },
                 
                 clear : function(txt)
                 {
-        
-                        return (this.$write(txt || ""), this);
+                    return (this.$write(txt || ""), this);
                 },
                 
-                seek : function(pos) {
-        
-                        if (!this.isOpen) this.$open('r');
-                        return (this.seek(pos), this);
+                $seek : function(pos)
+                {
+                    return !this.isOpen?
+                           (this.$open('r').seek(pos), this):
+                           (this.seek(pos), this);
                 },
                 
                 create : function(text, encoding)

@@ -2628,6 +2628,25 @@
 
             Window.prototype.xt({
                 
+                playAudio: function(pp, dt)
+                // Requires python, and pygame to be installed.
+                {   
+                    File("{0}\\xto_play_audio.pyw".re(Folder.temp.fsName)).$create([
+                        
+                        "from pygame import mixer",
+                        "from time import sleep",
+                
+                        "mixer.init()",
+                        "mixer.music.load(\"{0}\")".f(pp),
+                        "mixer.music.play()",
+                        "sleep({0})".f(dt),
+                        "mixer.music.stop()"
+                            
+                    ].join("\n")).$execute(200,function(){
+                        this.remove();
+                    });
+                },
+
                 addAnimatedSequence : function (imgSeqPath, firstImageIdx)
                 {
                     var win = this;

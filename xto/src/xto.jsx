@@ -170,6 +170,14 @@
             ]
         },
 
+        MATH:
+        {
+            TRIG:
+            [
+                "degreesToRadians", "radiansToDegrees"
+            ]
+        },
+
         $$$$: 
         {
             DATA:
@@ -550,6 +558,22 @@
             
         }),
 
+        MATH$TRIG: (function()
+        {
+            Math.xt({
+                
+                degreesToRadians : function(degrees)
+                {
+                    return degrees * Math.PI / 180;
+                },
+            
+                radiansToDegrees : function(radians)
+                {
+                    return radians * 180 / Math.PI;
+                }
+            })
+        }),
+
         //**************************** */
         //*************************** */
 
@@ -919,6 +943,15 @@
                 return MathEx.getAOV(filmSizeVertical, CompItem.FOCAL_LENGTH);
             }
 
+            CompItem.prototype.getActiveAOV = function()
+            {
+                var cam = this.activeCamera;
+                
+                return (cam && cam.enabled)?
+                       cam.getAOV():
+                       this.getAOV();
+            }
+
             CompItem.prototype.getProjectedZ = function(w)
             {
                 var zoom = this.getZoom();
@@ -1067,6 +1100,33 @@
                         [0, 1, 0]
                     );
                 },
+
+                toComp: function(offset)
+                {
+                    var offset = fixOffset(this, offset);
+                    var modelMatrix = getModelMatrix(this, offset);
+            
+                    if(!layer.threeDLayer) return (result = Matrix.getTranslate(modelMatrix), result.pop(), result)
+
+                    return result = toScreenCoordinates(
+                        getModelViewProjection(modelMatrix, this.containingComp),
+                        layer.containingComp
+                    );
+                },
+
+                toWorld: function(offset)
+                {
+                    var offset = !offset? [0,0,0]:
+                                 ((anch = this.getProp("Transform/Anchor Point").value, anch[2] *= -1, offset-=anch), 
+                                 offset);
+
+
+                    
+                    var modelMatrix = getModelMatrix(layer, offset);
+                    var result = Matrix.getTranslate(modelMatrix);
+            
+                    return (!layer.threeDLayer? result.pop(): result[2] *= -1, result);
+                }
             }
 
             ShapeLayer.prototype.xt(LayerExt);

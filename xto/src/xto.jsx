@@ -764,7 +764,7 @@
             {
                 return LayerEx.getWorldMatrix(camera = this);
             }
-            
+
             CameraLayer.prototype.getLocalMatrix = function()
             {
                 var camera = this;
@@ -966,6 +966,114 @@
                     grab   : CollectionInterface.grab
                 })
             })();
+        }),
+
+        AFFX$Layer_prototype: (function(){
+
+            var LayerExt = 
+            {
+                getAnchorPointMatrix: function()
+                {
+                    var value = this.getProp("Transform/Anchor Point").value;
+            
+                    return Matrix.identity().translate(
+                        value[0],
+                        value[1],
+                        -value[2]
+                    )
+                },
+
+                getOrientationMatrix: function()
+                {
+                    var oriValue = this.getProp("Transform/Orientation").value;
+            
+                    return Matrix.identity()
+                    
+                    .rotateZ(Math.degreesToRadians(oriValue[2]))
+                    .rotateY(Math.degreesToRadians(-oriValue[1]))
+                    .rotateX(Math.degreesToRadians(-oriValue[0]));
+                },
+
+                getPositionMatrix: function()
+                {
+                    var posValue = this.property("Transform/Position");
+                    
+                    return Matrix.getIdentity()
+                    
+                    .translate(posValue[0], posValue[1], -posValue[2]);
+                },
+
+                getRotationMatrix: function()
+                {
+                    return Matrix.getIdentity()
+                    
+                    .rotateZ(Math.degreesToRadians(this.getProp("Transform/Z Rotation").value))
+                    .rotateY(Math.degreesToRadians(-this.getProp("Transform/Y Rotation").value))
+                    .rotateX(Math.degreesToRadians(-this.getProp("Transform/X Rotation").value))
+                },
+
+                getScaleMatrix: function()
+                {
+                    var scaleVal = this.getProp("Transform/Scale").value /100;
+            
+                    return Matrix.identity()
+
+                    .scale(scaleVal[0], scaleVal[1], scaleVal[2])
+                },
+
+                getLocalMatrix: function()
+                {
+                    var localMatrix;
+                    
+                    return localMatrix = Matrix.multiplyArrayOfMatrices([
+
+                        this.getScaleMatrix(), // scale
+                        this.getRotationMatrix(), // rotation
+                        this.getOrientationMatrix(), // orientation
+                        this.getPositionMatrix(), // position
+                    ]);
+                },
+
+                getWorldMatrix: function()
+                {
+                    var worldMatrix = Matrix.getIdentity();
+
+                    while (layer.parent)
+                    {
+                        parent = layer.parent;
+            
+                        worldMatrix = Matrix.multiplyArrayOfMatrices([
+                            
+                            worldMatrix,
+                            Matrix.invert(this.getAnchorPointMatrix(parent)),
+                            this.getLocalMatrix(parent),
+                        ]);
+                        layer = parent;
+                    }
+            
+                    return worldMatrix;
+                },
+
+                getLookAt: function()
+                {
+                    var lookAtMatrix;
+
+                    var anchorPoint = this.getProp("Transform/Anchor Point").value; anchorPoint[2] *= -1;
+                    var position    = this.getProp("Transform/Position").value; position[2] *= -1;
+            
+                    return lookAtMatrix = Matrix.lookAt(
+                        position,
+                        anchorPoint,
+                        [0, 1, 0]
+                    );
+                },
+            }
+
+            ShapeLayer.prototype.xt(LayerExt);
+            CameraLayer.prototype.xt(LayerExt);
+            TextLayer.prototype.xt(LayerExt);
+            AVLayer.prototype.xt(LayerExt);
+            LightLayer.prototype.xt(LayerExt);
         }),
 
         AFFX$AVLayer_prototype: (function(){

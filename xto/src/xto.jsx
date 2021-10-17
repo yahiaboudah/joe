@@ -74,7 +74,7 @@
 
     S.xt({
 
-        version: '1.0.0',
+        version: '1.0.2',
 
         // [GETTERS]
         functionsOf: function(what)
@@ -307,7 +307,9 @@
                 "snap",
                 "sel",
                 "setTime",
-                "workAreaDomain"
+                "workAreaDomain",
+
+                "getAOV", "getProjectedZ", "getViewMatrix", "getZoom"
             ],
 
             ItemCollection_prototype:
@@ -855,6 +857,36 @@
                     start: this.workAreaStart,
                     end  : this.workAreaStart + this.workAreaDuration 
                 }
+            }
+
+            CompItem.prototype.getAOV = function()
+            {
+                var aspect           = this.width / this.height,
+                    filmSizeVertical = FILM_SIZE / aspect;
+                
+                return MathEx.getAOV(filmSizeVertical, FOCAL_LENGTH);
+            }
+
+            CompItem.prototype.getProjectedZ = function(w)
+            {
+                var zoom = this.getZoom();
+                return (z -(z/w))
+            }
+
+            CompItem.prototype.getViewMatrix = function()
+            {
+                var viewMatrix = Matrix.identity();
+                
+                return viewMatrix.translate(    
+                    this.width /2,
+                    this.height/2,
+                    this.getZoom()
+                );
+            }
+
+            CompItem.prototype.getZoom = function()
+            {
+                return this.width * FOCAL_LENGTH / FILM_SIZE;
             }
         }),
         

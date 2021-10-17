@@ -3,7 +3,7 @@
 		Desc:           A small utility framework for Extendscript and AE.
 		Created:        2110 (YYMM)
 		Modified:       2110 (YYMM)
-
+        
     =================================== XTO ========================================
                         
                                 ██╗  ██╗████████╗ ██████╗ 
@@ -1894,10 +1894,6 @@
              * 
              */
         }),
-        
-        PRIM$Array: (function(){
-
-        }),
 
         PRIM$Function_prototype: (function(){
             
@@ -2046,22 +2042,22 @@
                 
                 "*" : function(op, joinChar)
                 {
-                    if(!$.global.strr)
+                    if(!$.global.str)
                     {
-                        $.global.strr = function(s){return new String(s)};
+                        $.global.str = function(s){return new String(s)};
                     }
                 
-                    var str = this, fstr = [fstr];
-                    if(isNaN(op = Math.floor(op))) return str;
+                    var strr = this, fstr = [fstr];
+                    if(isNaN(op = Math.floor(op))) return strr;
                     
-                    while(op--) fstr.push(str);
-                    return fstr.join(joinChar); 
+                    while(op--) fstr.push(strr);
+                    return fstr.join(joinChar || ""); 
                 },
                 
                 pushAt : function(atIndex, pushChar, delet, numDelete) {
                     
-                    delet     = (typeof delet == "undefined")? 1: delet;
-                    numDelete = (typeof delet == "undefined")? 1: numDelete;
+                    delet     = delet.is(undefined)? 1: delet;
+                    numDelete = delet.is(undefined)? 1: numDelete;
                     
                     first = this.substring(0, atIndex);
                     last  = this.substring(delet? (atIndex+numDelete): atIndex);
@@ -2101,26 +2097,17 @@
 
                 isOpen : false,
             
-                open : function(mode)
+                $open : function(mode)
                 {
-                        var cases = ["r", "w", "a", "e"];
-                        idx = cases.indexOf(mode);
-        
-                        if (idx == -1) {
-                                if (this.fsName.checkFF()) with(this) {
-                                        open("e");
-                                        isOpen = true
-                                }
-                                else with(this) {
-                                        open("w");
-                                        isOpen = true
-                                };
-                                return this;
-                        } // throw Error("File open mode is invalid");
-        
-                        this.open(cases[idx]);
-                        this.isOpen = true;
-                        return this;
+                    var cases = ["r", "w", "a", "e"];
+
+                    this.isOpen = this.open(
+                        (cases.indexOf(mode) == -1)?
+                        (File(this.fsName).exists? 'e': 'w'):
+                        mode
+                    );
+
+                    return this;
                 },
                 
                 close = function()

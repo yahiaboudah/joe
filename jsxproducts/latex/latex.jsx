@@ -129,7 +129,6 @@
 
 })(LatexScript, {toString: function(){return "LatexLib"}})
 
-
 if($.stack.split("\n")[0] == "[" + $.fileName.split("/").pop() + "]")
 {
   LatexScript.getWindow().show();

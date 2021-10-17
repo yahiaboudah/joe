@@ -2110,19 +2110,20 @@
                     return this;
                 },
                 
-                close = function()
+                $close = function()
                 {
-                        this.isOpen = false;
-                        return (this.close(), this);
+                    this.isOpen = false;
+                    return (this.close(), this);
                 },
                 
-                write : function(txt, mode)
+                $write : function(txt, mode)
                 {
-                        if (this.isOpen) this.write(txt, mode);
-                        return (this.$open(mode).write(txt), this.close());
+                    return this.isOpen?
+                           (this.write(txt, mode), this.$close(), this):
+                           (this.$open(mode).write(txt), this.$close(), this);
                 },
                 
-                read : function()
+                $read : function()
                 {
                         if (!this.exists) throw Error("Can't read a non-existent file!");
                         

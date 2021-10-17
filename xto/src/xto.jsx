@@ -2146,108 +2146,112 @@
                 
                 create : function(text, encoding)
                 {
-        
-                        this.encoding = encoding || "UTF-8";
-                        return (this.$write((text || ""), 'w'), this);
+                    this.encoding = encoding || "UTF-8";
+                    return (this.$write((text || ""), 'w'), this);
                 },
                 
                 execute = function(slp, cb, doClose)
                 {
-                        this.execute();
-                        if(!!doClose) this.$close();
-                        $.sleep(slp || 0);
-                        if(typeof callback == "function") cb.call(this);
+                    this.execute();
+                    if(!!doClose) this.$close();
+                    $.sleep(slp || 0);
+                    if(cb.is(Function)) cb.call(this);
         
-                        return this;
+                    return this;
                 },
                 
                 lines : function()
                 {
-                        var lines = [];
-                        this.$open("r");
-        
-                        while (!this.eof) lines.push(this.readln());
-        
-                        return (this.$close(), lines);
+                    var lines = [];
+                    this.$open("r");
+    
+                    while(!this.eof) lines.push(this.readln());
+    
+                    return (this.$close(), lines);
                 },
                 
                 listenForChange : function(debug, wait, maxiter)
                 {
-                        var iter = -1, maxiter = maxiter || 100;
-        
-                        while (++iter < maxiter) {
-                                if (this.modified > lmod) break;
-                                $.$sleep(
-                                        !wait? 180: wait == "exp"? Math.round(2, iter+6):
-                                        wait,
-                                        debug,
-                                        iter
-                                );
-                        }
-        
+                    var iter = -1, maxiter = maxiter || 100;
+    
+                    while (++iter < maxiter)
+                    {
+                        if(this.modified > lmod) break;
+                        $.$sleep(
+
+                            !wait? 180: wait == "exp"? Math.round(Math.pow(2, iter+6)):
+                            wait,
+                            debug,
+                            iter
+                        );
+                    }
+    
                 },
                 
                 listenForChar : function(charac, pos, wait, maxiter, debug)
                 {
-        
-                        var iter = -1, maxiter = maxiter || 100;
-                        while (++iter < maxiter) {
-        
-                                if (this.$open('r').$seek(pos).readch() == charac) break;
-                                else $.$sleep(wait, debug, iter);
-                        }
-                        
-                        this.$close();
+    
+                    var iter = -1, maxiter = maxiter || 100;
+                    while(++iter < maxiter)
+                    {
+                        if (this.$open('r').$seek(pos).readch() == charac) break;
+                        else $.$sleep(wait, debug, iter);
+                    }
+                    
+                    this.$close();
                 },
                 
                 listen : function(delay, debug, patience, cleanup)
                 {
-        
-                        patience = patience || 60000;
-                        var ttdelay = 0;
-        
-                        while(1)
-                        {       
-                                if(this.exists)
-                                {
-                                        (!cleanup) || (this.remove());
-                                        break;
-                                }
-                                if(ttdelay > patience) break;
-                                $.$sleep(delay, debug, "File not found yet");
-                                ttdelay += delay;
+    
+                    patience = patience || 60000;
+                    var ttdelay = 0;
+    
+                    while(1)
+                    {       
+                        if(this.exists)
+                        {
+                            (!cleanup) || (this.remove());
+                            break;
                         }
+                        if(ttdelay > patience) break;
+                        $.$sleep(delay, debug, "File not found yet");
+                        ttdelay += delay;
+                    }
                 },
                 
                 getDuration : function()
                 {
-                        if(!this.exists) return 0;
-                        if(!["video", "audio"].includes(this.getType())) return 0;
-                        
-                        k = app.project.importFile(new ImportOptions(this));
-                        d = k.duration;
-                        
-                        k.remove(); k = null;
-                        return d;
+                    if(!this.exists) return 0;
+                    if(!["video", "audio"].includes(this.getType())) return 0;
+                    
+                    k = app.project.importFile(new ImportOptions(this));
+                    d = k.duration;
+                    
+                    k.remove(); k = null;
+                    return d;
                 },
                 
                 getName : function()
                 {
-                        return this.name.replace(/.[^.]+$/, "");
+                    return this.name.replace(/.[^.]+$/, "");
                 },
                 
-                getExtension : function()
+                getExtension : function(toLower)
                 {
-                        return this.name.replace(/^.*\./, "");
+                    var ext = this.name.replace(/^.*\./, ""); 
+                    return toLower?
+                           ext.toLowerCase():
+                           ext;
                 },
                 
                 getType : function()
                 {
-                        xt = this.name.replace(/^.*\./,"").toLowerCase();
-                        tp = File.TYPES_BY_EXTENSION[xt] || 7;
-                        nm = File.CATEGORIES[tp].toLowerCase();
-        
-                        return nm;
+                    return File.CATEGORIES
+                    [ 
+                        File.TYPES_BY_EXTENSION[this.getExtension(true)] || 7
+                    
+                    ].toLowerCase();
                 }
             })
         }),

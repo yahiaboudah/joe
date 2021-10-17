@@ -958,6 +958,15 @@
                 return (z -(z/w))
             }
 
+            CompItem.prototype.getActiveProjectedZ = function(w)
+            {
+                var cam = this.activeCamera;
+                
+                return (cam && cam.enabled)?
+                       cam.getProjectedZ():
+                       this.getProjectedZ();
+            }
+
             CompItem.prototype.getViewMatrix = function()
             {
                 var viewMatrix = Matrix.identity();
@@ -972,6 +981,26 @@
             CompItem.prototype.getZoom = function()
             {
                 return this.width * CompItem.FOCAL_LENGTH / CompItem.FILM_SIZE;
+            }
+
+            CompItem.prototype.getProjectionMatrix = function()
+            {
+                return Matrix.perspective(
+                    
+                    this.getAOV(), //angle of view
+                    this.width / this.height, //aspect
+                    0.1, //near
+                    10000 //far
+                );
+            }
+        
+            CompItem.prototype.getActiveViewMatrix = function()
+            {
+                var cam = this.activeCamera;
+                
+                return (cam && cam.enabled)?
+                       cam.getViewMatrix():
+                       this.getViewMatrix();
             }
         }),
         
@@ -1101,32 +1130,70 @@
                     );
                 },
 
+                getModalMatrix: function(offset)
+                {
+                    return Matrix.multiplyArrayOfMatrices([
+                        
+                        Matrix.identity().translate(offset), //offset vector
+                        this.getLocalMatrix(),
+                        this.getWorldMatrix()
+                    ]);
+                },
+
+                getModelViewProjection: function(modelMatrix)
+                {
+                    var comp = this.containingComp;
+                    // Model-View-Projection
+                    return Matrix.multiplyArrayOfMatrices([
+                        
+                        modelMatrix, // model matrix
+                        comp.getViewMatrix().invert(), // view matri
+                        comp.getProjectionMatrix() // projection matrix
+                    ]);
+                },
+                
                 toComp: function(offset)
                 {
-                    var offset = fixOffset(this, offset);
-                    var modelMatrix = getModelMatrix(this, offset);
+                    var offset = !offset? [0,0,0]:
+                                 ((anch = this.getProp("Transform/Anchor Point").value, anch[2] *= -1, offset-=anch), 
+                                 offset),
+
+                    var modelMatrix = this.getModelMatrix(offset);
             
                     if(!layer.threeDLayer) return (result = Matrix.getTranslate(modelMatrix), result.pop(), result)
 
-                    return result = toScreenCoordinates(
-                        getModelViewProjection(modelMatrix, this.containingComp),
-                        layer.containingComp
-                    );
+                    var mvp = this.getModelViewProjection(modelMatrix);
+                    var ndc = Matrix.getTranslate(mvp) / (w = mvp[15]);
+
+                    return [
+                        x = (ndc[0] + 1) * (this.containingComp.width  / 2),
+                        y = (ndc[1] + 1) * (this.containingComp.height / 2),
+                        z = comp.getActiveProjectedZ(w)
+                    ];
                 },
 
                 toWorld: function(offset)
                 {
+                    // preprocess offset:
                     var offset = !offset? [0,0,0]:
                                  ((anch = this.getProp("Transform/Anchor Point").value, anch[2] *= -1, offset-=anch), 
-                                 offset);
+                                 offset),
 
-
-                    
-                    var modelMatrix = getModelMatrix(layer, offset);
+                    // modelMatrix:
+                    var modelMatrix = this.getModalMatrix(offset);
                     var result = Matrix.getTranslate(modelMatrix);
             
+                    // return result:
                     return (!layer.threeDLayer? result.pop(): result[2] *= -1, result);
                 }
+            }
+
+            function toScreenCoordinates(mvp, comp)
+            {                
+                var w   = mvp[15];
+                var ndc = Matrix.getTranslate(mvp) / w;
+        
+                
             }
 
             ShapeLayer.prototype.xt(LayerExt);

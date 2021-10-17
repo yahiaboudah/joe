@@ -749,8 +749,22 @@
             })
         }),
         
+        AFFX$Camera : (function(){
+
+            CameraLayer.prototype.getAOV = function()
+            {
+                var filmSize    = this.containingComp.height;
+                    focalLength = this.getProp("Camera Options/Zoom").value;
+                    
+                return MathEx.getAOV(filmSize, focalLength);
+            }
+        }),
+
         AFFX$CompItem_prototype: (function()
         {
+            CompItem.FILM_SIZE    = 36;
+            CompItem.FOCAL_LENGTH = 50;
+
             CompItem.prototype.setResolution = function(newRes)
             {
                 var rs = this.resolutionFactor;
@@ -862,9 +876,9 @@
             CompItem.prototype.getAOV = function()
             {
                 var aspect           = this.width / this.height,
-                    filmSizeVertical = FILM_SIZE / aspect;
+                    filmSizeVertical = CompItem.FILM_SIZE / aspect;
                 
-                return MathEx.getAOV(filmSizeVertical, FOCAL_LENGTH);
+                return MathEx.getAOV(filmSizeVertical, CompItem.FOCAL_LENGTH);
             }
 
             CompItem.prototype.getProjectedZ = function(w)
@@ -886,7 +900,7 @@
 
             CompItem.prototype.getZoom = function()
             {
-                return this.width * FOCAL_LENGTH / FILM_SIZE;
+                return this.width * CompItem.FOCAL_LENGTH / CompItem.FILM_SIZE;
             }
         }),
         

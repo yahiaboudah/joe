@@ -1188,14 +1188,6 @@
                 }
             }
 
-            function toScreenCoordinates(mvp, comp)
-            {                
-                var w   = mvp[15];
-                var ndc = Matrix.getTranslate(mvp) / w;
-        
-                
-            }
-
             ShapeLayer.prototype.xt(LayerExt);
             CameraLayer.prototype.xt(LayerExt);
             TextLayer.prototype.xt(LayerExt);

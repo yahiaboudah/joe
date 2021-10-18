@@ -755,7 +755,7 @@
                     }
                 },
               
-                doUndo   : function(func, thisArg, sTime)
+                doUndo   : function(func, thisArg, offsetTime)
                 {
                     // execute function:
                     app.wrapUndo(
@@ -767,7 +767,7 @@
                     // undo with an offset time:
                     app.setTimeout(function(){
                         app.executeCommand(app.findMenuCommandId("Undo " + func.name));
-                    }, sTime || 0);
+                    }, offsetTime || 0);
               
                 },
             })
@@ -776,57 +776,25 @@
         AFFX$Project: (function(){
 
             if($.global["proj"].is(undefined)) $.global["proj"] = app.project;
+
+            app.project.xt({
+
+                ITEM_TYPES: [FolderItem, FootageItem, CompItem],
+
+                itemsArr: function()
+                {
+                    for(var i =0; ++i<this.numItems+1;) items.push(this.item(i))
+                },
+
+                $import: function(filePath)
+                {
+                    this.importFile(new ImportOptions(filePath));
+                },
+
+
+            })
         }),
         
-        AFFX$Camera : (function(){
-
-            CameraLayer.prototype.getAOV = function()
-            {
-                var filmSize    = this.containingComp.height;
-                    focalLength = this.getProp("Camera Options/Zoom").value;
-
-                return MathEx.getAOV(filmSize, focalLength);
-            }
-
-            
-            CameraLayer.prototype.getWorldMatrix = function()
-            {
-                return LayerEx.getWorldMatrix(camera = this);
-            }
-
-            CameraLayer.prototype.getLocalMatrix = function()
-            {
-                var camera = this;
-                var lookAtMatrix = LayerEx.getLookAt(camera);
-                var localMatrix  = Matrix.multiplyArrayOfMatrices([
-
-                    LayerEx.getRotationMatrix(camera),
-                    LayerEx.getOrientationMatrix(camera),
-                    Matrix.invert(lookAtMatrix),
-                    LayerEx.getPositionMatrix(camera),
-                ]);
-        
-                return localMatrix;
-            }
-
-            CameraLayer.prototype.getProjectedZ = function(w)
-            {
-                var z = this.getProp("Camera Options/Zoom").value;
-                return (z - (z / w));
-            }
-
-            CameraLayer.prototype.getViewMatrix = function()
-            {
-                var viewMatrix;
-
-                return viewMatrix = Matrix.multiplyArrayOfMatrices([
-                    
-                    this.getLocalMatrix(camera),
-                    this.getWorldMatrix(camera),
-                ]);
-            }
-        }),
-
         AFFX$CompItem_prototype: (function()
         {
             // make default "comp" reference activeItem. [REQURES FIX: case of activeItem not CompItem]
@@ -834,6 +802,15 @@
 
             CompItem.FILM_SIZE    = 36;
             CompItem.FOCAL_LENGTH = 50;
+
+            CompItem.prototype.drop = function(project, itemIdx)
+            {
+                var items = project.items.is(undefined)?app.project.items: project.items;
+                
+                return this.layers.add(
+                    items[itemIdx + 1]
+                )
+            }
 
             CompItem.prototype.setResolution = function(newRes)
             {
@@ -1011,7 +988,56 @@
                        this.getViewMatrix();
             }
         }),
+
+        AFFX$Camera : (function(){
+
+            CameraLayer.prototype.getAOV = function()
+            {
+                var filmSize    = this.containingComp.height;
+                    focalLength = this.getProp("Camera Options/Zoom").value;
+
+                return MathEx.getAOV(filmSize, focalLength);
+            }
+
+            
+            CameraLayer.prototype.getWorldMatrix = function()
+            {
+                return LayerEx.getWorldMatrix(camera = this);
+            }
+
+            CameraLayer.prototype.getLocalMatrix = function()
+            {
+                var camera = this;
+                var lookAtMatrix = LayerEx.getLookAt(camera);
+                var localMatrix  = Matrix.multiplyArrayOfMatrices([
+
+                    LayerEx.getRotationMatrix(camera),
+                    LayerEx.getOrientationMatrix(camera),
+                    Matrix.invert(lookAtMatrix),
+                    LayerEx.getPositionMatrix(camera),
+                ]);
         
+                return localMatrix;
+            }
+
+            CameraLayer.prototype.getProjectedZ = function(w)
+            {
+                var z = this.getProp("Camera Options/Zoom").value;
+                return (z - (z / w));
+            }
+
+            CameraLayer.prototype.getViewMatrix = function()
+            {
+                var viewMatrix;
+
+                return viewMatrix = Matrix.multiplyArrayOfMatrices([
+                    
+                    this.getLocalMatrix(camera),
+                    this.getWorldMatrix(camera),
+                ]);
+            }
+        }),
+
         AFFX$ItemCollection_prototype: (function()
         // [REQURES COLLECTION INTERFACE]
         {
@@ -2565,6 +2591,13 @@
                         File.TYPES_BY_EXTENSION[this.getExtension(true)] || 7
                     
                     ].toLowerCase();
+                },
+
+                importAE: function(customName)
+                {
+                    if(app.appName != "After Effects") return;
+                    var newItem = app.project.importFile(new ImportOptions(this));
+                    if(customName.is(String)) newItem.name = customName;
                 }
             })
         }),

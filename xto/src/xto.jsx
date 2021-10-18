@@ -791,6 +791,17 @@
                     this.importFile(new ImportOptions(filePath));
                 },
 
+                getItemsWith: function(prop, cb)
+                {
+                    var pr    = this,
+                        items = [];
+                    pr.itemsArr().forEach(function(item)
+                    {
+                        if(cb.call(pr, item[prop])) items.push(item);
+                    })
+
+                    return items;
+                }
 
             })
         }),
@@ -810,6 +821,23 @@
                 return this.layers.add(
                     items[itemIdx + 1]
                 )
+            }
+
+            CompItem.prototype.importAndDrop = function(filePath, force)
+            {
+
+                var _file = File(filePath);
+                var items = app.project.getItemsWith("name", function(name){return name == _file.name});
+
+                // layer:
+                var layer = comp.layers.add(
+
+                    (items.length && !force)?
+                    items[0]:
+                    _file.importAE()
+                );
+                app.project.lastItem().selected = false;
+                return layer;
             }
 
             CompItem.prototype.setResolution = function(newRes)
@@ -2598,6 +2626,8 @@
                     if(app.appName != "After Effects") return;
                     var newItem = app.project.importFile(new ImportOptions(this));
                     if(customName.is(String)) newItem.name = customName;
+
+                    return newItem;
                 }
             })
         }),

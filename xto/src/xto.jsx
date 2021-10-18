@@ -1100,17 +1100,16 @@
 
                 getWorldMatrix: function()
                 {
-                    var worldMatrix = Matrix.getIdentity();
+                    var worldMatrix = Matrix.identity(),
+                        layer       = this;
 
-                    while (layer.parent)
+                    while (parent = layer.parent)
                     {
-                        parent = layer.parent;
-            
                         worldMatrix = Matrix.multiplyArrayOfMatrices([
                             
                             worldMatrix,
-                            Matrix.invert(this.getAnchorPointMatrix(parent)),
-                            this.getLocalMatrix(parent),
+                            Matrix.invert(parent.getMatrixOf("Anchor Point")),
+                            parent.getLocalMatrix(),
                         ]);
                         layer = parent;
                     }

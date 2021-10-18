@@ -1088,15 +1088,13 @@
                 },
 
                 getLocalMatrix: function()
-                {
-                    var localMatrix;
-                    
-                    return localMatrix = Matrix.multiplyArrayOfMatrices([
+                {   
+                    return Matrix.multiplyArrayOfMatrices([
 
-                        this.getScaleMatrix(), // scale
-                        this.getRotationMatrix(), // rotation
-                        this.getOrientationMatrix(), // orientation
-                        this.getPositionMatrix(), // position
+                        this.getMatrixOf("Scale"), // scale
+                        this.getMatrixOf("Rotation"), // rotation
+                        this.getMatrixOf("Orientation"), // orientation
+                        this.getMatrixOf("Position"), // position
                     ]);
                 },
 

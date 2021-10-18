@@ -824,7 +824,7 @@
                         frameRate: 24
                     });
 
-                    var comp = this.items.addComp.apply(this, Object.values(cfg));
+                    var comp = this.items.addComp.apply(this.items, Object.values(cfg));
                     comp.bgColor = cfg.bgColor || [21,21,21];
                     return comp;
                 }

@@ -814,7 +814,7 @@
                                   item2;
                               }).name.split(" ")[1];
 
-                    cfg = Object.sortAndFill(cfg, 
+                    cfg = Object.adapt(cfg, 
                     {
                         name: "comp {0}".re(parseInt(num) + 1),
                         width: 1920,
@@ -1631,6 +1631,16 @@
         PRIM$Object: (function(){
 
             Object.xt({
+
+                adapt: function(ob, oo)
+                {
+                    for(x in oo) if(x.in(oo) && x.in(ob) && !!(k = ob[x]))
+                    {
+                        oo[x] = k;   
+                    }
+                
+                    return oo;
+                },
 
                 keys: (function () {
                     'use strict';

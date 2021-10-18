@@ -1642,6 +1642,13 @@
                     return oo;
                 },
 
+                values: function()
+                {
+                    var valArr = [];
+                    for(x in oo) if(x.in(oo)) valArr.push(oo[x]);
+                    return valArr;
+                },
+
                 keys: (function () {
                     'use strict';
                     var hasOwnProperty = Object.prototype.hasOwnProperty,

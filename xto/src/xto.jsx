@@ -1,6 +1,6 @@
 /***********************************************************************************
 		Name:           xto
-		Desc:           A small utility framework for Extendscript and AE.
+		Desc:           A helper framework for Extendscript and AE.
 		Created:        2110 (YYMM)
 		Modified:       2110 (YYMM)
         
@@ -580,21 +580,272 @@
         //---------- $$$$ -------------
         $$$$$DATA: (function(){
 
+            $.json = (function()
+            {
+                var JJ = {};
+            
+                "use strict";
+            
+                var rx_one = /^[\],:{}\s]*$/;
+                var rx_two = /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g;
+                var rx_three = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;
+                var rx_four = /(?:^|:|,)(?:\s*\[)+/g;
+                var rx_escapable = /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+                var rx_dangerous = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+            
+                function f(n){ return (n < 10) ? ("0" + n): n;}
+            
+                function quote(string) {
+            
+                    rx_escapable.lastIndex = 0;
+                    return rx_escapable.test(string)
+                        ? "\"" + string.replace(rx_escapable, function (a) {
+                            var c = meta[a];
+                            return typeof c === "string"
+                                ? c
+                                : "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4);
+                        }) + "\""
+                        : "\"" + string + "\"";
+                }
+            
+                function str(key, holder) {
+                    
+                    var i;          
+                    var k;          
+                    var v;          
+                    var length;
+                    var mind = gap;
+                    var partial;
+                    var value = holder[key];
+            
+                    if (
+                        value
+                        && typeof value === "object"
+                        && typeof value.toJSON === "function"
+                    ) {
+                        value = value.toJSON(key);
+                    }
+            
+                    if (typeof rep === "function") {
+                        value = rep.call(holder, key, value);
+                    }
+            
+                    switch (typeof value) {
+                        case "string":
+                            return quote(value);
+                        case "number":
+                            return (isFinite(value))
+                                ? String(value)
+                                : "null";
+                        case "boolean":
+                        case "null":
+                            return String(value);
+                        case "object":
+                            if (!value) {
+                                return "null";
+                            }
+                            gap += indent;
+                            partial = [];
+            
+                            if (Object.prototype.toString.apply(value) === "[object Array]") {
+                                length = value.length;
+                                for (i = 0; i < length; i += 1) {
+                                    partial[i] = str(i, value) || "null";
+                                }
+            
+                                v = partial.length === 0
+                                    ? "[]"
+                                    : gap
+                                        ? (
+                                            "[\n"
+                                            + gap
+                                            + partial.join(",\n" + gap)
+                                            + "\n"
+                                            + mind
+                                            + "]"
+                                        )
+                                        : "[" + partial.join(",") + "]";
+                                gap = mind;
+                                return v;
+                            }
+            
+                            if (rep && typeof rep === "object") {
+                                length = rep.length;
+                                for (i = 0; i < length; i += 1) {
+                                    if (typeof rep[i] === "string") {
+                                        k = rep[i];
+                                        v = str(k, value);
+                                        if (v) {
+                                            partial.push(quote(k) + (
+                                                (gap)
+                                                    ? ": "
+                                                    : ":"
+                                            ) + v);
+                                        }
+                                    }
+                                }
+                            } else {
+            
+                                for (k in value) {
+                                    if (Object.prototype.hasOwnProperty.call(value, k)) {
+                                        v = str(k, value);
+                                        if (v) {
+                                            partial.push(quote(k) + (
+                                                (gap)
+                                                    ? ": "
+                                                    : ":"
+                                            ) + v);
+                                        }
+                                    }
+                                }
+                            }
+            
+                            v = partial.length === 0
+                                ? "{}"
+                                : gap
+                                    ? "{\n" + gap + partial.join(",\n" + gap) + "\n" + mind + "}"
+                                    : "{" + partial.join(",") + "}";
+                            gap = mind;
+                            return v;
+                        }
+                }
+            
+            
+                Date.prototype.toJSON = function ()
+                {
+                    return isFinite(this.valueOf())
+                        ? (
+                            this.getUTCFullYear()
+                            + "-"
+                            + f(this.getUTCMonth() + 1)
+                            + "-"
+                            + f(this.getUTCDate())
+                            + "T"
+                            + f(this.getUTCHours())
+                            + ":"
+                            + f(this.getUTCMinutes())
+                            + ":"
+                            + f(this.getUTCSeconds())
+                            + "Z"
+                        )
+                        : null;
+                }
+                Boolean.prototype.toJSON = function(){return this.valueOf()};
+                Number.prototype.toJSON  = function(){return this.valueOf()};
+                String.prototype.toJSON  = function(){return this.valueOf()};
+            
+                var gap;
+                var indent;
+                var meta = 
+                {    
+                    "\b": "\\b",
+                    "\t": "\\t",
+                    "\n": "\\n",
+                    "\f": "\\f",
+                    "\r": "\\r",
+                    "\"": "\\\"",
+                    "\\": "\\\\"
+                };
+            
+                var rep;
+            
+                JJ.stringify = function(value, replacer, space)
+                {
+            
+                    rep = replacer;
+                    var repCond = (replacer && typeof replace !== "function" &&(
+                        typeof replacer !== "object" || typeof replacer.length !== "number"
+                    ));
+                    if(repCond) throw new Error("JJ.stringify");
+            
+                    var i      = -1,
+                        gap    = "";
+                        indent = "";
+            
+                    switch (typeof space)
+                    {
+                        case "string": indent = space; break;
+                        case "number": for(;++i <space;) indent += " "; break;
+                    }
+            
+                    return str("", {"": value});
+                }
+            
+                JJ.parse = function (text, reviver)
+                {
+                    var j;
+                    function walk(holder, key)
+                    {
+                        var k;
+                        var v;
+                        var value = holder[key];
+                        if (value && typeof value === "object") {
+                            for (k in value) {
+                                if (Object.prototype.hasOwnProperty.call(value, k)) {
+                                    v = walk(value, k);
+                                    if (v !== undefined) {
+                                        value[k] = v;
+                                    } else {
+                                        delete value[k];
+                                    }
+                                }
+                            }
+                        }
+                        return reviver.call(holder, key, value);
+                    }
+            
+                    text = String(text);
+                    rx_dangerous.lastIndex = 0;
+                    
+                    if (rx_dangerous.test(text))
+                    {
+                        text = text.replace(rx_dangerous, function (a) {
+                            return (
+                                "\\u"
+                                + ("0000" + a.charCodeAt(0).toString(16)).slice(-4)
+                            );
+                        });
+                    }
+            
+                    if(
+                        rx_one.test(
+                            text
+                                .replace(rx_two, "@")
+                                .replace(rx_three, "]")
+                                .replace(rx_four, "")
+                        )
+                    ){
+                        j = eval("(" + text + ")");
+                        return (typeof reviver === "function")
+                            ? walk({"": j}, "")
+                            : j;
+                    }
+            
+                    throw new SyntaxError("JJ.parse");
+                }
+            
+                return JJ;
+            })();
+
             $.xt({
                 
                 clipboardLibFile: false,
                 clipboardLib : 0,
 
-                ser: function(type)
+                ser: function(data, type)
                 {
                     if(typeof type == "undefined") type = "JSON";
                     if(type != "JSON") return;
+
+                    return $.json.stringify(data);
                 },
 
-                deser: function(type)
+                deser: function(data, type)
                 {
                     if(typeof type == "undefined") type = "JSON";
                     if(type != "JSON") return;
+
+                    return $.json.parse(data);
                 },
 
                 http: function(type, link, body){
@@ -711,32 +962,428 @@
                 SAVE_AS_FRAME: 2104
             };
 
-            // MATCH NAMES:
-            MN = 
+            function _MN(prop)
             {
-                ELLIPSE: "ADBE Vector Shape - Ellipse",
-                ELLIPSE_SIZE: "ADBE Vector Ellipse Size",
-              
-                FILL: "ADBE Vector Graphic - Fill",
-                FILL_COLOR: "ADBE Vector Fill Color",
-                FILL_OPACITY: "ADBE Vector Fill Opacity",
-                
-                STROKE: "ADBE Vector Graphic - Stroke",
-                STROKE_COLOR: "ADBE Vector Stroke Color",
-                STROKE_WIDTH: "ADBE Vector Stroke Width",
-              
-                TEXT_ANIMATOR: "ADBE Text Animator",
-                TEXT_ANIMATOR_PROPS: "ADBE Text Animator Properties",
-                TEXT_FILL_COLOR: "ADBE Text Fill Color",
-              
-                GROUP: "ADBE Vector Group",
-                VECTORS_GROUP:"ADBE Vectors Group",
-                PATH: "ADBE Vector Shape - Group",
-              
-                TRIM: "ADBE Vector Filter - Trim",
-                TRIM_START: "ADBE Vector Trim Start",
-                TRIM_END: "ADBE Vector Trim End",
-                TRIM_OFFSET: "ADBE Vector Trim Offset",
+                const TOP_LEVEL = 
+                {
+                    Marker: "ADBE Marker"    ,
+                    Time_Remap: "ADBE Time Remapping",
+                    Motion_Trackers: "ADBE MTrackers",
+                    Masks: "ADBE Mask Parade",
+                    Effects: "ADBE Effect Parade",
+                    Essential_Properties: "ADBE Layer Overrides" 
+                },
+            
+                TRANSFORM = 
+                {
+                    Transform: "ADBE Transform Group",
+                    Anchor_Point: "ADBE Anchor Point",
+                    Position: "ADBE Position",
+                    X_Position: "ADBE Position_0",
+                    Y_Position: "ADBE Position_1",
+                    Z_Position: "ADBE Position_2",
+                    Scale: "ADBE Scale",
+                    Orientation: "ADBE Orientation",
+                    X_Rotation: "ADBE Rotate X",
+                    Y_Rotation: "ADBE Rotate Y",
+                    Z_Rotation: "ADBE Rotate Z",
+                    Opacity: "ADBE Opacity"
+                },
+            
+                AUDIO = 
+                {
+                    Audio: "ADBE Audio Group",
+                    Audio_Levels: "ADBE Audio Levels"
+                },
+            
+                THREED = 
+                {
+                    Geometry_Options: ["ADBE Plane Options Group", "ADBE Extrsn Options Group"],
+                    Curvature: "ADBE Plane Curvature",
+                    Segments: "ADBE Plane Subdivision",
+                    Bevel_Depth: "ADBE Bevel Depth",
+                    Hole_Bevel_Depth: "ADBE Hole Bevel Depth",
+                    Extrusion_Depth: "ADBE Extrsn Depth"
+                },
+            
+                THREEDMATERIALS = 
+                {
+                    Material_Options: "ADBE Material Options Group",
+                    Light_Transmission: "ADBE Light Transmission",
+                    Ambient: "ADBE Ambient Coefficient",
+                    Diffuse: "ADBE Diffuse Coefficient",
+                    Specular_Intensity: "ADBE Specular Coefficient",
+                    Specular_Shininess: "ADBE Shininess Coefficient",
+                    Metal : "ADBE Metal Coefficient",
+                    Reflection_Intensity: "ADBE Reflection Coefficient",
+                    Reflection_Sharpness: "ADBE Glossiness Coefficient",
+                    Reflection_Rolloff: ["ADBE Fresnel Coefficient", "ADBE Transp Rolloff"],
+                    Transparency: "ADBE Transparency Coefficient",
+                    Index_Of_Refraction: "ADBE Index of Refraction"
+                },
+            
+                CAMERA =
+                {
+                    Camera_Options: "ADBE Camera Options Group",
+                    Zoom: "ADBE Camera Options Group",
+                    Depth_Of_Field: "ADBE Camera Depth of Field",
+                    Focus_Distance: "ADBE Camera Focus Distance",
+                    Aperture: "ADBE Camera Aperture",
+                    Blur_Level: "ADBE Camera Blur Level"
+                },
+            
+                CAMERAIRIS = 
+                {
+                    Iris_Shape: "ADBE Iris Shape",
+                    Iris_Rotation: "ADBE Iris Rotation",
+                    Iris_Roundness: "ADBE Iris Roundness",
+                    Iris_Aspect_Ration: "ADBE Iris Aspect Ratio",
+                    Iris_Diffraction_Fringe: "ADBE Iris Diffraction Fringe",
+                    Hightlight_Gain: "ADBE Iris Highlight Gain",
+                    Heighlight_Threshold: "ADBE Iris Highlight Threshold",
+                    Highlight_Saturation: "ADBE Iris Hightlight Saturation"
+                },
+            
+                LIGHT = 
+                {
+                    Light_Options: "ADBE Light Options Group",
+                    Intensity: "ADBE Light Intensity",
+                    Color: "ADBE Light Color",
+                    Cone_Angle: "ADBE Light Cone Angle",
+                    Cone_Feather: "ADBE Light Cone Feather 2",
+                    Falloff: "ADBE Light Falloff Type",
+                    Radius: "ADBE Light Falloff Start",
+                    Falloff_Distance: "ADBE Light Falloff Distance",
+                    Shadow_Darkness: "ADBE Light Shadow Darkness",
+                    Shadow_Diffusion: "ADBE Light Shadow Diffustion"
+                },
+            
+                TEXT = 
+                {
+                    Text: "ADBE Text Properties",
+                    Source_Text: "ADBE Text Document",
+                    Path_Options: "ADBE Text Path Options",
+                    Reverse_Path: "ADBE Text Reverse Path",
+                    Perpendicular_To_Path: "ADBE Text Perpendicular To Path",
+                    Force_Alignment: "ADBE Text Force Align Path",
+                    First_Margin: "ADBE Text First Margin",
+                    Last_Margin: "ADBE Text Last Margin",
+                    More_Options: "ADBE Text More Options",
+                    Grouping_Alignment: "ADBE Text Anchor Point Align",
+                    Animators: "ADBE Text Animators"
+            
+                    // ANIMATORS:
+            
+                    ,Animator: "ADBE Text Animator",
+                    Selectors: "ADBE Text Selectors",
+                    Range_Selector: "ADBE Text Selector",
+                    Start: ["ADBE Text Percent Start", "ADBE Text Index Start"],
+                    End: ["ADBE Text Percent End", "ADBE Text Index End"],
+                    Offset: ["ADBE Text Percent Offset", "ADBE Text Index Offset"],
+                    Advanced: "ADBE Text Range Advanced",
+                    Mode: "ADBE Text Selector Mode",
+                    Amount: "ADBE Text Selector Max Amount",
+                    Smoothness: "ADBE Text Selector Smoothness",
+                    Ease_High: "ADBE Text Levels Max Ease",
+                    Ease_Low: "ADBE Text Levels Min Ease",
+                    Random_Seed: "ADBE Text Random Seed",
+                    Properties: "ADBE Text Animator Properties",
+                    Anchor_Point: "ADBE Text Anchor Point 3D",
+                    Position: "ADBE Text Position 3D",
+                    Scale: "ADBE Text Scale 3D",
+                    Skew: "ADBE Text Skew",
+                    Skew_Axis: "ADBE Text Skew Axis",
+                    X_Rotation: "ADBE Text Rotation X",
+                    Y_Rotation: "ADBE Text Rotation Y",
+                    Z_Rotation: "ADBE Text Rotation",
+                    Opacity: "ADBE Text Opacity",
+                    Fill_Opacity: "ADBE Text Fill Opacity",
+                    Stroke_Opacity: "ADBE Text Stroke Opacity",
+                    Fill_Hue: "ADBE Text Fill Hue",
+                    Stroke_Hue: "ADBE Text Stroke Hue",
+                    Fill_Saturation: "ADBE Text Fill Saturation",
+                    Stroke_Saturation: "ADBE Text Stroke Saturation",
+                    Fill_Brightness: "ADBE Text Fill Brightness",
+                    Stroke_Brightness: "ADBE Text Stroke Brightness",
+                    Stroke_Width: "ADBE Text Stroke Width",
+                    Line_Anchor: "ADBE Text Line Anchor",
+                    Tracking_Type: "ADBE Text Track Type",
+                    Tracking_Amount: "ADBE Text Tracking Amount",
+                    Character_Value: "ADBE Text Character Replace",
+                    Character_Offset: "ADBE Text Character Offset",
+                    Line_Spacing: "ADBE Text Line Spacing",
+                    Blue: "ADBE Text Blur"
+            
+            
+                    //THREE D:
+                    ,Front_Color: "ADBE 3DText Front RGB",
+                    Front_Hue: "ADBE 3DText Front Hue",
+                    Front_Saturation: "ADBE 3DText Front Sat",
+                    Front_Brightness: "ADBE 3DText Front Bright",
+                    Front_Opacity: "ADBE 3DText Front Opacity",
+                    Front_Ambient: "ADBE 3DText Front Ambient",
+                    Front_Diffuse: "ADBE 3DText Front Diffuse",
+                    Front_Specular_Intensity: "ADBE 3DText Front Specular",
+                    Front_Specular_Shininess: "ADBE 3DText Front Shininess",
+                    Front_Metal: "ADBE 3DText Front Metal",
+                    Front_Reflection_Intensity: "ADBE 3DText Front Reflection",
+                    Front_Reflection_Sharpness: "ADBE 3DText Front Gloss",
+                    Front_Reflection_Rolloff: "ADBE 3DText Front Fresnel",
+                    Front_Transparency: "ADBE 3DText Front Xparency",
+                    Front_Transparency_Rolloff: "ADBE 3DText Front XparRoll",
+                    Front_Index_Of_Refraction: "ADBE 3DText Front IOR",
+                    Bevel_Color: "ADBE 3DText Bevel RGB",
+                    Bevel_Hue: "ADBE 3DText Bevel Hue",
+                    Bevel_Saturation: "ADBE 3DText Bevel Sat",
+                    Bevel_Brightness: "ADBE 3DText Bevel Bright",
+                    Bevel_Opacity: "ADBE 3DText Bevel Opacity",
+                    Bevel_Ambient: "ADBE 3DText Bevel Ambient",
+                    Bevel_Diffuse: "ADBE 3DText Bevel Diffuse",
+                    Bevel_Specular_Intensity: "ADBE 3DText Bevel Specular",
+                    Bevel_Specular_Shininess: "ADBE 3DText Bevel Shininess",
+                    Bevel_Metal: "ADBE 3DText Bevel Metal",
+                    Bevel_Reflection_Intensity: "ADBE 3DText Bevel Reflection",
+                    Bevel_Reflection_Sharpness: "ADBE 3DText Bevel Gloss",
+                    Bevel_Reflection_Rolloff: "ADBE 3DText Bevel Fresnel",
+                    Bevel_Transparency: "ADBE 3DText Bevel Xparency",
+                    Bevel_Transparency_Rolloff: "ADBE 3DText Bevel XparRoll",
+                    Bevel_Index_Of_Refraction: "ADBE 3DText Bevel IOR",
+                    
+                    Side_Color: "ADBE 3DText Side RGB",
+                    Side_Hue: "ADBE 3DText Side Hue",
+                    Side_Saturation: "ADBE 3DText Side Sat",
+                    Side_Brightness: "ADBE 3DText Side Bright",
+                    Side_Opacity: "ADBE 3DText Side Opacity",
+                    Side_Ambient: "ADBE 3DText Side Ambient",
+                    Side_Diffuse: "ADBE 3DText Side Diffuse",
+                    Side_Specular_Intensity: "ADBE 3DText Side Specular",
+                    Side_Specular_Shininess: "ADBE 3DText Side Shininess",
+                    Side_Metal: "ADBE 3DText Side Metal",
+                    Side_Reflection_Intensity: "ADBE 3DText Side Reflection",
+                    Side_Reflection_Sharpness: "ADBE 3DText Side Gloss",
+                    Side_Reflection_Rolloff: "ADBE 3DText Side Fresnel",
+                    Side_Transparency: "ADBE 3DText Side Xparency",
+                    Side_Transparency_Rolloff: "ADBE 3DText Side XparRoll",
+                    Side_Index_Of_Refraction: "ADBE 3DText Side IOR",
+            
+                    Back_Color: "ADBE 3DText Back RGB",
+                    Back_Hue: "ADBE 3DText Back Hue",
+                    Back_Saturation: "ADBE 3DText Back Sat",
+                    Back_Brightness: "ADBE 3DText Back Bright",
+                    Back_Opacity: "ADBE 3DText Back Opacity",
+                    Back_Ambient: "ADBE 3DText Back Ambient",
+                    Back_Diffuse: "ADBE 3DText Back Diffuse",
+                    Back_Specular_Intensity: "ADBE 3DText Back Specular",
+                    Back_Specular_Shininess: "ADBE 3DText Back Shininess",
+                    Back_Metal: "ADBE 3DText Back Metal",
+                    Back_Reflection_Intensity: "ADBE 3DText Back Reflection",
+                    Back_Reflection_Sharpness: "ADBE 3DText Back Gloss",
+                    Back_Reflection_Rolloff: "ADBE 3DText Back Fresnel",
+                    Back_Transparency: "ADBE 3DText Back Xparency",
+                    Back_Transparency_Rolloff: "ADBE 3DText Back XparRoll",
+                    Back_Index_Of_Refraction: "ADBE 3DText Back IOR",
+            
+                    Bevel_Depth: "ADBE 3DText Bevel Depth",
+                    Extrustion_Depth: "ADBE 3DText Extrude Depth"
+                },
+            
+                SHAPE =
+                {
+            
+                    Shape_Layer: "ADBE Vector Layer",
+                    Contents: "ADBE Root Vectors Group"
+                    
+                    //GROUP
+                    ,Group: "ADBE Vector Group",
+                    Blend_Mode: "ADBE Vector Blend Mode",
+                    Contents: "ADBE Vectors Group",
+                    Transform: "ADBE Vector Transform Group",
+                    Material_Options: "ADBE Vector Materials Group"
+                    
+                    // RECT
+                    ,Rectangle: "ADBE Vector Shape - Rect",
+                    Shape_Direction: "ADBE Vector Shape Direction",
+                    Size: "ADBE Vector Rect Size",
+                    Position: "ADBE Vector Rect Position",
+                    Roundness: "ADBE Vector Rect Roundness"
+            
+                    //ELLIPSE
+                    ,Ellipseà: "ADBE Vector Shape - Ellipse",
+                    EllipseàShape_Direction: "ADBE Vector Shape Direction",
+                    EllipseàSize: "ADBE Vector Size",
+                    EllipseàPosition: "ADBE Vector Position"
+            
+                    //POLYSTAR
+                    ,Polystar: "ADBE Vector Shape - Star",
+                    PolystaràShape_Direction: "ADBE Vector Shape Direction",
+                    PolystaràType: "ADBE Vector Star Type",
+                    PolystaràPoints: "ADBE Vector Star Points",
+                    PolystaràPosition: "ADBE Vector Star Position",
+                    PolystaràRotation: "ADBE Vector Star Rotation",
+                    PolystaràInner_Radius: "ADBE Vector Star Inner Radius",
+                    PolystaràOuter_Radius: "ADBE Vector Star Outer Radius",
+                    PolystaràInner_Roundness: "ADBE Vector Star Inner Roundness",
+                    PolystaràOuter_Roundness: "ADBE Vector Star Outer Radius"
+            
+                    //PATH
+                    ,Path: "ADBE Vector Shape",
+                    PathGroup: "ADBE Vector Shape - Group",
+                    PathàShape_Direction: "ADBE Vector Shape Direction"
+            
+                    //FILL
+                    ,Fill: "ADBE Vector Graphic - Fill",
+                    FillàBlendMode: "ADBE Vector Blend Mode",
+                    FillàComposite: "ADBE Vector Composite Order",
+                    FillàFillRule: "ADBE Vector Fill Rule",
+                    FillàColor: "ADBE Vector Fill Color",
+                    FillàOpacity: "ADBE Vector Fill Opacity"
+            
+                    // STROKE
+                    ,Stroke: "ADBE Vector Graphic - Stroke",
+                    StrokeàBlend_Mode: "ADBE Vector Blend Mode",
+                    StrokeàComposite: "ADBE Vector Composite Order",
+                    StrokeàColor: "ADBE Vector Stroke Color",
+                    StrokeàOpacity: "ADBE Vector Stroke Opacity",
+                    StrokeàStroke_Width: "ADBE Vector Stroke Width",
+                    StrokeàLine_Cap: "ADBE Vector Stroke Line Cap",
+                    StrokeàLine_Join: "ADBE Vector Stroke Line Join",
+                    StrokeàMiter_Limit: "ADBE Vector Stroke Miter Limit"
+            
+                    // STROKE DASHES
+                    ,Dashes: "ADBE Vector Stroke Dashes",
+                    DashesàDash: "ADBE Vector Stroke Dash 1",
+                    DashesàGap: "ADBE Vector Stroke Gap 1",
+                    DashesàDash_2: "ADBE Vector Stroke Dash 2",
+                    DashesàGap_2: "ADBE Vector Stroke Gap 2",
+                    DashesàDash_3: "ADBE Vector Stroke Dash 3",
+                    DashesàGap_3: "ADBE Vector Stroke Gap 3",
+                    DashesàOffset: "ADBE Vector Stroke Offset"
+            
+                    //STROKE TAPER
+                    ,Taper: "ADBE Vector Stroke Taper",
+                    TaperàStart_Width: "ADBE Vector Taper Start Width",
+                    TaperàLength_Units: "ADBE Vector Taper Length Units",
+                    TaperàEnd_Width: "ADBE Vector Taper End Width",
+                    TaperàEnd_Ease: "ADBE Vector Taper End Ease",
+                    TaperàEnd_Length: "ADBE Vector Taper End Length",
+                    TaperàStart_Length: "ADBE Vector Taper Start Length",
+                    TaperàStart_Ease: "ADBE Vector Taper Start Ease"
+            
+                    //STROKE WAVE
+                    ,Wave: "ADBE Vector Stroke Wave",
+                    Amount: "ADBE Vector Taper Wave Amount",
+                    Units: "ADBE Vector Taper Wave Units",
+                    Phase: "ADBE Vector Taper Wave Phase",
+                    WaveLength: "ADBE Vector Taper Wavelength"
+            
+                    //GRADIENT FILL
+                    ,Gradient_Fill: "ADBE Vector Graphic - G-Fill",
+                    Blend_Mode: "ADBE Vector Blend Mode",
+                    Composite: "ADBE Vector Composite Order",
+                    Fill_Rule: "ADBE Vector Composite Order",
+                    Type: "ADBE Vector Grad Type",
+                    Start_Point: "ADBE Vector Grad Start Pt",
+                    End_Point: "ADBE Vector Grad End Pt",
+                    Highlight_Length: "ADBE Vector Grad HiLite Length",
+                    Highlight_Angle: "ADBE Vector Grad HiLite Angle",
+                    Colors: "ADBE Vector Grad Colors",
+                    Opacity: "ADBE Vector Fill Opacity"
+            
+                    //GRADIENT STROKE:
+                    ,Gradient_Stroke: "ADBE Vector Graphic - G-Stroke",
+                    Blend_Mode: "ADBE Vector Blend Mode",
+                    Composite: "ADBE Vector Composite Order",
+                    Stroke_Rule: "ADBE Vector Composite Order",
+                    Type: "ADBE Vector Grad Type",
+                    Start_Point: "ADBE Vector Grad Start Pt",
+                    End_Point: "ADBE Vector Grad End Pt",
+                    Highlight_Length: "ADBE Vector Grad HiLite Length",
+                    Highlight_Angle: "ADBE Vector Grad HiLite Angle",
+                    Colors: "ADBE Vector Grad Colors",
+                    Opacity: "ADBE Vector Stroke Opacity",
+                    Stroke_Width: "ADBE Vector Stroke Width",
+                    Line_Cap: "ADBE Vector Stroke Line Cap",
+                    Line_Join: "ADBE Vector Stroke Line Join",
+                    Miter_Limit: "ADBE Vector Stroke Miter Limit",
+                    Dashes: "ADBE Vector Stroke Dashes"
+            
+                    //MERGE PATHS:
+                    ,Merge_Paths: "ADBE Vector Filter - Merge",
+                    Mode: "ADBE Vector Merge Type"
+            
+                    //OFFSET PATHS:
+                    ,Offset_Paths: "ADBE Vector Filter - Offset",
+                    Amount: "ADBE Vector Offset Amount",
+                    Line_Join: "ADBE Vector Offset Line Join",
+                    Miter_Limit: "ADBE Vector Offset Miter Limit",
+                    Copies: "ADBE Vector Offset Copies",
+                    Copy_Offset: "ADBE Vector Offset Copy Offset"
+            
+                    //PUCKER & BLOAT:
+                    ,Pucker$Bloat: "ADBE Vector Filter - PB",
+                    Amount: "ADBE Vector PuckerBloat Amount"
+            
+                    //REPEATER
+                    ,Repeater: "ADBE Vector Filter - Repeater",
+                    Copies: "ADBE Vector Repeater Copies",
+                    Offset: "ADBE Vector Repeater Offset",
+                    Composite: "ADBE Vector Repeater Order",
+                    Transform: "ADBE Vector Repeater Transform"
+            
+                    //ROUND CORNERS
+                    ,Round_Corners: "ADBE Vector Filter - RC",
+                    Radius: "ADBE Vector RoundCorner Radius"
+            
+                    //TRIM PATHS
+                    ,Trim_Paths: "ADBE Vector Filter - Trim",
+                    Start: "ADBE Vector Trim Start",
+                    End: "ADBE Vector Trim End",
+                    Offset: "ADBE Vector Trim End",
+                    Trim_Multiple_Shapes: "ADBE Vector Trim Type"
+            
+                    //TWIST
+                    ,Twist: "ADBE Vector Filter - Twist",
+                    Angle: "ADBE Vector Twist Angle",
+                    Center: "ADBE Vector Twist Center"
+            
+                    //WIGGLE PATHS
+                    ,WigglePaths: "ADBE Vector Filter - Roughen",
+                    Size: "ADBE Vector Roughen Size",
+                    Detail: "ADBE Vector Roughen Detail",
+                    Points: "ADBE Vector Roughen Points",
+                    Wiggles$$Second: "ADBE Vector Temporal Freq",
+                    Correlation: "ADBE Vector Correlation",
+                    Temporal_Phase: "ADBE Vector Temporal Phase",
+                    Spatial_Phase: "ADBE Vector Spatial Phase",
+                    Random_Seed: "ADBE Vector Random Seed"
+            
+                    //WIGGLE TRANSFORM
+                    ,Wiggle_Transform: "ADBE Vector Filter - Wiggler",
+                    Wiggles$$Second: "ADBE Vector Xform Temporal Freq",
+                    Correlation: "ADBE Vector Correlation",
+                    TemporalPhase: "ADBE Vector Temporal Phase",
+                    Spatial_Phase: "ADBE Vector Spatial Phase",
+                    Random_Seed: "ADBE Vector Random Seed",
+                    Transform: "ADBE Vector Wiggler Transform",
+            
+                    //ZIG ZAG
+                    Zig_Zag: "	ADBE Vector Filter - Zigzag",
+                    Size: "ADBE Vector Zigzag Size",
+                    Ridges_per_segment: "ADBE Vector Zigzag Detail",
+                    Points: "ADBE Vector Zigzag Points"
+            
+                }
+
+                var ALL_MATCH_NAMES = [TOP_LEVEL, TRANSFORM, AUDIO, THREED, THREEDMATERIALS, CAMERA, CAMERAIRIS, LIGHT, TEXT, SHAPE];
+
+                var curr, i =-1;
+                for(;++i< ALL_MATCH_NAMES.length;)
+                {
+                    curr = ALL_MATCH_NAMES[i];
+                    for(x in curr) if(x.in(curr) && x == prop) return curr[x];
+                }
+
+                return "ADBE";
             }
         }),
 

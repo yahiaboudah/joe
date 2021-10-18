@@ -2,6 +2,9 @@
 JSON = {};
 
 (function () {
+
+    var JJ = {};
+
     "use strict";
 
     var rx_one = /^[\],:{}\s]*$/;
@@ -11,49 +14,7 @@ JSON = {};
     var rx_escapable = /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
     var rx_dangerous = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
 
-    function f(n) {
-        
-        return (n < 10)
-            ? "0" + n
-            : n;
-    }
-
-    function this_value() {
-        return this.valueOf();
-    }
-
-    if (typeof Date.prototype.toJSON !== "function") {
-
-        Date.prototype.toJSON = function () {
-
-            return isFinite(this.valueOf())
-                ? (
-                    this.getUTCFullYear()
-                    + "-"
-                    + f(this.getUTCMonth() + 1)
-                    + "-"
-                    + f(this.getUTCDate())
-                    + "T"
-                    + f(this.getUTCHours())
-                    + ":"
-                    + f(this.getUTCMinutes())
-                    + ":"
-                    + f(this.getUTCSeconds())
-                    + "Z"
-                )
-                : null;
-        };
-
-        Boolean.prototype.toJSON = this_value;
-        Number.prototype.toJSON = this_value;
-        String.prototype.toJSON = this_value;
-    }
-
-    var gap;
-    var indent;
-    var meta;
-    var rep;
-
+    function f(n){ return (n < 10) ? ("0" + n): n;}
 
     function quote(string) {
 
@@ -67,7 +28,6 @@ JSON = {};
             }) + "\""
             : "\"" + string + "\"";
     }
-
 
     function str(key, holder) {
         
@@ -171,92 +131,119 @@ JSON = {};
             }
     }
 
-    // JSON STRINGIFY:
-    if (typeof JSON.stringifyy !== "function") {
-        meta = {    
-            "\b": "\\b",
-            "\t": "\\t",
-            "\n": "\\n",
-            "\f": "\\f",
-            "\r": "\\r",
-            "\"": "\\\"",
-            "\\": "\\\\"
-        };
-        JSON.stringifyy = function (value, replacer, space) {
 
-            var i;
-            gap = "";
+    Date.prototype.toJSON = function ()
+    {
+        return isFinite(this.valueOf())
+            ? (
+                this.getUTCFullYear()
+                + "-"
+                + f(this.getUTCMonth() + 1)
+                + "-"
+                + f(this.getUTCDate())
+                + "T"
+                + f(this.getUTCHours())
+                + ":"
+                + f(this.getUTCMinutes())
+                + ":"
+                + f(this.getUTCSeconds())
+                + "Z"
+            )
+            : null;
+    }
+    Boolean.prototype.toJSON = function(){return this.valueOf()};
+    Number.prototype.toJSON  = function(){return this.valueOf()};
+    String.prototype.toJSON  = function(){return this.valueOf()};
+
+    var gap;
+    var indent;
+    var meta = 
+    {    
+        "\b": "\\b",
+        "\t": "\\t",
+        "\n": "\\n",
+        "\f": "\\f",
+        "\r": "\\r",
+        "\"": "\\\"",
+        "\\": "\\\\"
+    };
+
+    var rep;
+
+    JJ.stringify = function(value, replacer, space)
+    {
+
+        rep = replacer;
+        var repCond = (replacer && typeof replace !== "function" &&(
+            typeof replacer !== "object" || typeof replacer.length !== "number"
+        ));
+        if(repCond) throw new Error("JJ.stringify");
+
+        var i      = -1,
+            gap    = "";
             indent = "";
 
-            if (typeof space === "number") {
-                for (i = 0; i < space; i += 1) {
-                    indent += " ";
-                }
+        switch (typeof space)
+        {
+            case "string": indent = space; break;
+            case "number": for(;++i <space;) indent += " "; break;
+        }
 
-            } else if (typeof space === "string") {
-                indent = space;
-            }
-
-            rep = replacer;
-            if (replacer && typeof replacer !== "function" && (
-                typeof replacer !== "object"
-                || typeof replacer.length !== "number"
-            )) {
-                throw new Error("JSON.stringifyy");
-            }
-
-            return str("", {"": value});
-        };
+        return str("", {"": value});
     }
 
-    // PARSE FUNCTION:
-    if (typeof JSON.parse !== "function") {
-        JSON.parse = function (text, reviver) {
-            var j;
-            function walk(holder, key) {
-
-                var k;
-                var v;
-                var value = holder[key];
-                if (value && typeof value === "object") {
-                    for (k in value) {
-                        if (Object.prototype.hasOwnProperty.call(value, k)) {
-                            v = walk(value, k);
-                            if (v !== undefined) {
-                                value[k] = v;
-                            } else {
-                                delete value[k];
-                            }
+    JJ.parse = function (text, reviver)
+    {
+        var j;
+        function walk(holder, key)
+        {
+            var k;
+            var v;
+            var value = holder[key];
+            if (value && typeof value === "object") {
+                for (k in value) {
+                    if (Object.prototype.hasOwnProperty.call(value, k)) {
+                        v = walk(value, k);
+                        if (v !== undefined) {
+                            value[k] = v;
+                        } else {
+                            delete value[k];
                         }
                     }
                 }
-                return reviver.call(holder, key, value);
             }
+            return reviver.call(holder, key, value);
+        }
 
-            text = String(text);
-            rx_dangerous.lastIndex = 0;
-            if (rx_dangerous.test(text)) {
-                text = text.replace(rx_dangerous, function (a) {
-                    return (
-                        "\\u"
-                        + ("0000" + a.charCodeAt(0).toString(16)).slice(-4)
-                    );
-                });
-            }
-            if (
-                rx_one.test(
-                    text
-                        .replace(rx_two, "@")
-                        .replace(rx_three, "]")
-                        .replace(rx_four, "")
-                )
-            ) {
-                j = eval("(" + text + ")");
-                return (typeof reviver === "function")
-                    ? walk({"": j}, "")
-                    : j;
-            }
-            throw new SyntaxError("JSON.parse");
-        };
+        text = String(text);
+        rx_dangerous.lastIndex = 0;
+        
+        if (rx_dangerous.test(text))
+        {
+            text = text.replace(rx_dangerous, function (a) {
+                return (
+                    "\\u"
+                    + ("0000" + a.charCodeAt(0).toString(16)).slice(-4)
+                );
+            });
+        }
+
+        if(
+            rx_one.test(
+                text
+                    .replace(rx_two, "@")
+                    .replace(rx_three, "]")
+                    .replace(rx_four, "")
+            )
+        ){
+            j = eval("(" + text + ")");
+            return (typeof reviver === "function")
+                ? walk({"": j}, "")
+                : j;
+        }
+
+        throw new SyntaxError("JJ.parse");
     }
+
+    return JJ;
 }());

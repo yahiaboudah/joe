@@ -772,6 +772,11 @@
                 },
             })
         }),
+
+        AFFX$Project: (function(){
+
+            if($.global["proj"].is(undefined)) $.global["proj"] = app.project;
+        }),
         
         AFFX$Camera : (function(){
 
@@ -824,6 +829,9 @@
 
         AFFX$CompItem_prototype: (function()
         {
+            // make default "comp" reference activeItem. [REQURES FIX: case of activeItem not CompItem]
+            if($.global["comp"].is(undefined)) $.global["comp"] = app.project.activeItem;
+
             CompItem.FILM_SIZE    = 36;
             CompItem.FOCAL_LENGTH = 50;
 
@@ -1031,6 +1039,12 @@
         }),
 
         AFFX$Layer_prototype: (function(){
+
+            if($.global["layr"].is(undefined))
+            {
+                var currComp = app.project.activeItem;
+                $.global["layr"] = currComp.selectedLayers[0] || currComp.layer(1);
+            }
 
             var LayerExt = 
             {
@@ -2639,7 +2653,7 @@
                         "mixer.init()",
                         "mixer.music.load(\"{0}\")".f(pp),
                         "mixer.music.play()",
-                        "sleep({0})".f(dt),
+                        "sleep({0})".re(dt),
                         "mixer.music.stop()"
                             
                     ].join("\n")).$execute(200,function(){

@@ -1048,53 +1048,43 @@
 
             var LayerExt = 
             {
-                getAnchorPointMatrix: function()
+                getMatrixOf: function(what)
                 {
-                    var value = this.getProp("Transform/Anchor Point").value;
-            
-                    return Matrix.identity().translate(
-                        value[0],
-                        value[1],
-                        -value[2]
-                    )
-                },
+                    var value = this.getProp("Transform/{0}".re(what)).value;
 
-                getOrientationMatrix: function()
-                {
-                    var oriValue = this.getProp("Transform/Orientation").value;
-            
-                    return Matrix.identity()
+                    switch(what) 
+                    {    
+                        case "Anchor Point":
+                            return Matrix.identity()
+                            
+                            .translate(value[0], value[1], -value[2]);
+                        
+                        case "Orientation":
+                            return Matrix.identity()
+                            
+                            .rotateZ(Math.degreesToRadians(value[2]))
+                            .rotateY(Math.degreesToRadians(-value[1]))
+                            .rotateX(Math.degreesToRadians(-value[0]));
+                        
+                        case "Position":
+                            return Matrix.getIdentity()
+                            
+                            .translate(value[0], value[1], -value[2]);
+                        
+                        case "Rotation":
+                            return Matrix.getIdentity()
                     
-                    .rotateZ(Math.degreesToRadians(oriValue[2]))
-                    .rotateY(Math.degreesToRadians(-oriValue[1]))
-                    .rotateX(Math.degreesToRadians(-oriValue[0]));
-                },
-
-                getPositionMatrix: function()
-                {
-                    var posValue = this.property("Transform/Position");
-                    
-                    return Matrix.getIdentity()
-                    
-                    .translate(posValue[0], posValue[1], -posValue[2]);
-                },
-
-                getRotationMatrix: function()
-                {
-                    return Matrix.getIdentity()
-                    
-                    .rotateZ(Math.degreesToRadians(this.getProp("Transform/Z Rotation").value))
-                    .rotateY(Math.degreesToRadians(-this.getProp("Transform/Y Rotation").value))
-                    .rotateX(Math.degreesToRadians(-this.getProp("Transform/X Rotation").value))
-                },
-
-                getScaleMatrix: function()
-                {
-                    var scaleVal = this.getProp("Transform/Scale").value /100;
-            
-                    return Matrix.identity()
-
-                    .scale(scaleVal[0], scaleVal[1], scaleVal[2])
+                            .rotateZ(Math.degreesToRadians(this.getProp("Transform/Z Rotation").value))
+                            .rotateY(Math.degreesToRadians(-this.getProp("Transform/Y Rotation").value))
+                            .rotateX(Math.degreesToRadians(-this.getProp("Transform/X Rotation").value))
+                        
+                        case "Scale":
+                            return Matrix.identity()
+        
+                            .scale(value[0] /100, value[1] /100, value[2] /100)
+                        
+                        default: return Matrix.identity();
+                    }
                 },
 
                 getLocalMatrix: function()

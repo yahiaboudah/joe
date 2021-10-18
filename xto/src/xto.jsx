@@ -1119,12 +1119,10 @@
 
                 getLookAt: function()
                 {
-                    var lookAtMatrix;
-
                     var anchorPoint = this.getProp("Transform/Anchor Point").value; anchorPoint[2] *= -1;
                     var position    = this.getProp("Transform/Position").value; position[2] *= -1;
             
-                    return lookAtMatrix = Matrix.lookAt(
+                    return Matrix.lookAt(
                         position,
                         anchorPoint,
                         [0, 1, 0]
@@ -1148,18 +1146,20 @@
                     return Matrix.multiplyArrayOfMatrices([
                         
                         modelMatrix, // model matrix
-                        comp.getViewMatrix().invert(), // view matri
+                        comp.getViewMatrix().invert(), // view matrix
                         comp.getProjectionMatrix() // projection matrix
                     ]);
                 },
                 
                 toComp: function(offset)
                 {
+                    var x,y,z;
+
                     var offset = !offset? [0,0,0]:
                                  ((anch = this.getProp("Transform/Anchor Point").value, anch[2] *= -1, offset-=anch), 
                                  offset),
 
-                    var modelMatrix = this.getModelMatrix(offset);
+                    var modelMatrix = this.getModalMatrix(offset);
             
                     if(!layer.threeDLayer) return (result = Matrix.getTranslate(modelMatrix), result.pop(), result)
 
@@ -1178,13 +1178,14 @@
                     // preprocess offset:
                     var offset = !offset? [0,0,0]:
                                  ((anch = this.getProp("Transform/Anchor Point").value, anch[2] *= -1, offset-=anch), 
-                                 offset),
+                                 offset);
 
-                    // modelMatrix:
-                    var modelMatrix = this.getModalMatrix(offset);
-                    var result = Matrix.getTranslate(modelMatrix);
+                    // translate modelMatrix:
+                    var result = Matrix.getTranslate(
+                        this.getModalMatrix(offset)
+                    );
             
-                    // return result:
+                    // if not 3d, pop z:
                     return (!layer.threeDLayer? result.pop(): result[2] *= -1, result);
                 }
             }

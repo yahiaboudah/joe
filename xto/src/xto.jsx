@@ -795,12 +795,38 @@
                 {
                     var pr    = this,
                         items = [];
+
                     pr.itemsArr().forEach(function(item)
                     {
                         if(cb.call(pr, item[prop])) items.push(item);
                     })
 
                     return items;
+                },
+
+                $addComp: function(cfg)
+                {
+                    var num = this.getItemsWith("name", function(n){return (/comp \d+/gi).test(n)})
+                              .reduce(function(item1, item2)
+                              {
+                                  return parseInt(item1.split(" ")[1]) > parseInt(item2.split(" ")[1])?
+                                  item1:
+                                  item2;
+                              }).name.split(" ")[1];
+
+                    cfg = Object.sortAndFill(cfg, 
+                    {
+                        name: "comp {0}".re(parseInt(num) + 1),
+                        width: 1920,
+                        height: 1080,
+                        someBool: 1,
+                        length: 10,
+                        frameRate: 24
+                    });
+
+                    var comp = this.items.addComp.apply(this, Object.values(cfg));
+                    comp.bgColor = cfg.bgColor || [21,21,21];
+                    return comp;
                 }
 
             })
@@ -908,12 +934,7 @@
                     return oldVal == val;
                 })
             }
-            
-            CompItem.prototype.numLayersWithName = function(name)
-            {
-                return this.getLayersWith("name", RegExp("{0} \d+".re(name),"gi")).length;
-            }
-        
+
             CompItem.prototype.setTime = function(t, all)
             {
               if(t.isnt(Number)) return this;
@@ -953,7 +974,7 @@
                 var aspect           = this.width / this.height,
                     filmSizeVertical = CompItem.FILM_SIZE / aspect;
                 
-                return MathEx.getAOV(filmSizeVertical, CompItem.FOCAL_LENGTH);
+                return Math.getAOV(filmSizeVertical, CompItem.FOCAL_LENGTH);
             }
 
             CompItem.prototype.getActiveAOV = function()
@@ -982,9 +1003,7 @@
 
             CompItem.prototype.getViewMatrix = function()
             {
-                var viewMatrix = Matrix.identity();
-                
-                return viewMatrix.translate(    
+                return Matrix.identity().translate(    
                     this.width /2,
                     this.height/2,
                     this.getZoom()

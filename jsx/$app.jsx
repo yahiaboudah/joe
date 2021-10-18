@@ -100,11 +100,6 @@ Object.extend(app, {
   },
 
   // [INFO]
-  pitem : function(dd){
-    return app.project.item(dd);
-  },
-
-  // [INFO]
   pitemByName: function(itemName)
   {
     return app.project.items.grab(function(item){

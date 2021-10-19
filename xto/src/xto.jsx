@@ -574,6 +574,25 @@
             })
         }),
 
+        MATH$MATRIX: (function(){
+
+            $.global.Matrix = function Matrix(){};
+
+            Matrix.identity = function(dim)
+            {
+                if(typeof dim !== "number") dim = 4;
+                
+                var mat = [], i = j = -1;
+                while(++i < dim)
+                {
+                    mat[i] = [];
+                    while(++j < dim) mat[i][j] = (i==j)?1:0;
+                }
+                
+                return mat;
+            }
+        }),
+
         //**************************** */
         //*************************** */
 
@@ -918,7 +937,8 @@
                     return (fr.encoding = "UTF-8", fr.open('a'), fr.write("\n{0}".re(msg)), fr.close())
                 },
 
-                inspect: function(){
+                inspect: function()
+                {
 
                 },
 

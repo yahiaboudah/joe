@@ -589,7 +589,7 @@
                     while(++j < dim) mat[i][j] = (i==j)?1:0;
                 }
                 
-                return mat;
+                return new Matrix(mat);
             }
         }),
 

@@ -4,18 +4,6 @@
 
 function $http(config)
 {
-	jj =
-	{
-		ser: function(data)
-		{
-			return JSON.stringify(data);
-		},
-		deser: function(data)
-		{
-			return JSON.parse(data);
-		}
-	}
-
 	function makeRequest($method, $url)
 	{
 		var request = 
@@ -30,7 +18,7 @@ function $http(config)
         config.payload || config.payload = {};
 		if(typeof config.payload === "object")
 		{
-			config.payload = jj.ser(config.payload);
+			config.payload = $.ser(config.payload);
 			config.headers = config.headers || {};
 
 			config.headers["Content-Type"]   = "application/json";
@@ -123,7 +111,7 @@ function $http(config)
 
     if(config.forcejson || contenttype == "application/json")
     {
-        http.payload = jj.deser(payload);
+        http.payload = $.deser(payload);
     }
 
     else http.payload = payload;

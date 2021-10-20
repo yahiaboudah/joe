@@ -867,8 +867,9 @@
                     return $.json.parse(data);
                 },
 
-                http: function(type, link, body){
-
+                http: function(type, link, body)
+                {
+                    
                 },
 
                 wget: function(file, link)
@@ -1783,10 +1784,42 @@
 
             LayerCollection.prototype.xt({
 
-                $add: function(type)
+                $add : function(what, cfg)
                 {
-
+                    var that = this;
+                
+                    var Configs = 
+                    {
+                        SHAPE: {},
+                        TEXT: {text: "text"},
+                        TEXTBOX: {width: 250, height: 250},
+                        SOLID: 
+                        {
+                            color: [21,21,21],
+                            name: "solid",
+                            width: this.containingComp.width,
+                            height: this.containingComp.height,
+                            pixelAspect: this.containingComp.aspectRatio,
+                            duration: this.containingComp.duration,
+                        },
+                        CAMERA: {name: "cam", centerPoint: [960, 540]},
+                        LIGHT: {name: "light", centerPoint: [960, 540]},
+                        NULL: {duration: this.containingComp.duration}
+                    }
+                
+                    switch (what)
+                    {
+                        case "shape"   : return that.addShape.apply(that, Object.values(Object.adapt(Configs.SHAPE, cfg)));
+                        case "text"    : return that.addText.apply(that, Object.values(Object.adapt(Configs.TEXT, cfg)));
+                        case "textbox" : return that.addBoxText.apply(that, Object.values(Object.adapt(Configs.TEXTBOX, cfg)));
+                        case "solid"   : return that.addSolid.apply(that, Object.values(Object.adapt(Configs.SOLID, cfg)));
+                        case "camera"  : return that.addCamera.apply(that, Object.values(Object.adapt(Configs.CAMERA, cfg)));
+                        case "light"   : return that.addLight.apply(that, Object.values(Object.adapt(Configs.LIGHT, cfg)));
+                        case "null"    :
+                        default        : return that.addNull.apply(that, Object.values(Object.adapt(Configs.NULL, cfg)));
+                    }
                 }
+                
             })
         }),
 

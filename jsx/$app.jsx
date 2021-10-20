@@ -132,12 +132,11 @@ Object.extend(app, {
   // [INFO]
   mostRecent : function(fp, type){
 
-    var fs = Folder(fp).getFiles(type || "*"),
-        re = fs[0],
-        i  = -1;
-    
-    if(!re) return;
-    return Array.min(fs, "modified");
+    return Folder(fp).getFiles().reduce(function(file1, file2){
+      return (file1.modified < file2.modified)?
+             file1:
+             file2;
+    })
   },
 
   // [INFO]

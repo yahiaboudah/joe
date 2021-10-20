@@ -1048,9 +1048,13 @@
                     return (fr.encoding = "UTF-8", fr.open('a'), fr.write("\n{0}".re(msg)), fr.close())
                 },
 
-                inspect: function()
+                inspect: function(k)
                 {
-                    
+                    var type = typeof k,
+                        cns  = k.constructor.name,
+                        strr = k.toString(),
+                        pps  = k.reflect.properties;
+                        funs = k.reflect.methods;
                 },
 
                 scan: function(){

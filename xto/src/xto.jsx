@@ -1812,9 +1812,11 @@
                         case "LightLayer": return cns;
 
                         case "AVLayer":
-                            if(this.source.constructor.name == "CompItem") return "CompLayer"
-                            if(this.nullLayer && !this.adjustmentLayer)    return "NullLayer";
-                            if(this.nullLayer && this.adjustmentLayer)     return "AdjustmentLayer";
+                            if(this.source.constructor.name == "CompItem") return "CompLayer";
+                            if(this.nullLayer) return "NullLayer";
+                            if(this.source.mainSource.constructor.name == "SolidSource") return "SolidLayer";
+                            if(this.hasAudio && !this.hasVideo) return "AudioLayer";
+                            if(this.hasVideo) return "VideoLayer";
                     }
                 },
 

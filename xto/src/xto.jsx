@@ -1507,200 +1507,204 @@
             CompItem.FILM_SIZE    = 36;
             CompItem.FOCAL_LENGTH = 50;
 
-            CompItem.prototype.drop = function(project, itemIdx)
-            {
-                var items = project.items.is(undefined)?app.project.items: project.items;
-                
-                return this.layers.add(
-                    items[itemIdx + 1]
-                )
-            }
+            CompItem.prototype.xt({
 
-            CompItem.prototype.importAndDrop = function(filePath, force)
-            {
-
-                var _file = File(filePath);
-                var items = app.project.getItemsWith("name", function(name){return name == _file.name});
-
-                // layer:
-                var layer = comp.layers.add(
-
-                    (items.length && !force)?
-                    items[0]:
-                    _file.importAE()
-                );
-                app.project.lastItem().selected = false;
-                return layer;
-            }
-
-            CompItem.prototype.setResolution = function(newRes)
-            {
-                var rs = this.resolutionFactor;
-                this.resolutionFactor = newRes;
-                return rs;
-            }
-        
-            CompItem.prototype.getResolution = function()
-            {
-                return this.resolutionFactor;
-            }
-        
-            CompItem.prototype.sel = function()
-            {
-                LAYER_TYPES = [ShapeLayer, Textlayer, LightLayer, CameraLayer, AVLayer];
-        
-                var args = Object.toArray(arguments);
-        
-                var ss = this.selectedLayers;
-                var os = [];
-        
-                args.forEach(function(arg)
+                drop : function(project, itemIdx)
                 {
-                    if(arg.is(Number)) os.push(ss[arg]); //if (2) ==> comp.layer(2)
-        
-                    if(LAYER_TYPES.includes(arg)) // if(ShapeLayer) ==> comp shape layers!
-                    {
-                        Array.prototype.push.apply(os, ss.grab(function(layer){
-                            return layer.constructor == arg;
-                        }));
-                    }
-                })
-        
-                return os.length == 1?
-                       os[0]:
-                       os;
-            }
-        
-            CompItem.prototype.snap = function(t, pp)
-            // snap(1.5, "~/Desktop/MySnaps/snapit.png") => A screenshot of compo at -1.5s-
-            {
-        
-                t = t.is(Number)? t: this.time;
-        
-                app.executeCommand(AECMD.SAVE_AS_FRAME);
-        
-                app.project.renderQueue.showWindow(false);
-                var num = app.project.renderQueue.numItems;
-                // app.project.renderQueue.item(num).outputModule(1).applyTemplate("SnapShotSettings");
-                app.project.renderQueue.item(num).outputModule(1).file = File(pp || "~/Images/AESnap.png");
-                app.project.renderQueue.render();
-                app.project.renderQueue.showWindow(false);
-            }
-        
-            CompItem.prototype.getLayersWith = function(prop, val)
-            {
-                if(val.is(undefined)) val = true;
-        
-                return this.layers.grab(function(layer)
-                {
-                    var oldVal = layer[prop]; 
-        
-                    if(oldVal.is(undefined)) return false;
-                    if(oldVal.is(String) && val.is(RegExp)) return val.test(oldVal);
+                    var items = project.items.is(undefined)?app.project.items: project.items;
                     
-                    return oldVal == val;
-                })
-            }
+                    return this.layers.add(
+                        items[itemIdx + 1]
+                    )
+                },
 
-            CompItem.prototype.setTime = function(t, all)
-            {
-              if(t.isnt(Number)) return this;
-              all  = all.is(undefined)? 1:all;
-        
-              //==============/
-              this.duration = t;
-              //==============/
-          
-              this.layers.grab().forEach(function(layer){
-                
-                var isLocked = layer.locked;
-                layer.locked = false;
-          
-                //-----------------------------------------------------------
-                layer.outPoint = t;
-                if(all && layer.source.is(CompItem)) setTime(t, layer.source);
-                //------------------------------------------------------------
-          
-                layer.locked = isLocked;
-              })
-              
-              return this;
-            },
-        
-            CompItem.prototype.workAreaDomain = function(){
+                importAndDrop : function(filePath, force)
+                {
+
+                    var _file = File(filePath);
+                    var items = app.project.getItemsWith("name", function(name){return name == _file.name});
+
+                    // layer:
+                    var layer = comp.layers.add(
+
+                        (items.length && !force)?
+                        items[0]:
+                        _file.importAE()
+                    );
+                    app.project.lastItem().selected = false;
+                    return layer;
+                },
+
+                setResolution : function(newRes)
+                {
+                    var rs = this.resolutionFactor;
+                    this.resolutionFactor = newRes;
+                    return rs;
+                },
             
-                return {
+                getResolution : function()
+                {
+                    return this.resolutionFactor;
+                },
+            
+                sel : function()
+                {
+                    LAYER_TYPES = [ShapeLayer, Textlayer, LightLayer, CameraLayer, AVLayer];
+            
+                    var args = Object.toArray(arguments);
+            
+                    var ss = this.selectedLayers;
+                    var os = [];
+            
+                    args.forEach(function(arg)
+                    {
+                        if(arg.is(Number)) os.push(ss[arg]); //if (2) ==> comp.layer(2)
+            
+                        if(LAYER_TYPES.includes(arg)) // if(ShapeLayer) ==> comp shape layers!
+                        {
+                            Array.prototype.push.apply(os, ss.grab(function(layer){
+                                return layer.constructor == arg;
+                            }));
+                        }
+                    })
+            
+                    return os.length == 1?
+                        os[0]:
+                        os;
+                },
+            
+                snap : function(t, pp)
+                // snap(1.5, "~/Desktop/MySnaps/snapit.png") => A screenshot of compo at -1.5s-
+                {
+            
+                    t = t.is(Number)? t: this.time;
+            
+                    app.executeCommand(AECMD.SAVE_AS_FRAME);
+            
+                    app.project.renderQueue.showWindow(false);
+                    var num = app.project.renderQueue.numItems;
+                    // app.project.renderQueue.item(num).outputModule(1).applyTemplate("SnapShotSettings");
+                    app.project.renderQueue.item(num).outputModule(1).file = File(pp || "~/Images/AESnap.png");
+                    app.project.renderQueue.render();
+                    app.project.renderQueue.showWindow(false);
+                },
+            
+                getLayersWith : function(prop, val)
+                {
+                    if(val.is(undefined)) val = true;
+            
+                    return this.layers.grab(function(layer)
+                    {
+                        var oldVal = layer[prop]; 
+            
+                        if(oldVal.is(undefined)) return false;
+                        if(oldVal.is(String) && val.is(RegExp)) return val.test(oldVal);
+                        
+                        return oldVal == val;
+                    })
+                },
+
+                setTime : function(t, all)
+                {
+                if(t.isnt(Number)) return this;
+                all  = all.is(undefined)? 1:all;
+            
+                //==============/
+                this.duration = t;
+                //==============/
+            
+                this.layers.grab().forEach(function(layer){
                     
-                    start: this.workAreaStart,
-                    end  : this.workAreaStart + this.workAreaDuration 
-                }
-            }
-
-            CompItem.prototype.getAOV = function()
-            {
-                var aspect           = this.width / this.height,
-                    filmSizeVertical = CompItem.FILM_SIZE / aspect;
+                    var isLocked = layer.locked;
+                    layer.locked = false;
+            
+                    //-----------------------------------------------------------
+                    layer.outPoint = t;
+                    if(all && layer.source.is(CompItem)) setTime(t, layer.source);
+                    //------------------------------------------------------------
+            
+                    layer.locked = isLocked;
+                })
                 
-                return Math.getAOV(filmSizeVertical, CompItem.FOCAL_LENGTH);
-            }
-
-            CompItem.prototype.getActiveAOV = function()
-            {
-                var cam = this.activeCamera;
+                return this;
+                },
+            
+                workAreaDomain : function(){
                 
-                return (cam && cam.enabled)?
-                       cam.getAOV():
-                       this.getAOV();
-            }
+                    return {
+                        
+                        start: this.workAreaStart,
+                        end  : this.workAreaStart + this.workAreaDuration 
+                    }
+                },
 
-            CompItem.prototype.getProjectedZ = function(w)
-            {
-                var zoom = this.getZoom();
-                return (z -(z/w))
-            }
-
-            CompItem.prototype.getActiveProjectedZ = function(w)
-            {
-                var cam = this.activeCamera;
-                
-                return (cam && cam.enabled)?
-                       cam.getProjectedZ():
-                       this.getProjectedZ();
-            }
-
-            CompItem.prototype.getViewMatrix = function()
-            {
-                return Matrix.identity().translate(    
-                    this.width /2,
-                    this.height/2,
-                    this.getZoom()
-                );
-            }
-
-            CompItem.prototype.getZoom = function()
-            {
-                return this.width * CompItem.FOCAL_LENGTH / CompItem.FILM_SIZE;
-            }
-
-            CompItem.prototype.getProjectionMatrix = function()
-            {
-                return Matrix.perspective(
+                getAOV : function()
+                {
+                    var aspect           = this.width / this.height,
+                        filmSizeVertical = CompItem.FILM_SIZE / aspect;
                     
-                    this.getAOV(), //angle of view
-                    this.width / this.height, //aspect
-                    0.1, //near
-                    10000 //far
-                );
-            }
-        
-            CompItem.prototype.getActiveViewMatrix = function()
-            {
-                var cam = this.activeCamera;
+                    return Math.getAOV(filmSizeVertical, CompItem.FOCAL_LENGTH);
+                },
+
+                getActiveAOV : function()
+                {
+                    var cam = this.activeCamera;
+                    
+                    return (cam && cam.enabled)?
+                        cam.getAOV():
+                        this.getAOV();
+                },
+
+                getProjectedZ : function(w)
+                {
+                    var zoom = this.getZoom();
+                    return (z -(z/w))
+                },
+
+                getActiveProjectedZ : function(w)
+                {
+                    var cam = this.activeCamera;
+                    
+                    return (cam && cam.enabled)?
+                        cam.getProjectedZ():
+                        this.getProjectedZ();
+                },
+
+                getViewMatrix : function()
+                {
+                    return Matrix.identity().translate(    
+                        this.width /2,
+                        this.height/2,
+                        this.getZoom()
+                    );
+                },
+
+                getZoom : function()
+                {
+                    return this.width * CompItem.FOCAL_LENGTH / CompItem.FILM_SIZE;
+                },
+
+                getProjectionMatrix : function()
+                {
+                    return Matrix.perspective(
+                        
+                        this.getAOV(), //angle of view
+                        this.width / this.height, //aspect
+                        0.1, //near
+                        10000 //far
+                    );
+                },
+            
+                getActiveViewMatrix : function()
+                {
+                    var cam = this.activeCamera;
+                    
+                    return (cam && cam.enabled)?
+                        cam.getViewMatrix():
+                        this.getViewMatrix();
+                },
                 
-                return (cam && cam.enabled)?
-                       cam.getViewMatrix():
-                       this.getViewMatrix();
-            }
+            });
         }),
 
         AFFX$Camera : (function(){

@@ -1050,15 +1050,21 @@
 
                 inspect: function(k)
                 {
-                    var type = typeof k,
-                        cns  = k.constructor.name,
-                        strr = k.toString(),
-                        pps  = k.reflect.properties;
-                        funs = k.reflect.methods;
+                    var io = 
+                    {
+                        type : typeof k,
+                        cns  : k.constructor.name,
+                        strr : k.toString(),
+                        pps  : k.reflect.properties;
+                        funs : k.reflect.methods
+                    }
+
+                    return io;
                 },
 
-                scan: function(){
-
+                scan: function()
+                {
+                    return $.summary();
                 }
             })
 

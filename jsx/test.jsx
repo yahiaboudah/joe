@@ -132,7 +132,7 @@ function $http(config)
 }
 
 var hello = $http({
-    url : "http://soundcloud.com/oembed?url=http%3A//soundcloud.com/forss/flickermood&format=js&callback=?",
+    url : "http://example.com/articles/1",
     method: "GET",
     forcejson: false,
 });

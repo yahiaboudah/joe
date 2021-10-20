@@ -1,7 +1,5 @@
 
-JSON = {};
-
-(function () {
+var JSON = (function(){
 
     var JJ = {};
 
@@ -246,4 +244,4 @@ JSON = {};
     }
 
     return JJ;
-}());
+})();

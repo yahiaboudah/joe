@@ -3442,6 +3442,15 @@
                         var al = [];
                         this.getFiles().forEach(function(f){ if(f.constructor == File) al.push(f)})
                         return al; 
+                },
+
+                mostRecent: function()
+                {
+                    return Folder(fp).getFiles().reduce(function(file1, file2){
+                        return (file1.modified < file2.modified)?
+                               file1:
+                               file2;
+                      })
                 }
             })
         }),

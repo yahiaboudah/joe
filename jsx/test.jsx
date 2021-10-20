@@ -15,6 +15,9 @@ LayerCollection.prototype.$add = function(what, cfg)
 
 var comp = app.project.activeItem;
 
-$.writeln(comp.layer(1).)
+$.writeln(app.project.item(2).constructor.name);
+
+$.writeln(comp.layer(1).source.constructor.name)
+$.writeln(comp.layer(1).nullLayer)
 
 // comp.layers.$add();

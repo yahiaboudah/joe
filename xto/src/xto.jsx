@@ -1703,7 +1703,7 @@
                         cam.getViewMatrix():
                         this.getViewMatrix();
                 },
-                
+
             });
         }),
 
@@ -1780,6 +1780,14 @@
                     grab   : CollectionInterface.grab
                 })
             })();
+
+            LayerCollection.prototype.xt({
+
+                $add: function(type)
+                {
+
+                }
+            })
         }),
 
         AFFX$Layer_prototype: (function(){
@@ -1792,6 +1800,24 @@
 
             var LayerExt = 
             {
+                getType: function()
+                {
+                    var cns = this.constructor.name;
+
+                    switch (cns)
+                    {
+                        case "ShapeLayer":
+                        case "TextLayer":
+                        case "CameraLayer":
+                        case "LightLayer": return cns;
+
+                        case "AVLayer":
+                            if(this.source.constructor.name == "CompItem") return "CompLayer"
+                            if(this.nullLayer && !this.adjustmentLayer)    return "NullLayer";
+                            if(this.nullLayer && this.adjustmentLayer)     return "AdjustmentLayer";
+                    }
+                },
+
                 getMatrixOf: function(what)
                 {
                     var value = this.getProp("Transform/{0}".re(what)).value;

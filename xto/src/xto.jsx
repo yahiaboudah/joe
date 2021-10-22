@@ -849,19 +849,13 @@
                 clipboardLibFile: false,
                 clipboardLib : 0,
 
-                ser: function(data, type)
+                ser: function(data)
                 {
-                    if(typeof type == "undefined") type = "JSON";
-                    if(type != "JSON") return;
-
                     return $.json.stringify(data);
                 },
 
-                deser: function(data, type)
+                deser: function(data)
                 {
-                    if(typeof type == "undefined") type = "JSON";
-                    if(type != "JSON") return;
-
                     return $.json.parse(data);
                 },
 
@@ -871,9 +865,9 @@
                     {
                         var request = 
                         [
-                            "{0} {1} HTTP/1.0".f($method, $url.path),
+                            "{0} {1} HTTP/1.0".re($method, $url.path),
                             "Connection: close",
-                            "Host: {0}".f($url.host)
+                            "Host: {0}".re($url.host)
                         
                         ].join("\r\n"), header;
                 
@@ -1055,10 +1049,23 @@
                         type : typeof k,
                         cns  : k.constructor.name,
                         strr : k.toString(),
-                        pps  : k.reflect.properties;
-                        funs : k.reflect.methods
+                        PPS  : k.reflect.properties,
+                        FUNS : k.reflect.methods
                     }
-
+                
+                    if(io.cns == "Object")
+                    {
+                        var keys = [];
+                        for(x in k) if(k.hasOwnProperty(x))
+                        {
+                            keys.push(x);
+                            io.PPS.remove(x, function(z){return z.toString()});
+                        }
+                        io["keys"] = keys;
+                    }
+                
+                    io.PPS = io.PPS.join(",");
+                    io.FUNS = io.FUNS.join(",");
                     return io;
                 },
 
@@ -1084,7 +1091,7 @@
 
                 cmd: function(myCommand, sp)
                 {
-                    var oo = system.callSystem((sp?"cmd /c \"{0}\"":"{0}").f(myCommand));
+                    var oo = system.callSystem((sp?"cmd /c \"{0}\"":"{0}").re(myCommand));
                     if(typeof sleep == "number") $.sleep(sleep);
                     return oo;
                 },

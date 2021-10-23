@@ -26,6 +26,24 @@ function moveIt(){
     right     : [dist,0]
   };
   
+
+  comp.sel().forEach(function(layer)
+  {
+    if(groupCheckedPosition)
+    {
+      layer.properties().forEach(function(prop){
+        
+        prop.setValueOf("Transform/Position", function(position){
+          position += dirs[dir];
+        })    
+      })
+    }
+
+    layer.setValueOf("Transform/Position", function(position){
+      position += dirs[dir];
+    })
+  })
+
   app.beginUndoGroup(callee.name);
   
   if(!groupCheckedPosition.value){
@@ -70,6 +88,7 @@ function moveIt(){
 
   app.endUndoGroup();
 }
+
 function scaleIt(){
 
   var comp      = comp || app.project.activeItem,
@@ -227,26 +246,31 @@ function kfit(){ //keyframe it
 }
 function bongIt()
 {
+  comp.sel().forEach(function(layer){
+    
+    layer.setValueOf("Scale", function(){return [this.value, 0]})
+    }
+    )
+
+    layer.setValueOf("Transform/Scale", function(scale){
+      pastScale = scale;
+      scale *= $prompt("Enter bong size: ", parseFloat);
+    }, t1);
+
+    layer.setValueOf("Transform/Scale", function(scale){
+      scale = pastScale;
+    }, t2);
+  })
+
   comp      = app.project.activeItem;
   selLayers = comp.selectedLayers;
 
   app.beginUndoGroup(callee.name);
 
-  if(globalState.bongItWithColor)
-  {
-    hx = $.colorPicker();
-    c2 = [
-          hx >> 16,
-          (hx & 0x00ff00) >> 8,
-          hx & 0xff,
-          255
-    ] /= 255;
-  }
+  if(globalState.bongItWithColor) hx = $.$colorPicker(1);
 
   bongTime = prompt("Enter the bong time",0.7);
   bongSize = prompt("Enter the bong size",35);
   bongSize = parseFloat(bongSize);
   bongTime = parseFloat(bongTime);
-
-
 }

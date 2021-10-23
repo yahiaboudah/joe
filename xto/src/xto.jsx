@@ -872,7 +872,7 @@
                         ].join("\r\n"), header;
                 
                         // PÄYLOAD:
-                        config.payload || config.payload = {};
+                        config.payload || (config.payload = {});
                         if(typeof config.payload === "object")
                         {
                             config.payload = $.ser(config.payload);

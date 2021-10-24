@@ -1933,17 +1933,10 @@
                         LIGHT: {name: "light", centerPoint: [960, 540]},
                         NULL: {duration: this.containingComp.duration}
                     }
-                
-                    switch (what)
+
+                    if(func = that["add{0}".re(what.title())])
                     {
-                        case "shape"   : return that.addShape.apply(that, Object.values(Object.adapt(Configs.SHAPE, cfg)));
-                        case "text"    : return that.addText.apply(that, Object.values(Object.adapt(Configs.TEXT, cfg)));
-                        case "textbox" : return that.addBoxText.apply(that, Object.values(Object.adapt(Configs.TEXTBOX, cfg)));
-                        case "solid"   : return that.addSolid.apply(that, Object.values(Object.adapt(Configs.SOLID, cfg)));
-                        case "camera"  : return that.addCamera.apply(that, Object.values(Object.adapt(Configs.CAMERA, cfg)));
-                        case "light"   : return that.addLight.apply(that, Object.values(Object.adapt(Configs.LIGHT, cfg)));
-                        case "null"    :
-                        default        : return that.addNull.apply(that, Object.values(Object.adapt(Configs.NULL, cfg)));
+                        func.apply(that, Object.values(Object.adapt(Configs[what.toUpperCase()], cfg)));
                     }
                 }
                 

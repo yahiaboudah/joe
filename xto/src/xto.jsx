@@ -3193,16 +3193,96 @@
                     return ($.hiresTimer / 1000000);	
                 },
 
-                getArgs : function(){
-
+                getArgs : function(nocom)        /*
+                * Get a function args (eg. Arguments.getArgs(Arguments.getArgs) => ["c", "nocom"])
+                */
+                {  
+                     if(typeof nocom == "undefined") nocom =true;
+                     return this.toString().split(/\)\/*/)[0]
+                                        .replace(/^[^(]*[(]/, '')  
+                                        .replace(/\s+/g, '')
+                                        .replace(nocom?/\/\*([\s\S]*?)\*\//g:'','')
+                                        .split(',');                
                 },
 
-                params: function(){
-
+                params: function()
+                /** 
+                * Extract parameter names and types from a function definition.
+                */
+                {
+                        var paramsList = A.getArgs(this.toString());
+        
+                        for (var k = 0, len = params.length; k < len; k++) {
+                
+                                var currParam = params[k],
+                                    split     = currParam.split("*/"),
+                                    s0        = split[0],
+                                    s1        = split[1];
+                
+                                params[k] = s0.slice(0, 2) == "/*"?
+                                            "{0}:{1}".f(s0.slice(2), s1):
+                                            "Any:{0}".f(s0);
+                        }
+                
+                
+                        return paramsList;
                 },
 
-                check : function(){
-
+                check : function(/*Boolean*/ optArgs, /*Boolean*/ limitArgs)
+                /**
+                * @param {Boolean} optArgs whether to include optional args 
+                * @param {Boolean} limitArgs whether to limit args to a number.
+                * @returns {0}  if params are healthy
+                */
+                {
+                                        
+        
+                        const ERRS = 
+                        {
+                        BAD_ARG     :  "Bad Argument Error."
+                                        + "Arg {0} is a {1} and not a {2}",
+                        MISSING_ARG : "Missing Argument Error.",
+                        EXTRA_ARG   : "Extra Argument Error."
+                        }
+        
+                        var definedAndBool = function(myArg){
+                                return ((myArg !== undefined) || (myArg.constructor === Boolean));
+                        }
+        
+                        if (!definedAndBool(limitArgs)) limitArgs = true;
+                        if (!definedAndBool(optArgs))   optArgs   = false;
+        
+        
+                        var stack      = $.stack.split("\n");
+                        funcName   = stack[stack.length - 3].split("(")[0],
+                        funcParams = this.params(),
+                        isGreater  = (args.length > funcParams.length),
+                        isLess     = (args.length < funcParams.length);
+        
+                        if (isGreater && limitArgs) throw Error(ERRS.EXTRA_ARG);
+                        if (isLess    && !optArgs ) throw Error(ERRS.MISSING_ARG);
+        
+                        // Args length has priority over params length
+                        for (var i = 0; i < args.length; i++) {
+        
+                                var split     = funcParams[i].split(":"),
+                                type      = split[0].toLowerCase(),
+                                paramName = split[1],
+                                argValue  = args[i],
+                                argType;
+        
+                                if ([null, undefined].includes(argValue)) continue;
+        
+                                argType = argValue.constructor.name.toLowerCase();
+                                if (!["any", argType].includes(type)) 
+                                {
+                                        throw Error(ERR.BAD_ARG.f(
+                                                "{0}[1]".f(paramName, i),
+                                                argType,
+                                                type
+                                        ));
+                                }
+                        }
                 },
 
             })

@@ -3645,6 +3645,15 @@
                            ext.toLowerCase():
                            ext;
                 },
+
+                withExtension : function(extension, noReplace)
+                // File("mylife.txt").withExtension("eps") ==> File: mylife.eps;
+                {
+                    return File(
+                        noReplace? "{0}.{1}".re(this.fsName, extension):
+                        "{0}.{1}".re(this.fsName.replace(/.[^.]+$/, ""), extension)
+                    );
+                },
                 
                 getType : function()
                 {

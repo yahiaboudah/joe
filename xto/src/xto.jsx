@@ -1042,7 +1042,7 @@
                     return (fr.encoding = "UTF-8", fr.open('a'), fr.write("\n{0}".re(msg)), fr.close())
                 },
 
-                inspect: function(k)
+                inspect: function(k, detail)
                 {
                     var io = 
                     {
@@ -1064,9 +1064,24 @@
                         io["keys"] = keys;
                     }
                 
-                    io.PPS = io.PPS.join(",");
-                    io.FUNS = io.FUNS.join(",");
-                    return io;
+                    if(!detail)
+                    {
+                        io.PPS  = io.PPS.join(",");
+                        io.FUNS = io.FUNS.join(",");
+                        return io;
+                    }
+
+                    var ppo = {}, foo = {};
+                    for(var i=-1; ++i<io.PPS.length;)  ppo[io.PPS[i]]  = obj[io.PPS[i]];
+                    for(var i=-1; ++i<io.FUNS.length;) ffo[io.FUNS[i]] = obj[io.FUNS[i]].apply(obj, []);
+
+                    return 
+                    (
+                        io.PPS  = ppo,
+                        io.FUNS = ffo,
+                        io
+                    );
+                
                 },
 
                 scan: function()

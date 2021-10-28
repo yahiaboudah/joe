@@ -33,12 +33,6 @@ $.writeln(({ toString: "knaze" }).propertyIsEnumerable('proprop'))
 
 function basicPropsAndMethods(oo)
 {
-    var pp = oo.reflect.properties, ppo = {}, propEmoji = "🅿️";
-    var ff = oo.reflect.methods, ffo = {}, methEmoji = "Ⓜ️";
-
-    for(var i=-1; ++i<pp.length;) ppo[pp[i]] = oo[pp[i]];
-    for(var i=-1; ++i<ff.length;) ffo[ff[i]] = oo[ff[i]].apply(oo, []);
-
     return info = 
     {
         props: ppo,

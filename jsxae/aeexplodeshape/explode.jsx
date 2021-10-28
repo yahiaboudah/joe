@@ -236,7 +236,7 @@ function copyProperties(origin, target)
 (function createWindow(){
 
     w = new Window("palette", "EXPLODE SHAPE!");
-    b = w.add("iconbutton", undefined, "/d/media/explode.png");;
+    b = w.add("iconbutton", undefined, "/d/media/explode.png");
     b.text = "EXPLODE!";
     b.onClick = explode;
 

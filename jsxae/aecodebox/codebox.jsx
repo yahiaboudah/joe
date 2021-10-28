@@ -185,7 +185,11 @@ function outputBox(myCode){
       out = output(myCode),
       txt = c.layers.addText(out),
       box = bigbox(c);
-  
+
+  c.layers.$add("text", {
+    
+  })
+      
   src = box.sourceRectAtTime(0,false);
   box.transform.position.setValue([1350,540]);
   

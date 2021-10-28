@@ -20,6 +20,7 @@
 /******************************************************************************/
 
 Object.keys = (function () {
+    
     'use strict';
     var hasOwnProperty = Object.prototype.hasOwnProperty,
         hasDontEnumBug = !({ toString: null }).propertyIsEnumerable('toString'),
@@ -57,6 +58,7 @@ Object.keys = (function () {
         return result;
     };
 }());
+
 Object.extend  = function(oo, newstuff){
     for(k in newstuff) if(newstuff.hasOwnProperty(k)) oo[k] = newstuff[k];
 }
@@ -99,7 +101,6 @@ Object.validate = function(o, a){
 
     function type(v){
 
-        if(arguments.length != 1) throw Error("pass 1 variable");
         if(v === undefined)       return 'undefined';
         if(v === null)            return 'undefined';
         if(typeof v == 'xml')     return 'xml';
@@ -208,8 +209,9 @@ Object.getValue = function(oo, pp){
     }
 
 
-    if (cf) new File($.fileName.replace(/\.[a-zA-Z]+/, ".info.txt")).$create(str);
-    return str;
+    return cf?
+           (new File($.fileName).withExtension(".info.txt").$create(str), str):
+           str;
 }
 
 Object.print = function(obj, lvl, writeit) {

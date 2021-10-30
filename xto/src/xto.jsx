@@ -1027,6 +1027,14 @@
                     return ($.stack.split("\n")[0] == "[{0}]".re(ff.split("/").pop()));
                 },
 
+                caller: function(){
+                    
+                    var stack = $.stack.split('\n'),
+                        len   = stack.length;
+                    
+                    return len === 4 ? null : stack[len - 4].split("(")[0];
+                },
+
                 sleep: function(ms, msg){
                     
                     if(ms.is(undefined)) return;

@@ -1104,6 +1104,59 @@
             
             $.xt({
 
+                frame: function(str, frameChar, entry)
+                {
+                    if(typeof str == "undefined") str = "undefined";
+                    str       = str.toString();
+                    entry     = typeof entry != "number" ? 20: entry;
+                    frameChar = typeof frameChar == "undefined"?"■": frameChar; 
+                    str       = str + ((str.length%2)?" ":"");
+            
+                    String.prototype["*"] = function(op, joinChar)
+                    {
+                        if(!$.global.strr)
+                        {
+                            $.global.strr = function(s){return new String(s)};
+                        }
+            
+                        var str = this, fstr = [fstr];
+                        if(isNaN(op = Math.floor(op))) return str;
+                        
+                        while(op--) fstr.push(str);
+                        return fstr.join(joinChar); 
+                    }
+            
+                    var isEmoji = function(ss){ return ss.length == 2 }
+                    
+                    var B   = strr(frameChar),
+                        S   = strr(" ");
+                    
+                    var EMOJ_WIDTH = isEmoji(B)? 1.8: 1;
+                    var tsize = (entry * 2) + (((str.length+4) / frameChar.length));
+                    tsize /= EMOJ_WIDTH;
+            
+                    //####################################################
+                    //#
+                    var framo   = "{0}\n{1}\n{0}".f(
+            
+                        B * tsize,   // ■■■■■■
+                        
+                        "{0}{1}{0}".f( // ■       HELLO        ■
+            
+                            B * 2, // ■
+                            "{0}{1}{0}".f((S * entry), str) //      STR        
+                        )
+                    );
+                    //#
+                    //#####################################################
+            
+                    delete(String.prototype["*"]);
+                    delete(String.prototype.isEmoji);
+                    strr = str = B = S = entry = null;
+                    return framo;
+            
+                },
+
                 colorPicker  : function(rgba)
                 {
                     var hx = $.colorPicker();

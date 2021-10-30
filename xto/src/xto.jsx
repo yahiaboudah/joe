@@ -3799,6 +3799,21 @@
             })
         }),
 
+        SCUI$DropDownList_prototype: (function(){
+            
+            DropDownList.prototype.makeGroupVisible = function(g) // g: group var name
+            {
+                const P = "visibility", N = false, Y = true;
+            
+                var i = this.selection.index,
+                    l = this.items,
+                    n = l.length;
+            
+                while(n--) (l[n][g][P] = N);
+                l[i][g][P] = Y; 
+            }
+        }),
+
         SCUI$XYLayout: (function(){
             
             $.global.CustomLayout = function CustomLayout(c){

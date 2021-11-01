@@ -461,6 +461,17 @@
 
         BASC: (function()
         {    
+            /*
+            delete(Object.rm);
+            Object.rm = function(mo)
+            {
+                eval([
+                    
+                    mo + "= undefined",
+                    "delete( " + mo + ")"
+            
+                ].join(";"))
+            } */            
 
             delete(Object.prototype.in);
             Object.prototype.in = function(oo)

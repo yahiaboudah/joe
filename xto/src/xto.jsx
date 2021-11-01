@@ -3533,7 +3533,12 @@
         }),
 
         PRIM$Number_prototype: (function(){
+            
+            if(!$.global["num"]) $.global["num"] = function(n){return new Number(n)};
 
+            Number.prototype["^"] = function(v){
+                return Math.pow(this, v);
+            }
         }),
         //-------- END PRIM -------------
 

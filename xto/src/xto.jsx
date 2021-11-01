@@ -1303,12 +1303,31 @@
             
                 },
 
+                hexToRgb : function(hx)
+                {
+                    return [/*r*/hx >> 16, /*g*/(hx & 0x00ff00) >> 8,/*b*/ hx & 0xff, /*a*/255] /= 255;
+                },
+
+                rgbToHex : function(rgb)
+                {
+                    var abc = 
+                    {
+                        a: (rgb[0] * 255).toString(16),
+                        b: (rgb[1] * 255).toString(16),
+                        c: (rgb[2] * 255).toString(16)
+                    
+                    }, hx;
+
+                    for(x in abc) if(abc[x].length != 2) abc[x] = '0' + abc[x];
+                    for(x in abc) hx += abc[x];
+            
+                    return hx;
+                },
+
                 $colorPicker  : function(rgba)
                 {
                     var hx = $.colorPicker();
-                    return  rgba?
-                            [/*r*/hx >> 16, /*g*/(hx & 0x00ff00) >> 8,/*b*/ hx & 0xff, /*a*/255] /= 255:
-                            hx;
+                    return  rgba? $.hexToRgb(hx): hx;
                 },
 
                 cmd: function(myCommand, sp)

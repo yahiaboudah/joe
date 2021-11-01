@@ -89,61 +89,6 @@ Object.extend(app, {
     }));
   },
 
-  // [SETTER]
-  drop : function(idx, c)
-  {
-    c = c || app.project.activeItem;
-
-    c.layers.add(
-      app.project.item(idx)
-    );
-  },
-
-  // [INFO]
-  pitemByName: function(itemName)
-  {
-    return app.project.items.grab(function(item){
-      item.name == itemName; 
-    });
-  },
-
-  // [SETTER]
-  importAndDrop : function(fp, force, comp){
-
-    if(typeof fp == "undefined" || !File(fp).exists) throw Error("Invalid file!");
-    force = (typeof force == "undefined") ? false:force;
-    comp  = comp || app.project.activeItem;
-
-    var fName = File(fp).name;
-    var items = app.pitemByName(fName);
-  
-    var layer = comp.layers.add(
-
-       (items.length && !force)?
-       items[0]:
-       app.$import(fp)
-    
-    );
-
-    app.pitem(app.project.items.length).selected = false;
-    return layer;
-  },
-
-  // [INFO]
-  mostRecent : function(fp, type){
-
-    return Folder(fp).getFiles().reduce(function(file1, file2){
-      return (file1.modified < file2.modified)?
-             file1:
-             file2;
-    })
-  },
-
-  // [INFO]
-  getFileDlg : function(sugg, helptip, type){
-    return (new File(sugg)).openDlg(helptip,type);
-  },
-  
   // [SETTER]: [MATCH MARKER KEY TO JSON TEXT VALUE EXPRESSION]
   matchMarkerToTextExpr : function(ftName, type){
     
@@ -181,13 +126,11 @@ Object.extend(app, {
     
         var obj = footage($footageName).sourceData;
 
-        obj[i][type];    
-    
-    }).body()._replace({
-
+        obj[i][$type];
+        
+    }).body({
       $footageName: ftName,
       $type : type    
-    
     });
   },
 
@@ -249,42 +192,5 @@ Object.extend(app, {
     })
 
     return layer;
-  },
-
-  // [HELPER]
-  wrapUndo : function(fn, thisArg)
-  {
-    var _args = Object.toArray(arguments, 2);
-    return function()
-    {
-      app.beginUndoGroup(fn.name);
-      fn.apply(thisArg, _args);
-      app.endUndoGroup();
-    }
-  },
-
-  doUndo   : function(func, thisArg)
-  {
-    // execute function:
-    this.wrapUndo(
-      func,
-      thisArg || {},
-      Object.toArray(arguments, 3)
-    )();
-    
-    // undo with an offset time:
-    app.setTimeout(function(){
-        app.executeCommand(app.findMenuCommandId("Undo " + func.name));
-    }, sTime || 0);
-
-  },
-
-  // [HELPER]
-  colorPicker  : function(rgba)
-  {
-    var hx = $.colorPicker();
-    return rgba?
-           [/*r*/hx >> 16, /*g*/(hx & 0x00ff00) >> 8,/*b*/ hx & 0xff, /*a*/255] /= 255:
-           hx;
   }
 })

@@ -1303,7 +1303,7 @@
             
                 },
 
-                colorPicker  : function(rgba)
+                $colorPicker  : function(rgba)
                 {
                     var hx = $.colorPicker();
                     return  rgba?
@@ -2253,11 +2253,11 @@
                         case "LightLayer": return cns;
 
                         case "AVLayer":
-                            if(this.source.constructor.name == "CompItem") return "CompLayer";
-                            if(this.nullLayer) return "NullLayer";
-                            if(this.source.mainSource.constructor.name == "SolidSource") return "SolidLayer";
-                            if(this.hasAudio && !this.hasVideo) return "AudioLayer";
-                            if(this.hasVideo) return "VideoLayer";
+                            if(this.source.constructor.name == "CompItem") return "Comp";
+                            if(this.nullLayer) return "Null";
+                            if(this.source.mainSource.constructor.name == "SolidSource") return "Solid";
+                            if(this.hasAudio && !this.hasVideo) return "Audio";
+                            if(this.hasVideo) return "Video";
                     }
                 },
 
@@ -2647,11 +2647,50 @@
 
             TextLayer.prototype.xt({
 
-                style: function()
-                {
-
-                }
-            });
+                fromJSONAndMarkersOf: function(layerName, jsonDataName, dataPointName)
+                {/**Expression to apply to a text layer source:
+                 * 
+                 * Example JSON:
+                 * 
+                 * [
+                 * {
+                 *    "animation": "move ball up"
+                 * },
+                 * {
+                 *    "animation": "move ball down" 
+                 * }
+                 * ]
+                 * 
+                 * On timeline:
+                 * 
+                 * (text = "move ball up")
+                 * |  <>    <>
+                 * (text = "move ball up")
+                 *  <>  |  <>
+                 * (text = "move ball down")
+                 * <>   <>   |
+                 */
+            
+                this.sourceText.expression =  (function(){
+            
+                    var m = thisComp.layer($layerName).marker;
+                    var t = time;
+                    var i = m.nearestKey(time).index;
+                
+                    if(m.nearestKey(t).time>t){ i--; } //if: |  <>
+                    i || (i = 1);
+                
+                    var obj = footage($footageName).sourceData;
+            
+                    obj[i][$dataPointName];
+                    
+                }).body({
+                    $layerName: layerName,
+                    $footageName: jsonDataName,
+                    $dataName : dataPointName
+                });
+                },
+            })
         }),
 
         AFFX$PropertyGroup_prototype: (function(){

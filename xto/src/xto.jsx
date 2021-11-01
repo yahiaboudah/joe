@@ -3534,11 +3534,21 @@
                         .replace(/\s*\}[^}]*$/,"")._replace(repConfig || {});
                 },
                 
-                timeme : function(thisArg, args)
+                timeme : function(thisArg, args, n)
                 {
-                    $.hiresTimer;
-                    this.apply(thisArg, args);
-                    return ($.hiresTimer / 1000000);	
+                    const MICS = 1000000;
+                    
+                    var tt = 0,
+                        i  = n || 1;
+
+                    while(i--)
+                    {
+                        $.hiresTimer;
+                        this.apply(thisArg, args);
+                        tt += $.hiresTimer;
+                    }
+                
+                    return ((tt/n)/MICS);
                 },
 
                 getArgs : function(nocom)        /*

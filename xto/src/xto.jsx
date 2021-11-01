@@ -1761,6 +1761,35 @@
             
             app.xt(
             {
+                makeAnimMarkers : function(animObj)
+                /**
+                 * Convert this: 
+                 * [
+                  {
+                      animation: "move it up",
+                      duration : 2
+                  },
+                  {
+                      animation : "move it down",
+                      duration  : 3
+                  }
+                  ]
+                  
+                  to this:
+                  {
+                    "move it up": 2,
+                    "move it down": 3
+                  }
+              
+                 */
+                {  
+                  var oo = {}, i =0;
+                  oo[animObj[i]["animation"]] = 0;
+                  for(;++i<animObj.length;)oo[animObj[i]["animation"]] = animObj[i-1]["duration"]; 
+              
+                  return oo;
+                },
+
                 wrapUndo : function(fn, thisArg)
                 {
                     var _args = Array.prototype.slice.call(arguments, 2);
@@ -3723,6 +3752,15 @@
 
             Number.prototype["^"] = function(v){
                 return Math.pow(this, v);
+            }
+
+            Number.prototype.inRange = function(range, s0, s1)
+            {
+                var n = this;
+                s0 = s0? (n >= range[0]): n > range[0];
+                s1 = s1? (n <= range[1]): n < range[1];
+
+                return s0 && s1;
             }
         }),
         //-------- END PRIM -------------

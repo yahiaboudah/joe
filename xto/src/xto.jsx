@@ -4616,6 +4616,118 @@
                 extensions : ["py", "pyw"]
 
             })
+
+            Python.xt({
+
+                install: function()
+                {
+                    if(!PY.isInstalled()) throw Error("Python not installed!");
+                    
+                    var fd = Folder(self.instPath);
+                    if(fd.exists) fd.$remove();   
+                    
+                    (fd.create(), I.make(), PY.makeExec());
+            
+                    return 0;
+                },
+
+                repair: function()
+                {
+        
+                    if(!Folder(self.instPath).exists) throw Error("Pyjsx not installed! (Run pyjsx.install())");
+            
+                    var ff      = File(I.intfPath),
+                        xf      = File(PY.execPath),
+                        ffvalid = I.validate(jj.deser(ff.$read())),
+                        xfvalid = (PY.execStr == xf.$read());
+            
+                    (ff.exists && ff.length && ffvalid) || I.make();
+                    (xf.exists && xf.length && xfvalid) || PY.makeExec();
+                },
+
+                call: function(script, about, talk)
+                {    
+                    return I.post({
+            
+                        path: script,
+                        func: about,
+                        args: talk
+                    
+                    }).runExec().get(false);
+                },
+
+                contact: function()
+                {
+                    var ff = File(pp);
+                    if(!ff.exists || ff.constructor !== File) throw Error("Contact file invalid!");
+                    
+                    I.modify("metadata/contacts/{0}".f(ff.getName()), //display name of py file
+                             {
+                                path  : pp,
+                                funcs : PY.functions(pp)
+                             });
+                },
+
+                build: function(contactName)
+                {
+        
+                    if(contactName.checkFF() == 1) contactName = self.contact(contactName);
+            
+                    var pyo  = {functions: []};
+                    intf     = I.getIntf();
+                    contact  = intf.contacts[contactName];
+            
+                    if(!Object.validateKeys(contact, "path", "funcs")) throw Error("Contact is not valid");
+            
+                    var cSkills  = contact.funcs,
+                        ttSkills = cSkills.length, i=-1;
+                    
+                    for(;++i < ttSkills;)
+                    {
+            
+                        pyo[cSkills[i].name] = Function((function(){
+            
+                            var cPath   = $contactPath,
+                                name    = $skillName,
+                                nDefNum = nondefLen,
+                                defNum  = defLen;
+                            
+                            var args    = Array.prototype.slice.call(arguments),
+                                numArgs = args.length,
+                                ttArgs  = (nDefNum + defNum);
+                        
+                            const ERRS    = 
+                            {
+                                extrArgs    : "Pyjsx:{0}() takes at most  {1} but {2} were given".f(name, ttArgs, numArgs),
+                                missingArgs : "Pyjsx:{0}() takes at least {1} non-default args but {2} were given".f(name, nDefNum, numArgs)
+                            };
+                        
+                            if(numArgs < nDefNum) throw Error(ERRS.missingArgs)
+                            if(numArgs > ttArgs ) throw Error(ERRS.extrArgs)
+                            
+                            return self.call(cPath, name, args);              
+            
+                        }).body().replace({
+                            
+                            $contactPath : contact.path,
+                            $skillName   : cSkills[i].name,
+                            nondefLen    : cSkills[i].args[non_default].length,
+                            defLen       : cSkills[i].args[_default].length
+                        
+                        }));
+            
+                        pyo.functions.push(skill.name);
+                    }
+                        return pyo;
+                },
+
+                uninstall : function()
+                {
+                    var instFolder = Folder(this.instPath);
+                    if(instFolder.exists) instFolder.$remove();
+                }
+
+            })
         }),
 
         CSTR$Logger: (function(){

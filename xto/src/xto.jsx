@@ -1814,6 +1814,11 @@
             
             app.xt(
             {
+                getSpecifer: function()
+                {
+                    return app.name.split(" ")[0].replace(" ", "").toLowerCase();
+                },
+
                 makeAnimMarkers : function(animObj)
                 /**
                  * Convert this: 

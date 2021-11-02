@@ -24,16 +24,6 @@
             },
         
             children: [
-
-                {
-                    type: "progressbar",
-                    infoText: "Loading, please wait..",
-                    width: 400,
-                    min: 0,
-                    max: 400,
-                    
-                }
-                
                 {   // TEXTBOX:
 
                     type: "edittext",

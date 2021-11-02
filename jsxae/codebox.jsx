@@ -6,10 +6,20 @@ function getCode(pp){
 }
 
 function getExpression(points){
-  function expression(){
+  
+  return (function()
+  {
     var i = textIndex -1;
+    if(
+      GEN[($p0 <= i && $p1 <= 78), "", "||\n", "0"]
+    ){100}else{0};
+  
+  }).expression({
+    
+    $p0: [[0, points.length], points, i, 0],
+    $p1: [[0, points.length], points, i, 0]
+  })
 
-  }
   var expr = "var i = textIndex-1;\n"
   +"if(\n";
   for(var i=0;i<points.length;i++){
@@ -132,22 +142,6 @@ function codeLayer(fp){
 
 }
 
-String.prototype.f = function() {
-    
-  var frmt = this,
-      args = arguments,
-      i  = 0;
-
-  for (;++i < args.length;) 
-  {
-      frmt = frmt.replace(
-          RegExp("\\{" + i + "\\}", 'gi'),
-          args[i]
-          );
-  }
-
-  return frmt;
-}
 
 function output(c){
   var pp = File(Folder.temp.fsName + "/tmp.py").$create(c).fsName,

@@ -1925,7 +1925,7 @@
                     )
                 },
 
-                importAndDrop : function(filePath, force)
+                importAndDrop : function(filePath, force, interval)
                 {
 
                     var _file = File(filePath);
@@ -1939,6 +1939,12 @@
                         _file.importAE()
                     );
                     app.project.lastItem().selected = false;
+                    
+                    if(interval)
+                    {
+                        layer.inPoint = interval[0]; 
+                        layer.outPoint = interval[1];
+                    }
                     return layer;
                 },
 

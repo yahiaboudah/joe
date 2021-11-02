@@ -1901,6 +1901,11 @@
                     var comp = this.items.addComp.apply(this.items, Object.values(cfg));
                     comp.bgColor = cfg.bgColor || [21,21,21];
                     return comp;
+                },
+
+                removeLastRender: function()
+                {
+                    return this.renderQueue.item(this.renderQueue.numItems).remove();
                 }
 
             })
@@ -1925,7 +1930,7 @@
                     )
                 },
 
-                importAndDrop : function(filePath, force, interval)
+                importAndDrop : function(filePath, force, interval, idx)
                 {
 
                     var _file = File(filePath);
@@ -1940,6 +1945,7 @@
                     );
                     app.project.lastItem().selected = false;
                     
+                    if(idx) layer.moveAfter(idx);
                     if(interval)
                     {
                         layer.inPoint = interval[0]; 

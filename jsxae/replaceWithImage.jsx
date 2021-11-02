@@ -139,6 +139,7 @@ function dropSnapshot(interval, idx){
   return snap;
 }
 
+// parent the transform property of the new snap to origLayer:
 function parentSnap(snap, origLayer,  startTime){
 
   num = snap.transform.numProperties+1;
@@ -208,6 +209,22 @@ function unSoloAll(c){
   c = c || app.project.activeItem;
 
   for(var i=0;++i<c.layers.length;) c.layer(i).solo = false;
+}
+
+function main(c)
+{
+  c = c || comp;
+
+  var solo = c.layers.grab(function(k){return k.solo}),
+      res  = c.setResolutionToFull(),
+      intv = c.workAreaDomain();
+
+  if(!solo.length) throw Error("No solo layers!");
+
+  var snap = c.snap(intv.start);
+  c.importAndDrop(snap, true, intv, Mathx.min(solo, function(k){return k.index}));
+
+  c.resolutionFactor = res;
 }
 
 function main(c){

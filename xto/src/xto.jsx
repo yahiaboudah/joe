@@ -2232,7 +2232,7 @@
 
             LayerCollection.prototype.xt({
 
-                $add : function(what, cfg)
+                $add : function(what, args, cfg)
                 {
                     var that = this;
                 
@@ -2257,7 +2257,17 @@
 
                     if(func = that["add{0}".re(what.title())])
                     {
-                        func.apply(that, Object.values(Object.adapt(Configs[what.toUpperCase()], cfg)));
+                        var myLayer = func.apply(that, Object.values(Object.adapt(Configs[what.toUpperCase()], args)));
+                    }
+
+                    if(!cfg) return myLayer;
+                    switch(what)
+                    {
+                        case "Shape":
+                            if(cfg.path == true) myLayer.content.addProperty(_MN("PathGroup"));
+                            break;
+
+                        default: break;
                     }
                 },
 

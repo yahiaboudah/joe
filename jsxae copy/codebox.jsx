@@ -21,57 +21,6 @@ function addAnimatorProp(
   cSel.setValue(highLightingColor);
 }
 
-function getSyntaxJSON(){
-  return _m.deser(File("syntax.json").$read());
-}
-
-function getPoints( txt, patt, blank){
-    
-  var pts = [],
-      tmp = "";
-    
-  while((match = patt.exec(txt)) != null)
-  {
-    fi = match.index;
-    li = patt.lastIndex;
-
-    tmp = txt.substring(fi,li).replace(blank,"");
-    pts.push([fi+1, fi+tmp.length]);
-  }
-  
-  return pts;
-}
-
-function testPoints(text,p){
-  
-  var str = "",
-      i   = -1,
-      allStr = "";
-  
-  for(;++i<p.length;){
-    str = text.substring(p[i][0],p[i][1]);
-    allStr.push(str);
-  }
-
-  return allStr.join("\n");
-}
-
-app.newLayerName = function(n, c)
-{
-  c  = c || app.project.activeItem;
-  ln = c.layers.length+1;
-  t  = i = 0;
-  
-  for(;++i< ln;) if(c.layer(i).name == n) t++;
-
-  return [n, " #", t].join("");
-}
-
-sys.cmd = function(cmdStr)
-{
-  r = system.callSystem(cmdStr);
-  return r;
-}
 
 function codeLayer(fp){
 
@@ -110,13 +59,6 @@ function codeLayer(fp){
     position: [200, 200]
   });
 
-}
-
-
-function output(c){
-  var pp = File(Folder.temp.fsName + "/tmp.py").$create(c).fsName,
-      rs = sys.cmd("python {0}".f(pp));
-  return rs;
 }
 
 function bigbox(c){

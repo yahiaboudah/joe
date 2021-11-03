@@ -2350,6 +2350,69 @@
 
             var LayerExt = 
             {
+
+                transformIt: function(PROP, value, t, groupChecked)
+                {
+                    /**
+                     * Change opacity, position and scale of a layer or of multiple
+                     * groups pertaining to a layer easily.
+                     */
+                
+                    var layer = this;
+                
+                    if(typeof groupChecked == "undefined") groupChecked = false;
+                    var scaleFactorValue = opacityFactorValue = dist = value;
+                
+                    var dirs = 
+                    {
+                      scale: 
+                      {
+                        up   :  scaleFactorValue,
+                        down : -scaleFactorValue
+                      },
+                
+                      opacity: 
+                      {
+                        up   :  opacityFactorValue,
+                        down : -opacityFactorValue
+                      },
+                
+                      position:
+                      {
+                        up        : [0,-dist],
+                        down      : [0,dist],
+                        upleft    : [-dist,-dist],
+                        downleft  : [-dist,dist],
+                        upright   : [dist,-dist],
+                        downright : [dist,dist],
+                        left      : [-dist,0],
+                        right     : [dist,0]
+                      }
+                    };
+                    
+                    app.beginUndoGroup(callee.name)
+                
+                    if(groupChecked)
+                    {
+                      layer.properties().forEach(function(prop){
+                        
+                        if(!prop.selected) return;
+                
+                        prop.setValueOf("Transform/{0}".re(PROP), function(position){
+                          position.value += dirs[PROP][dir];
+                        }, t).setTemporalEaseAtKey("numKeys", [easeIn], [easeOut]);
+                      })
+                      return;
+                    }
+                
+                    layer.setValueOf("Transform/{0}".re(PROP), function(position){
+                      position += dirs[PROP][dir];
+                    }, t).setTemporalEaseAtKey("numKeys", [easeIn], [easeOut])
+                
+                
+                    app.endUndoGroup();
+                },
+                
                 getType: function()
                 {
                     var cns = this.constructor.name;

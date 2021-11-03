@@ -20,13 +20,13 @@ function getExpression(points){
     $p1: [[0, points.length], points, i, 0]
   })
 
-  var expr = "var i = textIndex-1;\n"
-  +"if(\n";
-  for(var i=0;i<points.length;i++){
-    expr += "("+points[i][0]+" <= i && i <= "+points[i][1]+") ||\n";
-  }
-  expr += "0){100}else{0}";
-  return expr;
+  // var expr = "var i = textIndex-1;\n"
+  // +"if(\n";
+  // for(var i=0;i<points.length;i++){
+  //   expr += "("+points[i][0]+" <= i && i <= "+points[i][1]+") ||\n";
+  // }
+  // expr += "0){100}else{0}";
+  // return expr;
 }
 
 function addAnimatorProp(

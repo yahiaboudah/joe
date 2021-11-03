@@ -487,21 +487,15 @@ function draw(c, dt /*draw time*/){
   trimEnd.setValueAtTime(c.time + dt ,100);
 }
 
-function transitionTo(c ,layer /*layer to transition to*/,dt /*draw time*/){
-  
-  c = c || app.project.activeItem;
+function transitionTo(fromLayer, toLayer, dt){
 
-  if( !(c.sel().length-1) || (c.sel(0).constructor != ShapeLayer))
-  {
-    throw Error("Select a shape layer");
-  }
+  var t = fromLayer.containingComp.time;
 
-  var shape = c.sel(0),
-      oldp  = shape.content.property(MATCH_NAMES.PATH).path,
-      newp  = layer.content.property(MATCH_NAMES.PATH).path;
-  
-  path.setValueAtTime(c.time,      oldp.value);
-  path.setValueAtTime(c.time + dt, newp.value);
+  path.setValuesAtTimes(
+    [t, t + dt],
+    [fromLayer.content.property(MATCH_NAMES.PATH).path.value,
+     toLayer.content.property(MATCH_NAMES.PATH).value]
+  );
 
   return shape;
 }

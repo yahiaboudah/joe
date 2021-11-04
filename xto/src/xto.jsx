@@ -2264,10 +2264,24 @@
                     switch(what)
                     {
                         case "Shape":
-                            if(cfg.path == true) myLayer.content.addProperty(_MN("PathGroup"));
+                            if(cfg.path == true)    myLayer.content.addProperty(_MN("PathGroup"));
                             break;
 
-                        default: break;
+                        case "Text":
+                            if(cfg.fixSource.is(Function))
+                            {
+                                var src = this.Text.sourceText;
+                                src.setValue(
+                                    fixSource(src.value.toString())
+                                );                          
+                            }
+                            break;
+                        default: 
+                            if(cfg.name.is(String))
+                            {
+                                myLayer.name = this[0].containingComp.newName(cfg.name);
+                            }
+                            break;
                     }
                 },
 
@@ -2819,6 +2833,26 @@
 
             TextLayer.prototype.xt({
 
+                config: function(cfg)
+                {
+                    var prop = textLayer.property("Source Text");
+                    var doc = textProp.value;
+                    doc.applyFill = cfg.applyFill;
+                    doc.fontSize = cfg.fontSize;
+                    doc.font = cfg.font;
+                    doc.fillColor = cfg.fill;
+                    prop.setValue(doc);
+
+                    return this;
+                },
+
+                animator: function(name)
+                {
+                    var am = this.Text.Animators.addProperty("ADBE Text Animator");
+                    am.name = name; 
+                    return am;
+                },
+
                 fromJSONAndMarkersOf: function(layerName, jsonDataName, dataPointName)
                 {/**Expression to apply to a text layer source:
                  * 
@@ -2960,7 +2994,7 @@
                 {  
                   t = t.is(Number)? t: this.containingComp().time;
                 
-                  if(this.isnt("Path")) throw TypeError("{0} only works for Path".f(callee.name));
+                  if(this.isnt("Path")) throw TypeError("{0} only works for Path".re(callee.name));
                   if(!this.numKeys) return 0;
                   
                   keyIndex = this.nearestKeyIndex(t);
@@ -2971,6 +3005,41 @@
                   if((keyTime > t) && lr == "L") return keyIndex-1;
                   if((keyTime < t) && lr == "L") return keyIndex;
                   if((keyTime < t) && lr == "R") return keyIndex+1;
+                },
+
+                // TEXT RELATED: [ANIMATORS]:
+                // Find a way to verify that the property is a text Animator.
+                addTextFill: function(color)
+                {
+                    const ANIM_PROPS = "ADBE Text Animator Properties",
+                          FILL_PROP  = "ADBE Text Fill Color";
+                    
+                    if(this.property(ANIM_PROPS).is(undefined)) return this;
+
+                    var pp = this.property(ANIM_PROPS).addProperty(FILL_PROP);
+                    pp.color = color;
+
+                    return pp;
+                },
+
+                addExpressionSelector: function(name, basedOn, expressionStr)
+                {
+                    const EXPR_SELECTOR = "ADBE Text Expressible Selector";
+                    if(sel = this.property("Selectors").is(undefined)) return this;
+
+                    sel = sel.addProperty(EXPR_SELECTOR);
+                    sel.name = name; // find the count of a given name
+                    sel.property("Based On").setValue(basedOn);
+                    sel.property("Amount").expression = expressionStr;
+
+                    return sel;
+                },
+
+                getParent: function(level)
+                {
+                    var p = this;
+                    while(level--) p = p.parent;
+                    return p;
                 }
             })
         }),

@@ -1,33 +1,24 @@
 
-function codeLayer(codeStr)
+function codeLayer(codeStr, syntax)
 {
-      jsonObj = _m.deser(File("syntax.json").$read());
-
-
-
-  for(i=-1;++i<jsonObj.length;)
+  var sytle = 
   {
-    
-    var txtAnim = text.property("ADBE Text Properties").property(4).addProperty("ADBE Text Animator");
-        jj      = jsonObj[i];
-
-    addAnimatorProp(
-      txtAnim, //text animator
-      jj.name, //name
-      getExpression(getPoints(codeStr, RegExp(jj.pattern), RegExp(jj.replacepattern))), //expression
-      jj.color // color
-    )
-  }
-  
-  
-  return text.config({
     applyFill: true,
     fontSize : 50,
     font: "DejaVuSansMono",
     fillColor: [1,1,1],
     position: [200, 200]
-  });
+  };
 
+  for(i=-1;++i<syntax.length;)
+  {
+    var jj = syntax[i];
+    var pointsEx = getExpression(getPoints(codeStr, RegExp(syntax.pattern), RegExp(syntax.replacepattern)));
+    text.animator(jj.name).addExpressionSelector(pointsEx).getParent(3)
+                          .addTextFill(jj.color);
+  }
+
+  return text.config(style);
 }
 
 function bigbox(c){

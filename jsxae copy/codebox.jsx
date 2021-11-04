@@ -1,39 +1,8 @@
 
-function addAnimatorProp(
-  txtAnimator,
-  animatorName,
-  animExpression,
-  highLightingColor
-  )
-  {
+function codeLayer(codeStr)
+{
+      jsonObj = _m.deser(File("syntax.json").$read());
 
-  txtAnimator.name = animatorName;
-
-  // Modify the amount expression:
-  var expressionSelector = txtAnimator.property("Selectors").addProperty("ADBE Text Expressible Selector");// Add an expression selector
-  expressionSelector.name ="Rangooo";
-
-  expressionSelector.property("Based On").setValue(1); // set to chars
-  expressionSelector.property("Amount").expression = animExpression; // get expression
-  
-  // Add the appropriate fill color:
-  var cSel = txtAnimator.property("ADBE Text Animator Properties").addProperty("ADBE Text Fill Color");
-  cSel.setValue(highLightingColor);
-}
-
-
-function codeLayer(fp){
-
-  if(File(fp).exists) codeStr = File(fp).$read();
-  else codeStr = fp;
-
-  var comp = app.project.activeItem,
-      text = comp.layers.addText(codeStr);
-      text.name = app.newLayerName(callee.name);
-      jsonObj = _m.deser(File("syntax.json").$read());;
-
-      src = text.Text.sourceText.value.toString().replace(/^/gm," ");
-      text.Text.sourceText.setValue(src);
 
 
   for(i=-1;++i<jsonObj.length;)
@@ -120,5 +89,5 @@ function modifyText(textLayer, fontSize, font, fill, fontStyle){
 
 }
 
-var codeText = codeLayer("shit.py");
-var outText  = outputLayer(codeText);
+// var codeText = codeLayer("shit.py");
+// var outText  = outputLayer(codeText);

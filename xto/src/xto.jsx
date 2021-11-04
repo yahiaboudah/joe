@@ -1810,6 +1810,22 @@
             }
         }),
 
+        AFFX$BRIDGETALK: (function(){
+            
+            BridgeTalk.xt({
+                
+                formatFunction: function(target, func, args)
+                {
+                    var bd = "{0}({1});\n{2}".f(func.name, args.toSource(), func.toString()),
+                        bt = new BridgeTalk;
+                    
+                    bt.target = target;
+                    bt.body   = bd;
+                    bt.send();
+                }
+            })
+        }),
+
         AFFX$app: (function(){
             
             app.xt(
@@ -2285,6 +2301,27 @@
                     }
                 },
 
+                code: function(codeStr, syntax)
+                {
+                    var style =
+                    {
+                      applyFill: true,
+                      fontSize : 50,
+                      font: "DejaVuSansMono",
+                      fillColor: [1,1,1],
+                      position: [200, 200]
+                    };
+                  
+                    for(i=-1;++i<syntax.length;)
+                    {
+                      var jj = syntax[i];
+                      var pointsEx = getExpression(getPoints(codeStr, RegExp(syntax.pattern), RegExp(syntax.replacepattern)));
+                      text.animator(jj.name).addExpressionSelector(pointsEx).getParent(3)
+                                            .addTextFill(jj.color);
+                    }
+                  
+                    return text.config(style);                  
+                },
                 
                 plot: function(
                     /*str*/func/*="x"*/

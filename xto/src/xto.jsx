@@ -2301,6 +2301,32 @@
                     }
                 },
 
+                point: function(c, radius)
+                {
+                  radius = radius.is(Number)?radius:8;
+                  
+                  var stretch = radius / (kconst = 1.81066);
+                  const POINT_SHAPE = 
+                  {
+                    vertices    : [[-radius,0],[0,radius],[radius,0],[0,-radius]],
+                    inTangents  : [[0,-stretch],[-stretch,0],[0,stretch],[stretch,0]],
+                    outTangents : [[0,stretch],[stretch,0],[0,-stretch],[-stretch,0]],
+                    closed      : true
+                  };
+                
+                  return c.layers.$add("shape", {name: c.newName(callee.name)},{
+                    groups:[
+                      {
+                        name: "point",
+                        path: new $Shape(POINT_SHAPE)
+                      }
+                    ],
+                    fill: {
+                      color: [1,1,1,1]
+                    }
+                  })
+                },
+
                 code: function(codeStr, syntax)
                 {
                     var style =

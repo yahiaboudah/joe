@@ -166,37 +166,6 @@ for(var i=0;i<numDashes;i++){
  lineShape.property("Effects").property("Axis").property("End").setValue((numDashes*100 -100)/2);
 }
 
-function point(c, radius){
-
-  c = c || app.project.activeItem;
-  if(typeof radius == "undefined") radius = 8;
-  
-  const kconst = 1.81066;
-  var stretch = radius/ kconst,
-      cn      = callee.name;
-  
-  var shape = new $Shape({
-    vertices    : [[-radius,0],[0,radius],[radius,0],[0,-radius]],
-    inTangents  : [[0,-stretch],[-stretch,0],[0,stretch],[stretch,0]],
-    outTangents : [[0,stretch],[stretch,0],[0,-stretch],[-stretch,0]],
-    closed      : true
-  });
-
-  var layer = makeShapeWithPath(c, 0);
-  var path  = layer.content.property(MATCH_NAMES.PATH).path;
-  path.setValue(shape);
-  
-  layer.addFill();
-
-  layer.name = "{0} #{1}".f(cn ,app.numObjComment(c, cn));
-  layer.comment = ser({
-    type  : cn,
-    radius: radius
-  });
-
-  return layer;
-}
-
 function dynamicLine(c ,x0 ,y0 ,x1 ,y1){
 
   defVals = {

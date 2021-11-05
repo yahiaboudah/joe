@@ -22,51 +22,6 @@ MATCH_NAMES =
     path: "'ADBE Vector Group'"
 }
 
-
-
-function explodeLayer(layer) 
-{
-    var layers   = [], newLayer,
-        allProps = layer.contents.properties();
-
-    // Loop through contents:
-    allProps.forEach(function(_prop, idx)
-    {
-        if(!_prop.enabled) return;
-
-        newLayer = layer.clone({
-
-            name    : "{0} - {1}".f(layer.name, _prop.name),
-            enabled : false,
-            shy     : true
-        });
-
-        copyProperties
-        (
-            _prop, 
-            newLayer.contents.addProperty(_prop.matchName)
-        )
-
-        layers.push(newLayer);
-    })
-
-    layers.forEach(function(layer){
-        layer.enabled = true;
-        layer.shy     = false;
-    })
-
-    return layers;
-}
-
-function cloneLayer(layer) 
-{
-    var newLayer = layer.containingComp.layers.addShape();
-    // single argument function, no index or array usage.
-    PROPS.transform.forEach(AVLayer.prototype.copy.bind(layer, [undefined/*prop*/, newLayer]));
-
-    return newLayer;
-}
-
 function copyProperties(origin, target) 
 {
     var copyProp = function()

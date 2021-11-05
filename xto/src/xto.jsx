@@ -2402,6 +2402,30 @@
             var LayerExt = 
             {
 
+                clone: function(cloneName)
+                {
+                    var c = this.containingComp,
+                        n = cloneName || c.newName(this.name);
+                    
+                    switch (this.getType())
+                    {    
+                        case "shape":
+                            c.layers.$add("shape", {name: n},{
+                                // PROPS GO HERE:
+                                // GROUPS/FILL..etc
+                            })
+                            break;
+                    
+                        case "text":
+                            c.layers.$add("text", {name: n}, {
+                                // OLD TEXT LAYER PROPS GO HERE:
+                                // SOURCE TEXT, FILL COLOR, STROKE..etc
+                            })
+                            break;
+                        default:
+                            break;
+                    }
+                },
                 transformIt: function(PROP, value, t, groupChecked)
                 {
                     /**

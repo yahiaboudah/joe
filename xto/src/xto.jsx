@@ -3115,6 +3115,54 @@
                     var p = this;
                     while(level--) p = p.parent;
                     return p;
+                },
+
+                copyPropertiesTo: function(target)
+                {
+                    var origin = this;
+                    var copyProp = function()
+                    {
+                        this.target[this.origin].setValue(this.origin[this.origin].value);
+                    }
+                
+                    origin.properties().forEach(function(_prop){
+
+                        if(!(_prop.enabled && target.canAddProperty(_prop.matchName))) return;
+                        
+                        var prop = target.addProperty(_prop.matchName);
+                
+                        //------------------------------------------------
+                
+                        switch (_prop.matchName) 
+                        {
+                
+                            case MN("merge"):
+                                prop["mode"].setValue(_prop["mode"].value);
+                                return;
+                
+                            case MN("blendMode"):
+                                prop.setValue(_prop.value);
+                                return;
+                
+                            case MN("shapeGroup"):
+                                prop.property(MATCH_NAMES.shape)
+                                    .setValue(_prop.property(MATCH_NAMES.shape).value);
+                                return;
+                
+                            case MN("group"):
+                            case MN("pathGroup"):
+                            case MN("path"):
+                                copyProperties(_prop, prop);
+                                return;
+                        }
+                
+                        //------------------------------------------------
+                        
+                        var __propsList = PROPS[Object.getKeyByValue(MATCH_NAMES, _prop.matchName)];
+                        if(!__propsList) return;
+                
+                        __propsList.forEach(copyProp, {origin: _prop, target:prop})
+                    })
                 }
             })
         }),

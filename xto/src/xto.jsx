@@ -3132,10 +3132,8 @@
                         var prop = target.addProperty(_prop.matchName);
                 
                         //------------------------------------------------
-                
                         switch (_prop.matchName) 
                         {
-                
                             case MN("merge"):
                                 prop["mode"].setValue(_prop["mode"].value);
                                 return;

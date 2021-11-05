@@ -2864,6 +2864,20 @@
                     return allProps;
                 }
             });
+
+            // PROPS:
+            ShapeLayer.xt({
+                PROPS : 
+                {
+                    stroke    : ["composite", "color", "strokeWidth", "lineCap", "lineJoin", "miterLimit"],
+                    fill      : ["composite", "fillRule", "color"],
+                    transform : ["anchorPoint", "position", "scale", "skew", "skewAxis", "rotation", "opacity"],
+                    rect      : ["shapeDirection", "size", "position", "roundness"],
+                    ellipse   : ["shapeDirection", "size", "position"],
+                    star      : ["shapeDirection, type", "points", "position", "rotation", 
+                                "innerRadius", "outerRadius", "innerRoundness", "outerRoundness"]    
+                }
+            })
         }),
 
         AFFX$TextLayer_prototype: (function(){

@@ -2301,10 +2301,158 @@
                     }
                 },
 
+
+                axis: function(numDashes ,textIncluded)
+                {
+                    var comp = app.project.activeItem;
+                    var lineShape = comp.layers.addShape();
+                    var namePrompt = prompt("Enter the name of the axis","Axis: ");
+                    lineShape.name = namePrompt.toString();
+                    var axisProp = lineShape.property("Effects").addProperty("Axis");
+                    // Just add Group 1
+                    var mainLineGroup = lineShape.content.addProperty("ADBE Vector Group");
+                    mainLineGroup.name = "line";
+                    // add a path prop:
+                    lineShape.property("Contents").property(mainLineGroup.name).property("Contents").addProperty("ADBE Vector Shape - Group");
+                    var mainLineExpression = "var start = effect(\"Axis\")(\"Start\");\n"
+                      +"var end = effect(\"Axis\")(\"End\");\n"
+                      +"createPath(points =[[start,0], [end,0]],\n"
+                      +"inTangents = [], outTangents = [], is_closed = false)";
+                    lineShape.property("Contents").property(mainLineGroup.name).property("Contents").property("Path 1").property("Path").expression = mainLineExpression;
+                    // add a stroke prop:
+                    var mainLineStroke = lineShape.property("Contents").property(mainLineGroup.name).property("Contents").addProperty("ADBE Vector Graphic - Stroke");
+                    mainLineStroke.property("ADBE Vector Stroke Width").setValue(4);
+                  
+                    // Now create the other dashes:
+                    for(var i=0;i<numDashes;i++){
+                      var dash = lineShape.property("Contents").addProperty("ADBE Vector Group");
+                      dash.name = "dash "+i;
+                      lineShape.property("Contents").property(dash.name).property("Contents").addProperty("ADBE Vector Shape - Group");
+                      lineShape.property("Contents").property(dash.name).property("Contents").addProperty("ADBE Vector Graphic - Stroke");
+                  
+                      var dashPathExpression = "var start = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Start\");\n"
+                      +"var spacingout = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Spacingout\");\n"
+                      +"var end =thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"End\");\n"
+                      +"var factor = 30;\n"
+                      +"var dashLength = effect(\"Axis\")(\"Dash length\");\n"
+                      +"var pos = start+"+i+"*spacingout;\n"
+                      + "var dashLen = 0;\n"
+                      +"if(pos-end<-20){dashLen = dashLength;}\n"
+                      +"else{dashLen = dashLength*Math.exp(-Math.pow(end-pos,2)/(2*factor*factor));}\n"
+                      +"createPath(points =[[pos,-dashLen/2], [pos,dashLen/2]],\n"
+                      +"inTangents = [], outTangents = [], is_closed = false)";
+                  
+                      //var dashStrokeExpression = "thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Stroke Width\");";
+                      lineShape.property("Contents").property(dash.name).property("Contents").property("Path 1").property("Path").expression = dashPathExpression;
+                      lineShape.property("Contents").property(dash.name).property("Contents").property("Stroke 1").property("Stroke Width").setValue(4);
+                  }
+                  if(textIncluded){
+                  for(var i=0;i<numDashes;i++){
+                    var textLayer = comp.layers.addText();
+                    textLayer.shy = true;
+                    // Editing the source text
+                    textLayer.sourceText.expression = "var num = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Count\")+"
+                    +i+"*thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Basis\");\
+                    Math.round(10*num)/10";
+                    textLayer.name = textLayer.sourceText.value;
+                  
+                    //Anchor Point of the text
+                    textLayer.transform.anchorPoint.expression= "var x = sourceRectAtTime(time,false).width/2 + sourceRectAtTime(time,false).left;\
+                    var y = sourceRectAtTime(time,false).height/2 + sourceRectAtTime(time,false).top;\
+                    [x,y]";
+                  
+                    // Position of the text
+                    var positionExpression = "var x0 = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Start\");"
+                    +"var spacingout = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Spacingout\");"
+                    +"var x = (thisComp.width/2)+"+i+"*spacingout+x0+thisComp.layer(\""+lineShape.name+"\").transform.position[0]-960;"
+                    +"var y = thisComp.layer(\""+lineShape.name+"\").transform.position[1]+55;"
+                    +"[x,y]";
+                  
+                    textLayer.transform.position.expression = positionExpression;
+                  
+                    //Opacity of the text
+                    var opacityExpression = "var end0 =thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"End\");\
+                    var pos = transform.position[0]-thisComp.width/2;\
+                    if(pos-end0 <-10){100}\
+                    else{100*Math.exp(-Math.pow(end0-pos,2)/(2*30*30))}";
+                  
+                    textLayer.transform.opacity.expression = opacityExpression;
+                  
+                    // END TEXT RELATED THINGS HERE
+                    }
+                   }
+                   lineShape.property("Effects").property("Axis").property("Start").setValue(-(numDashes*100 -100)/2);
+                   lineShape.property("Effects").property("Axis").property("End").setValue((numDashes*100 -100)/2);
+                },
+
+                dynamicLine: function(x0 ,y0 ,x1 ,y1)
+                {
+                    var c = this[0].containingComp;
+                    
+                    var shape   = new makeShapeWithPath(c, 2 ,true);
+                    var path    = shape.content.property(MATCH_NAMES.PATH);
+                    var argName = Arguments.getArgs(callee);
+                    var i       = -1;
+                    var args    = arguments;
+                    var expr    = ""; 
+                  
+                    for(;++i<args.length;)
+                    {
+                      a = arguments[i];
+                      n = argName[i];
+                  
+                      if(a instanceof Array) // if it's layers you want to connect:
+                      {
+                        arrRepCfg = 
+                        {
+                          $argName: n,
+                          $argLayer: a[0].name,
+                          $argType: a[1]
+                        }
+                  
+                        expr += (function(){
+                          
+                          var $argName     = thisComp.layer("$argLayer").transform.position[$argType] - ($argType? 540 : 960);
+                          var anch$argName = thisComp.layer("$argLayer").transform.anchorPoint[$argType];
+                  
+                        }).body()._replace(arrRepCfg)
+                        
+                      }
+                      else //if it's points you want to connect:
+                      {
+                        expr += (function(){
+                  
+                          var $argName      = $argValue;
+                          var anch$argName  = 0;
+                  
+                        }).body()._replace({$argName  : n, $argValue : a });
+                  
+                      }
+                    }
+                  
+                    // now make the path with createPath() with all the shit you made previously
+                    expr += (function(){
+                        
+                      createPath(
+                      points      = [[x0-anchx0,y0-anchy0],[x1-anchx1,y1-anchy1]],
+                      inTangents  = [], 
+                      outTangents = [], 
+                      is_closed   = true)
+                    
+                    }).body();
+                    
+                    // set the expression value, and zero the anchor point:
+                    path.path.expression = expr;
+                    shape.transform.anchorPoint.setValue(defVals.anchorPoint);
+                    
+                    // frick layer off:
+                    return layer;
+                },
+
                 point: function(c, radius)
                 {
                   radius = radius.is(Number)?radius:8;
-                  
+
                   var stretch = radius / (kconst = 1.81066);
                   const POINT_SHAPE = 
                   {

@@ -22,17 +22,7 @@ MATCH_NAMES =
     path: "'ADBE Vector Group'"
 }
 
-PROPS = 
-{
-    stroke    : ["composite", "color", "strokeWidth", "lineCap", "lineJoin", "miterLimit"],
-    fill      : ["composite", "fillRule", "color"],
-    transform : ["anchorPoint", "position", "scale", "skew", "skewAxis", "rotation", "opacity"],
-    rect      : ["shapeDirection", "size", "position", "roundness"],
-    ellipse   : ["shapeDirection", "size", "position"],
-    star      : ["shapeDirection, type", "points", "position", "rotation", 
-                "innerRadius", "outerRadius", "innerRoundness", "outerRoundness"
-                ]    
-}
+
 
 function explodeLayer(layer) 
 {

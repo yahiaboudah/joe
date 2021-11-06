@@ -53,7 +53,7 @@
 (function(H, S)
 {
 
-    TODO = 
+    var TODO = 
     [
         "Object.getKeyByValue",
         "Object.getKeysByValue",
@@ -62,7 +62,7 @@
         "Object.getPrototypeOf",
     ]
     
-    YOLO = "youwillneverguessthispassword"; 
+    var YOLO = "youwillneverguessthispassword"; 
     H[S] = S;
 
     // BY-DEFAULT: load the BASC functions when XTO is included:
@@ -151,11 +151,11 @@
                 || fn.isnt(Function)
             ) return;
     
-            EXTO[what] = fn;
+            FUNS[what] = fn;
         }
     })
 
-    EXTO = 
+    var EXTO = 
     {
         BASC: 
         {
@@ -453,7 +453,7 @@
         }
     }
 
-    FUNS = 
+    var FUNS = 
     {
 
         //********************* *******/
@@ -767,21 +767,23 @@
             
                 function f(n){ return (n < 10) ? ("0" + n): n;}
             
-                function quote(string) {
-            
+                function quote(string)
+                {
                     rx_escapable.lastIndex = 0;
-                    return rx_escapable.test(string)
-                        ? "\"" + string.replace(rx_escapable, function (a) {
-                            var c = meta[a];
-                            return typeof c === "string"
-                                ? c
-                                : "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4);
-                        }) + "\""
-                        : "\"" + string + "\"";
+                    var isRxEsc = rx_escapable.test(string);
+                    if(!isRxEsc) return "\"{0}\"".re(string);
+
+                    return "\"{0}\"".re(string.replace(rx_escapable, function(a){
+                        
+                        var c = meta[a];
+                        return typeof c === "string"
+                               ? c
+                               : "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4);
+                    }));
                 }
             
-                function str(key, holder) {
-                    
+                function str(key, holder) 
+                {        
                     var i;          
                     var k;          
                     var v;          

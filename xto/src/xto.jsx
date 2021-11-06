@@ -924,17 +924,11 @@
                         var k;
                         var v;
                         var value = holder[key];
-                        if (value && typeof value === "object") {
-                            for (k in value) {
-                                if (Object.prototype.hasOwnProperty.call(value, k)) {
-                                    v = walk(value, k);
-                                    if (v !== undefined) {
-                                        value[k] = v;
-                                    } else {
-                                        delete value[k];
-                                    }
-                                }
-                            }
+                        if(value.is(Object)) for(k in value) if(k.in(value))
+                        {
+                            v = walk(value, k);
+                            if(v.isnt(undefined)) value[k] = v;
+                            else delete value[k];
                         }
                         return reviver.call(holder, key, value);
                     }

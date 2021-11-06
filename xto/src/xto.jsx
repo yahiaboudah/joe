@@ -811,28 +811,24 @@
                             return String(value);
 
                         case "object":
+                            
                             if(!value) return "null";
                             gap += indent;
                             partial = [];
+
+                            if(value.is(Array))
+                            {
+                                length = value.length, i = -1;
+                                for(;++i<length;) partial[i] = str(i, value) || "null";
             
-                            if (Object.prototype.toString.apply(value) === "[object Array]") {
-                                length = value.length;
-                                for (i = 0; i < length; i += 1) {
-                                    partial[i] = str(i, value) || "null";
-                                }
-            
-                                v = partial.length === 0
-                                    ? "[]"
-                                    : gap
-                                        ? (
-                                            "[\n"
-                                            + gap
-                                            + partial.join(",\n" + gap)
-                                            + "\n"
+                                v = !partial.length? "[]"
+                                    : gap ?
+                                        "[\n{0}]".re(
+                                            gap
+                                            + partial.join(",\n" + gap) + "\n"
                                             + mind
-                                            + "]"
                                         )
-                                        : "[" + partial.join(",") + "]";
+                                        : "[{0}]".re(partial.join(','));
                                 gap = mind;
                                 return v;
                             }

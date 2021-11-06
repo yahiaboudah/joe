@@ -833,22 +833,19 @@
                                 return v;
                             }
             
-                            if (rep && typeof rep === "object") {
-                                length = rep.length;
-                                for (i = 0; i < length; i += 1) {
-                                    if (typeof rep[i] === "string") {
-                                        k = rep[i];
-                                        v = str(k, value);
-                                        if (v) {
-                                            partial.push(quote(k) + (
-                                                (gap)
-                                                    ? ": "
-                                                    : ":"
-                                            ) + v);
-                                        }
-                                    }
+                            if(rep.is(Object))
+                            {
+                                length = rep.length, i = -1;
+                                for (;++i<length;)
+                                {
+                                    if(rep[i].isnt(String)) continue;
+                                    k = rep[i], v = str(k, value);
+                                    if(!v) continue;
+                                    partial.push("{0}:{1}{2}".re(quote(k), gap?" ":"", v));
                                 }
-                            } else {
+                            } 
+                            
+                            else {
             
                                 for (k in value) {
                                     if (Object.prototype.hasOwnProperty.call(value, k)) {

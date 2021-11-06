@@ -845,56 +845,40 @@
                                 }
                             } 
                             
-                            else {
-            
-                                for (k in value) {
-                                    if (Object.prototype.hasOwnProperty.call(value, k)) {
-                                        v = str(k, value);
-                                        if (v) {
-                                            partial.push(quote(k) + (
-                                                (gap)
-                                                    ? ": "
-                                                    : ":"
-                                            ) + v);
-                                        }
-                                    }
-                                }
+                            else for(k in value) if(k.in(value))
+                            {
+                                v = str(k, value);
+                                if(!v) continue;
+                                partial.push("{0}:{1}{2}".re(quote(k), gap?" ":"", v));
                             }
             
-                            v = partial.length === 0
-                                ? "{}"
-                                : gap
-                                    ? "{\n" + gap + partial.join(",\n" + gap) + "\n" + mind + "}"
-                                    : "{" + partial.join(",") + "}";
+                            v = !partial.length? "{}" : gap
+                                ? "{\n{0}{1}\n{2}}".re(gap, partial.join(",\n" + gap), mind)
+                                : "{{0}}".re(partial.join(","));
                             gap = mind;
                             return v;
                         }
                 }
             
-            
                 Date.prototype.toJSON = function ()
                 {
-                    return isFinite(this.valueOf())
-                        ? (
-                            this.getUTCFullYear()
-                            + "-"
-                            + f(this.getUTCMonth() + 1)
-                            + "-"
-                            + f(this.getUTCDate())
-                            + "T"
-                            + f(this.getUTCHours())
-                            + ":"
-                            + f(this.getUTCMinutes())
-                            + ":"
-                            + f(this.getUTCSeconds())
-                            + "Z"
-                        )
-                        : null;
+                    return isFinite(this.valueOf())?
+                        (
+                            "{0}-{1}-{2}T{3}:{4}:{5}Z".re(
+                                this.getUTCFullYear(),
+                                this.getUTCMonth(),
+                                this.getUTCDate(),
+                                this.getUTCHours(),
+                                this.getUTCMinutes(),
+                                this.getUTCSeconds()
+                            )
+                        ) : null;
                 }
-                Boolean.prototype.toJSON = function(){return this.valueOf()};
-                Number.prototype.toJSON  = function(){return this.valueOf()};
-                String.prototype.toJSON  = function(){return this.valueOf()};
-            
+                
+                [Boolean.prototype, Number.prototype, String.prototype].xt({
+                    toJSON: function(){return this.valueOf()}
+                })
+
                 var gap;
                 var indent;
                 var meta = 

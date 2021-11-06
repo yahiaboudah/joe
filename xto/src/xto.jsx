@@ -792,32 +792,26 @@
                     var partial;
                     var value = holder[key];
             
-                    if (
-                        value
-                        && typeof value === "object"
-                        && typeof value.toJSON === "function"
-                    ) {
+                    if(value.is(Object) && value.toJSON.is(Function))
+                    {
                         value = value.toJSON(key);
                     }
+
+                    if(rep.is(Function)) value = rep.call(holder, key, value);
             
-                    if (typeof rep === "function") {
-                        value = rep.call(holder, key, value);
-                    }
-            
-                    switch (typeof value) {
+                    switch(typeof value)
+                    {
                         case "string":
                             return quote(value);
-                        case "number":
-                            return (isFinite(value))
-                                ? String(value)
-                                : "null";
+                        
                         case "boolean":
+                        case "number":
+                            if(!isFinite(value)) return "null";
                         case "null":
                             return String(value);
+
                         case "object":
-                            if (!value) {
-                                return "null";
-                            }
+                            if(!value) return "null";
                             gap += indent;
                             partial = [];
             

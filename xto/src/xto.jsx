@@ -62,13 +62,123 @@
         "Object.getPrototypeOf",
     ]
     
-    var YOLO = "youwillneverguessthispassword"; 
+    var YOLO = "youwillneverguessthispassword";
+    var FUNS = {};
+    var EXTO = {};
+    var BASC = (function(){
+        /*
+        delete(Object.rm);
+        Object.rm = function(mo)
+        {
+            eval([
+                
+                mo + "= undefined",
+                "delete( " + mo + ")"
+        
+            ].join(";"))
+        } */            
+
+        delete(Object.prototype.in);
+        Object.prototype.in = function(oo)
+        {
+            switch(oo.constructor)
+            {
+                case Object:
+                    return oo.hasOwnProperty(this);
+            }
+        }
+
+        delete(Object.prototype.re);
+        Object.prototype.re = function(/*reps*/)
+        {
+            // get reps, convert to string:
+            var fargs = Array.prototype.slice.call(arguments);
+            for(var g = -1; ++g<fargs.length;) fargs[g] = fargs[g].toString();
+        
+            var ff = 
+            {
+                pat: function(k)
+                // the pattern to look for:
+                {
+                    return RegExp("\\{" + k + "\\}", "gi");
+                },
+        
+                str: function(ss, argsArr)
+                {
+                    var i = -1;
+        
+                    while(++i <argsArr.length) ss = ss.replace(this.pat(i), argsArr[i]);
+                    return ss;
+                },
+        
+                obj: function(oo, argsArr)
+                {
+                    var newo = {Array: [], Object: {}}[oo.constructor.name],
+                        k;
+                    
+                    for(x in oo) if(oo.hasOwnProperty(x))
+                    {
+                        k = oo[x];
+                        switch (k.constructor)
+                        {   
+                            case String:
+                                newo[x] = ff.str(k, argsArr);
+                                break;
+        
+                            case Object:
+                            case Array:
+                                newo[x] = ff.obj(k, argsArr);
+                                break;
+        
+                            default: 
+                                newo[x] = k;
+                                break;
+                        }
+                    }
+        
+                    return newo;
+                }
+            }
+        
+            switch (this.constructor)
+            {
+                case String:
+                    return ff.str(this, fargs);
+        
+                case Object:
+                case Array:
+                    return ff.obj(this, fargs);
+        
+                default: return this;
+            }
+        }
+        
+        delete(Object.prototype.xt);
+        Object.prototype.xt = function(oo)
+        {
+            for(x in oo) if(oo.hasOwnProperty(x)) this[x] = oo[x];
+        }
+        
+        delete(Object.prototype.is);
+        Object.prototype.is = function()
+        {
+            var _args = Array.prototype.slice.call(arguments), i = -1;
+            var what = this.constructor;
+        
+            while(++i<_args.length) if(what == _args[i]) return true;
+        
+            return false;
+        }
+    })
     
     H[S] = S;
     // BY-DEFAULT: load BASC [is, in, re, xt]
-    //-----------------------------
-    FUNS["BASC"].call($.global);//|
-    //-----------------------------
+    //---------------------
+    BASC.call($.global);//|
+    //---------------------
+
+    $.writeln(FUNS.toSource());
+    return 0;
 
     S.xt({
 
@@ -160,7 +270,7 @@
         }
     })
 
-    var EXTO = 
+    EXTO = 
     {
         BASC: 
         {
@@ -458,119 +568,11 @@
         }
     }
 
-    var FUNS = 
+    FUNS = 
     {
 
         //********************* *******/
-        //*********** BASC ***********/
-
-        BASC: (function()
-        {    
-            /*
-            delete(Object.rm);
-            Object.rm = function(mo)
-            {
-                eval([
-                    
-                    mo + "= undefined",
-                    "delete( " + mo + ")"
-            
-                ].join(";"))
-            } */            
-
-            delete(Object.prototype.in);
-            Object.prototype.in = function(oo)
-            {
-                switch(oo.constructor)
-                {
-                    case Object:
-                        return oo.hasOwnProperty(this);
-                }
-            }
-
-            delete(Object.prototype.re);
-            Object.prototype.re = function(/*reps*/)
-            {
-                // get reps, convert to string:
-                var fargs = Array.prototype.slice.call(arguments);
-                for(var g = -1; ++g<fargs.length;) fargs[g] = fargs[g].toString();
-            
-                var ff = 
-                {
-                    pat: function(k)
-                    // the pattern to look for:
-                    {
-                        return RegExp("\\{" + k + "\\}", "gi");
-                    },
-            
-                    str: function(ss, argsArr)
-                    {
-                        var i = -1;
-            
-                        while(++i <argsArr.length) ss = ss.replace(this.pat(i), argsArr[i]);
-                        return ss;
-                    },
-            
-                    obj: function(oo, argsArr)
-                    {
-                        var newo = {Array: [], Object: {}}[oo.constructor.name],
-                            k;
-                        
-                        for(x in oo) if(oo.hasOwnProperty(x))
-                        {
-                            k = oo[x];
-                            switch (k.constructor)
-                            {   
-                                case String:
-                                    newo[x] = ff.str(k, argsArr);
-                                    break;
-            
-                                case Object:
-                                case Array:
-                                    newo[x] = ff.obj(k, argsArr);
-                                    break;
-            
-                                default: 
-                                    newo[x] = k;
-                                    break;
-                            }
-                        }
-            
-                        return newo;
-                    }
-                }
-            
-                switch (this.constructor)
-                {
-                    case String:
-                        return ff.str(this, fargs);
-            
-                    case Object:
-                    case Array:
-                        return ff.obj(this, fargs);
-            
-                    default: return this;
-                }
-            }
-            
-            delete(Object.prototype.xt);
-            Object.prototype.xt = function(oo)
-            {
-                for(x in oo) if(oo.hasOwnProperty(x)) this[x] = oo[x];
-            }
-            
-            delete(Object.prototype.is);
-            Object.prototype.is = function()
-            {
-                var _args = Array.prototype.slice.call(arguments), i = -1;
-                var what = this.constructor;
-            
-                while(++i<_args.length) if(what == _args[i]) return true;
-            
-                return false;
-            }
-            
-        }),
+        //*********** MATH ***********/
 
         MATH$MATH: (function()
         {
@@ -1290,7 +1292,7 @@
 
                 hexToRgb : function(hx)
                 {
-                    return [/*r*/hx >> 16, /*g*/(hx & 0x00ff00) >> 8,/*b*/ hx & 0xff, /*a*/255] /= 255;
+                    return [/*r*/hx >> 16, /*g*/(hx & 0x00ff00) >> 8,/*b*/ hx & 0xff, /*a*/255] / 255;
                 },
 
                 rgbToHex : function(rgb)
@@ -1544,7 +1546,7 @@
                     return ff.fsName;
                 },
 
-                typeof: function(v){
+                type: function(v){
         
                     if(arguments.length != 1) throw Error("pass 1 variable");
                     if(v === undefined)       return 'undefined';
@@ -1620,7 +1622,7 @@
         
                 while(++i<l) arr[i] = (i+1);
                 return arr;
-            }     
+            }
             Array.prototype.forEach = function(callback, thisArg) {
 
                 if (this == null) throw new TypeError('Array.prototype.forEach called on null or undefined');
@@ -1843,19 +1845,7 @@
                     hv: HorV
                 })
             }
-            Array.prototype.upIndex     =  Function(Array.oneDimIndexFunc("max", 1));
-            Array.prototype.bottomIndex =  Function(Array.oneDimIndexFunc("min", 1));
-            Array.prototype.leftIndex   =  Function(Array.oneDimIndexFunc("min", 0));
-            Array.prototype.rightIndex  =  Function(Array.oneDimIndexFunc("max", 0));
-            /**
-             * 
-             */
-        
-            
-            /**
-             *
-             *  
-             */
+
             Array.twoDimIndexFunc = function(ytype, xtype){
                 
                 return (function(){
@@ -1876,12 +1866,21 @@
                     ytype: ytype,
                 })
             }
-        
-            Array.prototype.upperLeftIndex   = Function(Array.twoDimIndexFunc("min", "min"));
-            Array.prototype.upperRightIndex  = Function(Array.twoDimIndexFunc("min", "max"));
-            Array.prototype.bottomRightIndex = Function(Array.twoDimIndexFunc("max", "max"));
-            Array.prototype.bottomLeftIndex  = Function(Array.twoDimIndexFunc("max", "min"));
 
+
+            Array.prototype.xt({
+
+                upIndex: Function(Array.oneDimIndexFunc("max", 1)),
+                bottomIndex: Function(Array.oneDimIndexFunc("min", 1)),
+                leftIndex: Function(Array.oneDimIndexFunc("min", 0)),
+                rightIndex: Function(Array.oneDimIndexFunc("max", 0)),
+                    
+                upperLeftIndex   : Function(Array.twoDimIndexFunc("min", "min")),
+                upperRightIndex  : Function(Array.twoDimIndexFunc("min", "max")),
+                bottomRightIndex : Function(Array.twoDimIndexFunc("max", "max")),
+                bottomLeftIndex  : Function(Array.twoDimIndexFunc("max", "min")),
+            })
+            
             /**
              * Vector operations/ Array operations:
              * 
@@ -1929,16 +1928,13 @@
             Array.prototype["^"] = function dotMultiply(v) // Hadmard product
             {
                 if(!v.is(Array)) return;
-        
+
                 var i = this.length,
                     j = v.length,
                     r = this.concat(v.slice(i));
                 
                 if(i > j) i = j;
-                while( i-- )
-                {
-                    r[i] *= (v[i]);
-                }
+                while(i--) r[i] *= (v[i]);
                 
                 return r;
             } 
@@ -2288,7 +2284,7 @@
                     return this;
                 },
                 
-                $close = function()
+                $close : function()
                 {
                     this.isOpen = false;
                     return (this.close(), this);
@@ -2328,7 +2324,7 @@
                     return (this.$write((text || ""), 'w'), this);
                 },
                 
-                execute = function(slp, cb, doClose)
+                execute : function(slp, cb, doClose)
                 {
                     this.execute();
                     if(!!doClose) this.$close();
@@ -3962,7 +3958,7 @@
 
                     var offset = !offset? [0,0,0]:
                                  ((anch = this.getProp("Transform/Anchor Point").value, anch[2] *= -1, offset-=anch), 
-                                 offset),
+                                 offset);
 
                     var modelMatrix = this.getModalMatrix(offset);
             
@@ -4363,7 +4359,7 @@
                 {    
                     const ERRS = 
                     {
-                      PROP_INVALID = "Property needs to be a shape, path group, or path"
+                      PROP_INVALID : "Property needs to be a shape, path group, or path"
                     }
                 
                     if(this.isnt("Group", "Path", "PathGroup")) throw Error(ERRS.PROP_INVALID)

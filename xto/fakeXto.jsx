@@ -3,7 +3,6 @@
 
     H[S] = S;
 
-
     S.load = function(what)
     {
         FUNS[what].call($.global);
@@ -41,11 +40,3 @@
     }
 
 })($.global, {toString: function(){return "fakeXto"}})
-
-fakeXto.load("myFunction");
-
-typeMonkey();
-
-fakeXto.unload("myFunction");
-
-typeMonkey();

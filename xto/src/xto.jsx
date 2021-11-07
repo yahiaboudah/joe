@@ -2,7 +2,7 @@
 		Name:           xto
 		Desc:           A helper framework for Extendscript and AE.
 		Created:        2110 (YYMM)
-		Modified:       2110 (YYMM)
+		Modified:       2111 (YYMM)
         
     =================================== XTO ========================================
                         
@@ -92,8 +92,8 @@
         Object.prototype.re = function(/*reps*/)
         {
             // get reps, convert to string:
-            var fargs = Array.prototype.slice.call(arguments);
-            for(var g = -1; ++g<fargs.length;) fargs[g] = fargs[g].toString();
+            var fargs = Array.prototype.slice.call(arguments), g = -1;
+            for(;++g<fargs.length;) fargs[g] = fargs[g].toString();
         
             var ff = 
             {
@@ -176,9 +176,6 @@
     //---------------------
     BASC.call($.global);//|
     //---------------------
-
-    $.writeln(FUNS.toSource());
-    return 0;
 
     S.xt({
 
@@ -871,24 +868,24 @@
                         }
                 }
             
-                Date.prototype.toJSON = function ()
-                {
-                    return isFinite(this.valueOf())?
-                        (
-                            "{0}-{1}-{2}T{3}:{4}:{5}Z".re(
-                                this.getUTCFullYear(),
-                                this.getUTCMonth(),
-                                this.getUTCDate(),
-                                this.getUTCHours(),
-                                this.getUTCMinutes(),
-                                this.getUTCSeconds()
-                            )
-                        ) : null;
-                }
+                // Date.prototype.toJSON = function ()
+                // {
+                //     return isFinite(this.valueOf())?
+                //         (
+                //             "{0}-{1}-{2}T{3}:{4}:{5}Z".re(
+                //                 this.getUTCFullYear(),
+                //                 this.getUTCMonth(),
+                //                 this.getUTCDate(),
+                //                 this.getUTCHours(),
+                //                 this.getUTCMinutes(),
+                //                 this.getUTCSeconds()
+                //             )
+                //         ) : null;
+                // }
                 
-                [Boolean.prototype, Number.prototype, String.prototype].xt({
-                    toJSON: function(){return this.valueOf()}
-                })
+                // [Boolean.prototype, Number.prototype, String.prototype].xt({
+                //     toJSON: function(){return this.valueOf()}
+                // })
 
                 var gap;
                 var indent;
@@ -4890,6 +4887,7 @@
             })
         }),
 
+
         CSTR$Path: (function(){
 
             $.global.Path = function Path()
@@ -5027,9 +5025,26 @@
 
         CSTR$Python: (function(){
 
+            /* $DEPS: [sys.cmd] [another.dependecy] [ok.man] [another.dependecy] [dep.here] [get.this.depo]
+            */
+
             $.global.Python = function Python(){};
 
             Python.xt({
+                testPython : function()
+                {
+                    return "Python works!";
+                }
+            })
+
+            return 0;
+
+            Python.xt({
+                
+                testPython : function()
+                {
+                    return "Python works!"
+                },
                 
                 installed: function()
                 {
@@ -5089,9 +5104,9 @@
 
                 //========================================
 
-                execStr: "def pyjsx_run():\n    import json, sys, os\n    inst_path  = '"+self.instPath+"/'\n    intf_path   =  (inst_path + 'PyIntf.pyintf')\n    exec_signal =  (inst_path + 'executed.tmp')\n    def strr(ss):\n        if(ss in ['true', 'false']): return ss.title()\n        if(type(ss) is str):         return '\"' + ss + '\"'\n        return str(ss)\n    with open(intf_path, 'r') as f:\n        c= f.read()\n    if not c: return 'Python Error: interface corrupt'\n    intff = json.loads(c)\n    AR    = intff['active_req']\n    path  = AR   ['road']\n    func  = AR   ['trac']\n    name  = '.'.join(path.split('/')[-1].split('.')[0:-1])\n    args  = ','.join(strr(e) for e in AR['seed'])\n    sys.path.append(os.path.dirname(path))\n    try:\n        exec('import ' + name + ' as s')\n        result = eval('s.' + func + '(' + args + ')')\n    except Exception as e:\n        result = 'Python Error: ' + str(e).replace('\'', '\\\'')\n    intff['active_req']['crop'] = result\n    intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1\n    with open(intf_path, 'w', encoding='utf8') as f:\n        f.write(json.dumps(intff, indent =4))\n    with open(exec_signal, 'w') as execf:\n        execf.write('')\n    return 0\npyjsx_run()",
+                execStr: "def pyjsx_run():\n    import json, sys, os\n    inst_path  = '"+Python.instPath+"/'\n    intf_path   =  (inst_path + 'PyIntf.pyintf')\n    exec_signal =  (inst_path + 'executed.tmp')\n    def strr(ss):\n        if(ss in ['true', 'false']): return ss.title()\n        if(type(ss) is str):         return '\"' + ss + '\"'\n        return str(ss)\n    with open(intf_path, 'r') as f:\n        c= f.read()\n    if not c: return 'Python Error: interface corrupt'\n    intff = json.loads(c)\n    AR    = intff['active_req']\n    path  = AR   ['road']\n    func  = AR   ['trac']\n    name  = '.'.join(path.split('/')[-1].split('.')[0:-1])\n    args  = ','.join(strr(e) for e in AR['seed'])\n    sys.path.append(os.path.dirname(path))\n    try:\n        exec('import ' + name + ' as s')\n        result = eval('s.' + func + '(' + args + ')')\n    except Exception as e:\n        result = 'Python Error: ' + str(e).replace('\'', '\\\'')\n    intff['active_req']['crop'] = result\n    intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1\n    with open(intf_path, 'w', encoding='utf8') as f:\n        f.write(json.dumps(intff, indent =4))\n    with open(exec_signal, 'w') as execf:\n        execf.write('')\n    return 0\npyjsx_run()",
 
-                execPath   : "{0}/exec.pyw".re(self.instPath),
+                execPath   : "{0}/exec.pyw".re(Python.instPath),
                 execTime   : 180,
                 extensions : ["py", "pyw"]
 
@@ -5103,7 +5118,7 @@
                 {
                     if(!PY.isInstalled()) throw Error("Python not installed!");
                     
-                    var fd = Folder(self.instPath);
+                    var fd = Folder(Python.instPath);
                     if(fd.exists) fd.$remove();   
                     
                     (fd.create(), I.make(), PY.makeExec());
@@ -5114,7 +5129,7 @@
                 repair: function()
                 {
         
-                    if(!Folder(self.instPath).exists) throw Error("Pyjsx not installed! (Run pyjsx.install())");
+                    if(!Folder(Python.instPath).exists) throw Error("Pyjsx not installed! (Run pyjsx.install())");
             
                     var ff      = File(I.intfPath),
                         xf      = File(PY.execPath),
@@ -5151,7 +5166,7 @@
                 build: function(contactName)
                 {
         
-                    if(contactName.checkFF() == 1) contactName = self.contact(contactName);
+                    if(contactName.checkFF() == 1) contactName = Python.contact(contactName);
             
                     var pyo  = {functions: []};
                     intf     = I.getIntf();
@@ -5185,7 +5200,7 @@
                             if(numArgs < nDefNum) throw Error(ERRS.missingArgs)
                             if(numArgs > ttArgs ) throw Error(ERRS.extrArgs)
                             
-                            return self.call(cPath, name, args);              
+                            return Python.call(cPath, name, args);              
             
                         }).body().replace({
                             

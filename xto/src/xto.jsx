@@ -63,9 +63,9 @@
     ]
     
     var YOLO = "youwillneverguessthispassword"; 
+    
     H[S] = S;
-
-    // BY-DEFAULT: load the BASC functions when XTO is included:
+    // BY-DEFAULT: load BASC [is, in, re, xt]
     //-----------------------------
     FUNS["BASC"].call($.global);//|
     //-----------------------------
@@ -73,6 +73,11 @@
     S.xt({
 
         version: '1.0.2',
+
+        getTODO: function()
+        {
+            return TODO;
+        },
 
         // [GETTERS]
         functionsOf: function(what)

@@ -20,7 +20,12 @@
     BASC.call($.global);
     //==================
 
-    S.loaded = [];
+    S.LOADED = 
+    {
+        asModule = [],
+        asDepend = {}
+    }
+
     S.isLoaded = function(what)
     {
         return what.in(S.loaded);
@@ -28,15 +33,25 @@
 
     S.load = function(what)
     {
+        S.LOADED.asModule.push(what);
+        
         // Deal with DEP:
         var deps = TREE[what].DEPS, i=-1;
-
         for(;++i<deps.length;)
         {
             n = deps[i];
-            if(!(f = FUNS[n]) || S.isLoaded(n)) continue;
+            // if FUNS[n] does not exist: continue:
+            if(!FUNS[n]) continue;
+            
+            // if it's loaded, add parent to LOADED.asDepend[n] and continue:
+            if(n.in(S.LOADED.asDepend))
+            {
+                S.LOADED.asDepend[n].push(what);
+                continue;
+            }
+            //if it's not loaded: add it to S.LOADED.asDepend, and its parent:
+            S.LOADED.asDepend[n] = [what];
             f.call($.global);
-            S.loaded.push(n);
         }
 
         FUNS[what].call($.global);
@@ -44,14 +59,37 @@
 
     S.unload = function(what)
     {
-        var arr = TREE[what];
-        if(!arr) return;
-        for(var i=0; i<arr.length; i++)
+        if(what.in(S.LOADED.asModule))
         {
-            eval([
-                "delete(" + arr[i] + ")",
-                arr[i] + "= null;"
-            ].join(";"))
+            S.LOADED[
+                what.in(S.LOADED.asModule)?"asModule":
+                what.in(S.LOADED.asDepend)?"asDepend": ($.err = "wtf?")
+            ].remove(what);
+
+            //===============
+            //=== UNLOAD ====
+            var arr = TREE[what], i=-1;
+            for(;++i<arr.length;)
+            {
+                eval([
+                    "delete(" + arr[i] + ")",
+                    arr[i] + "= null;"
+                ].join(";"))
+            }
+            //================
+
+            // UNLOAD DEPS:
+            var parentArr = [];
+            for(var k in S.LOADED.asDepend) if(k.in(S.LOADED.asDepend))
+            {
+                parentArr = S.LOADED.asDepend[k];
+                if(what.in(parentArr))
+                {
+                    parentArr = parentArr.remove(what);
+                    S.LOADED.asDepend[k] = parentArr;
+                    if(!parentArr.length) S.unload(k);
+                }
+            }
         }
     }
 

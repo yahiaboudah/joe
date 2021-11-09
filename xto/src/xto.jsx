@@ -177,16 +177,79 @@
     BASC.call($.global);//|
     //---------------------
 
+    // [LOADERS]:
+    S.xt({
+
+        load: function(what)
+        {
+            S.LOADED.asModule.push(what);
+        
+            // Deal with DEP:
+            var deps = TREE[what].DEPS, i=-1;
+            for(;++i<deps.length;)
+            {
+                n = deps[i];
+                //NO FUNS[n]? continue:
+                if(!FUNS[n]) continue;
+                
+                //LOADED? add parent to LOADED.asDepend[n], continue:
+                if(n.in(S.LOADED.asDepend))
+                {
+                    S.LOADED.asDepend[n].push(what);
+                    continue;
+                }
+                //NOT LOADED? add to S.LOADED.asDepend ({dep: [parent]}):
+                S.LOADED.asDepend[n] = [what];
+                f.call($.global);
+            }
+    
+            FUNS[what].call($.global);
+        },
+
+        unload: function(what)
+        {
+            S.LOADED[
+                what.in(S.LOADED.asModule)?"asModule":
+                what.in(S.LOADED.asDepend)?"asDepend": ($.err = "wtf?")
+            ].remove(what);
+    
+            //===============
+            //=== UNLOAD ====
+            var arr = TREE[what].FUNS, i=-1;
+            for(;++i<arr.length;)
+            {
+                eval([
+                    "delete(" + arr[i] + ")",
+                    arr[i] + "= null;"
+                ].join(";"))
+            }
+            //================
+    
+            // UNLOAD DEPS:
+            var parentArr = [];
+            for(var k in S.LOADED.asDepend) if(k.in(S.LOADED.asDepend))
+            {
+                parentArr = S.LOADED.asDepend[k];
+                if(what.in(parentArr))
+                {
+                    parentArr = parentArr.remove(what);
+                    S.LOADED.asDepend[k] = parentArr;
+                    if(!parentArr.length) S.unload(k);
+                }
+            }
+        }
+    })
+
+    // [INFO]
     S.xt({
 
         version: '1.0.2',
-
+        
         getTODO: function()
         {
             return TODO;
         },
 
-        // [GETTERS]
         functionsOf: function(what)
         {
             if(!(efun = EXTO[what])) return;
@@ -203,6 +266,7 @@
 
             return arr;
         },
+        
         functions: function()
         {
             var arr = [];
@@ -211,34 +275,12 @@
                 Array.prototype.push.apply(arr, S.functionsOf(x));
             }
             return arr;
-        },
-        // [GETTERS]
+        }
+    })
 
-        // [LOADERS]
-        load: function(what)
-        {
-            if(what != '*')
-            {
-                if(!(fun = FUNS[what])) return;
-                fun.call($.global);
-            }
-
-            for(fun in FUNS) if(fun.in(FUNS))
-            {
-                FUNS[fun].call($.global);
-            }
-        },
-        unload: function(what)
-        {
-            var a     = (what == '*');
-            var funcs = a? S.functions(): S.functionsOf(what);
-            var i     = funcs.length;
-
-            while(--i) eval("delete(" + funcs[i] + ")");
-
-            (!a || (eval(what + "=null;")))
-        },
-        // [LOADERS]
+    //[DEBUG/EXAMINE]
+    S.xt({
+        
         code: function(what, where)
         {
             if(!(fun = FUNS[what])) return;
@@ -269,299 +311,367 @@
 
     EXTO = 
     {
-        BASC: 
-        {
-            Object_prototype:
-            [
-                "is",
-                "in",
-                "re",
-                "xt"
-            ]
-        },
-
         MATH:
         {
             TRIG:
-            [
-                "degreesToRadians", "radiansToDegrees"
-            ]
+            {
+                DEPS: [],
+                FUNS: 
+                [
+                    "degreesToRadians", "radiansToDegrees"
+                ]
+            }
         },
 
         $$$$: 
         {
-            DATA:
-            [
-                "log",
-                "ser",
-                "deser",
-                "http"
-            ],
+            DATA: {
+                DEPS: [],
+                FUNS: 
+                [
+                    "log",
+                    "ser",
+                    "deser",
+                    "http"
+                ]
+            },
 
-            DBUG:
-            [
-                "inside",
-                "scan",
-                "inspect",
-            ],
+            DBUG:{
+                DEPS: [],
+                FUNS: [
+                    "inside",
+                    "scan",
+                    "inspect",
+                ]
+            },
 
             MISC:
-            [
-                "/colorPicker",
-                "/sleep",
-                "getClipbaord", "setClipboard", "clearClipboard",
-                "cmd", "wget"
-            ]
+            {
+                DEPS: [],
+                FUNS: [
+                    "/colorPicker",
+                    "/sleep",
+                    "getClipbaord", "setClipboard", "clearClipboard",
+                    "cmd", "wget"
+                ]
+            }
         },
 
         PRIM:
         {
             String_prototype:
-            [
-                "inspectFF", "checkFF",
-                "startsWith", "padding",
-                "replaceSeq", "fstr", "_replace",
-                "title", "trim", "pushAt",
-                "*"
-            ],
-
-            Array:
-            [
-                "range",
-                "oneDimIndexFunc", "twoDimIndexFunc"
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "inspectFF", "checkFF",
+                    "startsWith", "padding",
+                    "replaceSeq", "fstr", "_replace",
+                    "title", "trim", "pushAt",
+                    "*"
+                ]
+            },
 
             Array_prototype:
-            [
-                "forEach", "forEvery",
-                "indexOf", "remove", "includes", 
-                "rotate", 
-                "reduce", "map", 
-                "fliter", "select",
-    
-                "max", "min", "sortedIndices", "math2D", "sum",
-    
-                "upIndex", "bottomIndex", "leftIndex", "rightIndex",
-                "upperLeftIndex", "upperRightIndex", "bottomRightIndex", "bottomLeftIndex",
-    
-                "+", "-", "*", "/", "^"
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "range",
+                    "oneDimIndexFunc", "twoDimIndexFunc",
+                    
+                    "forEach", "forEvery",
+                    "indexOf", "remove", "includes", 
+                    "rotate", 
+                    "reduce", "map", 
+                    "fliter", "select",
+        
+                    "max", "min", "sortedIndices", "math2D", "sum",
+        
+                    "upIndex", "bottomIndex", "leftIndex", "rightIndex",
+                    "upperLeftIndex", "upperRightIndex", "bottomRightIndex", "bottomLeftIndex",
+        
+                    "+", "-", "*", "/", "^"
+                ]
+            },
 
             Function_prototype:
-            [
-                "bind",
-                "body",
-                "time",
-                "getArgs",
-                "params",
-                "check"
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "bind",
+                    "body",
+                    "time",
+                    "getArgs",
+                    "params",
+                    "check"
+                ]
+            },
 
             Number_prototype:
-            [
-                "isOdd", "isEven",
-                "floor", "ceiling"
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "isOdd", "isEven",
+                    "floor", "ceiling"
+                ]
+            },
 
             Object:
-            [
-                "keys", "newKeys", "extend", "size",
-                "dcKeys", "validate", "validateKeys",
-                "modify", "getValue",
-                "print", "write", 
-                "typeof",
-                "create",
-                "getPrototypeOf", 
-                "newObject", "fromEntries",
-                "has", "inspect"
-            ]
+            {
+                DEPS: [],
+                FUNS: [
+                    "keys", "newKeys", "extend", "size",
+                    "dcKeys", "validate", "validateKeys",
+                    "modify", "getValue",
+                    "print", "write", 
+                    "typeof",
+                    "create",
+                    "getPrototypeOf", 
+                    "newObject", "fromEntries",
+                    "has", "inspect"
+                ]
+            }
         },
 
         DATA:
         {
             File_prototype:
-            [
-                "-isOpen",
-                "/open", "/write", "/read", "/close", "clear",
-                "/seek", "create",
-                "/execute",
-                "lines",
-                
-                "listenForChange", "listenForChar", "listen",
-    
-                "getDuration", "getName", "getExtension", "getType"
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "-isOpen",
+                    "/open", "/write", "/read", "/close", "clear",
+                    "/seek", "create",
+                    "/execute",
+                    "lines",
+                    
+                    "listenForChange", "listenForChar", "listen",
+        
+                    "getDuration", "getName", "getExtension", "getType"
+                ]
+            },
 
             Folder_prototype:
-            [
-                "clearFolder", "/remove",
-                "getFolders", "/getFiles"
-            ],
+            {
+                DEPS: [],
+                FUNS : [
+                    "clearFolder", "/remove",
+                    "getFolders", "/getFiles"
+                ]
+            },
 
             Socket_prototype:
-            [
-                ""
-            ]
+            {
+                DEPS: [],
+                FUNS: []
+            }
         },
 
         AFFX:
         {
             $global:
-            [
-                "MATCH_NAMES",
-                "AECMD"
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "MATCH_NAMES",
+                    "AECMD"
+                ]
+            },
 
             app:
-            [
-                "wrapUndo",
-                "doUndo",
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "wrapUndo",
+                    "doUndo",
+                ]
+            },
 
             CompItem_prototype:
-            [
-                "setResolution", "getResolution",
-                "getLayersWith", "numLayersWithName",
-                "snap",
-                "sel",
-                "setTime",
-                "workAreaDomain",
-
-                "getAOV", "getProjectedZ", "getViewMatrix", "getZoom"
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "setResolution", "getResolution",
+                    "getLayersWith", "numLayersWithName",
+                    "snap",
+                    "sel",
+                    "setTime",
+                    "workAreaDomain",
+    
+                    "getAOV", "getProjectedZ", "getViewMatrix", "getZoom"
+                ]
+            },
 
             ItemCollection_prototype:
-            [
-                "toArray", "grab"
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "toArray", "grab"
+                ]
+            },
 
             LayerCollection_prototype:
-            [
-                "toArray", "grab"
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "toArray", "grab"
+                ]
+            },
 
             AVLayer_prototype:
-            [
-                "addProp", "getProp", "removeProp"
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "addProp", "getProp", "removeProp"
+                ]
+            },
 
             ShapeLayer_prototype:
-            [
-                "addProp", "getProp", "removeProp",
-                "alpha",
-                "area", "areas",
-                "distances",
-                "moveFirstVertex",
-                "grabProps",
-    
-                "stroke", "fill"
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "addProp", "getProp", "removeProp",
+                    "alpha",
+                    "area", "areas",
+                    "distances",
+                    "moveFirstVertex",
+                    "grabProps",
+        
+                    "stroke", "fill"
+                ]
+            },
 
             PropertyGroup_prototype:
-            [
-                "is", "isnt",
-                "containingComp",
-                "properties",
-                "moveFirstVertex", "mFirstIndex",
-                "$nearestKeyIndex"
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "is", "isnt",
+                    "containingComp",
+                    "properties",
+                    "moveFirstVertex", "mFirstIndex",
+                    "$nearestKeyIndex"
+                ]
+            },
 
             TextLayer_prototype:
-            [
-                "style"
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "style"
+                ]
+            },
         },
 
         SCUI:
         {
             Window_prototype:
-            [
-                "addAnimatedSequence"
-            ]
+            {
+                DEPS: [],
+                FUNS: [
+                    "addAnimatedSequence"
+                ]
+            }
         },
 
         CSTR:
         {
             Table:
-            [            
-                "-fNamePatt", "process", "removeAll",
-                "prototype.toString",
-                "prototype.getMaxRowSizes", "prototype.maxColumnSizes",
-                "prototype.format", "prototype.render",
-                "prototype.write", "prototype.show"
-            ],
+            {
+                DEPS: [],
+                FUNS: [            
+                    "-fNamePatt", "process", "removeAll",
+                    "prototype.toString",
+                    "prototype.getMaxRowSizes", "prototype.maxColumnSizes",
+                    "prototype.format", "prototype.render",
+                    "prototype.write", "prototype.show"
+                ]
+            },
 
             Path:
-            [
-                "prototype.py",
-                "prototype.resolve",
-                "prototype.exists", "prototype.mkdir",
-                "prototype.toString",
-                "prototype[\'/\']"
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "prototype.py",
+                    "prototype.resolve",
+                    "prototype.exists", "prototype.mkdir",
+                    "prototype.toString",
+                    "prototype[\'/\']"
+                ]
+            },
 
             Python:
-            [
-                "installed",
-
-                "-execStr",
-                "-execPath",
-                "-extensions",
-                
-                "prototype.execTime",
-                "prototype.functions",
-                
-                "prototype.makeExec",
-                "prototype.viewExec",
-                "prototype.editExec",
-                "prototype.runExec",
-                
-                "prototype.install",
-                "prototype.repair",
-                "prototype.uninstall",
-                
-                "prototype.call",
-                "prototype.contact",
-                "prototype.build",               
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "installed",
+    
+                    "-execStr",
+                    "-execPath",
+                    "-extensions",
+                    
+                    "prototype.execTime",
+                    "prototype.functions",
+                    
+                    "prototype.makeExec",
+                    "prototype.viewExec",
+                    "prototype.editExec",
+                    "prototype.runExec",
+                    
+                    "prototype.install",
+                    "prototype.repair",
+                    "prototype.uninstall",
+                    
+                    "prototype.call",
+                    "prototype.contact",
+                    "prototype.build",               
+                ]
+            },
 
             FileInterface:
-            [
-                "prototype.validate",
-                "prototype.make",
-                "prototype.set",
-                "prototype.get",
-                "prototype.modify",
-                "prototype.post",
-                "prototype.crop" 
-            ],
+            {
+                DEPS: [],
+                FUNS: [
+                    "prototype.validate",
+                    "prototype.make",
+                    "prototype.set",
+                    "prototype.get",
+                    "prototype.modify",
+                    "prototype.post",
+                    "prototype.crop" 
+                ]
+            },
 
             Logger:
-            [
-                "prototype.debug",
-                "prototype.info",
-                "prototype.warning",
-                "prototype.error",
-                "prototype.critical"
-            ]
+            {
+                DEPS: [],
+                FUNS: [
+                    "prototype.debug",
+                    "prototype.info",
+                    "prototype.warning",
+                    "prototype.error",
+                    "prototype.critical"
+                ]
+            }
         },
 
         WRPR:
         {
             SShape:
-            [
-                ""
-            ],
+            {
+                DEPS: [],
+                FUNS: []
+            },
 
             TTextLayer:
-            [
-                ""
-            ],
+            {
+                DEPS: [],
+                FUNS: []
+            },
 
             WWindow:
-            [
-                ""
-            ]
+            {
+                DEPS: [],
+                FUNS: []
+            }
         }
     }
 

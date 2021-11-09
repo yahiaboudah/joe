@@ -59,36 +59,33 @@
 
     S.unload = function(what)
     {
-        if(what.in(S.LOADED.asModule))
+        S.LOADED[
+            what.in(S.LOADED.asModule)?"asModule":
+            what.in(S.LOADED.asDepend)?"asDepend": ($.err = "wtf?")
+        ].remove(what);
+
+        //===============
+        //=== UNLOAD ====
+        var arr = TREE[what].FUNS, i=-1;
+        for(;++i<arr.length;)
         {
-            S.LOADED[
-                what.in(S.LOADED.asModule)?"asModule":
-                what.in(S.LOADED.asDepend)?"asDepend": ($.err = "wtf?")
-            ].remove(what);
+            eval([
+                "delete(" + arr[i] + ")",
+                arr[i] + "= null;"
+            ].join(";"))
+        }
+        //================
 
-            //===============
-            //=== UNLOAD ====
-            var arr = TREE[what], i=-1;
-            for(;++i<arr.length;)
+        // UNLOAD DEPS:
+        var parentArr = [];
+        for(var k in S.LOADED.asDepend) if(k.in(S.LOADED.asDepend))
+        {
+            parentArr = S.LOADED.asDepend[k];
+            if(what.in(parentArr))
             {
-                eval([
-                    "delete(" + arr[i] + ")",
-                    arr[i] + "= null;"
-                ].join(";"))
-            }
-            //================
-
-            // UNLOAD DEPS:
-            var parentArr = [];
-            for(var k in S.LOADED.asDepend) if(k.in(S.LOADED.asDepend))
-            {
-                parentArr = S.LOADED.asDepend[k];
-                if(what.in(parentArr))
-                {
-                    parentArr = parentArr.remove(what);
-                    S.LOADED.asDepend[k] = parentArr;
-                    if(!parentArr.length) S.unload(k);
-                }
+                parentArr = parentArr.remove(what);
+                S.LOADED.asDepend[k] = parentArr;
+                if(!parentArr.length) S.unload(k);
             }
         }
     }

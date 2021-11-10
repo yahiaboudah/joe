@@ -313,34 +313,66 @@ EXTO =
             ]
         },
 
-        PropertyGroup_prototype:
+        PropertyGroup:
         {
+            PRFX: "PropertyGroup.prototype.",
             DEPS: [],
             FUNS: [
                 "is", "isnt",
                 "containingComp",
                 "properties",
                 "moveFirstVertex", "mFirstIndex",
-                "$nearestKeyIndex"
+                "$nearestKeyIndex",
+
+                //TextPropertyGroup:
+                "addTextFill", "addExpressionSelector",
+
+                "getParent", "copyPropertiesTo"
             ]
         },
 
-        TextLayer_prototype:
+        TextLayer:
         {
+            PRFX: "TextLayer.prototype.",
             DEPS: [],
-            FUNS: [
-                "style"
+            FUNS: 
+            [
+                "cofig",
+                "animator",
+                "fromJSONAndMarkersOf"
             ]
         },
     },
 
     SCUI:
     {
-        Window_prototype:
+        Window:
         {
+            PRFX: "Window.prototype.",
+            DEPS: [],
+            FUNS: 
+            [
+                "addAnimatedSequence",
+                "playAudio"
+            ]
+        },
+
+        DropDownList: 
+        {
+            PRFX: "DropDownList.prototype.",
             DEPS: [],
             FUNS: [
-                "addAnimatedSequence"
+                "makeGroupVisible"
+            ]
+        },
+
+        XYLayout:
+        {
+            PRFX: "$.global.",
+            DEPS: [],
+            FUNS: [
+                "CustomLayout",
+                "XYLayout"
             ]
         }
     },

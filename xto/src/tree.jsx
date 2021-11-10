@@ -153,7 +153,7 @@ EXTO =
                 "keys", "newKeys", "extend", "size",
                 "getValue", "getPrototypeOf", "has", "inspect", "type", //inspect
                 "print", "write", //show
-                
+
                 "dcKeys", "validate", "validateKeys", // validate
                 
                 "modify", //modify
@@ -165,35 +165,43 @@ EXTO =
 
     DATA:
     {
-        File_prototype:
+        File:
         {
+            PRFX: "File.prototype.",
             DEPS: [],
             FUNS: [
-                "-isOpen",
-                "/open", "/write", "/read", "/close", "clear",
-                "/seek", "create",
-                "/execute",
-                "lines",
+                //basic operations:
+                "isOpen", "$open", "$write", "$read", "$close", "clear",
+                "$seek", "create", "$execute",
                 
+                //listeners
                 "listenForChange", "listenForChar", "listen",
     
+                //getters:
+                "getLines",
                 "getDuration", "getName", "getExtension", "getType"
             ]
         },
 
-        Folder_prototype:
+        Folder:
         {
+            PRFX: "Folder.prototype.",
             DEPS: [],
-            FUNS : [
-                "clearFolder", "/remove",
-                "getFolders", "/getFiles"
+            FUNS : 
+            [
+                //clear
+                "clearFolder", "$remove",
+                //getters
+                "getFolders", "$getFiles"
             ]
         },
 
         Socket_prototype:
         {
             DEPS: [],
-            FUNS: []
+            FUNS: [
+                //wow such empty!
+            ]
         }
     },
 
@@ -201,6 +209,7 @@ EXTO =
     {
         $global:
         {
+            PRFX: "$.global.",
             DEPS: [],
             FUNS: [
                 "MATCH_NAMES",
@@ -210,25 +219,31 @@ EXTO =
 
         app:
         {
+            PRFX: "$.global.",
             DEPS: [],
             FUNS: [
+                "getSpecifier",
+                "makeAnimMarkers",
                 "wrapUndo",
                 "doUndo",
             ]
         },
 
-        CompItem_prototype:
+        CompItem:
         {
+            PRFX: "CompItem.prototype.",
             DEPS: [],
-            FUNS: [
-                "setResolution", "getResolution",
-                "getLayersWith", "numLayersWithName",
-                "snap",
-                "sel",
-                "setTime",
-                "workAreaDomain",
+            FUNS: 
+            [   //droppers
+                "drop", "importAndDrop",
 
-                "getAOV", "getProjectedZ", "getViewMatrix", "getZoom"
+                //setters:
+                "setTime", "setResolution",
+
+                //getters
+                "snap", "sel", "getLayersWith", "getResolution", "workAreaDomain",
+                "getAOV", "getProjectedZ", "getViewMatrix", "getZoom",
+                "getActiveAOV", "getActiveProjectedZ", "getActiveViewMatrix",
             ]
         },
 

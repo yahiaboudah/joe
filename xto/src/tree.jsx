@@ -247,34 +247,61 @@ EXTO =
             ]
         },
 
-        ItemCollection_prototype:
+        Camera:
         {
+            PRFX: "Camera.prototype.",
+            DEPS: [],
+            FUNS: [
+                "getAOV", "getWorldMatrix", "getLocalMatrix",
+                "getProjectedZ", "getViewMatrix"
+            ]
+        },
+
+        ItemCollection:
+        {
+            PRFX: "ItemCollection.prototype.",
             DEPS: [],
             FUNS: [
                 "toArray", "grab"
             ]
         },
 
-        LayerCollection_prototype:
+        LayerCollection:
         {
+            PRFX: "LayerCollection.prototype.",
             DEPS: [],
-            FUNS: [
-                "toArray", "grab"
+            FUNS: 
+            [
+                "toArray", "grab",
+
+                "$add", 
+                "axis", "dynamicLine", "point", "code", "plot" 
             ]
         },
 
-        AVLayer_prototype:
+        AVLayer:
         {
+            PRFX: "AVLayer.prototype.",
             DEPS: [],
             FUNS: [
+                "clone", "transformIt", "getType", 
+                "getMatrixOf", "getLocalMatrix", "getWorldMatrix", "getLookAt", "getModalMatrix", "getModalViewProjection", 
+                "toComp", "toWorld",
                 "addProp", "getProp", "removeProp"
             ]
         },
 
-        ShapeLayer_prototype:
+        ShapeLayer:
         {
+            PRFX: "ShapeLayer.prototype.",
             DEPS: [],
-            FUNS: [
+            FUNS: 
+            [
+                //BASIC: 
+                "clone", "transformIt", "getType", 
+                "getMatrixOf", "getLocalMatrix", "getWorldMatrix", "getLookAt", "getModalMatrix", "getModalViewProjection", 
+                "toComp", "toWorld",
+
                 "addProp", "getProp", "removeProp",
                 "alpha",
                 "area", "areas",

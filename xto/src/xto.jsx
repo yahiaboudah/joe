@@ -64,7 +64,6 @@
     
     var YOLO = "youwillneverguessthispassword";
     var FUNS = {};
-    var EXTO = {};
     var BASC = (function(){
         /*
         delete(Object.rm);
@@ -85,6 +84,16 @@
             {
                 case Object:
                     return oo.hasOwnProperty(this);
+                
+                case Array:
+                    for(var i=0; i<oo.length; i++)
+                    {
+                        if(oo[i] == this) return true;
+                    }
+                    return false;
+                
+                default:
+                    return false;
             }
         }
 
@@ -169,148 +178,8 @@
         
             return false;
         }
-    })
-    
-    H[S] = S;
-    // BY-DEFAULT: load BASC [is, in, re, xt]
-    //---------------------
-    BASC.call($.global);//|
-    //---------------------
-
-    // [LOADERS]:
-    S.xt({
-
-        load: function(what)
-        {
-            S.LOADED.asModule.push(what);
-        
-            // Deal with DEP:
-            var deps = TREE[what].DEPS, i=-1;
-            for(;++i<deps.length;)
-            {
-                n = deps[i];
-                //NO FUNS[n]? continue:
-                if(!FUNS[n]) continue;
-                
-                //LOADED? add parent to LOADED.asDepend[n], continue:
-                if(n.in(S.LOADED.asDepend))
-                {
-                    S.LOADED.asDepend[n].push(what);
-                    continue;
-                }
-                //NOT LOADED? add to S.LOADED.asDepend ({dep: [parent]}):
-                S.LOADED.asDepend[n] = [what];
-                f.call($.global);
-            }
-    
-            FUNS[what].call($.global);
-        },
-
-        unload: function(what)
-        {
-            S.LOADED[
-                what.in(S.LOADED.asModule)?"asModule":
-                what.in(S.LOADED.asDepend)?"asDepend": ($.err = "wtf?")
-            ].remove(what);
-    
-            //===============
-            //=== UNLOAD ====
-            var arr = TREE[what].FUNS, i=-1;
-            for(;++i<arr.length;)
-            {
-                eval([
-                    "delete(" + arr[i] + ")",
-                    arr[i] + "= undefined;"
-                ].join(";"))
-            }
-            //================
-    
-            // UNLOAD DEPS:
-            var parentArr = [];
-            for(var k in S.LOADED.asDepend) if(k.in(S.LOADED.asDepend))
-            {
-                parentArr = S.LOADED.asDepend[k];
-                if(what.in(parentArr))
-                {
-                    parentArr = parentArr.remove(what);
-                    S.LOADED.asDepend[k] = parentArr;
-                    if(!parentArr.length) S.unload(k);
-                }
-            }
-        }
-    })
-
-    // [INFO]
-    S.xt({
-
-        version: '1.0.2',
-        
-        getTODO: function()
-        {
-            return TODO;
-        },
-
-        functionsOf: function(what)
-        {
-            if(!(efun = EXTO[what])) return;
-            var arr  = [];
-
-            for(var i=0; i< efun.length; i++)
-            {
-                curr = efun[i];
-                curr = (curr[0] == '-')? curr.shift(): curr;
-                jcur = [something, efun[i]].join('.');
-    
-                arr.push(jcurr);
-            }
-
-            return arr;
-        },
-        
-        functions: function()
-        {
-            var arr = [];
-            for(x in EXTO) if(x.in(EXTO))
-            {
-                Array.prototype.push.apply(arr, S.functionsOf(x));
-            }
-            return arr;
-        }
-    })
-
-    //[DEBUG/EXAMINE]
-    S.xt({
-        
-        code: function(what, where)
-        {
-            if(!(fun = FUNS[what])) return;
-
-            var callerFile = File(File($.stack).fsName || where);
-            
-            callerFile.open("a");
-            callerFile.write([
-                
-                "\n\n\n\n",
-                "var " + what.split('.').join('') + "= ",
-                fun.toString()
-    
-            ].join(""));
-            return callerFile.close();
-        },
-        update: function(pass, what, fn)
-        {
-            if(
-                   (pass !== YOLO)
-                || (!EXTO[what])
-                || fn.isnt(Function)
-            ) return;
-    
-            FUNS[what] = fn;
-        }
-    })
-
-
-    EXTO =
+    });
+    var EXTO =
     {
         MATH:
         {
@@ -507,7 +376,7 @@
                 ]
             },
 
-            Socket_prototype:
+            Socket:
             {
                 DEPS: [],
                 FUNS: [
@@ -729,7 +598,9 @@
             Python:
             {
                 PRFX: "$.global.",
-                DEPS: [],
+                DEPS: [
+                    "$$$$$MISC"
+                ],
                 FUNS: [
                     "Python"               
                 ],
@@ -814,6 +685,155 @@
             }
         }
     }
+
+    H[S] = S;
+    // BY-DEFAULT: load BASC [is, in, re, xt]
+    //---------------------
+    BASC.call($.global);//|
+    //---------------------
+
+    S.LOADED = 
+    {
+        asModule: [],
+        asDepend: {}
+    }
+
+    // [LOADERS]:
+    S.xt({
+
+        load: function(what)
+        {
+            S.LOADED.asModule.push(what);
+        
+            // Deal with DEP:
+            // First preprocess the name:
+            var pWhat = what.split("$"), eWhat = EXTO, k =-1;
+
+            for(;++k<pWhat.length;) eWhat = eWhat[pWhat[k]];
+
+            var deps = eWhat.DEPS, i=-1;
+            for(;++i<deps.length;)
+            {
+                n = deps[i];
+                //NO FUNS[n]? continue:
+                if(!(f = FUNS[n])) continue;
+                
+                //LOADED? add parent to LOADED.asDepend[n], continue:
+                if(n.in(S.LOADED.asDepend))
+                {
+                    S.LOADED.asDepend[n].push(what);
+                    continue;
+                }
+                //NOT LOADED? add to S.LOADED.asDepend ({dep: [parent]}):
+                S.LOADED.asDepend[n] = [what];
+                f.call($.global);
+            }
+    
+            FUNS[what].call($.global);
+        },
+
+        unload: function(what)
+        {
+            S.LOADED[
+                what.in(S.LOADED.asModule)?"asModule":
+                what.in(S.LOADED.asDepend)?"asDepend": ($.err = "wtf?")
+            ].remove(what);
+    
+            //===============
+            //=== UNLOAD ====
+            var arr = TREE[what].FUNS, i=-1;
+            for(;++i<arr.length;)
+            {
+                eval([
+                    "delete(" + arr[i] + ")",
+                    arr[i] + "= undefined;"
+                ].join(";"))
+            }
+            //================
+    
+            // UNLOAD DEPS:
+            var parentArr = [];
+            for(var k in S.LOADED.asDepend) if(k.in(S.LOADED.asDepend))
+            {
+                parentArr = S.LOADED.asDepend[k];
+                if(what.in(parentArr))
+                {
+                    parentArr = parentArr.remove(what);
+                    S.LOADED.asDepend[k] = parentArr;
+                    if(!parentArr.length) S.unload(k);
+                }
+            }
+        }
+    })
+
+    // [INFO]
+    S.xt({
+
+        version: '1.0.2',
+        
+        getTODO: function()
+        {
+            return TODO;
+        },
+
+        functionsOf: function(what)
+        {
+            if(!(efun = EXTO[what])) return;
+            var arr  = [];
+
+            for(var i=0; i< efun.length; i++)
+            {
+                curr = efun[i];
+                curr = (curr[0] == '-')? curr.shift(): curr;
+                jcur = [something, efun[i]].join('.');
+    
+                arr.push(jcurr);
+            }
+
+            return arr;
+        },
+        
+        functions: function()
+        {
+            var arr = [];
+            for(x in EXTO) if(x.in(EXTO))
+            {
+                Array.prototype.push.apply(arr, S.functionsOf(x));
+            }
+            return arr;
+        }
+    })
+
+    //[DEBUG/EXAMINE]
+    S.xt({
+        
+        code: function(what, where)
+        {
+            if(!(fun = FUNS[what])) return;
+
+            var callerFile = File(File($.stack).fsName || where);
+            
+            callerFile.open("a");
+            callerFile.write([
+                
+                "\n\n\n\n",
+                "var " + what.split('.').join('') + "= ",
+                fun.toString()
+    
+            ].join(""));
+            return callerFile.close();
+        },
+        update: function(pass, what, fn)
+        {
+            if(
+                   (pass !== YOLO)
+                || (!EXTO[what])
+                || fn.isnt(Function)
+            ) return;
+    
+            FUNS[what] = fn;
+        }
+    })
 
     FUNS =
     {
@@ -1564,10 +1584,10 @@
                     return  rgba? $.hexToRgb(hx): hx;
                 },
 
-                cmd: function(myCommand, sp)
+                cmd: function(myCommand, sp, sleep)
                 {
                     var oo = system.callSystem((sp?"cmd /c \"{0}\"":"{0}").re(myCommand));
-                    if(typeof sleep == "number") $.sleep(sleep);
+                    if(sleep.is(Number)) $.sleep(sleep);
                     return oo;
                 },
                 //===========================================================================
@@ -5278,7 +5298,7 @@
 
         CSTR$Python: (function(){
 
-            /* $DEPS: [sys.cmd] [another.dependecy] [ok.man] [another.dependecy] [dep.here] [get.this.depo]
+            /* $DEPS: [$.cmd] [another.dependecy] [ok.man] [another.dependecy] [dep.here] [get.this.depo]
             */
 
             $.global.Python = function Python(){};
@@ -5301,7 +5321,7 @@
                 
                 installed: function()
                 {
-                    return sys.cmd("python --version").split(" ")[0] == "Python";
+                    return $.cmd("python --version").split(" ")[0] == "Python";
                 },
 
                 functions: function(p)
@@ -5346,7 +5366,7 @@
                 
                 viewExec   : function(editor)
                 {
-                    sys.cmd("{1} {0}".re(File(this.execPath).fsName), editor || "notepad");
+                    $.cmd("{1} {0}".re(File(this.execPath).fsName), editor || "notepad");
                 },
 
                 editExec   : function(fs)

@@ -220,7 +220,7 @@
             {
                 eval([
                     "delete(" + arr[i] + ")",
-                    arr[i] + "= null;"
+                    arr[i] + "= undefined;"
                 ].join(";"))
             }
             //================
@@ -4634,7 +4634,6 @@
                 }
             })
         }),
-
 
         CSTR$Path: (function(){
 

@@ -381,7 +381,12 @@ EXTO =
     {
         Table:
         {
+            PRFX: "$.global.",
             DEPS: [],
+            FUNS: [
+                "Table"
+            ],
+            
             FUNS: [            
                 "-fNamePatt", "process", "removeAll",
                 "prototype.toString",

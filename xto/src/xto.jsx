@@ -205,16 +205,19 @@
             function _se(k, dt)
             {
                 if(!!dt) indent = dt;
-                var str = "";
+                var str = "",
+                    kC  = k.constructor.name;
 
-                switch(k.constructor.name)
+                switch(kC)
                 {
                     case "Object":
                     case "Array":
                     
-                        str += {Array:  space(indent) + "[\n",
-                                Object: space(indent) + "{\n"}
-                                [k.constructor.name];
+                        str += 
+                            {
+                                Array:  space(indent) + "[\n",
+                                Object: space(indent) + "{\n"    
+                            }[kC];
 
                         var v,
                             C,
@@ -244,9 +247,11 @@
                             LINK = " : ";
                         }
 
-                        str += {Array : "\n" + space(indent) + "]",
-                                Object: "\n" + space(indent) + "}"}
-                                [k.constructor.name];
+                        str += 
+                            {
+                                Array : "\n" + space(indent) + "]",
+                                Object: "\n" + space(indent) + "}"
+                            }[kC];
 
                         indent -= defaultIndent;
                         if(indent < 0) indent = 0;
@@ -260,11 +265,10 @@
                 return str;
             }
 
-            var rr = _se(that);
             return (
                   "-----------------------"
                 + "\n"
-                + rr
+                + _se(that)
                 + "\n"
                 + "======================="
             )

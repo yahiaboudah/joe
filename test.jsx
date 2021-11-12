@@ -1,7 +1,7 @@
 
 //@include "xto/src/xto.jsx"
 
-xto.load("CSTR$Python");
+xto.load("CSTR$Table");
 
 $.writeln(Python.testPython());
 

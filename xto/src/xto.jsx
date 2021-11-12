@@ -245,11 +245,12 @@
                                     );
 
                             LINK = " : ";
+                            vindent = indent;
                         }
 
                         str += 
                             {
-                                Array : "\n" + space(indent) + "]",
+                                Array : "\n" + space(indent) + "]\n",
                                 Object: "\n" + space(indent) + "}"
                             }[kC];
 
@@ -665,7 +666,7 @@
             Table:
             {
                 PRFX: "$.global.",
-                DEPS: [],
+                DEPS: ["MATH$COMPLEX", "MATH$MATH"],
                 FUNS: [
                     "Table"
                 ],

@@ -98,12 +98,21 @@
         }
 
         delete(Object.prototype.re);
-        Object.prototype.re = function(/*reps*/)
+        Object.prototype.re = function(/*replacements*/)
         {
-            // get reps, convert to string:
-            var fargs = Array.prototype.slice.call(arguments), g = -1;
-            for(;++g<fargs.length;) fargs[g] = fargs[g].toString();
-        
+            // get args array:
+            var fargs = Array.prototype.slice.call(arguments);
+            if(!fargs) return this;
+
+            //toString() the args
+            for(a in fargs) if(fargs.hasOwnProperty(a)){
+                if(fargs[a] === undefined){
+                    fargs[a] = "undefined";
+                    continue;    
+                }
+                fargs[a] = fargs[a].toString();
+            }
+            
             var ff = 
             {
                 pat: function(k)
@@ -177,6 +186,86 @@
             while(++i<_args.length) if(what == _args[i]) return true;
         
             return false;
+        }
+
+        delete(Object.prototype.se);
+        Object.prototype.se = function()
+        {
+            var that = this;
+
+            var indent        = 0,
+                defaultIndent = 8;
+
+            var space = function(n){
+                var s = "";
+                while(n--) s+= " ";
+                return s;
+            }
+            
+            function _se(k, dt)
+            {
+                if(!!dt) indent = dt;
+                var str = "";
+
+                switch(k.constructor.name)
+                {
+                    case "Object":
+                    case "Array":
+                    
+                        str += {Array:  space(indent) + "[\n",
+                                Object: space(indent) + "{\n"}
+                                [k.constructor.name];
+
+                        var v,
+                            C,
+                            LINK    = " : ";
+                            vindent = indent;
+
+                        for(x in k) if(k.hasOwnProperty(x))
+                        {
+                            v = k[x];
+                            C = v.constructor.name;
+                            LINK += "[" + C + "] ";
+
+                            if( C == "Object"
+                            ||  C == "Array")
+                            {
+                                vindent += defaultIndent;
+                                LINK += "\n";
+                            }
+                            
+                            str += (
+                                    space(indent) 
+                                    + x
+                                    + LINK
+                                    + _se(v, vindent)
+                                    );
+
+                            LINK = " : ";
+                        }
+
+                        str += {Array : "\n" + space(indent) + "]",
+                                Object: "\n" + space(indent) + "}"}
+                                [k.constructor.name];
+
+                        indent -= defaultIndent;
+                        if(indent < 0) indent = 0;
+                        break;
+
+                    default:
+                        str = k.toString();
+                        break;
+                }
+                
+                return str;
+            }
+
+            var rr = _se(that);
+            return (
+                  "-----------------------\n"
+                + rr
+                + "\n======================="
+            )
         }
     });
     var EXTO =
@@ -5309,8 +5398,6 @@
                     return "Python works!";
                 }
             })
-
-            return 0;
 
             Python.xt({
                 

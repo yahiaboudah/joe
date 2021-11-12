@@ -242,6 +242,7 @@
                                     + x
                                     + LINK
                                     + _se(v, vindent)
+                                    + "\n"
                                     );
 
                             LINK = " : ";
@@ -250,8 +251,8 @@
 
                         str += 
                             {
-                                Array : "\n" + space(indent) + "]\n",
-                                Object: "\n" + space(indent) + "}"
+                                Array :  space(indent) + "]",
+                                Object:  space(indent) + "}"
                             }[kC];
 
                         indent -= defaultIndent;
@@ -320,7 +321,7 @@
 
         $$$$:
         {
-            DATA:
+            Data:
             {
                 PRFX: "$.",
                 DEPS: [],
@@ -333,7 +334,7 @@
                 ]
             },
 
-            DBUG:
+            Dbug:
             {
                 PRFX: "$.",
                 DEPS: [],
@@ -344,7 +345,7 @@
                 ]
             },
 
-            MISC:
+            Misc:
             {
                 PRFX: "$.",
                 DEPS: [],
@@ -483,7 +484,7 @@
 
         AFFX:
         {
-            $global:
+            Global:
             {
                 PRFX: "$.global.",
                 DEPS: [],
@@ -494,7 +495,7 @@
                 ]
             },
 
-            app:
+            App:
             {
                 PRFX: "$.global.",
                 DEPS: [],
@@ -695,7 +696,8 @@
             {
                 PRFX: "$.global.",
                 DEPS: [
-                    "$$$$$MISC"
+                    "$$$$$Misc",
+                    "DATA$File"
                 ],
                 FUNS: [
                     "Python"               
@@ -783,7 +785,7 @@
     }
 
     H[S] = S;
-    // BY-DEFAULT: load BASC [is, in, re, xt]
+    // BY-DEFAULT: load BASC [is, in, re, xt, se]
     //---------------------
     BASC.call($.global);//|
     //---------------------
@@ -803,7 +805,7 @@
         
             // Deal with DEP:
             // First preprocess the name:
-            var pWhat = what.split("$"), eWhat = EXTO, k =-1;
+            var pWhat = what.split('$'), eWhat = EXTO, k =-1;
 
             for(;++k<pWhat.length;) eWhat = eWhat[pWhat[k]];
 
@@ -1683,7 +1685,7 @@
                 cmd: function(myCommand, sp, sleep)
                 {
                     var oo = system.callSystem((sp?"cmd /c \"{0}\"":"{0}").re(myCommand));
-                    if(sleep.is(Number)) $.sleep(sleep);
+                    if(sleep && sleep.is(Number)) $.sleep(sleep);
                     return oo;
                 },
                 //===========================================================================
@@ -1693,7 +1695,7 @@
 
         //------- PRIM ---------------
 
-        PRIM$Object: (function(){
+        PRIM$OBJECT: (function(){
 
             Object.xt({
 
@@ -1977,7 +1979,7 @@
 
         }),
 
-        PRIM$Array_prototype: (function()
+        PRIM$ARRAY: (function()
         {
             Array.range = function(l){
         
@@ -2328,7 +2330,7 @@
              */
         }),
 
-        PRIM$Function_prototype: (function(){
+        PRIM$FUNCTION: (function(){
             
             Function.prototype.xt({
                 
@@ -2469,7 +2471,7 @@
             })
         }),
 
-        PRIM$String_prototype: (function()
+        PRIM$STRING: (function()
         {
             String.prototype.xt({
 
@@ -2607,7 +2609,7 @@
             })
         }),
 
-        PRIM$Number_prototype: (function(){
+        PRIM$NUMBER: (function(){
             
             if(!$.global["num"]) $.global["num"] = function(n){return new Number(n)};
 
@@ -2628,7 +2630,7 @@
 
 
         //----------- DATA-------------
-        DATA$File_prototype: (function(){
+        DATA$FILE: (function(){
 
             File.prototype.xt({
 
@@ -2811,7 +2813,7 @@
             })
         }),
 
-        DATA$Folder_prototype: (function()
+        DATA$FOLDER: (function()
         {
             Folder.prototype.xt({
                 
@@ -2866,7 +2868,7 @@
             })
         }),
 
-        DATA$Socket_prototype: (function(){
+        DATA$SOCKET: (function(){
 
             Socket.prototype.xt({
 
@@ -2882,7 +2884,7 @@
 
         //----------- AFFX ------------
 
-        AFFX$$global: (function(){
+        AFFX$$Global: (function(){
             
             // AECMD:
             AECMD = 
@@ -3340,7 +3342,7 @@
             }
         }),
 
-        AFFX$BRIDGETALK: (function(){
+        AFFX$BridgeTalk: (function(){
             
             BridgeTalk.xt({
                 
@@ -3356,7 +3358,7 @@
             })
         }),
 
-        AFFX$app: (function(){
+        AFFX$App: (function(){
             
             app.xt(
             {
@@ -3487,7 +3489,7 @@
             })
         }),
         
-        AFFX$CompItem_prototype: (function()
+        AFFX$CompItem: (function()
         {
             // make default "comp" reference activeItem. [REQURES FIX: case of activeItem not CompItem]
             if($.global["comp"].is(undefined)) $.global["comp"] = app.project.activeItem;
@@ -3754,7 +3756,7 @@
             })
         }),
 
-        AFFX$ItemCollection_prototype: (function()
+        AFFX$ItemCollection: (function()
         // [REQURES COLLECTION INTERFACE]
         {
             ("function" != typeof CollectionInterface) || (function()
@@ -3767,7 +3769,7 @@
             })();
         }),
 
-        AFFX$LayerCollection_prototype: (function()
+        AFFX$LayerCollection: (function()
         // [REQUIRES COLLECTION INTERFACE]
         {    
             ("function" != typeof CollectionInterface) || (function()
@@ -4098,7 +4100,7 @@
             })
         }),
 
-        AFFX$Layer_prototype: (function(){
+        AFFX$Layer: (function(){
 
             if($.global["layr"].is(undefined))
             {
@@ -4365,7 +4367,7 @@
             LightLayer.prototype.xt(LayerExt);
         }),
 
-        AFFX$AVLayer_prototype: (function(){
+        AFFX$AVLayer: (function(){
             
             AVLayer.prototype.xt(
             {
@@ -4419,7 +4421,7 @@
             ShapeLayer.prototype.addProp = AVLayer.prototype.addProp;
         }),
 
-        AFFX$ShapeLayer_prototype: (function(){
+        AFFX$ShapeLayer: (function(){
 
             ShapeLayer.prototype.xt({
 
@@ -4612,7 +4614,7 @@
             })
         }),
 
-        AFFX$TextLayer_prototype: (function(){
+        AFFX$TextLayer: (function(){
 
             TextLayer.prototype.xt({
 
@@ -4682,7 +4684,7 @@
             })
         }),
 
-        AFFX$PropertyGroup_prototype: (function(){
+        AFFX$PropertyGroup: (function(){
 
             PropertyGroup.prototype.xt({
                 
@@ -4875,7 +4877,7 @@
         //------ END AFFX ----------------------
 
         //--------- SCUI ----------------
-        SCUI$Window_prototype: (function(){
+        SCUI$Window: (function(){
 
             Window.prototype.xt({
                 
@@ -4947,7 +4949,7 @@
             })
         }),
 
-        SCUI$DropDownList_prototype: (function(){
+        SCUI$DropDownList: (function(){
             
             DropDownList.prototype.makeGroupVisible = function(g) // g: group var name
             /**
@@ -5394,24 +5396,19 @@
 
         CSTR$Python: (function(){
 
-            /* $DEPS: [$.cmd] [another.dependecy] [ok.man] [another.dependecy] [dep.here] [get.this.depo]
-            */
-
             $.global.Python = function Python(){};
 
+            Python.instPath = "C:/Users/me/Desktop/PYJSX";
             Python.xt({
-                testPython : function()
-                {
-                    return "Python works!";
-                }
+                
+                execStr: "def pyjsx_run():\n    import json, sys, os\n    inst_path  = '"+Python.instPath+"/'\n    intf_path   =  (inst_path + 'PyIntf.pyintf')\n    exec_signal =  (inst_path + 'executed.tmp')\n    def strr(ss):\n        if(ss in ['true', 'false']): return ss.title()\n        if(type(ss) is str):         return '\"' + ss + '\"'\n        return str(ss)\n    with open(intf_path, 'r') as f:\n        c= f.read()\n    if not c: return 'Python Error: interface corrupt'\n    intff = json.loads(c)\n    AR    = intff['active_req']\n    path  = AR   ['road']\n    func  = AR   ['trac']\n    name  = '.'.join(path.split('/')[-1].split('.')[0:-1])\n    args  = ','.join(strr(e) for e in AR['seed'])\n    sys.path.append(os.path.dirname(path))\n    try:\n        exec('import ' + name + ' as s')\n        result = eval('s.' + func + '(' + args + ')')\n    except Exception as e:\n        result = 'Python Error: ' + str(e).replace('\\\'', '\\\\\\\'')\n    intff['active_req']['crop'] = result\n    intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1\n    with open(intf_path, 'w', encoding='utf8') as f:\n        f.write(json.dumps(intff, indent =4))\n    with open(exec_signal, 'w') as execf:\n        execf.write('')\n    return 0\npyjsx_run()",
+                execPath   : "{0}/exec.pyw".re(Python.instPath),
+                
+                execTime   : 180,
+                extensions : ["py", "pyw"]
             })
 
             Python.xt({
-                
-                testPython : function()
-                {
-                    return "Python works!"
-                },
                 
                 installed: function()
                 {
@@ -5429,11 +5426,11 @@
                         name     = nameArgs[0].replace(/\s*$/,"");
                         args     = nameArgs[1].slice(0,-1).split(",");
                         
-                        aaa      = { "default": [], "non_default": []};
+                        aaa      = { "_default": [], "non_default": []};
         
                         if(args[0]) for(var k=0, klen = args.length; k< klen; k++)
                         {
-                            arg = args[k].split("=");
+                            arg = args[k].split('=');
                             aaa[(arg.length-1)?"_default":"non_default"].push(arg[0]);
                         }
                         fs.push({"name": name, "args": aaa});
@@ -5443,7 +5440,7 @@
 
                 makeExec: function()
                 {
-                    return File(this.execPath).$create(this.execStr);
+                    return File(this.execPath).create(this.execStr);
                 },        
                 
                 runExec: function()
@@ -5470,13 +5467,6 @@
                 },
 
                 //========================================
-
-                execStr: "def pyjsx_run():\n    import json, sys, os\n    inst_path  = '"+Python.instPath+"/'\n    intf_path   =  (inst_path + 'PyIntf.pyintf')\n    exec_signal =  (inst_path + 'executed.tmp')\n    def strr(ss):\n        if(ss in ['true', 'false']): return ss.title()\n        if(type(ss) is str):         return '\"' + ss + '\"'\n        return str(ss)\n    with open(intf_path, 'r') as f:\n        c= f.read()\n    if not c: return 'Python Error: interface corrupt'\n    intff = json.loads(c)\n    AR    = intff['active_req']\n    path  = AR   ['road']\n    func  = AR   ['trac']\n    name  = '.'.join(path.split('/')[-1].split('.')[0:-1])\n    args  = ','.join(strr(e) for e in AR['seed'])\n    sys.path.append(os.path.dirname(path))\n    try:\n        exec('import ' + name + ' as s')\n        result = eval('s.' + func + '(' + args + ')')\n    except Exception as e:\n        result = 'Python Error: ' + str(e).replace('\'', '\\\'')\n    intff['active_req']['crop'] = result\n    intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1\n    with open(intf_path, 'w', encoding='utf8') as f:\n        f.write(json.dumps(intff, indent =4))\n    with open(exec_signal, 'w') as execf:\n        execf.write('')\n    return 0\npyjsx_run()",
-
-                execPath   : "{0}/exec.pyw".re(Python.instPath),
-                execTime   : 180,
-                extensions : ["py", "pyw"]
-
             })
 
             Python.xt({

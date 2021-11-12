@@ -697,7 +697,8 @@
                 PRFX: "$.global.",
                 DEPS: [
                     "$$$$$Misc",
-                    "DATA$File"
+                    "DATA$File",
+                    "DATA$Folder"
                 ],
                 FUNS: [
                     "Python"               
@@ -827,7 +828,7 @@
                 f.call($.global);
             }
     
-            FUNS[what].call($.global);
+            FUNS[what.toUpperCase()].call($.global);
         },
 
         unload: function(what)
@@ -2834,10 +2835,11 @@
                     return 0;
                 },
                 
-                remove : function()
+                $remove : function()
                 {
-                        if(this.constructor !== Folder) return;
-                        return (this.$clearFolder(), this.remove(), 0);
+                    return this.is(Folder)?
+                           (this.remove()):
+                           0;
                 },
                 
                 getFolders : function()
@@ -5394,20 +5396,27 @@
             }
         }),
 
-        CSTR$Python: (function(){
+        CSTR$PYTHON: (function(){
 
-            $.global.Python = function Python(){};
+            $.global.Python = function Python(INTF){
+
+                // pass new FileInterface()
+                this.INTERFACE = INTF;
+            };
 
             Python.instPath = "C:/Users/me/Desktop/PYJSX";
+            
+            // [BASIC ATTRIBUTES]
             Python.xt({
                 
-                execStr: "def pyjsx_run():\n    import json, sys, os\n    inst_path  = '"+Python.instPath+"/'\n    intf_path   =  (inst_path + 'PyIntf.pyintf')\n    exec_signal =  (inst_path + 'executed.tmp')\n    def strr(ss):\n        if(ss in ['true', 'false']): return ss.title()\n        if(type(ss) is str):         return '\"' + ss + '\"'\n        return str(ss)\n    with open(intf_path, 'r') as f:\n        c= f.read()\n    if not c: return 'Python Error: interface corrupt'\n    intff = json.loads(c)\n    AR    = intff['active_req']\n    path  = AR   ['road']\n    func  = AR   ['trac']\n    name  = '.'.join(path.split('/')[-1].split('.')[0:-1])\n    args  = ','.join(strr(e) for e in AR['seed'])\n    sys.path.append(os.path.dirname(path))\n    try:\n        exec('import ' + name + ' as s')\n        result = eval('s.' + func + '(' + args + ')')\n    except Exception as e:\n        result = 'Python Error: ' + str(e).replace('\\\'', '\\\\\\\'')\n    intff['active_req']['crop'] = result\n    intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1\n    with open(intf_path, 'w', encoding='utf8') as f:\n        f.write(json.dumps(intff, indent =4))\n    with open(exec_signal, 'w') as execf:\n        execf.write('')\n    return 0\npyjsx_run()",
-                execPath   : "{0}/exec.pyw".re(Python.instPath),
+                execFunc : "def pyjsx_run():\n    import json, sys, os\n    inst_path  = '"+Python.instPath+"/'\n    intf_path   =  (inst_path + 'PyIntf.pyintf')\n    exec_signal =  (inst_path + 'executed.tmp')\n    def strr(ss):\n        if(ss in ['true', 'false']): return ss.title()\n        if(type(ss) is str):         return '\"' + ss + '\"'\n        return str(ss)\n    with open(intf_path, 'r') as f:\n        c= f.read()\n    if not c: return 'Python Error: interface corrupt'\n    intff = json.loads(c)\n    AR    = intff['active_req']\n    path  = AR   ['road']\n    func  = AR   ['trac']\n    name  = '.'.join(path.split('/')[-1].split('.')[0:-1])\n    args  = ','.join(strr(e) for e in AR['seed'])\n    sys.path.append(os.path.dirname(path))\n    try:\n        exec('import ' + name + ' as s')\n        result = eval('s.' + func + '(' + args + ')')\n    except Exception as e:\n        result = 'Python Error: ' + str(e).replace('\\\'', '\\\\\\\'')\n    intff['active_req']['crop'] = result\n    intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1\n    with open(intf_path, 'w', encoding='utf8') as f:\n        f.write(json.dumps(intff, indent =4))\n    with open(exec_signal, 'w') as execf:\n        execf.write('')\n    return 0\npyjsx_run()",
+                execPath : "{0}/exec.pyw".re(Python.instPath),
                 
                 execTime   : 180,
                 extensions : ["py", "pyw"]
             })
 
+            // [SETUP/TOOLS]
             Python.xt({
                 
                 installed: function()
@@ -5415,6 +5424,42 @@
                     return $.cmd("python --version").split(" ")[0] == "Python";
                 },
 
+                makeExec: function()
+                {
+                    return File(this.execPath).create(this.execStr);
+                },        
+                
+                runExec: function()
+                {
+                    var sf = this.INTERFACE.signalFile;
+                    if(sf.exists) sf.remove();
+                    
+                    this.INTERFACE.modify("info/reqs_made", function(v){ return v+1});
+                    File(this.execPath).$execute();
+                    sf.$listen(this.execTime, false, undefined, true/*remove signal file once it appears*/);
+                    
+                    return this.INTERFACE;
+                },
+                
+                viewExec   : function(editor)
+                {
+                    $.cmd("{1} {0}".re(File(this.execPath).fsName, (editor || "notepad")));
+                    return 0;
+                },
+
+                editExec   : function(fs)
+                {
+                    this.execFunc = fs.is(File)?
+                                    fs.$read():
+                                    fs;
+                },
+
+                //========================================
+            })
+
+            // [LEXER/PARSER/GETTER]
+            Python.xt({
+                
                 functions: function(p)
                 {
                     var m   = File(p).$read().match(/(([\n]+def)|^def)\s+.+\(.*\)/g),
@@ -5436,51 +5481,26 @@
                         fs.push({"name": name, "args": aaa});
                     }
                     return fs;
-                },
-
-                makeExec: function()
-                {
-                    return File(this.execPath).create(this.execStr);
-                },        
-                
-                runExec: function()
-                {
-                    var sf = File(I.sgnlPath);
-                    if(sf.exists) sf.remove();
-                    
-                    I.modIntf("info/reqs_made", function(v){ return v+1});
-                    File(this.execPath).$execute();
-                    sf.$listen(this.pyExTime, false, undefined, true/*remove signal file once it appears*/);
-                    
-                    return I;
-                },
-                
-                viewExec   : function(editor)
-                {
-                    $.cmd("{1} {0}".re(File(this.execPath).fsName), editor || "notepad");
-                },
-
-                editExec   : function(fs)
-                {
-                    if(fs.constructor == File) fs = fs.$read();
-                    this.execStr = fs;
-                },
-
-                //========================================
+                }
             })
 
+            // [PYFILE/FILEINTERFACE HANDLING]
             Python.xt({
 
                 install: function()
                 {
-                    if(!PY.isInstalled()) throw Error("Python not installed!");
+                    if(!this.installed()) throw Error("Python not installed");
                     
-                    var fd = Folder(Python.instPath);
+                    var fd = Folder(this.instPath);
                     if(fd.exists) fd.$remove();   
                     
-                    (fd.create(), I.make(), PY.makeExec());
-            
-                    return 0;
+                    (
+                        fd.create(),
+                        this.INTERFACE.make(),
+                        this.makeExec()
+                    );
+
+                    return 1;
                 },
 
                 repair: function()
@@ -5499,25 +5519,25 @@
 
                 call: function(script, about, talk)
                 {    
-                    return I.post({
+                    return this.INTERFACE.post({
             
                         path: script,
                         func: about,
                         args: talk
                     
-                    }).runExec().get(false);
+                    }).runExec().get(0);
                 },
 
                 contact: function()
                 {
                     var ff = File(pp);
-                    if(!ff.exists || ff.constructor !== File) throw Error("Contact file invalid!");
+                    if(!(ff.is(File) && ff.exists)) throw Error("Contact file invalid");
                     
-                    I.modify("metadata/contacts/{0}".f(ff.getName()), //display name of py file
-                             {
-                                path  : pp,
-                                funcs : PY.functions(pp)
-                             });
+                    this.INTERFACE.modify("metadata/contacts/{0}".re(ff.getName()),
+                    {
+                        path  : pp,
+                        funcs : this.functions(pp)
+                    });
                 },
 
                 build: function(contactName)

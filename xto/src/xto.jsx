@@ -1748,8 +1748,16 @@
             ╠═╝╠╦╝║║║║ ║ ║ ║ ║╚╗╔╝║╣ ╚═╗
             ╩  ╩╚═╩╩ ╩ ╩ ╩ ╩ ╩ ╚╝ ╚═╝╚═╝
         */
-        
+
         PRIM$OBJECT: (function(){
+
+            Object.prototype.xt({
+
+                slice: function(n)
+                {
+                    return Array.prototype.slice.apply(this, [n]);
+                }
+            })
 
             Object.xt({
 
@@ -1810,35 +1818,33 @@
                             )) return false;
                         }
                     }
-                    
+
                     return true;
                 },
 
-                validate:  function(o, a)
-                {
-                    function type(v){
-                
-                        if(arguments.length != 1) throw Error("pass 1 variable");
-                        if(v === undefined)       return 'undefined';
-                        if(v === null)            return 'undefined';
-                        if(typeof v == 'xml')     return 'xml';
+                validate:  function(oo, bo)
+                {   // I don't like this function
+                    var type = function(v)
+                    {
+                        if(v.in([undefined, null])) return 'undefined';
+                        if(typeof v == 'xml')       return 'xml';
                         return v.constructor.name.toLowerCase();
                     }
                 
-                    if(type(o) != type(a))     return false; 
-                    if(type(o) == 'object')    return Object.dcKeys(o, a);
-                    if(type(o) == 'array')     return !(a<b || b<a);
+                    if(type(oo) != type(bo))  return false; 
+                    if(type(oo) == 'object')  return Object.dcKeys(oo, bo);
+                    if(type(oo) == 'array')   return !(oo<bo || oo<bo);
                 
-                    return (o == a);
+                    return (oo == bo);
                 },
 
-                validateKeys: function(obj)
+                validateKeys: function(oo, /*keypath1, keypath2...*/)
                 {
-                    var args = Array.prototype.slice.call(arguments,1);
-                    for(var i=0, len = args.length; i< len; i++)
-                    {
-                        if(typeof Object.getValue(obj, args[i]) == "undefined") return false;
-                    }
+                    var args = arguments.slice(1), i = -1,
+                        len  = args.length;
+
+                    while(++i<len) if(!Object.getValue(oo, args[i])) return false;
+
                     return true;
                 },
 

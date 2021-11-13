@@ -1130,19 +1130,22 @@
 
             $.global.Matrix = function Matrix(){};
 
-            Matrix.identity = function(dim)
-            {
-                if(typeof dim !== "number") dim = 4;
+            Matrix.xt({
                 
-                var mat = [], i = j = -1;
-                while(++i < dim)
+                identity : function(dim)
                 {
-                    mat[i] = [];
-                    while(++j < dim) mat[i][j] = (i==j)?1:0;
+                    if(!(dim && dim.is(Number))) dim = 4;
+                    
+                    var mat = [], i = j = -1;
+                    while(++i < dim)
+                    {
+                        mat[i] = [];
+                        while(++j < dim) mat[i][j] = (i==j)?1:0;
+                    }
+                    
+                    return new Matrix(mat);
                 }
-                
-                return new Matrix(mat);
-            }
+            })
         }),
 
         MATH$BEZIER: (function(){
@@ -1170,7 +1173,13 @@
                 var rx_escapable = /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
                 var rx_dangerous = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
             
-                function f(n){ return (n < 10) ? ("0" + n): n;}
+                function f(n)
+                {
+                    return "{0}{1}".re(
+                        (n < 10)? '0': '',
+                        n
+                    )
+                }
             
                 function quote(string)
                 {
@@ -1181,9 +1190,9 @@
                     return "\"{0}\"".re(string.replace(rx_escapable, function(a){
                         
                         var c = meta[a];
-                        return typeof c === "string"
+                        return c.is(String)
                                ? c
-                               : "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4);
+                               : "\\u" + ("0000" + a.charCodeAt(0).toString(16)) .slice(-4);
                     }));
                 }
             
@@ -1503,43 +1512,41 @@
                     return http;
                 },
 
-                wget: function(file, link)
-                {   // get images from the web with cmd utility: [WGET]    
-                    var folder = Folder(File(file).path).fsName.replace(/\\/gi, "/");
-                    file = file.replace(/\\/gi, "/");
-            
+                wget: function(fp, link)
+                {   // get images from the web with cmd utility: [WGET]
+
                     system.callSystem("cd {0} & wget -O {1} {2}".re(
-                            folder,
-                            file,
+                            
+                            Folder(File(fp).path).fsName.replace(/\\/gi, '/'),
+                            fp.replace(/\\/gi, '/'),
                             link
                     ));
+                },
+
+                chkClipboard: function(p)
+                {
+                    if(!$.clipboardLibFile)
+                    {
+                        var ff = File(p);
+                        (ff.encoding = "UTF-8", ff.open('w'), ff.write($.clipboardLib), ff.close()); 
+                        $.clipboardLibFile = true;
+                        $.clipBoardLib = 0;
+                    }
                 },
 
                 getClipboard: function(){
                     
                     var path = Folder.userData + "/xto$clipboard.dll";
-                    if(!$.clipboardLibFile)
-                    {
-                        var ff = File(path);
-                        (ff.encoding = "UTF-8", ff.open('w'), ff.write($.clipboardLib), ff.close()); 
-                        $.clipboardLibFile = true;
-                        $.clipBoardLib = 0;
-                    }
-
+                    
+                    $.chkClipboard(path);
                     return (new ExternalObject("lib:" + path)).getClipboard();
                 },
 
                 setClipboard: function(){
 
                     var path = Folder.userData + "/xto$clipboard.dll";
-                    if(!$.clipboardLibFile)
-                    {
-                        var ff = File(path);
-                        (ff.encoding = "UTF-8", ff.open('w'), ff.write($.clipboardLib), ff.close()); 
-                        $.clipboardLibFile = true;
-                        $.clipBoardLib = 0;
-                    }
 
+                    $.chkClipboard(path);
                     return (new ExternalObject("lib:" + path)).setClipboard();
                 }
             })

@@ -2137,13 +2137,17 @@
                     return A;
                 },
 
-                forEvery: function(cb)
+                forEvery: function(cb, thisArg)
                 {
-                    var a = this;
-                    for(var i=0; i<a.length; i++)
+                    if(!cb.is(Function)) throw TypeError("CB not a function");
+
+                    var k,O = Object(this),
+
+                    for(k in O) if(k.in(O))
                     {
-                        if(cb.call(null, a[i], i) == false) return false;
+                        if(cb.call(thisArg, O[k], k, O) == false) return false;
                     }
+                    
                     return true;
                 },
 

@@ -2027,6 +2027,7 @@
                 }
             })
 
+            // [Array Functions]
             Array.prototype.xt({
                 
                 forEach: function(cb, thisArg)
@@ -2151,40 +2152,35 @@
                     return true;
                 },
 
-                filter: function(func, thiss)
-                {
-                    if(this.is(null)) throw new TypeError();
-            
-                    var obj = Object(this),
-                        len = obj.length >>> 0;
+                filter: function(cb, thisArg)
+                {     
+                    var k,O = Object(this), A;
                     
-                    if(func.isnt(Function)) throw new TypeError();
+                    if(!cb.is(Function)) throw new TypeError("CB not a function");
             
-                    var arr = [], i = -1;
-            
-                    while(++i < len) if(i in obj)
+                    for(k in O) if(k.in(O))
                     {
-                        if(func.call(thiss, t[i], i, obj)) res.push(t[i]); 
+                        if(cb.call(thisArg, O[k], k, O)) A.push(O[k]);
                     }
-            
-                    return arr;
+
+                    return A;
+                },
+
+                select: function(cb, thisArg)
+                {
+                    return Array.prototype.filter.apply(this, [cb, thisArg]);
+                },
+
+                sortedIndices: function()
+                {
+                    var a = this;
+                    return Array.range(a.length).sort(function(x,y){
+                        return a[x-1] > a[y-1];
+                    })
                 }
-                
             })
 
-            
-        
-
-
-
-
-
-
-            /**
-             * 
-             * Max & Min & some wrapped Math functions:
-             * 
-             */
+            // [MATH Related Functions]
         
             Array.prototype.max = function(prop)
             {
@@ -2205,12 +2201,6 @@
                 while(k--) a[k] = a[k][prop];
                 
                 return Math.min.apply(null, a)
-            }
-            Array.prototype.sortedIndices = function(){
-                var a = this;
-                return Array.range(a.length).sort(function(x,y){
-                    return a[x-1] > a[y-1];
-                })
             }
             Array.prototype.math2D = function(type, xory)
             {

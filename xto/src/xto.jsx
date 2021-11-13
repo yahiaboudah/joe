@@ -1566,22 +1566,33 @@
                     var stack = $.stack.split('\n'),
                         len   = stack.length;
                     
-                    return len === 4 ? null : stack[len - 4].split("(")[0];
+                    if(len == 4) return null;
+                    return stack[len - 4] .split('(')[0];
                 },
 
-                sleep: function(ms, msg){
+                $sleep: function(ms, msg){
                     
-                    if(ms.is(undefined)) return;
-                
-                    if(msg.is(String)) $.writeln("{0}: Sleeping for {1}..".re(msg, ms))
+                    if(!ms) return;
+                    if(msg && msg.is(String)){
+                        $.writeln("{0}: Sleeping for {1}..".re(msg, ms));
+                    }
+
                     $.sleep(ms);
                 },
 
                 log: function(msg)
                 {
-                    var fn = $.fileName.split("/").pop();
-                    var fr = File("{0}/{1}.log".re(Folder(File($.fileName).parent).fsName, fn));
-                    return (fr.encoding = "UTF-8", fr.open('a'), fr.write("\n{0}".re(msg)), fr.close())
+                    var fn = $.fileName.split('/').pop(),
+                        fr = File("{0}/{1}.log".re(
+                                Folder(File($.fileName).parent).fsName,
+                                fn)
+                             );
+                    
+                    return (
+                        fr.encoding = "UTF-8", fr.open('a'), 
+                        fr.write("\n{0}".re(msg || '')), 
+                        fr.close()
+                    );
                 },
 
                 inspect: function(k, detail)

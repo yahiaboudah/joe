@@ -1967,10 +1967,10 @@
                     return new F();
                 },
 
-                objectFromArray: function()
+                objectFromArray: function(arr)
                 {    
-                    var oo   = {}, args = arguments.slice();
-                    for(a in args) if(a.in(args) && a.is(Array)) oo[a[0]] = a[1];
+                    var oo = {};
+                    for(a in arr) if(a.in(arr) && a.is(Array)) oo[a[0]] = a[1];
 
                     return oo;
                 },
@@ -1983,13 +1983,13 @@
                     return oo;
                 },
 
-                inspect: function()
+                inspect: function(oo)
                 {
-                    var ps = Object.fromEntries(this.reflect.properties),
-                        fs = Object.fromEntries(this.reflect.methods);
+                    var ps = Object.fromEntries(oo.reflect.properties),
+                        fs = Object.fromEntries(oo.reflect.methods);
                 
-                    for(x in ps) if(x.in(ps)) ps[x] = this[x];
-                    for(y in fs) if(y.in(fs)) fs[y] = "[\"\"] => {0}".re(this[y].call(undefined, []));
+                    for(x in ps) if(x.in(ps)) ps[x] = oo[x];
+                    for(y in fs) if(y.in(fs)) fs[y] = "[\"\"] => {0}".re(oo[y].call(undefined, []));
                 
                     return {
                         pp: ps,
@@ -1997,14 +1997,12 @@
                     };
                 },
 
-                rm : function(mo)
+                rm : function(oo)
                 {
                     eval([
-                        
-                        mo + "= undefined",
-                        "delete( " + mo + ")"
-                
-                    ].join(";"))
+                        "{0} = undefined",
+                        "delete({0})"
+                    ].join(";").re(oo))
                 }
 
             })
@@ -2013,177 +2011,177 @@
 
         PRIM$ARRAY: (function()
         {
-            Array.range = function(l){
-        
-                var arr = [], i = -1;
-        
-                while(++i<l) arr[i] = (i+1);
-                return arr;
-            }
-            Array.prototype.forEach = function(callback, thisArg) {
+            Array.xt({
 
-                if (this == null) throw new TypeError('Array.prototype.forEach called on null or undefined');
-                if (typeof callback !== "function") throw new TypeError(callback + ' is not a function');
-        
-        
-                var T, k,
-                    O = Object(this);
-                    len = O.length >>> 0;
-                if (arguments.length > 1) T = thisArg;
-                k = 0;
-                
-                while (k < len){
-        
-                        var kValue;
-                        if (k in O)
-                        {
-                            kValue = O[k];
-                            callback.call(T, [kValue, k, O].concat(Object.toArray(arguments)));
-                        }
-                        k++;
-                }
-        
-        
-                return this;
-            }
-            Array.prototype.indexOf = function(el, fromIdx) {
-        
-                "use strict";
-                if (this == null) throw new TypeError('"this" is null or not defined');
-        
-        
-                var k,
-                    o = Object(this);
-                    len = o.length >>> 0,
-                    n = fromIdx | 0;
-        
-        
-                if (len === 0) return -1;
-                if (n >= len) return -1;
-        
-                k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
-                for (; k < len; k++) {
-                        if (k in o && o[k] === el) return k;
-                }
-        
-        
-                return -1;
-            }
-            Array.prototype.remove = function(k, all) {
-        
-                if(typeof all != "boolean") all = false;
-        
-        
-                var i   = -1,
-                    len = this.length;
-                
-                while (++i < len) 
+                range: function(n)
                 {
-                    if(this[i] != k) continue;
+                    var arr = [], i = -1;
+        
+                    while(++i<n) arr[i] = (i+1);
+                    return arr;
+                }
+            })
+
+            Array.prototype.xt({
+                
+                forEach: function(cb, thisArg)
+                {
+                    if(!cb.is(Function)) throw TypeError("CB not a function");
+
+                    var O = Object(this);
+                    for(x in O) if(x.in(O)){
+
+                        cb.apply(
+                            thisArg || {}, 
+                            [O[x], x, O].concat(arguments.slice())
+                        )
+                    }
+            
+                    return this;
+                },
+
+                indexOf: function(e, fromIdx) {
+            
+                    var k,
+                        O = Object(this);
+                        len = O.length >>> 0,
+                        n = fromIdx | 0;
+            
+                    if(!len || len <= n) return -1;
+
+                    k = Math.max(n >= 0 ? n : (len - Math.abs(n)),
+                        0
+                    )-1;
+
+                    while(++k<len) if(k in o && o[k] === e) return k;
+
+                    return -1;
+                },
+
+                remove: function(e, all)
+                {
+                    var k,
+                        O = Object(this);
+                        len = O.length >>> 0;
                     
-                    this.splice(i, 1);
-                    if(!all) break;    
-                    len--;
+                    k = -1;
+                    while(++k<len) if(this[k] == e)
+                    {
+                        this.splice(i, 1);
+                        if(!all) break;
+                        len--; k--;
+                    }
+
+                    return this;
+                },
+
+                includes: function(k) {
+                    return this.indexOf(k) > -1;
                 }
-                return this;
-            }
-            Array.prototype.includes = function(k) {
-                return this.indexOf(k) > -1;
-            }
-            Array.prototype.rotate = function(d, i){
-                
-                a = this; // eval("["+String(this)+"]");
-                
-                switch (d) 
-                {
-                    case "l": while(i--)    a.push(a.shift())
-                    case "r": while(i-->-1) a.unshift(a.pop())
-                }
-        
-                return arr;
-            }
-            Array.prototype.reduce = function(cb) {
-                
-                'use strict';
-                if (this == null)             throw TypeError('Reduce called on null or undefined');
-                if (typeof cb !== 'function') throw TypeError(cb + ' is not a function');
-                var t = Object(this), len = t.length >>> 0, k = 0, value;
-                
-                if(arguments.length == 2) 
-                {
-                value = arguments[1];
-                } 
-                else 
-                {
-                while (k < len && !(k in t)) k++; 
-                if (k >= len) throw TypeError('Reduce of empty array with no initial value');
-                value = t[k++];
-                }
-        
-                for (; k < len; k++) 
-                {
-                if (k in t) value = cb(value, t[k], k, t);
-                }
-                
-                return value;
-            }
-            Array.prototype.map = function(cb) {
-        
-                if (this == null) throw TypeError('Map array is null or not defined');
+                rotate: function(d, i){
+                    
+                    a = this; // eval("["+String(this)+"]");
+                    
+                    switch (d) 
+                    {
+                        case "l": while(i--)    a.push(a.shift())
+                        case "r": while(i-->-1) a.unshift(a.pop())
+                    }
             
-                var T,
-                    A,
-                    k,
-                    O   = Object(this),
-                    len = O.length >>> 0;
-            
-                if (typeof cb !== 'function') throw TypeError(cb + ' is not a function');
-                if (arguments.length > 1) T = arguments[1];
-                A = new Array(len);
-                k = -1;
-            
-                while (++k < len) {
-        
-                var kValue, mappedValue;
-            
-                if (k in O) 
-                {
-                    kValue = O[k];
-                    mappedValue = cb.call(T, kValue, k, O);
-                    A[k] = mappedValue;
+                    return arr;
                 }
+                reduce: function(cb) {
+                    
+                    'use strict';
+                    if (this == null)             throw TypeError('Reduce called on null or undefined');
+                    if (typeof cb !== 'function') throw TypeError(cb + ' is not a function');
+                    var t = Object(this), len = t.length >>> 0, k = 0, value;
+                    
+                    if(arguments.length == 2) 
+                    {
+                    value = arguments[1];
+                    } 
+                    else 
+                    {
+                    while (k < len && !(k in t)) k++; 
+                    if (k >= len) throw TypeError('Reduce of empty array with no initial value');
+                    value = t[k++];
+                    }
+            
+                    for (; k < len; k++) 
+                    {
+                    if (k in t) value = cb(value, t[k], k, t);
+                    }
+                    
+                    return value;
+                }
+                map: function(cb) {
+            
+                    if (this == null) throw TypeError('Map array is null or not defined');
+                
+                    var T,
+                        A,
+                        k,
+                        O   = Object(this),
+                        len = O.length >>> 0;
+                
+                    if (typeof cb !== 'function') throw TypeError(cb + ' is not a function');
+                    if (arguments.length > 1) T = arguments[1];
+                    A = new Array(len);
+                    k = -1;
+                
+                    while (++k < len) {
+            
+                    var kValue, mappedValue;
+                
+                    if (k in O) 
+                    {
+                        kValue = O[k];
+                        mappedValue = cb.call(T, kValue, k, O);
+                        A[k] = mappedValue;
+                    }
+                    }
+                    
+                    return A;
+                }
+                forEvery: function(cb)
+                {
+                    var a = this;
+                    for(var i=0; i<a.length; i++)
+                    {
+                        if(cb.call(null, a[i], i) == false) return false;
+                    }
+                    return true;
+                }
+                filter: Array.prototype.select = function(func, thiss)
+                {
+                    if(this.is(null)) throw new TypeError();
+            
+                    var obj = Object(this),
+                        len = obj.length >>> 0;
+                    
+                    if(func.isnt(Function)) throw new TypeError();
+            
+                    var arr = [], i = -1;
+            
+                    while(++i < len) if(i in obj)
+                    {
+                        if(func.call(thiss, t[i], i, obj)) res.push(t[i]); 
+                    }
+            
+                    return arr;
                 }
                 
-                return A;
-            }
-            Array.prototype.forEvery = function(cb)
-            {
-                var a = this;
-                for(var i=0; i<a.length; i++)
-                {
-                    if(cb.call(null, a[i], i) == false) return false;
-                }
-                return true;
-            }
-            Array.prototype.filter = Array.prototype.select = function(func, thiss)
-            {
-                if(this.is(null)) throw new TypeError();
+            })
+
+            
         
-                var obj = Object(this),
-                    len = obj.length >>> 0;
-                
-                if(func.isnt(Function)) throw new TypeError();
-        
-                var arr = [], i = -1;
-        
-                while(++i < len) if(i in obj)
-                {
-                    if(func.call(thiss, t[i], i, obj)) res.push(t[i]); 
-                }
-        
-                return arr;
-            }
-        
+
+
+
+
+
+
             /**
              * 
              * Max & Min & some wrapped Math functions:

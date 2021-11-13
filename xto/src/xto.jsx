@@ -1978,22 +1978,23 @@
                 fromEntries: function(arr)
                 {
                     var oo = {};
-                    arr.forEach(function(e){
-                        oo[e] = "";
-                    })
-                
+                    for(x in arr) if(x.in(arr)) oo[x] = '';
+
                     return oo;
                 },
 
                 inspect: function()
                 {
-                    var props = Object.fromEntries(this.reflect.properties);
-                    var funcs = Object.fromEntries(this.reflect.methods);
+                    var ps = Object.fromEntries(this.reflect.properties),
+                        fs = Object.fromEntries(this.reflect.methods);
                 
-                    for(x in props) if(props.has(x)) props[x] = this[x];
-                    for(y in funcs) if(funcs.has(y)) funcs[y] = app.doUndo(this[y]);
+                    for(x in ps) if(x.in(ps)) ps[x] = this[x];
+                    for(y in fs) if(y.in(fs)) fs[y] = "[\"\"] => {0}".re(this[y].call(undefined, []));
                 
-                    return [props, funcs];
+                    return {
+                        pp: ps,
+                        ff: fs
+                    };
                 },
 
                 rm : function(mo)

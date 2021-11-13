@@ -1850,28 +1850,26 @@
 
                 modify: function(oo, pp, v)
                 {
-                    var ks = pp.split("/"),
-                        seq= "oo",
-                        i  = 0,
-                        len= ks.length;
-                
-                    for(; i<len; i++) seq += "[\"" + ks[i] + "\"]";
-                    
-                    eval(seq + "="  + JSON.stringifyy(v) + ";");
+                    var ks  = pp.split('/'),
+                        seq = "oo";
+                        
+                    var i = -1, len = ks.length;
+                    while(++i<len) seq += "[\"{0}\"]".re(ks[i]);;
+
+                    eval("{0}={1};".re(seq, v.toString()));
                 },
 
                 getValue: function(oo, pp)
                 {
-                    var ks = pp.split("/"),
-                    seq= "oo",
-                    i  = 0,
-                    len= ks.length,
-                    myVal;
+                    var ks  = pp.split('/'),
+                        seq = "oo",
+                        val;
+                        
+                    var i = -1, len = ks.length;
+                    while(++i<len) seq += "[\"{0}\"]".re(ks[i]);;
                 
-                    for(; i<len; i++) seq += "[\"" + ks[i] + "\"]";
-                
-                    eval("myVal = " + seq + ";");
-                    return myVal;
+                    eval("val={0};".re(seq));
+                    return val;
                 },
 
                 info: function()
@@ -1932,21 +1930,6 @@
                     var str = "",
                         hdr = "",
                         max = 50;
-                    
-                    function frame(str, size){
-                
-                        var size    = typeof size == "undefined"?50:size;
-                        var block   = String.fromCharCode(9632); // the block character: ■
-                        var entry   = ((size+2) / 2) - (str.length / 2);
-                        return      ( 
-                                    block.repeat(size+2)+
-                                    "\n"+
-                                    block.repeat(3)+" ".repeat(entry) + str + " ".repeat(size-entry-str.length-4) +block.repeat(3-str.length%2)+ 
-                                    "\n"+
-                                    block.repeat(size+2)+
-                                    "\n"
-                                    );
-                    }
                 
                     hdr = "["+obj.constructor.name+"]: w/len: " + Object.size(obj);
                     str    = (frame(hdr, max) + Object.stringify(obj, lvl));
@@ -1976,36 +1959,19 @@
                     return ff.fsName;
                 },
 
-                type: function(v){
-        
-                    if(arguments.length != 1) throw Error("pass 1 variable");
-                    if(v === undefined)       return 'undefined';
-                    if(v === null)            return 'undefined';
-                    if(typeof v == 'xml')     return 'xml';
-                    return v.constructor.name.toLowerCase();
-                },
-
-                create: function (proto)
+                create: function(proto)
                 {
-                    function F() {}
+                    function F(){}
                     F.prototype = proto;
                 
                     return new F();
                 },
 
-                newObject: function()
+                objectFromArray: function()
                 {    
-                    var oo   = {};
-                    var args = Array.prototype.slice.call(arguments);
-                
-                    for(var i =0; i< args.length; i++)
-                    {
-                        arg = args[i];
-                        if(arg.constructor !== Array) continue;
-                
-                        oo[arg[0]] = arg[1];
-                    }
-                
+                    var oo   = {}, args = arguments.slice();
+                    for(a in args) if(a.in(args) && a.is(Array)) oo[a[0]] = a[1];
+
                     return oo;
                 },
 

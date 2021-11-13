@@ -1649,62 +1649,62 @@
             
             $.xt({
 
-                frame: function(str, frameChar, entry)
+                frame: function(strr, char, entr)
                 {
-                    if(typeof str == "undefined") str = "undefined";
-                    str       = str.toString();
-                    entry     = typeof entry != "number" ? 20: entry;
-                    frameChar = typeof frameChar == "undefined"?"■": frameChar; 
-                    str       = str + ((str.length%2)?" ":"");
+                    strr = (strr || "undefined").toString();
+                    strr += strr.length%2? ' ':'';
+                    entr = (entr && entr.is(Number))?entr:20;
+                    char = (char || '■'); 
             
-                    String.prototype["*"] = function(op, joinChar)
-                    {
-                        if(!$.global.strr)
-                        {
-                            $.global.strr = function(s){return new String(s)};
-                        }
-            
-                        var str = this, fstr = [fstr];
-                        if(isNaN(op = Math.floor(op))) return str;
+                    if(!String.prototype['*']) String.prototype.xt({
                         
-                        while(op--) fstr.push(str);
-                        return fstr.join(joinChar); 
-                    }
+                        '*': function(op, joinChar)
+                        {
+                            $.global.str = function(s){return new String(s)};
+
+                            var ss = this, ts = [ss];
+                            if(isNaN(op = Math.floor(op))) return ss;
+
+                            while(op--) ts.push(ss);
+                            return ts.join(joinChar);
+                        },
+
+                        isEmoji: function()
+                        {
+                            return this.length == 2;
+                        }
+                    })
             
-                    var isEmoji = function(ss){ return ss.length == 2 }
+                    var B   = str(char),
+                        S   = str(" ");
                     
-                    var B   = strr(frameChar),
-                        S   = strr(" ");
-                    
-                    var EMOJ_WIDTH = isEmoji(B)? 1.8: 1;
-                    var tsize = (entry * 2) + (((str.length+4) / frameChar.length));
+                    var EMOJ_WIDTH = B.isEmoji()? 1.8: 1;
+                    var tsize = (entr * 2) + (((strr.length + 4) / char.length));
                     tsize /= EMOJ_WIDTH;
             
                     //####################################################
                     //#
-                    var framo   = "{0}\n{1}\n{0}".f(
+                    var framo   = "{0}\n{1}\n{0}".re(
             
                         B * tsize,   // ■■■■■■
                         
-                        "{0}{1}{0}".f( // ■       HELLO        ■
+                        "{0}{1}{0}".re( // ■       HELLO        ■
             
                             B * 2, // ■
-                            "{0}{1}{0}".f((S * entry), str) //      STR        
+                            "{0}{1}{0}".f((S * entr), strr) //      STR        
                         )
                     );
                     //#
                     //#####################################################
             
-                    delete(String.prototype["*"]);
+                    delete(String.prototype['*']);
                     delete(String.prototype.isEmoji);
-                    strr = str = B = S = entry = null;
                     return framo;
-            
                 },
 
                 hexToRgb : function(hx)
                 {
-                    return [/*r*/hx >> 16, /*g*/(hx & 0x00ff00) >> 8,/*b*/ hx & 0xff, /*a*/255] / 255;
+                    return [/*r*/(hx >> 16), /*g*/((hx & 0x00ff00) >> 8),/*b*/ (hx & 0xff), /*a*/(255)] / 255;
                 },
 
                 rgbToHex : function(rgb)
@@ -1717,8 +1717,12 @@
                     
                     }, hx;
 
-                    for(x in abc) if(abc[x].length != 2) abc[x] = '0' + abc[x];
-                    for(x in abc) hx += abc[x];
+                    for(x in abc) if(x.in(abc))
+                    {
+                        if(abc[x].length != 2) abc[x] = '0' + abc[x];
+                    }
+                    
+                    for(x in abc) if(x.in(abc)) /**/ hx += abc[x]; /**/
             
                     return hx;
                 },

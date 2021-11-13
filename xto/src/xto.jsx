@@ -1763,49 +1763,54 @@
                     return oo;
                 },
 
-                values: function()
+                values: function(oo)
                 {
-                    var valArr = [];
-                    for(x in oo) if(x.in(oo)) valArr.push(oo[x]);
-                    return valArr;
+                    var arr = [];
+                    for(x in oo) if(x.in(oo)) arr.push(oo[x]);
+
+                    return arr;
                 },
 
-                keys: function(obj)
+                keys: function(oo)
                 {
-                    if(obj.isnt(Object)) throw TypeError("Object.keys called on non-object");
+                    var arr = [];
+                    for(x in oo) if(x.in(oo)) arr.push(x);
 
-                    var ks = [];
-                    for(prop in obj) if(prop.in(obj)) ks.push(prop);
-
-                    return ks;
+                    return arr;
                 },
 
-                newKeys: function(obj, keys, values){
-                    for(var i=0,len = keys.length; i< len; i++) obj[keys[i]] = values[i];
-                    return obj;
-                },
-
-                size: function(o){
-                    var s = 0;
-                    for (ky in o) if (o.hasOwnProperty(ky)) s++;
-                    return s;
+                size: function(oo){
+                    
+                    var k = 0;
+                    for (x in oo) if (x.in(oo)) k++;
+                    return k;
                 },
 
                 dcKeys: function cKeys(a, b){
 
-                    if(typeof a != 'object' || typeof b != 'object') throw TypeError("bad arguments");
-                
-                    if(Object.size(a) != Object.size(b)) return false;
-                
-                    for (x in a){
-                        if(!a.hasOwnProperty(x)) continue;
-                        if(!b.hasOwnProperty(x)) return false; // also check for type?
-                        if(typeof a[x] == 'object')
+                    if(!(
+                        
+                        a && b &&
+                        a.is(Object) && b.is(Object) &&
+                        Object.size(a) == Object.size(b)
+
+                    ))  return false;
+
+                    for(x in a) if(x.in(a)){
+                        
+                        if(!x.in(b)) return false;
+                        
+                        if(a[x].is(Object))
                         {
-                            if(typeof b[x] != 'object') return false;
-                            if (!cKeys(a[x], b[x])) return false;
+                            if(!(
+                                
+                                b[x].is(Object) &&
+                                Object.dcKeys(a[x], b[x])
+                            
+                            )) return false;
                         }
                     }
+                    
                     return true;
                 },
 

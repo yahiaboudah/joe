@@ -2019,6 +2019,11 @@
         
                     while(++i<n) arr[i] = (i+1);
                     return arr;
+                },
+
+                clone: function(arr)
+                {
+                    return eval("[{0}]".re(String(arr)));
                 }
             })
 
@@ -2058,6 +2063,11 @@
                     return -1;
                 },
 
+                includes: function(k)
+                {
+                    return this.indexOf(k) > -1;
+                },
+
                 remove: function(e, all)
                 {
                     var k,
@@ -2075,23 +2085,19 @@
                     return this;
                 },
 
-                includes: function(k) {
-                    return this.indexOf(k) > -1;
-                }
-                rotate: function(d, i){
+                rotate: function(dir, k){
                     
-                    a = this; // eval("["+String(this)+"]");
-                    
-                    switch (d) 
-                    {
-                        case "l": while(i--)    a.push(a.shift())
-                        case "r": while(i-->-1) a.unshift(a.pop())
+                    var a = Array.clone(this);
+                    switch(dir){
+                        case "l": while(k--)    a.push(a.shift());
+                        case "r": while(k-->-1) a.unshift(a.pop());
                     }
             
-                    return arr;
-                }
-                reduce: function(cb) {
-                    
+                    return a;
+                },
+
+                reduce: function(cb)
+                {    
                     'use strict';
                     if (this == null)             throw TypeError('Reduce called on null or undefined');
                     if (typeof cb !== 'function') throw TypeError(cb + ' is not a function');
@@ -2114,7 +2120,8 @@
                     }
                     
                     return value;
-                }
+                },
+
                 map: function(cb) {
             
                     if (this == null) throw TypeError('Map array is null or not defined');
@@ -2143,7 +2150,8 @@
                     }
                     
                     return A;
-                }
+                },
+
                 forEvery: function(cb)
                 {
                     var a = this;
@@ -2152,8 +2160,9 @@
                         if(cb.call(null, a[i], i) == false) return false;
                     }
                     return true;
-                }
-                filter: Array.prototype.select = function(func, thiss)
+                },
+
+                filter: function(func, thiss)
                 {
                     if(this.is(null)) throw new TypeError();
             

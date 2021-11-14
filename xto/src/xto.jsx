@@ -1181,9 +1181,20 @@
                 },
 
                 // w/ DeCastaljau's algorithm:
-                DC_pointAt: function(t)
+                DC_pointAt: function DC(t, p)
                 {
+                    if(!(p && p.is(Array))) p = this.points;
 
+                    var len = p.length;
+                    if(len == 1) return p[0];
+
+                    var pp = [], i = -1;
+                    while(++i<len-1)
+                    {
+                        pp[i] = (1-t) * p[i] + t * p[i+1];
+                    }
+
+                    DC(t, pp);
                 },
 
                 // w/ Bernstein polynomials:

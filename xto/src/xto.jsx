@@ -2162,7 +2162,7 @@
 
             // [Array Functions]
             Array.prototype.xt({
-                
+
                 forEach: function(cb, thisArg)
                 {
                     if(!cb.is(Function)) throw TypeError("CB not a function");
@@ -2448,32 +2448,34 @@
             
             Function.prototype.xt({
                 
-                bind : function(thisArg) 
+                bind: function(T/*thisArg*/) 
                 {
-                    var method = this;
-                    var args = Array.prototype.slice.call(arguments, 1);
+                    var F = this;
+                    var A = arguments.slice(1);
                 
-                    return function bound() {
-                        var _args = args.concat(Array.prototype.slice.call(arguments));
-                        if (!(this instanceof bound))
-                            return method.apply(thisArg, _args);
+                    return function B()
+                    {
+                        var a = A.concat(arguments.slice());
+                        var aLen = a.length, 
+                            i    = -1;
+                        
+                        if(!this instanceof B) return F.apply(T, a);
                 
-                        var __args = [];
-                        for (var i = 0, len = _args.length; i < len; i++)
-                            __args.push('_args[' + i + ']');
-                
-                        return eval('new method(' + __args.join(',') + ')');
-                    };
+                        var _a = [];
+                        while(++i<aLen) _a.push('a[{0}]'.re(i));
+
+                        return eval('new F({0})'.re(_a.join(',')));
+                    }
                 },
                 
-                body : function(repConfig)
+                body: function(repConfig)
                 {   
                     return this.toString()
                         .replace(/^[^{]*\{[\s]*/,"    ")
                         .replace(/\s*\}[^}]*$/,"")._replace(repConfig || {});
                 },
                 
-                timeme : function(thisArg, args, n)
+                time: function(thisArg, args, n)
                 {
                     const MICS = 1000000;
 
@@ -2490,7 +2492,7 @@
                     return ((tt/n)/MICS);
                 },
 
-                getArgs : function(nocom)        /*
+                getArgs: function(nocom)        /*
                 * Get a function args (eg. Arguments.getArgs(Arguments.getArgs) => ["c", "nocom"])
                 */
                 {  
@@ -2525,7 +2527,7 @@
                         return paramsList;
                 },
 
-                check : function(/*Boolean*/ optArgs, /*Boolean*/ limitArgs)
+                check: function(/*Boolean*/ optArgs, /*Boolean*/ limitArgs)
                 /**
                 * @param {Boolean} optArgs whether to include optional args 
                 * @param {Boolean} limitArgs whether to limit args to a number.

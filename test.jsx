@@ -7,3 +7,5 @@
 // $.writeln(arr.map(function(x){
 //     return x-1;
 // }))
+
+$.writeln((55).length)

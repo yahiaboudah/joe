@@ -2314,7 +2314,6 @@
             })
 
             // [MATH Related Functions]
-
             Array.prototype.xt({
 
                 math2: function(type, xory)
@@ -2376,89 +2375,73 @@
                         default:
                             return A[0];
                     }
-
                 }
-
             });
 
-            
-            // Addition:
-            Array.prototype["+"] = function(v)
-            {
-                if(!v.is(Array)) return;
-        
-                var i = this.length,
-                    j = v.length,
-                    r = this.concat(v.slice(i));
-                
-                if(i > j) i = j;
-                while( i-- )
-                {
-                    r[i] += (v[i]);
-                }
-                
-                return r;
-            }
-        
-            // Subtract
-            Array.prototype["-"] = function(v)
-            {
-                var sign = "-";
-        
-                if(!v.is(Array)) return;
-        
-                var i = this.length,
-                    j = v.length,
-                    r = this.concat(v.slice(i));
-                
-                if(i > j) i = j;
-                while( i-- )
-                {
-                    r[i] -= (v[i]);
-                }
-                
-                return r;
-            } 
-        
-            // Component-wise multiplication:
-            Array.prototype["^"] = function dotMultiply(v) // Hadmard product
-            {
-                if(!v.is(Array)) return;
+            // [Operator Overloading]:
+            Array.prototype.xt({
 
-                var i = this.length,
-                    j = v.length,
-                    r = this.concat(v.slice(i));
-                
-                if(i > j) i = j;
-                while(i--) r[i] *= (v[i]);
-                
-                return r;
-            } 
-        
-            // Scalar multiplication:
-            Array.prototype['*'] = function(/*operand*/k)
-            {
-                if(!k.is(Number)) return;
-                
-                var i = this.length,
-                    r = this.concat();
-                
-                while( i-- ) r[i] *= k;
-                return r;
-            }
-            
-            // Dividing operation:
-            Array.prototype['/'] = function(/*operand*/k, /*reversed*/rev)
-            {
-                return (k.is(Number) && !rev)?
-                    this * (1/k):
-                    undefined; 
-            }
-            /**
-             * 
-             * 
-             * 
-             */
+                '+': function(v)
+                {
+                    var A = Object(this);
+                    if(!(v && v.is(Array))) return A;
+                    
+                    var aLen = A.length,
+                        vLen = v.length;
+                    
+                    var R = A.concat(v.slice(aLen));
+                    if(aLen > vLen) aLen = vLen;
+
+                    while(aLen--) R[aLen] += v[aLen];
+
+                    return R;
+                },
+
+                '-': function(v)
+                {
+                    var A = Object(this);
+                    if(!(v && v.is(Array))) return A;
+
+                    for(x in v) if(x.in(v)) v[x] = -v[x];
+                    return Array.prototype['+'].call(A, v);
+                },
+
+                '*': function(v)
+                {
+                    var A = Object(this);
+                    var aLen = A.length >>> 0,
+                        vLen = v.length >>> 0;
+                    var R;
+                    if(!v) return A;
+                    
+                    if(v.is(Number))
+                    {
+                        R = A.concat();
+                        while(aLen--) R[aLen] *= v;
+                        return R;
+                    }
+
+                    if(v.is(Array))
+                    {
+                        R = A.concat(v.slice(aLen));
+                        if(aLen > vLen) aLen = vLen;
+
+                        while(aLen--) R[aLen] *= v[aLen];
+
+                        return R;
+                    }
+
+                    return A;
+                },
+
+                '/': function(v, rev)
+                {
+                    var A = Object(this);
+                    if(!(v && v.is(Number)) || rev) return A;
+
+                    return A * (1/v);
+                }
+            })
         }),
 
         PRIM$FUNCTION: (function(){

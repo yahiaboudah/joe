@@ -2488,14 +2488,13 @@
                 time: function(thisArg, args, n)
                 {
                     const MICS = 1000000;
+                    var F = this;
 
-                    var tt = 0,
-                        i  = n || 1;
-
-                    while(i--)
+                    var tt = 0, k  = n || 1;
+                    while(k--)
                     {
                         $.hiresTimer;
-                        this.apply(thisArg, args);
+                        F.apply(thisArg, args);
                         tt += $.hiresTimer;
                     }
                 
@@ -2503,15 +2502,16 @@
                 },
 
                 getArgs: function(nocom)        /*
-                * Get a function args (eg. Arguments.getArgs(Arguments.getArgs) => ["c", "nocom"])
+                * Get a function args 
+                (eg. this.getArgs(Arguments.getArgs) => ["nocom"])
                 */
                 {  
-                     if(typeof nocom == "undefined") nocom =true;
-                     return this.toString().split(/\)\/*/)[0]
-                                        .replace(/^[^(]*[(]/, '')  
-                                        .replace(/\s+/g, '')
-                                        .replace(nocom?/\/\*([\s\S]*?)\*\//g:'','')
-                                        .split(',');                
+                    if(!nocom) nocom = true;
+                    return this.toString().split(/\)\/*/)[0]
+                                    .replace(/^[^(]*[(]/, '')  
+                                    .replace(/\s+/g, '')
+                                    .replace(nocom?/\/\*([\s\S]*?)\*\//g:'','')
+                                    .split(',');    
                 },
 
                 params: function()

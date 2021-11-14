@@ -1257,6 +1257,7 @@
 
                         L.push(p[0]);
                         R.push(len == 1?p[0]:p[len-1]);
+                        if(len == 1) return;
 
                         var pp = [], i = -1;
                         while(++i<len-1)
@@ -1269,7 +1270,17 @@
 
                     DC(t, this.points);
                     return [L, R];
+                },
+
+                M_split: function()
+                {
+
                 }
+            })
+
+            // [DEGREE ELEVATION]
+            Bezier.prototype.xt({
+
             })
         
         }),

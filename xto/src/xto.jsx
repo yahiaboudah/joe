@@ -2470,9 +2470,19 @@
                 
                 body: function(repConfig)
                 {   
-                    return this.toString()
-                        .replace(/^[^{]*\{[\s]*/,"    ")
-                        .replace(/\s*\}[^}]*$/,"")._replace(repConfig || {});
+                    var _replace = function(S, cfg)
+                    {
+                        var S = S;
+                        for(x in cfg) if(x.in(cfg))
+                        {
+                            S = S.split(x).join(cfg[x])
+                        }
+                        return S;
+                    }
+
+                    return _replace(this.toString()
+                               .replace(/^[^{]*\{[\s]*/,"    ")
+                               .replace(/\s*\}[^}]*$/,""), repConfig);
                 },
                 
                 time: function(thisArg, args, n)

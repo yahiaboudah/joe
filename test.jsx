@@ -1,5 +1,4 @@
 
 //@include "xto/src/xto.jsx"
-xto.load("CSTR$Python");
+xto.load("MATH$BEZIER");
 
-Python.install()

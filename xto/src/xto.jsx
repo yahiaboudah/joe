@@ -810,7 +810,7 @@
 
             for(;++k<pWhat.length;) eWhat = eWhat[pWhat[k]];
 
-            var deps = eWhat.DEPS, i=-1;
+            var deps = eWhat? eWhat.DEPS:{}, i=-1;
             for(;++i<deps.length;)
             {
                 n = deps[i];
@@ -1221,7 +1221,7 @@
                         [1 ,  0, 0],
                         [-2,  2, 0],
                         [1 , -2, 1]
-                    ]),
+                    ]);
 
                     var P = M(this.points);
 
@@ -2314,94 +2314,74 @@
             })
 
             // [MATH Related Functions]
-        
-            Array.prototype.max = function(prop)
-            {
-                if(!prop) return Math.max.apply(null, this);
-                
-                a = eval(this.toSource());
-                k = a.length;
-                while(k--) a[k] = a[k][prop];
-                
-                return Math.max.apply(null, a)
-            }
-            Array.prototype.min = function(prop)
-            {
-                if(!prop) return Math.min.apply(null, this);
-                
-                a = eval(this.toSource());
-                k = a.length;
-                while(k--) a[k] = a[k][prop];
-                
-                return Math.min.apply(null, a)
-            }
-            Array.prototype.math2D = function(type, xory)
-            {
-                return Math[type].apply(null, this.map(function(x){
-                    return x[xory]
-                }))
-            }
-            Array.prototype.sum = function()
-            {
-                return Math.sum.apply(null, this);
-            }
-        
-            /**
-             * 
-             * 2D indcies:
-             * 
-             */
-            Array.oneDimIndexFunc = function(maxormin, HorV)
-            {
-                return function()
-                {
-                    return this.indexOf(this.math2D(mm, hv));
-                }.body({
-                    mm: maxormin,
-                    hv: HorV
-                })
-            }
-
-            Array.twoDimIndexFunc = function(ytype, xtype){
-                
-                return (function(){
-        
-                    var a = this;
-                    var o = {
-                        x: a.math2D(xtype, 0),
-                        y: a.math2D(ytype, 1)
-                    }
-                    
-                    var m = a.map(function(v){
-                        return Math.sqrt(Math.pow( v[0] - o.x,2) + Math.pow(v[1] - o.y,2));
-                    }).min();
-            
-                    return a.indexOf(m);    
-                }).body({
-                    xtype: xtype,
-                    ytype: ytype,
-                })
-            }
-
 
             Array.prototype.xt({
 
-                upIndex: Function(Array.oneDimIndexFunc("max", 1)),
-                bottomIndex: Function(Array.oneDimIndexFunc("min", 1)),
-                leftIndex: Function(Array.oneDimIndexFunc("min", 0)),
-                rightIndex: Function(Array.oneDimIndexFunc("max", 0)),
+                math2: function(type, xory)
+                {
+                    return Math[type].apply(null, this.map(function(x){
+                        return x[xory]
+                    }))
+                },
+
+                mapToDistance: function(offset)
+                {
+                    return this.map(function(v){
+                        return Math.sqrt(
+                            Math.pow(v[0] - offset[0], 2)
+                          + Math.pow(v[1] - offset[1], 2)
+                        )
+                    })  
+                },
+
+                getIndex: function(type)
+                {
+                    var A = Object(this);
+                    if(!type) return A[0];
+
+                    if(type.is(Number))  return A.indexOf(type);
+                    if(!type.is(String)) return A[0];
+
+                    type = type.replace(/[^0-9a-zA-Z]/gi, "").toLowerCase();
                     
-                upperLeftIndex   : Function(Array.twoDimIndexFunc("min", "min")),
-                upperRightIndex  : Function(Array.twoDimIndexFunc("min", "max")),
-                bottomRightIndex : Function(Array.twoDimIndexFunc("max", "max")),
-                bottomLeftIndex  : Function(Array.twoDimIndexFunc("max", "min")),
-            })
+                    var minx = A.indexOf(A.math2('min',0)),
+                        miny = A.indexOf(A.math2('min',1)),
+                        maxx = A.indexOf(A.math2('max',0)),
+                        maxy = A.indexOf(A.math2('max',1)),
+                        m;
+
+                    switch(type)
+                    {
+                        case "up"   : return maxy;
+                        case "down" : return miny;
+                        case "left" : return minx;
+                        case "right": return maxx;
+                        
+                        case "upperLeft":                            
+                            m = A.mapToDistance([minx,miny]);
+                            return m.indexOf(Math.min.apply(null, m));
+
+                        case "bottomLeft":
+                            m = A.mapToDistance([minx,maxy]);
+                            return m.indexOf(Math.min.apply(null, m));
+
+                        case "upperRight":
+                            m = A.mapToDistance([maxx,miny]);
+                            return m.indexOf(Math.min.apply(null, m));
+
+                        case "bottomRight":
+                            m = A.mapToDistance([maxx,maxy]);
+                            return m.indexOf(Math.min.apply(null, m));
+
+                        default:
+                            return A[0];
+                    }
+
+                }
+
+            });
+
             
-            /**
-             * Vector operations/ Array operations:
-             * 
-             * 
-             */
             // Addition:
             Array.prototype["+"] = function(v)
             {

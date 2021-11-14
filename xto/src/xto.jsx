@@ -1147,9 +1147,78 @@
                 }
             })
         }),
-
+    
         MATH$BEZIER: (function(){
-            $.global.Bezier = function(){}; 
+            
+            // ONLY SUPPORTS 2D QUADRATIC BEZIER CURVES
+
+            $.global.Bezier = function Bezier(coords)
+            {
+                this.points = Array.clone(coords);
+
+                this.start = coords.shift();
+                this.end   = coords.pop();
+                this.controls = coords;
+            }
+
+            Bezier.prototype.xt({
+
+                pointsWithStep: function(step, method)
+                {
+                    var P = [], p;
+                    var t = 0, tn = 1;
+
+                    if(!(step && step.is(Number))) step = 0.1; 
+                    step = Math.abs(step <= 1?step:(1/step));
+
+                    for(;t <= tn; t += step)
+                    {
+                        p = this["{0}_pointAt".re(method || 'M')](t);
+                        P.push(p);
+                    }
+
+                    return P;
+                },
+
+                // w/ DeCastaljau's algorithm:
+                DC_pointAt: function(t)
+                {
+
+                },
+
+                // w/ Bernstein polynomials:
+                BR_pointAt: function(t)
+                {
+                    var p =   this.start       * (1-t)^2 
+                            + this.controls[0] * 2*(1-t)*t 
+                            + this.end         * t^2;
+                    
+                    return p;
+                },
+
+                // w/ Matrix operations:
+                M_pointAt: function(t)
+                {
+                    var T = M([
+                        [1, t, t^2]
+                    ]);
+
+                    var M = M([
+                        [1 ,  0, 0],
+                        [-2,  2, 0],
+                        [1 , -2, 1]
+                    ]),
+
+                    var P = M(this.points);
+
+                    return T * M * P;
+                },
+
+
+                
+
+            })
+        
         }),
 
         /*
@@ -1649,12 +1718,12 @@
             
             $.xt({
 
-                frame: function(strr, char, entr)
+                frame: function(strr, chrc, entr)
                 {
                     strr = (strr || "undefined").toString();
                     strr += strr.length%2? ' ':'';
                     entr = (entr && entr.is(Number))?entr:20;
-                    char = (char || '■'); 
+                    chrc = (chrc || '■'); 
             
                     if(!String.prototype['*']) String.prototype.xt({
                         
@@ -1675,11 +1744,11 @@
                         }
                     })
             
-                    var B   = str(char),
+                    var B   = str(chrc),
                         S   = str(" ");
                     
                     var EMOJ_WIDTH = B.isEmoji()? 1.8: 1;
-                    var tsize = (entr * 2) + (((strr.length + 4) / char.length));
+                    var tsize = (entr * 2) + (((strr.length + 4) /chrc.length));
                     tsize /= EMOJ_WIDTH;
             
                     //####################################################
@@ -2142,7 +2211,7 @@
                 {
                     if(!cb.is(Function)) throw TypeError("CB not a function");
 
-                    var k,O = Object(this),
+                    var k,O = Object(this);
 
                     for(k in O) if(k.in(O))
                     {

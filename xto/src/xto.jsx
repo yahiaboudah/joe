@@ -1200,11 +1200,13 @@
                 // w/ Bernstein polynomials:
                 BR_pointAt: function(t)
                 {
-                    var p =   this.start       * (1-t)^2 
-                            + this.controls[0] * 2*(1-t)*t 
-                            + this.end         * t^2;
-                    
-                    return p;
+                    var sum = 0, P = this.points;
+                    for(var i=0; i<=n; i++)
+                    {
+                        sum += (Bezier.Bernstein(i, n, t) * P[i]);
+                    }
+
+                    return sum;
                 },
 
                 // w/ Matrix operations:
@@ -1224,10 +1226,20 @@
 
                     return T * M * P;
                 },
+            })
 
+            Bezier.xt({
 
-                
+                // Binomial Coefficients:
+                BC: function(n, i)
+                {
 
+                },
+
+                Bernstein: function(i, n, t)
+                {
+                    return this.BC(n, i) * ((1-t)^(n-i)) * (t^i);
+                }
             })
         
         }),

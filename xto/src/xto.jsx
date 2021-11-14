@@ -1161,6 +1161,7 @@
                 this.controls = coords;
             }
 
+            // [VALUE AT T]
             Bezier.prototype.xt({
 
                 pointsWithStep: function(step, method)
@@ -1228,6 +1229,7 @@
                 },
             })
 
+            // [UTILITIES: BERNSTEIN, BINOMIAL COEFF..]
             Bezier.xt({
 
                 // Binomial Coefficients:
@@ -1239,6 +1241,34 @@
                 Bernstein: function(i, n, t)
                 {
                     return this.BC(n, i) * ((1-t)^(n-i)) * (t^i);
+                }
+            })
+
+            // [CRUVE SPLITTING]
+            Bezier.prototype.xt({
+
+                DC_split: function(t)
+                {
+                    var L = R = [];
+
+                    var DC = function DC(z, p)
+                    {
+                        var len = p.length;
+
+                        L.push(p[0]);
+                        R.push(len == 1?p[0]:p[len-1]);
+
+                        var pp = [], i = -1;
+                        while(++i<len-1)
+                        {
+                            pp[i] = (1-t) * p[i] + t * p[i+1];
+                        }
+
+                        DC(z, pp);
+                    }
+
+                    DC(t, this.points);
+                    return [L, R];
                 }
             })
         

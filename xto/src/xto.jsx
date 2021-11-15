@@ -4181,11 +4181,13 @@
                     G.name = "line";
                     
                     // add a path prop:
-                    lineShape.property("Contents").property(mainLineGroup.name).property("Contents").addProperty("ADBE Vector Shape - Group");
+                    S.addProp("Contents/{0}/Contents/ADBE Vector Shape - Group".re(G.name));
+                    
                     var mainLineExpression = "var start = effect(\"Axis\")(\"Start\");\n"
                       +"var end = effect(\"Axis\")(\"End\");\n"
                       +"createPath(points =[[start,0], [end,0]],\n"
                       +"inTangents = [], outTangents = [], is_closed = false)";
+                    
                     lineShape.property("Contents").property(mainLineGroup.name).property("Contents").property("Path 1").property("Path").expression = mainLineExpression;
                     // add a stroke prop:
                     var mainLineStroke = lineShape.property("Contents").property(mainLineGroup.name).property("Contents").addProperty("ADBE Vector Graphic - Stroke");

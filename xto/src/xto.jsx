@@ -286,11 +286,17 @@
 
         //=====================================
         //-------------------------------------
+        //------------- EXTRA -----------------
 
         $.global.is = function(what)
         {
             var A = Array.prototype.slice.apply(arguments, 1);
             return Object.prototype.is.apply(what, A);
+        }
+
+        Object.prototype.slice = function(n)
+        {
+            return Array.prototype.slice.call(this, n);
         }
     });
 
@@ -2004,14 +2010,6 @@
 
         PRIM$OBJECT: (function(){
 
-            Object.prototype.xt({
-
-                slice: function(n)
-                {
-                    return Array.prototype.slice.apply(this, [n]);
-                }
-            })
-
             Object.xt({
 
                 adapt: function(ob, oo)
@@ -2259,7 +2257,6 @@
                 }
 
             })
-
         }),
 
         PRIM$ARRAY: (function()
@@ -3697,13 +3694,13 @@
                   return oo;
                 },
 
-                wrapUndo : function(fn, thisArg)
+                wrapUndo : function(F, T)
                 {
-                    var _args = Array.prototype.slice.call(arguments, 2);
+                    var A = arguments.slice(2);
                     return function()
                     {
-                        app.beginUndoGroup(fn.name);
-                        fn.apply(thisArg, _args);
+                        app.beginUndoGroup(F.name);
+                        F.apply(T, A);
                         app.endUndoGroup();
                     }
                 },

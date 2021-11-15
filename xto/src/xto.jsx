@@ -2763,32 +2763,36 @@
                     return S;
                 },
                 
-                pushAt : function(atIndex, pushChar, delet, numDelete) {
-                    
-                    delet     = delet.is(undefined)? 1: delet;
-                    numDelete = delet.is(undefined)? 1: numDelete;
-                    
-                    first = this.substring(0, atIndex);
-                    last  = this.substring(delet? (atIndex+numDelete): atIndex);
-                
-                    return first + pushChar + last;
+                pushAt : function(atIndex, pushChar, Delete, numDelete)
+                {
+                    if(!Delete)    Delete = 1;
+                    if(!numDelete) numDelete = 1;
+
+                    var S = this, F,L; //String/First/Last
+
+                    F = S.substring(0, atIndex);
+                    L = S.substring(Delete? (atIndex + numDelete): atIndex);
+
+                    return F + pushChar + L;
                 },
                 
-                fstr : function()
+                fstr : function() // "replace &1 with &2".fstr("me", "this")
                 {
-                    arra = Array.prototype.slice.call(arguments);
-                    s    = this.toString();
-                    patt = /&/g;
+                    var S = this,
+                        A = arguments.slice(),
+                        P = /&/g;
                     
-                    while(!!patt.exec(s))
+                    var li, no;
+                    while(!!P.exec(S))
                     {
-                      li = patt.lastIndex -1;
-                      no = s[li+1];
+                      li = P.lastIndex -1;
+                      no = S[li+1];
+                      
                       if(isNaN(no)) continue;
-                      s = s.pushAt(li, arra[no-1], 1, 2);
+                      S = S.pushAt(li, A[no-1], 1, 2);
                     }
                 
-                    return s;
+                    return S;
                 }
             }),
 

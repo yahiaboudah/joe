@@ -3761,17 +3761,13 @@
 
                 $addComp: function(cfg)
                 {
-                    var num = this.getItemsWith("name", function(n){return (/comp \d+/gi).test(n)})
-                              .reduce(function(item1, item2)
-                              {
-                                  return parseInt(item1.split(" ")[1]) > parseInt(item2.split(" ")[1])?
-                                  item1:
-                                  item2;
-                              }).name.split(" ")[1];
-
-                    cfg = Object.adapt(cfg, 
+                    var numComps = this.getItemsWith("constructor", function(C){
+                        return C == CompItem;
+                    }).length;
+                    
+                    var cfg = Object.adapt(cfg, 
                     {
-                        name: "comp {0}".re(parseInt(num) + 1),
+                        name: "comp {0}".re(numComps + 1),
                         width: 1920,
                         height: 1080,
                         someBool: 1,

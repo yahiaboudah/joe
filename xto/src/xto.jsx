@@ -2824,13 +2824,13 @@
                 return Math.pow(this, v);
             }
 
-            Number.prototype.inRange = function(range, s0, s1)
+            Number.prototype.inRange = function(range, z, o)
             {
-                var n = this;
-                s0 = s0? (n >= range[0]): n > range[0];
-                s1 = s1? (n <= range[1]): n < range[1];
+                var N = this;
+                z = z? (N >= range[0]): N > range[0];
+                o = o? (N <= range[1]): N < range[1];
 
-                return s0 && s1;
+                return z && o;
             }
         }),
 

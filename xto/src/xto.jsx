@@ -3212,9 +3212,10 @@
                 }
             })
 
+            // [MATCH NAMES FUNCTION: app.MN("Masks") => ..]
             app.xt({
 
-                _MN: function(prop)
+                MN: function(P)
                 {
                     const TOP_LEVEL = 
                     {
@@ -3626,13 +3627,13 @@
                 
                     }
 
-                    var ALL_MATCH_NAMES = [TOP_LEVEL, TRANSFORM, AUDIO, THREED, THREEDMATERIALS, CAMERA, CAMERAIRIS, LIGHT, TEXT, SHAPE];
-
-                    var curr, i =-1;
-                    for(;++i< ALL_MATCH_NAMES.length;)
+                    var A = [TOP_LEVEL, TRANSFORM, AUDIO, THREED, THREEDMATERIALS, CAMERA, CAMERAIRIS, LIGHT, TEXT, SHAPE];
+                    
+                    var C; // CURRENT
+                    for(x in A) if(x.in(A))
                     {
-                        curr = ALL_MATCH_NAMES[i];
-                        for(x in curr) if(x.in(curr) && x == prop) return curr[x];
+                        C = A[x];
+                        for(k in C) if(x.in(C) && x == P) return C[k]
                     }
 
                     return "ADBE";

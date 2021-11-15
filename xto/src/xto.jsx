@@ -175,6 +175,8 @@
         Object.prototype.xt = function(oo)
         {
             for(x in oo) if(oo.hasOwnProperty(x)) this[x] = oo[x];
+
+            return this;
         }
         
         delete(Object.prototype.is);

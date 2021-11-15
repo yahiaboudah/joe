@@ -4105,7 +4105,7 @@
 
                 $add : function(what, args, cfg)
                 {
-                    var that = this;
+                    var T = this, F, V, L;
                 
                     var Configs = 
                     {
@@ -4121,39 +4121,48 @@
                             pixelAspect: this.containingComp.aspectRatio,
                             duration: this.containingComp.duration,
                         },
+
                         CAMERA: {name: "cam", centerPoint: [960, 540]},
                         LIGHT: {name: "light", centerPoint: [960, 540]},
                         NULL: {duration: this.containingComp.duration}
                     }
 
-                    if(func = that["add{0}".re(what.title())])
+                    if(F = that["add{0}".re(what.title())])
                     {
-                        var myLayer = func.apply(that, Object.values(Object.adapt(Configs[what.toUpperCase()], args)));
+                        V = Object.values(Object.adapt(Configs[what.toUpperCase()], args));
+                        L = F.apply(T, V);
                     }
 
-                    if(!cfg) return myLayer;
+                    if(!cfg) return L;
+
                     switch(what)
                     {
                         case "Shape":
-                            if(cfg.path == true)    myLayer.content.addProperty(_MN("PathGroup"));
+                            if(cfg.path == true)
+                            {
+                                L.content.addProperty(app.MN("PathGroup"));
+                            }
                             break;
 
                         case "Text":
-                            if(cfg.fixSource.is(Function))
+                            if(is(cfg.fixSource, Function))
                             {
-                                var src = this.Text.sourceText;
+                                var src = L.Text.sourceText;
                                 src.setValue(
-                                    fixSource(src.value.toString())
-                                );                          
+                                    cfg.fixSource(src.value.toString())
+                                );
                             }
                             break;
+                        
                         default: 
-                            if(cfg.name.is(String))
+                            if(is(cfg.name, String))
                             {
-                                myLayer.name = this[0].containingComp.newName(cfg.name);
+                                L.name = T[0].containingComp.newName(cfg.name);
                             }
                             break;
                     }
+
+                    return L;
                 },
 
 

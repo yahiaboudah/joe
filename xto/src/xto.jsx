@@ -3739,17 +3739,15 @@
                     return A;
                 },
 
-                getItemsWith: function(prop, cb)
+                getItemsWith: function(PP, cb)
                 {
-                    var pr    = this,
-                        items = [];
-
-                    pr.itemsArr().forEach(function(item)
+                    var P = this, A = [];
+                    for(x in P) if(x.in(P))
                     {
-                        if(cb.call(pr, item[prop])) items.push(item);
-                    })
+                        if(cb.call(P, P[x][PP])) A.push(P[x]);
+                    }
 
-                    return items;
+                    return A;
                 },
             })
 

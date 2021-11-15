@@ -4166,7 +4166,7 @@
                 },
 
 
-                axis: function(numDashes ,textIncluded)
+                axis: function(numDashes, text)
                 {
                     var C = this[0].containingComp,
                         S = this.$add("Shape");
@@ -4182,8 +4182,7 @@
                     
                     // add a path prop:
                     S.addProp("Contents/{0}/Contents/ADBE Vector Shape - Group".re(G.name));
-                    
-                    var lineExpression = function()
+                    S.getProp("Contents/{0}/Contents/Path 1/Path".re(G.name)).expression = function()
                     {
                         var start = effect("Axis")("Start");
                         var end   = effect("Axis")("End");
@@ -4192,71 +4191,90 @@
                                    is_closed = false) 
                     }.body();
 
-                    lineShape.property("Contents").property(mainLineGroup.name).property("Contents").property("Path 1").property("Path").expression = mainLineExpression;
                     // add a stroke prop:
-                    var mainLineStroke = lineShape.property("Contents").property(mainLineGroup.name).property("Contents").addProperty("ADBE Vector Graphic - Stroke");
-                    mainLineStroke.property("ADBE Vector Stroke Width").setValue(4);
-                  
+                    var STROKE = S.addProp("Contents/{0}/Contents/ADBE Vector Graphic - Stroke".re(G.name))
+                    STROKE.getProp("ADBE Vector Stroke Width").setValue(4);
+
                     // Now create the other dashes:
-                    for(var i=0;i<numDashes;i++){
-                      var dash = lineShape.property("Contents").addProperty("ADBE Vector Group");
-                      dash.name = "dash "+i;
-                      lineShape.property("Contents").property(dash.name).property("Contents").addProperty("ADBE Vector Shape - Group");
-                      lineShape.property("Contents").property(dash.name).property("Contents").addProperty("ADBE Vector Graphic - Stroke");
-                  
-                      var dashPathExpression = "var start = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Start\");\n"
-                      +"var spacingout = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Spacingout\");\n"
-                      +"var end =thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"End\");\n"
-                      +"var factor = 30;\n"
-                      +"var dashLength = effect(\"Axis\")(\"Dash length\");\n"
-                      +"var pos = start+"+i+"*spacingout;\n"
-                      + "var dashLen = 0;\n"
-                      +"if(pos-end<-20){dashLen = dashLength;}\n"
-                      +"else{dashLen = dashLength*Math.exp(-Math.pow(end-pos,2)/(2*factor*factor));}\n"
-                      +"createPath(points =[[pos,-dashLen/2], [pos,dashLen/2]],\n"
-                      +"inTangents = [], outTangents = [], is_closed = false)";
-                  
-                      //var dashStrokeExpression = "thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Stroke Width\");";
-                      lineShape.property("Contents").property(dash.name).property("Contents").property("Path 1").property("Path").expression = dashPathExpression;
-                      lineShape.property("Contents").property(dash.name).property("Contents").property("Stroke 1").property("Stroke Width").setValue(4);
-                  }
-                  if(textIncluded){
-                  for(var i=0;i<numDashes;i++){
-                    var textLayer = comp.layers.addText();
-                    textLayer.shy = true;
-                    // Editing the source text
-                    textLayer.sourceText.expression = "var num = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Count\")+"
-                    +i+"*thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Basis\");\
-                    Math.round(10*num)/10";
-                    textLayer.name = textLayer.sourceText.value;
-                  
-                    //Anchor Point of the text
-                    textLayer.transform.anchorPoint.expression= "var x = sourceRectAtTime(time,false).width/2 + sourceRectAtTime(time,false).left;\
-                    var y = sourceRectAtTime(time,false).height/2 + sourceRectAtTime(time,false).top;\
-                    [x,y]";
-                  
-                    // Position of the text
-                    var positionExpression = "var x0 = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Start\");"
-                    +"var spacingout = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Spacingout\");"
-                    +"var x = (thisComp.width/2)+"+i+"*spacingout+x0+thisComp.layer(\""+lineShape.name+"\").transform.position[0]-960;"
-                    +"var y = thisComp.layer(\""+lineShape.name+"\").transform.position[1]+55;"
-                    +"[x,y]";
-                  
-                    textLayer.transform.position.expression = positionExpression;
-                  
-                    //Opacity of the text
-                    var opacityExpression = "var end0 =thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"End\");\
-                    var pos = transform.position[0]-thisComp.width/2;\
-                    if(pos-end0 <-10){100}\
-                    else{100*Math.exp(-Math.pow(end0-pos,2)/(2*30*30))}";
-                  
-                    textLayer.transform.opacity.expression = opacityExpression;
-                  
-                    // END TEXT RELATED THINGS HERE
+                    var i = -1;
+                    while(++i<numDashes)
+                    {
+                        // Dash
+                        var D = S.addProp("Contents/ADBE Vector Group");
+                        D.name = "dash {0}".re(i);
+                        S.addProp("Contents/{0}/Contents/ADBE Vector Shape - Group".re(D.name));
+                        S.addProp("Contents/{0}/Contents/ADBE Vector Graphic - Stroke".re(D.name));
+
+                        S.getProp("Contents/{0}/Contents/Path 1/Path").expression = function()
+                        {
+                            var FX = thisComp.layer("$SName").effect("Axis");
+                            var start = FX("Start");
+                            var space = FX("Space");
+                            var end   = FX("End");
+                            var dLength = FX("Axis")("Dash Length");
+                            
+                            var factor= 30;
+                            var pos   = start + $i * space;
+                            var dLen  = 0;
+
+                            if(pos-end < -20) dLen = dashLen;
+                            else
+                            {
+                                dLen = dLength * Math.exp(-Math.pow(end-pos, 2)/(2*factor*factor));
+                            }
+
+                            createPath(points = [[pos, -dLen/2], [pos, dLen/2]],
+                                        inTangents = [], outTangents = [], is_closed =false);
+
+                        }.body({
+                            $SName: S.name,
+                            $i: i
+                        });
+                        S.getProp("Contents/{0}/Contents/Stroke 1/Stroke Width").setValue(4);
+                        }
+
+                    if(text)
+                    {
+                    i = -1;
+                    while(++i<numDahses)
+                    {
+                        var textLayer = comp.layers.addText();
+                        textLayer.shy = true;
+                        // Editing the source text
+                        textLayer.sourceText.expression = "var num = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Count\")+"
+                        +i+"*thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Basis\");\
+                        Math.round(10*num)/10";
+                        textLayer.name = textLayer.sourceText.value;
+                    
+                        //Anchor Point of the text
+                        textLayer.transform.anchorPoint.expression= "var x = sourceRectAtTime(time,false).width/2 + sourceRectAtTime(time,false).left;\
+                        var y = sourceRectAtTime(time,false).height/2 + sourceRectAtTime(time,false).top;\
+                        [x,y]";
+                    
+                        // Position of the text
+                        var positionExpression = "var x0 = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Start\");"
+                        +"var spacingout = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Spacingout\");"
+                        +"var x = (thisComp.width/2)+"+i+"*spacingout+x0+thisComp.layer(\""+lineShape.name+"\").transform.position[0]-960;"
+                        +"var y = thisComp.layer(\""+lineShape.name+"\").transform.position[1]+55;"
+                        +"[x,y]";
+                    
+                        textLayer.transform.position.expression = positionExpression;
+                    
+                        //Opacity of the text
+                        var opacityExpression = "var end0 =thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"End\");\
+                        var pos = transform.position[0]-thisComp.width/2;\
+                        if(pos-end0 <-10){100}\
+                        else{100*Math.exp(-Math.pow(end0-pos,2)/(2*30*30))}";
+                    
+                        textLayer.transform.opacity.expression = opacityExpression;
+                    
+                        // END TEXT RELATED THINGS HERE
+                        }
                     }
-                   }
-                   lineShape.property("Effects").property("Axis").property("Start").setValue(-(numDashes*100 -100)/2);
-                   lineShape.property("Effects").property("Axis").property("End").setValue((numDashes*100 -100)/2);
+                    
+                    var endValue = ((100*numDashes)-100)/2;
+                    S.getProp("Effects/Axis/Start").setValue(-endValue);
+                    S.getProp("Effects/Axis/End")  .setValue(endValue);
                 },
 
                 dynamicLine: function(x0 ,y0 ,x1 ,y1)

@@ -2725,8 +2725,9 @@
 
         PRIM$STRING: (function()
         {
+            // [FILE PATH RELATED OPERATIONS]
             String.prototype.xt({
-
+                
                 inspectPath: function()
                 {
                     var S = this, 
@@ -2749,20 +2750,12 @@
                     else I.valid = I.folder = 1
 
                     return inspection;
-                },
-    
-                startsWith : function(S, P)
-                {
-                    P = P > 0 ? (P | 0) : 0;
-                    return this.substring(P, P + S.length) === S;
-                },
-                
-                padding : function()
-                {
-                    (pad = /^\s*/).exec(this);
-                    return pad.lastIndex;
-                },
-                
+                }
+            })
+
+            // [REPLACERS]
+            String.prototype.xt({
+
                 replaceSeq : function(C/*, str1, str2..*/)
                 {
                     var startIdx = 1;
@@ -2777,18 +2770,7 @@
                 
                     return S;
                 },
-                
-                title : function()
-                {
-                    var S = this;
-                    return S.toUpperCase() + S.slice(1);
-                },
-                
-                trim : function()
-                {
-                    return this.replace(/^\s*|\s*$/,'');
-                },
-                
+            
                 _replace : function(R)
                 {    
                     var S = this;
@@ -2796,20 +2778,7 @@
 
                     return S;
                 },
-                
-                pushAt : function(atIndex, pushChar, Delete, numDelete)
-                {
-                    if(!Delete)    Delete = 1;
-                    if(!numDelete) numDelete = 1;
 
-                    var S = this, F,L; //String/First/Last
-
-                    F = S.substring(0, atIndex);
-                    L = S.substring(Delete? (atIndex + numDelete): atIndex);
-
-                    return F + pushChar + L;
-                },
-                
                 fstr : function() // "replace &1 with &2".fstr("me", "this")
                 {
                     var S = this,
@@ -2828,7 +2797,51 @@
                 
                     return S;
                 }
-            }),
+            })
+
+            // [INFO / CHECKERS]
+            String.prototype.xt({
+
+                startsWith : function(S, P)
+                {
+                    P = P > 0 ? (P | 0) : 0;
+                    return this.substring(P, P + S.length) === S;
+                },
+                
+                padding : function()
+                {
+                    (pad = /^\s*/).exec(this);
+                    return pad.lastIndex;
+                }
+            })
+
+            // [SETTERS/ MODIFIERS]
+            String.prototype.xt({
+                
+                title : function()
+                {
+                    var S = this;
+                    return S.toUpperCase() + S.slice(1);
+                },
+                
+                trim : function()
+                {
+                    return this.replace(/^\s*|\s*$/,'');
+                },
+                
+                pushAt : function(atIndex, pushChar, Delete, numDelete)
+                {
+                    if(!Delete)    Delete = 1;
+                    if(!numDelete) numDelete = 1;
+
+                    var S = this, F,L; //String/First/Last
+
+                    F = S.substring(0, atIndex);
+                    L = S.substring(Delete? (atIndex + numDelete): atIndex);
+
+                    return F + pushChar + L;
+                }
+            })
 
             // [OPERATOR OVERLOADING]:
             String.prototype.xt({

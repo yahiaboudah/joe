@@ -2755,28 +2755,12 @@
                     return this.replace(/^\s*|\s*$/,'');
                 },
                 
-                _replace : function(repCfg){
-                    
-                    var str = this;
-                    for(x in repCfg) if(repCfg.hasOwnProperty(x))
-                    {
-                        str = str.split(x).join(repCfg[x])
-                    }
-                    return str;
-                },
-                
-                "*" : function(op, joinChar)
-                {
-                    if(!$.global.str)
-                    {
-                        $.global.str = function(s){return new String(s)};
-                    }
-                
-                    var strr = this, fstr = [fstr];
-                    if(isNaN(op = Math.floor(op))) return strr;
-                    
-                    while(op--) fstr.push(strr);
-                    return fstr.join(joinChar || ""); 
+                _replace : function(R)
+                {    
+                    var S = this;
+                    for(x in R) if(x.in(R)) S = S.split(x).join(R[x])
+
+                    return S;
                 },
                 
                 pushAt : function(atIndex, pushChar, delet, numDelete) {
@@ -2806,6 +2790,25 @@
                 
                     return s;
                 }
+            }),
+
+            // [OPERATOR OVERLOADING]:
+            String.prototype.xt({
+                
+                '*' : function(op, joinChar)
+                {
+                    if(!$.global.str)
+                    {
+                        $.global.str = function(s){return new String(s)};
+                    }
+                
+                    var S = this, FS = [S]; // String & FinalString
+                    if(isNaN(op = Math.floor(op))) return S;
+                    
+                    while(op--) FS.push(S);
+                    return FS.join(joinChar || "");
+                }
+
             })
         }),
 

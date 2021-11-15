@@ -2550,6 +2550,7 @@
 
         PRIM$FUNCTION: (function(){
             
+            // [BIND BODY TIME]
             Function.prototype.xt({
                 
                 bind: function(T/*thisArg*/) 
@@ -2604,7 +2605,11 @@
                 
                     return ((tt/n)/MICS);
                 },
-
+            })
+            
+            // [PARSING, CHECKING ARGS]
+            Function.prototype.xt({
+                
                 getArgs: function(nocom)        /*
                 * Get a function args 
                 (eg. this.getArgs(Arguments.getArgs) => ["nocom"])

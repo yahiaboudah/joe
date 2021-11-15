@@ -180,14 +180,20 @@
         delete(Object.prototype.is);
         Object.prototype.is = function()
         {
-            var _args = Array.prototype.slice.call(arguments), i = -1;
-            var what = this.constructor;
-        
-            while(++i<_args.length) if(what == _args[i]) return true;
+            var O = this, T;
+
+            var A = Array.prototype.slice.call(arguments),
+                T = (O === undefined || O === null)?
+                    undefined: 
+                    this.constructor; //type
+
+            var i = -1;
+            while(++i<A.length) if(T == A[i]) return true;
         
             return false;
         }
 
+        //=============================
         delete(Object.prototype.se);
         Object.prototype.se = function()
         {
@@ -275,7 +281,17 @@
                 + "======================="
             )
         }
+
+        //=====================================
+        //-------------------------------------
+
+        $.global.is = function(what)
+        {
+            var A = Array.prototype.slice.apply(arguments, 1);
+            return Object.prototype.is.apply(what, A);
+        }
     });
+
     var EXTO =
     {
         MATH:
@@ -2859,13 +2875,13 @@
             
                 $open : function(mode)
                 {
-                    var cases = ["r", "w", "a", "e"];
+                    var cases = ['r', 'a', 'w', 'e'];
 
                     this.isOpen = this.open(
                         (cases.indexOf(mode) == -1)?
                         (File(this.fsName).exists? 'e': 'w'):
                         mode
-                    );
+                    )
 
                     return this;
                 },
@@ -2910,11 +2926,13 @@
                     return (this.$write((text || ""), 'w'), this);
                 },
                 
-                execute : function(slp, cb, doClose)
+                execute : function(sleep, cb, doClose)
                 {
+                    if(is(doClose, undefined)) doClose = 0;
+
                     this.execute();
-                    if(!!doClose) this.$close();
-                    $.sleep(slp || 0);
+                    if(doClose) this.$close();
+                    $.sleep(sleep || 0);
                     if(cb.is(Function)) cb.call(this);
         
                     return this;

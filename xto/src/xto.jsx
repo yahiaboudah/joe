@@ -3032,12 +3032,12 @@
                            E;
                 },
 
-                withExtension : function(extension, noReplace)
+                withExtension : function(extens, noReplace)
                 // File("mylife.txt").withExtension("eps") ==> File: mylife.eps;
                 {
                     return File(
-                        noReplace? "{0}.{1}".re(this.fsName, extension):
-                        "{0}.{1}".re(this.fsName.replace(/.[^.]+$/, ""), extension)
+                        noReplace? "{0}.{1}".re(this.fsName, extens):
+                        "{0}.{1}".re(this.getName(), extens)
                     );
                 },
                 

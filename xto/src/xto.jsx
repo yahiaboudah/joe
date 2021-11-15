@@ -5057,6 +5057,7 @@
                 }
             })
 
+            // [SETTERS/ MODIFIERS]
             PropertyGroup.prototype.xt({
 
                 moveFirstVertex : function(index)
@@ -5126,7 +5127,6 @@
                   if((keyTime < t) && lr == "L") return keyIndex;
                   if((keyTime < t) && lr == "R") return keyIndex+1;
                 },
-
                 // TEXT RELATED: [ANIMATORS]:
                 // Find a way to verify that the property is a text Animator.
                 addTextFill: function(color)

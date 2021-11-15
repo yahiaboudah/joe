@@ -1309,11 +1309,31 @@
             // [DERIVATIVE]
             Bezier.prototype.xt({
 
+                // return a Bezier of order (D-1)
+                derivative: function()
+                {
+                    var P = this.points,
+                        D = this.degree;
+
+                    var i = -1, PP = [];
+                    while(++i<=(D-1))
+                    {
+                        PP.push(D*(P[i+1]-P[i]));
+                    }
+
+                    return new Bezier(PP);
+                },
+
+                // return derivative value
+                deriv: function(t)
+                {
+                    return this.derivative().M_pointAt(t);
+                }
             })
 
             // [CURVE ALIGNMENT]
             Bezier.prototype.xt({
-
+                
             })
 
             // [BOUNDING BOXES]

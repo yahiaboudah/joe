@@ -3782,7 +3782,8 @@
 
                 removeLastRender: function()
                 {
-                    return this.renderQueue.item(this.renderQueue.numItems).remove();
+                    var P = this;
+                    return P.renderQueue.item(P.renderQueue.numItems).remove();
                 }
 
             })

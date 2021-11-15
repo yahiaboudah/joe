@@ -2949,22 +2949,21 @@
                     return (F.$close(), L);
                 },
                 
-                listenForChange : function(debug, wait, maxiter)
+                listenForModif : function(debug, wait, maxiter)
                 {
-                    var iter = -1, maxiter = maxiter || 100;
-    
-                    while (++iter < maxiter)
+                    if(!(is(maxiter, Number))) maxiter = 100;
+                    if(!(is(wait, Number))) wait = 180;
+                    if(!(is(debug, Boolean))) debug = false;
+                    
+                    var i = -1;
+                    while(++i<maxiter)
                     {
                         if(this.modified > lmod) break;
-                        $.$sleep(
-
-                            !wait? 180: wait == "exp"? Math.round(Math.pow(2, iter+6)):
-                            wait,
-                            debug,
-                            iter
+                        $.sleep(wait == 'exp'? ~~ Math.pow(2, (i+6)): wait)
+                        if(debug) $.writeln(
+                            "File not modified, sleeping for {0}..".re(wait)
                         );
                     }
-    
                 },
                 
                 listenForChar : function(charac, pos, wait, maxiter, debug)

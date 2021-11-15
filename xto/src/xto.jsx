@@ -2717,26 +2717,16 @@
                     return inspection;
                 },
     
-                startsWith : function(search, rawPos)
+                startsWith : function(S, P)
                 {
-                
-                    var pos = rawPos > 0 ? rawPos | 0 : 0;
-                    
-                    return this.substring(pos, pos + search.length) === search;
+                    P = P > 0 ? (P | 0) : 0;
+                    return this.substring(P, P + S.length) === S;
                 },
                 
                 padding : function()
-                {    
+                {
                     (pad = /^\s*/).exec(this);
                     return pad.lastIndex;
-                },
-                
-                checkFF : function() {
-                
-                    var ff = Folder(this);
-                
-                    if (!ff.exists) return 0;
-                    return (ff.constructor == File)? 1: -1;
                 },
                 
                 replaceSeq : function(specialChar/*, str1, str2..*/) {

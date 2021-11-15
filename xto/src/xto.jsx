@@ -1231,6 +1231,22 @@
             // [UTILITIES: BERNSTEIN, BINOMIAL COEFF..]
             Bezier.xt({
 
+                mapToDistance: function(A, offset)
+                {
+                    if(!offset) offset = [0, 0];
+
+                    var A = A;
+                    for(x in A) if(x.in(A))
+                    {
+                        A[x] = Math.sqrt(
+                                Math.pow(A[x][0] - offset[0], 2)
+                              + Math.pow(A[x][1] - offset[1], 2)
+                        );
+                    }
+
+                    return A;
+                },
+
                 // Binomial Coefficients:
                 BC: function(n, i)
                 {
@@ -1334,6 +1350,7 @@
             // [CURVE ALIGNMENT]
             Bezier.prototype.xt({
                 
+                
             })
 
             // [BOUNDING BOXES]
@@ -1344,6 +1361,23 @@
             // [ARC LENGTH FUNCTION]
             Bezier.prototype.xt({
 
+                // using curve FLattening 
+                FL_length: function(n)
+                {
+                    var B = this;
+                    
+                    var i = -1, L = [];
+                    while(++i<n)
+                    {
+                        L.push(B.M_pointAt((i+1)/n) 
+                             - B.M_pointAt(i/n));
+                    }
+
+                    return Math.sum.apply(
+                        null, 
+                        Bezier.mapToDistance(L, [0,0])
+                    );
+                }
             })
 
             // [CURVATURE]
@@ -2393,6 +2427,8 @@
 
                 mapToDistance: function(offset)
                 {
+                    if(!offset) offset = [0, 0];
+
                     return this.map(function(v){
                         return Math.sqrt(
                             Math.pow(v[0] - offset[0], 2)

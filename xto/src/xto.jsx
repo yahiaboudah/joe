@@ -3097,23 +3097,28 @@
 
         DATA$FOLDER: (function()
         {
+
+            // [REMOVERS/ CLEANERS]
             Folder.prototype.xt({
-                
-                clearFolder : function(extensionName)
+                                
+                clearFolder : function(extens)
                 {
-                    if(this.constructor !== Folder) return;
-                    if (this.fsName.checkFF() != -1) throw Error("dirPath is not a folder path");
-                    var isAll = (typeof extensionName == "undefined")? true: false;
-    
-                    var ffs = this.getFiles();
-    
-                    ffs.forEach(function(f) {
-                            var ext = f.fsName.split('.');
-                            ext = ext[ext.length-1];
-                            if (f.constructor == File && (isAll || (ext == extensionName)) ) f.remove();
-                    })
-    
-                    return 0;
+                    var FD  = this,
+                        ALL = is(extens, undefined)?1:0;
+
+                    if(!F.is(Folder)) return;
+                    
+                    var FFS = FD.getFiles(), E, F;
+                    for(x in FFS) if(x.in(FFS))
+                    {
+                        F = FFS[x];
+                        E = F.fsName.split('.');
+                        E = E[E.length-1];
+
+                        if(F.is(File) && (A || E == extens)) F.remvoe();
+                    }
+
+                    return FD;
                 },
                 
                 $remove : function()
@@ -3123,6 +3128,10 @@
                            0;
                 },
                 
+            })
+
+            Folder.prototype.xt({
+
                 getFolders : function()
                 {
                         if(this.constructor !== Folder) return;
@@ -3140,7 +3149,7 @@
                         return al; 
                 },
 
-                mostRecent: function()
+                getMostRecent: function()
                 {
                     return Folder(fp).getFiles().reduce(function(file1, file2){
                         return (file1.modified < file2.modified)?

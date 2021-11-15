@@ -2623,78 +2623,64 @@
                 * Extract parameter names and types from a function definition.
                 */
                 {
-                        var paramsList = this.getArgs(this.toString());
-        
-                        for (var k = 0, len = params.length; k < len; k++) {
-                
-                                var currParam = params[k],
-                                    split     = currParam.split("*/"),
-                                    s0        = split[0],
-                                    s1        = split[1];
-                
-                                params[k] = s0.slice(0, 2) == "/*"?
-                                            "{0}:{1}".f(s0.slice(2), s1):
-                                            "Any:{0}".f(s0);
-                        }
-                
-                        return paramsList;
+                    var P = this.getArgs(), pLen = P.length;
+                    var k = 0;
+    
+                    while(++k<pLen)
+                    {
+                        var p = P[k],
+                            s = p.split("*/"),
+                            z = s[0], o = s[1];
+                        
+                        P[k] = z.slice(0, 2) == "/*"?
+                               "{0}:{1}".re(z.slice(2), o):
+                               "Any:{0}".re(z);
+                    }
+
+                    return P;
                 },
 
-                check: function(/*Boolean*/ optArgs, /*Boolean*/ limitArgs)
-                /**
-                * @param {Boolean} optArgs whether to include optional args 
-                * @param {Boolean} limitArgs whether to limit args to a number.
-                * @returns {0}  if params are healthy
-                */
-                {
-                                        
-        
-                        const ERRS = 
-                        {
-                        BAD_ARG     :  "Bad Argument Error."
-                                        + "Arg {0} is a {1} and not a {2}",
-                        MISSING_ARG : "Missing Argument Error.",
-                        EXTRA_ARG   : "Extra Argument Error."
-                        }
-        
-                        var definedAndBool = function(myArg){
-                                return ((myArg !== undefined) || (myArg.constructor === Boolean));
-                        }
-        
-                        if (!definedAndBool(limitArgs)) limitArgs = true;
-                        if (!definedAndBool(optArgs))   optArgs   = false;
-        
-        
-                        var stack      = $.stack.split("\n");
-                        funcName   = stack[stack.length - 3].split("(")[0],
-                        funcParams = this.params(),
-                        isGreater  = (args.length > funcParams.length),
-                        isLess     = (args.length < funcParams.length);
-        
-                        if (isGreater && limitArgs) throw Error(ERRS.EXTRA_ARG);
-                        if (isLess    && !optArgs ) throw Error(ERRS.MISSING_ARG);
-        
-                        // Args length has priority over params length
-                        for (var i = 0; i < args.length; i++) {
-        
-                                var split     = funcParams[i].split(":"),
-                                type      = split[0].toLowerCase(),
-                                paramName = split[1],
-                                argValue  = args[i],
-                                argType;
-        
-                                if ([null, undefined].includes(argValue)) continue;
-        
-                                argType = argValue.constructor.name.toLowerCase();
-                                if (!["any", argType].includes(type)) 
-                                {
-                                        throw Error(ERR.BAD_ARG.f(
-                                                "{0}[1]".f(paramName, i),
-                                                argType,
-                                                type
-                                        ));
-                                }
-                        }
+                check: function(/*Boolean*/ opt, /*Boolean*/ lmt)
+                { 
+                    const BAD_ARG = "BadArg in {0}\nArg {1} is [{2}] and not [{3}]";
+
+                    if(!(opt && opt.is(Boolean))) opt = false;
+                    if(!(lmt && lmt.is(Boolean))) lmt = true;
+    
+                    var stack  = $.stack.split("\n");
+                    
+                    var FName   = stack[stack.length - 3].split("(")[0],
+                        FParams = this.params();
+                    
+                    if((g = args.length) != (p = FParams.length))
+                    {
+                        if(g>p && lmt)  throw Error("Extra Args were supplied in {0}.".re(FName));
+                        if(g<p && !opt) throw Error("Missing args in {0}".re(FName)); 
+                    }
+                    
+                    for(i in args) if(i.in(args)) 
+                    {
+                            var _S  = FParams[i].split(':'),
+                            Ptype = _S[0].toLowerCase(),
+                            PName = _S[1],
+                            
+                            var AValue = args[i], AType;
+    
+                            if(
+                                AValue.in([null, undefined]) ||
+                                
+                                (PType)
+                                .in(["any", AType = AValue.constructor.name])
+                                
+                            ) continue;
+
+                            throw Error(
+                                BAD_ARG.re(
+                                    funcName,
+                                    "[{1}:{0}]".re(PName, i),
+                                    AType, PType
+                            ));
+                    }
                 },
 
             })

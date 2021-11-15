@@ -3799,16 +3799,13 @@
                 FILM_SIZE: 36,
                 FOCAL_LENGTH: 50
             })
-            
+
             CompItem.prototype.xt({
 
-                drop : function(project, itemIdx)
+                drop : function(P/*roject*/, i/*temIndex*/)
                 {
-                    var items = project.items.is(undefined)?app.project.items: project.items;
-                    
-                    return this.layers.add(
-                        items[itemIdx + 1]
-                    )
+                    if(!(is(P, Project))) P = app.project;
+                    return this.layers.add(P.items[i + 1])
                 },
 
                 importAndDrop : function(filePath, force, interval, idx)

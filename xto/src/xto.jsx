@@ -1152,9 +1152,28 @@
 
         MATH$MATRIX: (function(){
 
-            $.global.Matrix = function Matrix(){};
+            $.global.M = function M(A){
+                
+                this.numRows = A.length;
+                this.numCols = A[0].length; 
+            };
 
-            Matrix.xt({
+            // [OPERATOR OVERLOADING]
+            M.prototype.xt({
+
+                '*': function()
+                {
+
+                },
+
+                '+': function()
+                {
+
+                }
+            })
+
+            // [PROPERTIES]
+            M.xt({
                 
                 identity : function(dim)
                 {
@@ -1167,7 +1186,7 @@
                         while(++j < dim) mat[i][j] = (i==j)?1:0;
                     }
                     
-                    return new Matrix(mat);
+                    return new M(mat);
                 }
             })
         }),
@@ -5013,7 +5032,7 @@
                 animator: function(name)
                 {
                     var am = this.Text.Animators.addProperty("ADBE Text Animator");
-                    am.name = name; 
+                    am.name = name || "animator"; 
                     return am;
                 },
 

@@ -2986,21 +2986,20 @@
                     this.$close();
                 },
                 
-                listen : function(delay, debug, patience, cleanup)
+                listen : function(wait, debug, patience, cleanup)
                 {
+                    if(!(is(patience, Number))) patience = 60000;
     
-                    patience = patience || 60000;
                     var ttdelay = 0;
-    
                     while(1)
-                    {       
-                        if(this.exists)
-                        {
-                            (!cleanup) || (this.remove());
-                            break;
-                        }
-                        if(ttdelay > patience) break;
-                        $.$sleep(delay, debug, "File not found yet");
+                    {
+                        if(this.exists) return (cleanup?this.remove():this);
+                        if(ttdelay > patience) return;
+
+                        $.sleep(wait == 'exp'? ~~ Math.pow(2, (i+6)): wait);
+                        if(debug) $.writeln(
+                            "File not found, sleeping for {0}..".re(wait)
+                        );
                         ttdelay += delay;
                     }
                 },

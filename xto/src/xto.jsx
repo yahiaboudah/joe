@@ -3908,6 +3908,43 @@
 
             })
 
+            // [DROP/ DROP AND IMPORT]
+            // REQUIRES (PROJECT, File.prototype.importAE)
+            CompItem.prototype.xt({
+
+                drop : function(P/*roject*/, i/*temIndex*/)
+                {
+                    if(!(is(P, Project))) P = app.project;
+                    return this.layers.add(P.items[i + 1])
+                },
+
+                importAndDrop : function(FP, force, inv, i)
+                {
+                    var F = File(FP),
+                        I = app.project.getItemsWith("name",function(name){
+                            return name == F.name;
+                        });
+
+                    // layer:
+                    var L = this.layers.add(
+
+                        (I.length && !force)?
+                        I[0]:
+                        F.importAE()
+                    );
+                    app.project.lastItem().selected = false;
+                    
+                    if(i) L.moveAfter(i);
+                    if(inv)
+                    {
+                        L.inPoint  = inv[0]; 
+                        L.outPoint = inv[1];
+                    }
+
+                    return L;
+                }
+            })
+
             // [MATRIX RELATED OPERATIONS]
             CompItem.prototype.xt({
                 
@@ -3979,42 +4016,6 @@
 
             })
 
-            // [DROP/ DROP AND IMPORT]
-            // REQUIRES (PROJECT, File.prototype.importAE)
-            CompItem.prototype.xt({
-
-                drop : function(P/*roject*/, i/*temIndex*/)
-                {
-                    if(!(is(P, Project))) P = app.project;
-                    return this.layers.add(P.items[i + 1])
-                },
-
-                importAndDrop : function(FP, force, inv, i)
-                {
-                    var F = File(FP),
-                        I = app.project.getItemsWith("name",function(name){
-                            return name == F.name;
-                        });
-
-                    // layer:
-                    var L = this.layers.add(
-
-                        (I.length && !force)?
-                        I[0]:
-                        F.importAE()
-                    );
-                    app.project.lastItem().selected = false;
-                    
-                    if(i) L.moveAfter(i);
-                    if(inv)
-                    {
-                        L.inPoint  = inv[0]; 
-                        L.outPoint = inv[1];
-                    }
-
-                    return L;
-                }
-            })
         }),
 
         /*

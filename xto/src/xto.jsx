@@ -2955,7 +2955,7 @@
                     if(!(is(wait, Number))) wait = 180;
                     if(!(is(debug, Boolean))) debug = false;
                     
-                    var i = -1;
+                    var i = -1, lmod = this.modified;
                     while(++i<maxiter)
                     {
                         if(this.modified > lmod) break;
@@ -2966,14 +2966,21 @@
                     }
                 },
                 
-                listenForChar : function(charac, pos, wait, maxiter, debug)
+                listenForChar : function(chrc, pos, wait, maxiter, debug)
                 {
-    
-                    var iter = -1, maxiter = maxiter || 100;
-                    while(++iter < maxiter)
+                    if(!(is(maxiter, Number))) maxiter = 100;
+                    
+                    var i = -1;
+                    while(++i<maxiter)
                     {
-                        if (this.$open('r').$seek(pos).readch() == charac) break;
-                        else $.$sleep(wait, debug, iter);
+                        if(this.$open('r').$seek(pos).readch() == chrc) break;
+                        else
+                        {
+                            $.sleep(wait == 'exp'? ~~ Math.pow(2, (i+6)): wait);
+                            if(debug) $.writeln(
+                                "Character not found, sleeping for {0}..".re(wait)
+                            );
+                        }
                     }
                     
                     this.$close();

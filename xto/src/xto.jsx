@@ -4026,6 +4026,7 @@
 
         AFFX$Camera : (function(){
 
+            // [MATRIX RELATED OPERATIONS]
             CameraLayer.prototype.xt({
                 
                 getAOV : function()
@@ -4035,8 +4036,7 @@
     
                     return MathEx.getAOV(filmSize, focalLength);
                 },
-    
-                
+
                 getWorldMatrix : function()
                 {
                     return LayerEx.getWorldMatrix(camera = this);
@@ -4422,10 +4422,11 @@
 
         AFFX$Layer: (function(){
 
-            if($.global["layr"].is(undefined))
+            var C,L;
+            if(is(C = app.project.activeItem, CompItem)
+            && !is(L = C.selectedLayers[0], undefined))
             {
-                var currComp = app.project.activeItem;
-                $.global["layr"] = currComp.selectedLayers[0] || currComp.layer(1);
+                $.global.layr = L; 
             }
 
             var LayerExt = 

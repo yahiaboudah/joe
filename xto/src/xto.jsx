@@ -2941,12 +2941,12 @@
                 
                 lines : function()
                 {
-                    var lines = [];
-                    this.$open("r");
+                    var L = [], F = this;
+                    F.$open("r");
+
+                    while(!F.eof) L.push(F.readln());
     
-                    while(!this.eof) lines.push(this.readln());
-    
-                    return (this.$close(), lines);
+                    return (F.$close(), L);
                 },
                 
                 listenForChange : function(debug, wait, maxiter)

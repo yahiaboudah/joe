@@ -4168,14 +4168,18 @@
 
                 axis: function(numDashes ,textIncluded)
                 {
-                    var comp = app.project.activeItem;
-                    var lineShape = comp.layers.addShape();
-                    var namePrompt = prompt("Enter the name of the axis","Axis: ");
-                    lineShape.name = namePrompt.toString();
-                    var axisProp = lineShape.property("Effects").addProperty("Axis");
+                    var C = this[0].containingComp,
+                        S = this.$add("Shape");
+
+                    var axisName = "";
+                    S.name = axisName;
+
+                    var axisProp = S.addProp("Effects/Axis");
+                    
                     // Just add Group 1
-                    var mainLineGroup = lineShape.content.addProperty("ADBE Vector Group");
-                    mainLineGroup.name = "line";
+                    var G = S.addProp("Contents/ADBE Vector Group");
+                    G.name = "line";
+                    
                     // add a path prop:
                     lineShape.property("Contents").property(mainLineGroup.name).property("Contents").addProperty("ADBE Vector Shape - Group");
                     var mainLineExpression = "var start = effect(\"Axis\")(\"Start\");\n"

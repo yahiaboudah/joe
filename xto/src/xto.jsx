@@ -3723,21 +3723,20 @@
         }),
 
         AFFX$Project: (function(){
-            
+
             $.global.proj = app.project;
 
+            // [GETTERS]
             app.project.xt({
 
-                ITEM_TYPES: [FolderItem, FootageItem, CompItem],
+                ItemTypes: [FolderItem, FootageItem, CompItem],
 
                 itemsArr: function()
                 {
-                    for(var i =0; ++i<this.numItems+1;) items.push(this.item(i))
-                },
+                    var P = this, A = [];
+                    for(x in P) if(x.in(P)) A.push(P.item(x))
 
-                $import: function(filePath)
-                {
-                    this.importFile(new ImportOptions(filePath));
+                    return A;
                 },
 
                 getItemsWith: function(prop, cb)
@@ -3751,6 +3750,14 @@
                     })
 
                     return items;
+                },
+            })
+
+            app.project.xt({
+
+                $import: function(filePath)
+                {
+                    this.importFile(new ImportOptions(filePath));
                 },
 
                 $addComp: function(cfg)

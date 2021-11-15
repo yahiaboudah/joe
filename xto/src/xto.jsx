@@ -2750,8 +2750,9 @@
                     return S.toUpperCase() + S.slice(1);
                 },
                 
-                trim : function(){
-                    return this.replace(/^\s*/,"").replace(/\s*$/,"");
+                trim : function()
+                {
+                    return this.replace(/^\s*|\s*$/,'');
                 },
                 
                 _replace : function(repCfg){

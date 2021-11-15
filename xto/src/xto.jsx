@@ -2620,7 +2620,7 @@
 
                 params: function()
                 /** 
-                * Extract parameter names and types from a function definition.
+                * Extract parameter names and types.
                 */
                 {
                     var P = this.getArgs(), pLen = P.length;
@@ -2640,16 +2640,15 @@
                     return P;
                 },
 
-                check: function(/*Boolean*/ opt, /*Boolean*/ lmt)
+                check: function(/*Object*/ args, /*Boolean*/ opt, /*Boolean*/ lmt)
                 { 
                     const BAD_ARG = "BadArg in {0}\nArg {1} is [{2}] and not [{3}]";
+                    var S = $.stack.split("\n");
 
                     if(!(opt && opt.is(Boolean))) opt = false;
                     if(!(lmt && lmt.is(Boolean))) lmt = true;
     
-                    var stack  = $.stack.split("\n");
-                    
-                    var FName   = stack[stack.length - 3].split("(")[0],
+                    var FName   = S[S.length - 3].split("(")[0],
                         FParams = this.params();
                     
                     if((g = args.length) != (p = FParams.length))
@@ -2657,26 +2656,25 @@
                         if(g>p && lmt)  throw Error("Extra Args were supplied in {0}.".re(FName));
                         if(g<p && !opt) throw Error("Missing args in {0}".re(FName)); 
                     }
-                    
+
                     for(i in args) if(i.in(args)) 
                     {
                             var _S  = FParams[i].split(':'),
-                            Ptype = _S[0].toLowerCase(),
-                            PName = _S[1],
+                                PType = _S[0].toLowerCase(),
+                                PName = _S[1];
                             
-                            var AValue = args[i], AType;
+                            var AValue = args[i],
+                                AType  = (!!AValue?AValue.constructor.name.toLowerCase():
+                                         undefined);
     
                             if(
-                                AValue.in([null, undefined]) ||
-                                
-                                (PType)
-                                .in(["any", AType = AValue.constructor.name])
-                                
+                                !AType ||
+                                (PType).in(["any", AType])
                             ) continue;
 
                             throw Error(
                                 BAD_ARG.re(
-                                    funcName,
+                                    FName,
                                     "[{1}:{0}]".re(PName, i),
                                     AType, PType
                             ));

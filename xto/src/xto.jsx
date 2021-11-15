@@ -3026,10 +3026,10 @@
                 
                 getExtension : function(toLower)
                 {
-                    var ext = this.name.replace(/^.*\./, ""); 
+                    var E = this.name.replace(/^.*\./, ""); 
                     return toLower?
-                           ext.toLowerCase():
-                           ext;
+                           E.toLowerCase():
+                           E;
                 },
 
                 withExtension : function(extension, noReplace)

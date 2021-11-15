@@ -3106,8 +3106,6 @@
                     var FD  = this,
                         ALL = is(extens, undefined)?1:0;
 
-                    if(!F.is(Folder)) return;
-                    
                     var FFS = FD.getFiles(), E, F;
                     for(x in FFS) if(x.in(FFS))
                     {
@@ -3119,34 +3117,31 @@
                     }
 
                     return FD;
-                },
-                
-                $remove : function()
-                {
-                    return this.is(Folder)?
-                           (this.remove()):
-                           0;
-                },
-                
+                }
             })
 
             Folder.prototype.xt({
 
-                getFolders : function()
+                getF: function(what)
                 {
-                        if(this.constructor !== Folder) return;
-                        var al = [];
-                        this.getFiles().forEach(function(f){ if(f.constructor == Folder) al.push(f)})
-                        return al; 
-                },
-                
-                $getFiles : function()
-                {        
-                        if(this.constructor !== Folder) return;
+                    var cfg = 
+                    {
+                        olders: Folder,
+                        iles:   File
+                    }
+
+                    var FD = this,
+                        A  = [];
+
+                    var FFS = FD.getFiles(), F;
+                    for(x in FFS) if(x.in(FFS))
+                    {
+                        F = FFS[x];
                         
-                        var al = [];
-                        this.getFiles().forEach(function(f){ if(f.constructor == File) al.push(f)})
-                        return al; 
+                        if(F.is(cfg[what])) A.push(F);
+                    }
+
+                    return A; 
                 },
 
                 getMostRecent: function()

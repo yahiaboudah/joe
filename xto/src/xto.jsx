@@ -4233,48 +4233,54 @@
                         S.getProp("Contents/{0}/Contents/Stroke 1/Stroke Width").setValue(4);
                         }
 
-                    if(text)
-                    {
-                    i = -1;
-                    while(++i<numDahses)
-                    {
-                        var textLayer = comp.layers.addText();
-                        textLayer.shy = true;
-                        // Editing the source text
-                        textLayer.sourceText.expression = "var num = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Count\")+"
-                        +i+"*thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Basis\");\
-                        Math.round(10*num)/10";
-                        textLayer.name = textLayer.sourceText.value;
-                    
-                        //Anchor Point of the text
-                        textLayer.transform.anchorPoint.expression= "var x = sourceRectAtTime(time,false).width/2 + sourceRectAtTime(time,false).left;\
-                        var y = sourceRectAtTime(time,false).height/2 + sourceRectAtTime(time,false).top;\
-                        [x,y]";
-                    
-                        // Position of the text
-                        var positionExpression = "var x0 = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Start\");"
-                        +"var spacingout = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Spacingout\");"
-                        +"var x = (thisComp.width/2)+"+i+"*spacingout+x0+thisComp.layer(\""+lineShape.name+"\").transform.position[0]-960;"
-                        +"var y = thisComp.layer(\""+lineShape.name+"\").transform.position[1]+55;"
-                        +"[x,y]";
-                    
-                        textLayer.transform.position.expression = positionExpression;
-                    
-                        //Opacity of the text
-                        var opacityExpression = "var end0 =thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"End\");\
-                        var pos = transform.position[0]-thisComp.width/2;\
-                        if(pos-end0 <-10){100}\
-                        else{100*Math.exp(-Math.pow(end0-pos,2)/(2*30*30))}";
-                    
-                        textLayer.transform.opacity.expression = opacityExpression;
-                    
-                        // END TEXT RELATED THINGS HERE
+                        var endValue = ((100*numDashes)-100)/2;
+                        S.getProp("Effects/Axis/Start").setValue(-endValue);
+                        S.getProp("Effects/Axis/End")  .setValue(endValue);
+
+                        if(!text) return;
+
+                        i = -1;
+                        
+                        while(++i<numDahses)
+                        {
+                            var TL = this.$add("text", {shy: true});
+
+                            // Editing the source text
+                            TL.sourceText.expression = function()
+                            {
+                                var FX = thisComp.layer("$SName").effect("Axis");
+                                var num = FX("Count") + $i * FX("Basis");
+
+                                (Math.round(10*num)/10)
+                            }.body({$i:i})
+                            TL.name = TL.sourceText.value;
+                        
+                            //Anchor Point of the text
+                            TL.transform.anchorPoint.expression = function()
+                            {
+                                var S = sourceRectAtTime(time, false);
+                                [S.width/2 + S.left, S.height/2 + S.top];
+                            }
+                        
+                            // Position of the text
+                            var positionExpression = "var x0 = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Start\");"
+                            +"var spacingout = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Spacingout\");"
+                            +"var x = (thisComp.width/2)+"+i+"*spacingout+x0+thisComp.layer(\""+lineShape.name+"\").transform.position[0]-960;"
+                            +"var y = thisComp.layer(\""+lineShape.name+"\").transform.position[1]+55;"
+                            +"[x,y]";
+                        
+                            textLayer.transform.position.expression = positionExpression;
+                        
+                            //Opacity of the text
+                            var opacityExpression = "var end0 =thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"End\");\
+                            var pos = transform.position[0]-thisComp.width/2;\
+                            if(pos-end0 <-10){100}\
+                            else{100*Math.exp(-Math.pow(end0-pos,2)/(2*30*30))}";
+                        
+                            textLayer.transform.opacity.expression = opacityExpression;
+                        
+                            // END TEXT RELATED THINGS HERE
                         }
-                    }
-                    
-                    var endValue = ((100*numDashes)-100)/2;
-                    S.getProp("Effects/Axis/Start").setValue(-endValue);
-                    S.getProp("Effects/Axis/End")  .setValue(endValue);
                 },
 
                 dynamicLine: function(x0 ,y0 ,x1 ,y1)

@@ -2926,14 +2926,15 @@
                     return (this.$write((text || ""), 'w'), this);
                 },
                 
-                execute : function(sleep, cb, doClose)
+                $execute : function(sleep, cb, doClose)
                 {
                     if(is(doClose, undefined)) doClose = 0;
 
                     this.execute();
+
                     if(doClose) this.$close();
-                    $.sleep(sleep || 0);
-                    if(cb.is(Function)) cb.call(this);
+                    if(!!sleep) $.sleep(sleep);
+                    if(cb && cb.is(Function)) cb.call(this);
         
                     return this;
                 },

@@ -2744,8 +2744,10 @@
                     return S;
                 },
                 
-                title : function() {
-                    return this[0].toUpperCase() + this.slice(1);
+                title : function()
+                {
+                    var S = this;
+                    return S.toUpperCase() + S.slice(1);
                 },
                 
                 trim : function(){

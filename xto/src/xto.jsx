@@ -3753,9 +3753,10 @@
 
             app.project.xt({
 
-                $import: function(filePath)
+                $import: function(FP)
                 {
-                    this.importFile(new ImportOptions(filePath));
+                    var P = this;
+                    return P.importFile(new ImportOptions(FP));
                 },
 
                 $addComp: function(cfg)

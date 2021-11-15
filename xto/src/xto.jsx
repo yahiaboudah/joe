@@ -4240,12 +4240,13 @@
                         if(!text) return;
 
                         i = -1;
-                        
                         while(++i<numDahses)
                         {
                             var TL = this.$add("text", {shy: true});
 
-                            // Editing the source text
+                            // [EDIT TEXT LAYER PROPERTY EXPRESSIONS]
+
+                            // [SOURCE TEXT EXPRESSION]
                             TL.sourceText.expression = function()
                             {
                                 var FX = thisComp.layer("$SName").effect("Axis");
@@ -4255,14 +4256,14 @@
                             }.body({$i:i})
                             TL.name = TL.sourceText.value;
                         
-                            //Anchor Point of the text
+                            //[ANCHOR POINT EXPRESSION]
                             TL.transform.anchorPoint.expression = function()
                             {
                                 var S = sourceRectAtTime(time, false);
                                 [S.width/2 + S.left, S.height/2 + S.top];
                             }.body();
                         
-                            // Position of the text
+                            // [TEXT POSITION EXPRESSION]
                             TL.transform.position.expression = function()
                             {
                                 var LA = thisComp.layer("$SName");
@@ -4276,15 +4277,18 @@
 
                             }.body({$SName: S.name, $i:i})
 
-                            //Opacity of the text
-                            var opacityExpression = "var end0 =thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"End\");\
-                            var pos = transform.position[0]-thisComp.width/2;\
-                            if(pos-end0 <-10){100}\
-                            else{100*Math.exp(-Math.pow(end0-pos,2)/(2*30*30))}";
-                        
-                            textLayer.transform.opacity.expression = opacityExpression;
-                        
-                            // END TEXT RELATED THINGS HERE
+                            // [OPACITY EXPRESSION]
+                            TL.transform.opacity.expression = function()
+                            {
+                                var FX = thisComp.layer("$SName").effect("Axis");
+                                var PS = transform.position[0] - thisComp.width/2;
+
+                                if(PS - FX("End") < -10) 100
+                                else
+                                {
+                                    100 * Math.exp(-Math.pow(FX("End")-PS, 1)/(2*30*30))
+                                }
+                            }
                         }
                 },
 

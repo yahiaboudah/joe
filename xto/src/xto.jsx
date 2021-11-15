@@ -3146,11 +3146,17 @@
 
                 getMostRecent: function()
                 {
-                    return Folder(fp).getFiles().reduce(function(file1, file2){
-                        return (file1.modified < file2.modified)?
-                               file1:
-                               file2;
-                      })
+                    var FD  = this,
+                        FFS = FD.getFiles(), F, MR = -99999;
+                    
+                    for(x in FFS) if(x.in(FFS))
+                    {
+                        F = FFS[x];
+                        if(F.modified > (FFS[x+1] || -9999))
+                        {
+                            MR = F.modified;
+                        }
+                    }
                 }
             })
         }),

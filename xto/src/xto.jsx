@@ -3697,6 +3697,7 @@
                 wrapUndo : function(F, T)
                 {
                     var A = arguments.slice(2);
+
                     return function()
                     {
                         app.beginUndoGroup(F.name);
@@ -3705,19 +3706,17 @@
                     }
                 },
               
-                doUndo   : function(func, thisArg, offsetTime)
+                doUndo   : function(F, T, offset)
                 {
-                    // execute function:
-                    app.wrapUndo(
-                        func,
-                        thisArg || {},
-                        Array.prototype.slice.call(arguments, 3)
-                    )();
+                    // execute F:
+                    app.wrapUndo(F, T || {}, arguments.slice(3))();
                   
                     // undo with an offset time:
                     app.setTimeout(function(){
-                        app.executeCommand(app.findMenuCommandId("Undo " + func.name));
-                    }, offsetTime || 0);
+                        app.executeCommand(
+                            app.findMenuCommandId("Undo {0}".re(F.name))
+                        );
+                    }, offset || 0);
               
                 },
             })

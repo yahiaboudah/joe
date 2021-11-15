@@ -2818,20 +2818,31 @@
 
         PRIM$NUMBER: (function(){
             
-            if(!$.global["num"]) $.global["num"] = function(n){return new Number(n)};
+            $.global.num = function(n){return new Number(n)}
 
-            Number.prototype["^"] = function(v){
-                return Math.pow(this, v);
-            }
+            // [OPERATOR OVERLOADING]
+            Number.prototype.xt({
 
-            Number.prototype.inRange = function(range, z, o)
-            {
-                var N = this;
-                z = z? (N >= range[0]): N > range[0];
-                o = o? (N <= range[1]): N < range[1];
+                '^': function(v)
+                {
+                    var N = this;
+                    return Math.pow(N, v);
+                }
+            })
 
-                return z && o;
-            }
+            // [Range Functions]
+            Number.prototype.xt({
+
+                inRange: function(range, x, y)
+                {   
+                    // x,y if <= or < (strict or not)
+                    var N = this;
+                    x = x? (N >= range[0]): N > range[0];
+                    y = y? (N <= range[1]): N < range[1];
+
+                    return x && y;
+                }
+            })
         }),
 
         /*

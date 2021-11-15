@@ -2729,23 +2729,19 @@
                     return pad.lastIndex;
                 },
                 
-                replaceSeq : function(specialChar/*, str1, str2..*/) {
-                
-                    startIdx = 1;
-                    if (typeof specialChar == "undefined"){
-                        specialChar = '@';
-                        startIdx    =  0;  
-                    }
-                
-                    var thiss = this, 
-                        args  = Array.prototype.slice.call(arguments, startIdx),
-                        patt  = new RegExp(specialChar),    
-                        i     = 0;
+                replaceSeq : function(C/*, str1, str2..*/)
+                {
+                    var startIdx = 1;
+                    if(!C) C = '@'; startIdx = 0;
+
+                    var S = this; // String
+                    var A  = arguments.slice(startIdx), // Args
+                        P  = new RegExp(C); // Pattern
                     
-                    while (thiss.search(patt) != -1) thiss = thiss.replace(patt, args[i++] || specialChar);
+                    var i = 0;
+                    while(S.search(P) != -1) S = S.replace(P, A[i++] || C);
                 
-                
-                    return thiss;
+                    return S;
                 },
                 
                 title : function() {

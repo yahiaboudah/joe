@@ -3203,12 +3203,16 @@
 
         AFFX$App: (function(){
 
-            app.xt({
 
+            // [AECMD NUMBERS]
+            app.xt({
                 AECMD: 
                 {
                     SAVE_AS_FRAME: 2104
-                },
+                }
+            })
+
+            app.xt({
 
                 _MN: function(prop)
                 {
@@ -3660,13 +3664,9 @@
                 }
             })
 
+            // [DOERS/ WRAPUNDO/ DOUNDO]
             app.xt(
             {
-                getSpecifer: function()
-                {
-                    return app.name.split(" ")[0].replace(" ", "").toLowerCase();
-                },
-
                 makeAnimMarkers : function(animObj)
                 /**
                  * Convert this: 

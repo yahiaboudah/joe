@@ -5021,11 +5021,11 @@
                 
                 containingComp : function()
                 {
-                  var depth = this.propertyDepth, pp = this;
+                  var DEPTH = this.propertyDepth, P = this;
                 
-                  while(depth--) pp = pp.parentProperty;
+                  while(DEPTH--) P = P.parentProperty;
                   
-                  return pp.containingComp;
+                  return P.containingComp;
                 },
 
                 is : function()
@@ -5043,16 +5043,18 @@
 
                 isnt : function()
                 {
-                  return !this.is.apply(this, Array.prototype.slice.call(arguments));
+                  return !this.is.apply(this, arguments.slice());
                 },
 
                 properties : function()
                 {
-                  var props = [], i = -1;
-                  for(;++i<=this.numProperties;) props.push(this.property(i)); 
-                  return props;
-                }
+                  var P = [];
 
+                  var i = -1;
+                  while(++i <this.numproperties) P.push(this.property(i));
+
+                  return P;
+                }
             })
 
             PropertyGroup.prototype.xt({

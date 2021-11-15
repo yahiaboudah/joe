@@ -2606,7 +2606,7 @@
                     return ((tt/n)/MICS);
                 },
             })
-            
+
             // [PARSING, CHECKING ARGS]
             Function.prototype.xt({
                 
@@ -2693,33 +2693,32 @@
         {
             String.prototype.xt({
 
-                inspectFF : function() {
+                inspectFF : function()
+                {
+                    var S = this, 
+                        P = S.split('/'), I;
 
-                    var inspection = {},
-                        parts = this.split('/'),
-                        lastPart = parts.pop(),
-                        numParts = parts.length,
-                        fStr0 = this[0],
-                        fStr1 = this[1];
-                
-                    inspection.folderDepth = numParts;
-                    inspection.drive = (fStr1 == ':') ? fStr0 : null;
-                    inspection.isFile = false;
-                    inspection.isFolder = false;
-                    inspection.extension = "";
-                
-                    /**
-                     * if last part contains a dot: file
-                     * if not: check numParts: if 0: invalid path string
-                     * if numParts > 0: folder
-                     */
-                
-                    if (lastPart.indexOf('.') > -1) 
-                            Object.newKeys(inspection,["valid", "isFile", "isFolder","extension"],
-                                                      [true,true,false,lastPart.split('.').pop()]);
-                
-                    else Object.newKeys(inspection, ["valid", "isFolder"], [!!numParts, !!numParts]);
-                
+                    I = 
+                    {
+                        depth : P.length,
+                        drive : S[1] == ':'?S[0]:undefined,
+                        file  : 0,
+                        folder: 0,
+                        extens: ''
+                    }
+                    
+                    if('.'.in(lastPart))
+                    {
+                        inspection["valid"] = true;
+                        inspection["isFile"] = true;
+                        inspection["isFolder"] = false;
+                        inspection["extension"] = lastPart.split('.').pop();
+                    }
+                    else
+                    {
+                        inspection["valid"] = 
+                        inspection["isFolder"] = !!numParts;
+                    }
                 
                     return inspection;
                 },

@@ -4299,16 +4299,16 @@
                     var shape   = new makeShapeWithPath(c, 2 ,true);
                     var path    = shape.content.property(MATCH_NAMES.PATH);
                     var argName = Arguments.getArgs(callee);
-                    var i       = -1;
                     var args    = arguments;
                     var expr    = ""; 
                   
-                    for(;++i<args.length;)
+                    var i = -1;
+                    while(++i<args.length)
                     {
-                      a = arguments[i];
-                      n = argName[i];
+                      A = arguments[i];
+                      N = argName[i];
                   
-                      if(a instanceof Array) // if it's layers you want to connect:
+                      if(A.is(Array)) // if it's layers you want to connect:
                       {
                         arrRepCfg = 
                         {
@@ -4796,6 +4796,21 @@
 
         AFFX$ShapeLayer: (function(){
 
+
+            // [SETTERS/ MODIFIERS]
+            ShapeLayer.prototype.xt({
+                
+                moveFirstVertex : function(idx){
+                
+                    var i = 0,
+                        c = this.property("Contents"),
+                        n = c.numProperties + 1;
+                
+                    while(++i<n) c.property(i).moveFirstVertex(idx);
+                }
+            })
+
+            // [INFO / GETTERS]
             ShapeLayer.prototype.xt({
 
                 area : function(t){
@@ -4874,15 +4889,6 @@
                     }
                 
                     return areas;
-                },
-
-                moveFirstVertex : function(idx){
-                
-                    var i = 0,
-                        c = this.property("Contents"),
-                        n = c.numProperties + 1;
-                
-                    for(;++i<n;) c.property(i).moveFirstVertex(idx);
                 },
 
                 distances : function(origin)

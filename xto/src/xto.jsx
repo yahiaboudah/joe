@@ -3006,14 +3006,17 @@
                 
                 getDuration : function()
                 {
+                    var F = this,
+                        K, D;
+
                     if(!this.exists) return 0;
-                    if(!["video", "audio"].includes(this.getType())) return 0;
+                    if(this.getType().in(["video", "audio"])) return 0;
+
+                    K = app.project.importFile(new ImportOptions(F));
+                    D = K.duration;
                     
-                    k = app.project.importFile(new ImportOptions(this));
-                    d = k.duration;
-                    
-                    k.remove(); k = null;
-                    return d;
+                    K.remove(); K = null;
+                    return D;
                 },
                 
                 getName : function()

@@ -3723,8 +3723,8 @@
         }),
 
         AFFX$Project: (function(){
-
-            if($.global["proj"].is(undefined)) $.global["proj"] = app.project;
+            
+            $.global.proj = app.project;
 
             app.project.xt({
 

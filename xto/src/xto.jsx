@@ -3791,12 +3791,15 @@
         
         AFFX$CompItem: (function()
         {
-            // make default "comp" reference activeItem. [REQURES FIX: case of activeItem not CompItem]
-            if($.global["comp"].is(undefined)) $.global["comp"] = app.project.activeItem;
+            var I;
+            if(!(is(I = app.project.activeItem, CompItem))) $.global.comp = I;
 
-            CompItem.FILM_SIZE    = 36;
-            CompItem.FOCAL_LENGTH = 50;
-
+            // [PROPERTIES]
+            CompItem.xt({
+                FILM_SIZE: 36,
+                FOCAL_LENGTH: 50
+            })
+            
             CompItem.prototype.xt({
 
                 drop : function(project, itemIdx)

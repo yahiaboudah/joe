@@ -4260,17 +4260,22 @@
                             {
                                 var S = sourceRectAtTime(time, false);
                                 [S.width/2 + S.left, S.height/2 + S.top];
-                            }
+                            }.body();
                         
                             // Position of the text
-                            var positionExpression = "var x0 = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Start\");"
-                            +"var spacingout = thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"Spacingout\");"
-                            +"var x = (thisComp.width/2)+"+i+"*spacingout+x0+thisComp.layer(\""+lineShape.name+"\").transform.position[0]-960;"
-                            +"var y = thisComp.layer(\""+lineShape.name+"\").transform.position[1]+55;"
-                            +"[x,y]";
-                        
-                            textLayer.transform.position.expression = positionExpression;
-                        
+                            TL.transform.position.expression = function()
+                            {
+                                var LA = thisComp.layer("$SName");
+                                var FX = LA.effect("Axis");
+                                var SP = FX("Space");
+
+                                var x = (thisComp.width/2) + $i * SP + FX("Start") + LA.transform.position[0] -960;
+                                var y = LA.transform.position[1] + 55;
+
+                                [x, u]
+
+                            }.body({$SName: S.name, $i:i})
+
                             //Opacity of the text
                             var opacityExpression = "var end0 =thisComp.layer(\""+lineShape.name+"\").effect(\"Axis\")(\"End\");\
                             var pos = transform.position[0]-thisComp.width/2;\

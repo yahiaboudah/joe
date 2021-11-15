@@ -2693,33 +2693,27 @@
         {
             String.prototype.xt({
 
-                inspectFF : function()
+                inspectPath: function()
                 {
                     var S = this, 
-                        P = S.split('/'), I;
+                        P = S.split('/'), 
+                        I, L;
 
-                    I = 
+                    I =
                     {
                         depth : P.length,
                         drive : S[1] == ':'?S[0]:undefined,
                         file  : 0,
                         folder: 0,
-                        extens: ''
                     }
                     
-                    if('.'.in(lastPart))
+                    if('.'.in(L = P.pop()))
                     {
-                        inspection["valid"] = true;
-                        inspection["isFile"] = true;
-                        inspection["isFolder"] = false;
-                        inspection["extension"] = lastPart.split('.').pop();
+                        I.valid = I.file = 1;
+                        I.extens = L.split('.').pop();
                     }
-                    else
-                    {
-                        inspection["valid"] = 
-                        inspection["isFolder"] = !!numParts;
-                    }
-                
+                    else I.valid = I.folder = 1
+
                     return inspection;
                 },
     

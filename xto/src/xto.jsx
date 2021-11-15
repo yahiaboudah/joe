@@ -5016,6 +5016,7 @@
 
         AFFX$PropertyGroup: (function(){
 
+            // [INFO/GETTERS]
             PropertyGroup.prototype.xt({
                 
                 containingComp : function()
@@ -5029,15 +5030,13 @@
 
                 is : function()
                 {
-                    var _args = Array.prototype.slice.call(arguments), i = -1;
+                    var P = this,
+                        A = arguments.slice();
+
+                    var match = P.matchName.split(' ')[2];
                     
-                    // matchName processing:
-                    var match = this.matchName.split(" ")[2];
-                    
-                    while(++i<_args.length)
-                    {
-                      if(match == args[i]) return true;
-                    }
+                    var i = -1;
+                    while(++i<A.length) if(match == A[i]) return true;
                 
                     return false;
                 },
@@ -5052,7 +5051,11 @@
                   var props = [], i = -1;
                   for(;++i<=this.numProperties;) props.push(this.property(i)); 
                   return props;
-                },
+                }
+
+            })
+
+            PropertyGroup.prototype.xt({
 
                 moveFirstVertex : function(index)
                 {    

@@ -1150,15 +1150,14 @@
     
         MATH$BEZIER: (function(){
             
-            // ONLY SUPPORTS 2D QUADRATIC BEZIER CURVES
-
             $.global.Bezier = function Bezier(coords)
             {
                 this.points = Array.clone(coords);
+                this.degree = this.points.length -1;
 
-                this.start = coords.shift();
-                this.end   = coords.pop();
-                this.controls = coords;
+                this.start = coords[0];
+                this.end   = coords[coords.length-1];
+                this.controls = (coords.shift(), coords.pop(), coords);
             }
 
             // [VALUE AT T]
@@ -1240,7 +1239,7 @@
 
                 Bernstein: function(i, n, t)
                 {
-                    return this.BC(n, i) * ((1-t)^(n-i)) * (t^i);
+                    return Bezier.BC(n, i) * ((1-t)^(n-i)) * (t^i);
                 }
             })
 
@@ -1253,11 +1252,12 @@
 
                     var DC = function DC(z, p)
                     {
-                        var len = p.length;
+                        var len = p.length,
+                            one = (len === 1);
 
                         L.push(p[0]);
-                        R.push(len == 1?p[0]:p[len-1]);
-                        if(len == 1) return;
+                        R.push(one?p[0]:p[len-1]);
+                        if(one) return;
 
                         var pp = [], i = -1;
                         while(++i<len-1)
@@ -1279,6 +1279,54 @@
             })
 
             // [DEGREE ELEVATION]
+            Bezier.prototype.xt({
+
+                elevate: function()
+                {
+                    var P = this.points,
+                        D = this.degree;
+
+                    var Q = [P[0]];
+
+                    var i = 0, s;
+                    while(++i<=D)
+                    {
+                        s = (i/(D+1));
+                        Q[i] = s*P[i-1] + (1-s)*P[i];
+                    }
+
+                    Q.push(P[D]);
+                    return new Bezier(Q);
+                },
+
+                elevateN: function(n)
+                {
+                    var B = this;
+                    while(n--) B = B.elevate();
+                }
+            })
+
+            // [DERIVATIVE]
+            Bezier.prototype.xt({
+
+            })
+
+            // [CURVE ALIGNMENT]
+            Bezier.prototype.xt({
+
+            })
+
+            // [BOUNDING BOXES]
+            Bezier.prototype.xt({
+
+            })
+
+            // [ARC LENGTH FUNCTION]
+            Bezier.prototype.xt({
+
+            })
+
+            // [CURVATURE]
             Bezier.prototype.xt({
 
             })
@@ -2519,7 +2567,7 @@
                 * Extract parameter names and types from a function definition.
                 */
                 {
-                        var paramsList = A.getArgs(this.toString());
+                        var paramsList = this.getArgs(this.toString());
         
                         for (var k = 0, len = params.length; k < len; k++) {
                 
@@ -2532,7 +2580,6 @@
                                             "{0}:{1}".f(s0.slice(2), s1):
                                             "Any:{0}".f(s0);
                         }
-                
                 
                         return paramsList;
                 },

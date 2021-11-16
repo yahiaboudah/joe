@@ -983,23 +983,23 @@
         {
             Math.xt({
                 
-                degreesToRadians : function(degrees)
+                degToRad : function(D)
                 {
-                    return degrees * Math.PI / 180;
+                    return D * Math.PI / 180;
                 },
             
-                radiansToDegrees : function(radians)
+                radToDeg : function(R)
                 {
-                    return radians * 180 / Math.PI;
+                    return R * 180 / Math.PI;
                 },
 
-                mult : function(){
-                    var args = Array.prototype.slice.call(arguments);
-                    
-                    var i = args.length, mm = 1;
-                    while(i--) mm *= args[i];
+                mult : function()
+                {    
+                    var A = arguments.slice(); 
+                    var i = A.length, k = 1;
+                    while(i--) k *= A[i];
                 
-                    return mm
+                    return k;
                 }
             })
         }),
@@ -1164,12 +1164,35 @@
             // [OPERATOR OVERLOADING]
             M.prototype.xt({
 
-                '*': function()
+                '*': function(K)
                 {
+                    var MX = this;
 
+                    switch(K.constructor)
+                    {
+                        case Number:
+                            MX.forEach(function(e){
+                                return K * e;
+                            })
+                            break;
+                        
+                        case M:
+                            // return result of Matrix
+                            // multiplication
+                            break;
+                    }
                 },
 
                 '+': function()
+                {
+
+                }
+            })
+
+            // [ITERATORS]
+            M.xt({
+
+                forEach: function(cb)
                 {
 
                 }

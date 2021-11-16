@@ -1399,24 +1399,23 @@
                 // A = R*T*P:
                 alignAlongX: function()
                 {
-                    var P = this.points;
+                    var P = this.points, Q;
 
                     // 1) Translate by -P0
                     var T = P[0] * -1;
-                    // 2) Rotate by 
-                    var k = ((P[0][1] - P[2][1]) / (P[2][0] - P[0][0]))
+                    for(p in P) if(p.in(P)) P[p] = P[p] + T;
+                    // 2) Rotate by
+                    var x = P[P.length-1][0],
+                        y = P[P.length-1][1];
+
                     var R = M([
-                        [Math.cos(Math.atan(k)), -Math.sin(Math.atan(k))],
-                        [Math.sin(Math.atan(k)), Math.cos(Math.atan(k))]
+                        [1/Math.sqrt(1+(y/x)*(y/x)), y/Math.sqrt(x*x+y*y)],
+                        [-y/Math.sqrt(x*x+y*y), 1/Math.sqrt(1+(y/x)*(y/x))]
                     ]);
+                    
+                    Q = R * M(P);
 
-                    for(var p in P) if(p.in(P))
-                    {
-                        P[p] = P[p] + T;
-                        P[p] = R * M(P[p]);
-                    }
-
-                    return aligned = new Bezier(P);
+                    return aligned = new Bezier(Q);
                 }
             })
 

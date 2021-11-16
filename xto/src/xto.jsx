@@ -1404,6 +1404,7 @@
                     // 1) Translate by -P0
                     var T = P[0] * -1;
                     for(p in P) if(p.in(P)) P[p] = P[p] + T;
+                    
                     // 2) Rotate by θ (find θ first): x,y of last point
                     var x = P[P.length-1][0],
                         y = P[P.length-1][1];
@@ -1421,6 +1422,44 @@
 
             // [BOUNDING BOXES]
             Bezier.prototype.xt({
+
+                getXs: function()
+                {
+                    var P = this.points, Q;
+                    for(x in P) if(x.in(P)) Q.push(P[x][0])
+
+                    return Q;
+                },
+
+                getYs: function()
+                {
+                    var P = this.points, Q;
+                    for(x in P) if(x.in(P)) Q.push(P[x][1])
+
+                    return Q;
+                },
+
+                BBox: function(tightness)
+                {
+                    switch(tightness)
+                    {
+                        case 0: // do min/max of Bezier-polygon
+                            break;
+                        
+                        case 1: 
+                            // find roots of (x'(t) = 0) and (y'(t) = 0)
+                            break;
+                        case 2:
+                            /*
+                                1) Align the curve
+                                2) Find roots of x'(t) = 0, y'(t) = 0
+                                3) De-align the BBox back using -T and inv(R[θ])
+                            */
+                            break;
+                    }
+                    //return bounding box:
+                    return [B0, B1]
+                },
 
             })
 
@@ -1448,6 +1487,7 @@
 
             // [CURVATURE]
             Bezier.prototype.xt({
+
 
             })
         
@@ -5804,7 +5844,7 @@
             
             FileInterface.prototype.get = function()
             {
-                return jj.deser(File(this.intfPath).$read());
+                return $.deser(File(this.intfPath).$read());
             }
             
             FileInterface.prototype.modify = function(keysP, newV)

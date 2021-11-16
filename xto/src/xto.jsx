@@ -6126,10 +6126,9 @@
 
             $.global.Logger = function Logger(){};
 
-            (function (self){
+            Logger.xt({
 
-                I         = {};
-                I.levels  = 
+                LEVELS: 
                 {
                     NONSET: 0,
                     DEBUG: 10,
@@ -6137,71 +6136,82 @@
                     WARNING: 30,
                     ERROR: 40,
                     CRITICAL: 50
-                };
-                
-                I.dttypes = 
+                },
+
+                DATES: 
                 {
                     FULL     : "toString",
                     TIME     : "toTimeString",
                     TIMEONLY : "toLocaleTimeString",
                     WEEKDAY  : "toLocaleString"
-                }
-                
-                I.mkFile  = function(path, str)
-                {
-                    return File(path).$write(str);
-                }
-                
-                I.writeMsg = function(str, mode)
-                {
-                    File(self.path).$write(str, mode || "a");
-                }
+                },
             
-                I.getMsg = function(msg, lvl, noww)
+                getScriptName: function()
                 {
-                    return "{0}:{1}:{2}\n".f(noww, lvl, msg);
-                }
-            
-                I.now    = function()
-                {
-                    return new Date(Date.now())[I.dttypes[self.dttype]]();
-                }
-            
-                I.getScriptName = function(){
                     return $.stack.split("\n")[0].replace(/\[|\]/g, "");
-                }
+                },
             
-                I.getScriptPath = function(){
+                getScriptPath: function(){
                     return File($.stack).fsName;
                 }
             
-                self.config = function(cfg)
-                {
-                    if(cfg.isnt(Object)) cfg = {};
-            
-                    if(cfg.name.isnt(String))     cfg.name    = I.getScriptName();
-                    if(cfg.path.isnt("Path"))     cfg.path    = I.getScriptPath();
-                    if(cfg.level.isnt(Number))    cfg.level   = 0;
-                    if(cfg.dttype.isnt(String))   cfg.dttptye = "TIME";
-                    if(cfg.format.isnt(String))   cfg.format  = "*time:*level:*message";  
-                    if(cfg.enabled.isnt(Boolean)) cfg.enabeld = true;
-                }
-            
-                self.make = function(){ I.mkFile(self.path, ""); }
-            
-                for (k in I.levels) if(k != "NONSET"){
-                    
-                    self[k.toLowerCase()] = Function("msg", (function(){
-            
-                        if(this.enabled && (this.level <= I.levels[$lvl]))
-                        {
-                            I.writeMsg(I.getMsg($lvl, msg, I.now()) , "a");
-                        }
-                    }).replace("$lvl", k));
-                }
-            
-            }($.global.Logger));
+            })
 
+            Logger.prototype.xt({
+
+                formatMsg: function(oo)
+                {
+                    return this.format._replace({
+                        
+                        $time: oo.time,
+                        $message: oo.message,
+                        $level: oo.level
+                    });
+                },
+
+                now: function()
+                {
+                    return new Date(Date.now())[Logger.DATES[this.DateType]]();
+                },
+
+                config: function(cfg)
+                {
+                    return this.xt(Object.adapt(cfg,{
+
+                        name: Logger.getScriptName(),
+                        path: Logger.getScriptPath(),
+                        level: 0,
+                        DateType: "TIME",
+                        format: "XTO_LOGGER: $time:$level:$message",
+                        enabled: true
+                    }));
+                },
+
+                make: function()
+                {
+                    return File(this.path).$create('');
+                }
+            })
+
+            var LS = Logger.LEVELS;
+            for(L in LS) if(L.in(LS) && L != "NONSET")
+            {
+                Logger.prototype[L.toLowerCase()] = Function('MSG', (function(){
+
+                    var LG = this;
+                    if(LG.enabled && (LG.level <= Logger.LEVELS[$L]))
+                    {
+                        MSG = this.formatMsg({
+                            level: $L,
+                            message: MSG,
+                            time: LG.now()
+                        });
+
+                        File(LG.path).$write(MSG, 'a');
+                        return this;
+                    }
+                }).body({$L:L}))
+            }
         }),
 
         CSTR$Xester: (function(){

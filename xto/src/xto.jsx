@@ -6218,11 +6218,16 @@
 
             $.global.Xester = function Xester(){}
 
-            $.global.Xester.xt({
-                
-                T: "✔️",
-                F: "❌",
+            // [EMJOIS]
+            Xester.xt({
 
+                T: "✔️",
+                F: "❌"
+            })
+
+            // [TESTING]
+            Xester.xt({
+                
                 test: function(H, tests)
                 {
                     for(t in tests) if(t.in(tests))

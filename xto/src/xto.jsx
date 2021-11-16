@@ -968,6 +968,9 @@
             ██╔══██╗██╔══██║╚════██║██║██║     
             ██████╔╝██║  ██║███████║██║╚██████╗
             ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝ ╚═════╝
+        
+            ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+            ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
         */
 
         /*
@@ -3264,12 +3267,16 @@
         }),
 
         /*
-            █████╗ ██████╗ ██████╗ 
-            ██╔══██╗██╔══██╗██╔══██╗
-            ███████║██████╔╝██████╔╝
-            ██╔══██║██╔═══╝ ██╔═══╝ 
-            ██║  ██║██║     ██║     
-            ╚═╝  ╚═╝╚═╝     ╚═╝               
+          ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+         ▓▓                          ▓▓
+         ▓▓ █████╗ ██████╗ ██████╗   ▓▓
+         ▓▓ ██╔══██╗██╔══██╗██╔══██╗ ▓▓
+         ▓▓ ███████║██████╔╝██████╔╝ ▓▓
+         ▓▓ ██╔══██║██╔═══╝ ██╔═══╝  ▓▓
+         ▓▓ ██║  ██║██║     ██║      ▓▓
+         ▓▓ ╚═╝  ╚═╝╚═╝     ╚═╝      ▓▓         
+         ▓▓                          ▓▓
+          ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
         */
         
         /*
@@ -5516,12 +5523,16 @@
         }),
 
         /*
+            ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+
             ███████╗██╗  ██╗████████╗██████╗  █████╗ 
             ██╔════╝╚██╗██╔╝╚══██╔══╝██╔══██╗██╔══██╗
             █████╗   ╚███╔╝    ██║   ██████╔╝███████║
             ██╔══╝   ██╔██╗    ██║   ██╔══██╗██╔══██║
             ███████╗██╔╝ ██╗   ██║   ██║  ██║██║  ██║
             ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝
+            
+            ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
         */
 
         /*
@@ -5532,7 +5543,6 @@
 
         CSTR$Table: (function(){
                         
-            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ TABLE ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
             $.global.Table = function Table(table, margin, VD, HD)
             {
                 this.VD     = VD || "▓"; //Vertical Divider
@@ -5544,20 +5554,51 @@
             
                 this.maxColSizes = this.maxColumnSizes();
                 this.maxRowSizes = this.getMaxRowSizes();
-                $.log(this.maxColSizes);
-                $.log(this.maxRowSizes);
             }
-            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-            //                                                                                 ■■■
-            Table.prototype.xt( 
-            {
+
+            // [UTILS/PREPROCESSING]
+            Table.xt({
+
+                fNamePatt : /^(table)\s+\[\d+(x)\d+\]\(\d+\)/g,
+                
+                removeAll : function(path)
+                {
+                    fs = Folder(path || File($.fileName).path).getFiles("*.txt");
+                    i  = fs.length;
+                    $.writeln(i);
+                    while(i--) if(fs[i].displayName.match(Table.fNamePatt)) fs[i].remove();
+                },
+
+                process : function(arr, sign)
+                {
+                    fArr = [];
+                    sign = (sign || ",");
+                    behN = 35;
+                    
+                    for(i=0; i<arr.length; i++)
+                    {
+                        tmp = [];
+                        row = arr[i];
+                        spt = row.split(sign);
+                        for(k = 0; k<spt.length; k++)
+                        {
+                            tmp.push(spt[k]
+                                    .replace(/^\s*|\s*$/g, "")
+                                    .replace(RegExp("(.{"+behN+"})", "g"), "$1\n"));
+                        }
+                        fArr.push(tmp);
+                    }
+                    return fArr;
+                }
+            })
+
+            // [INFO/GETTERS]
+            Table.prototype.xt({
+                
                 toString: function(){
                     return this.render();
                 },
-        
-                // -------------------- Max Column Sizes -----------------------------
-                //--------------------------------------------------------------------
+                
                 maxColumnSizes : function(){
             
                     var tb = this.table,
@@ -5580,9 +5621,7 @@
                     }
                     return cs;
                 },
-        
-                // -------------------- Max Row Sizes -----------------------------
-                //--------------------------------------------------------------------
+
                 getMaxRowSizes : function(){
             
                     var tb = this.table,
@@ -5604,9 +5643,11 @@
                     }
                     return rs;
                 },
-        
-                // -------------------- Format --------------------------------------
-                //--------------------------------------------------------------------
+            })
+
+            // [FORMATTER/RENDERER]
+            Table.prototype.xt( 
+            {
                 format : function(){
         
                     // change the contents of each block:
@@ -5650,9 +5691,7 @@
                     }
                     this.ftable = tb;
                 },
-        
-                // -------------------- Render ---------------------------------------
-                //--------------------------------------------------------------------
+             
                 render : function(offset){
         
                     this.format(); // should be non-optional:
@@ -5681,9 +5720,11 @@
                     }
                     return fs;
                 },
-        
-                // ------------------------- WRITE -------------------------------------
-                // ---------------------------------------------------------------------
+            });
+
+            // [OUTPUT/DISPLAYERS]
+            Table.prototype.xt({
+
                 write : function(removePrev ,pad, path){
             
                     if(removePrev) Table.removeAll(path);
@@ -5705,47 +5746,9 @@
                     ).$write(this.render(pad)).fsName;
                 },
                 
-                // ----------------------------- SHOW ----------------------------
                 show : function(){
                     $.writeln(this.render())
                 },
-            });
-            //                                                                            ■■■■■■■
-            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-
-            Table.xt({
-
-                fNamePatt : /^(table)\s+\[\d+(x)\d+\]\(\d+\)/g,
-                
-                removeAll : function(path)
-                {
-                    fs = Folder(path || File($.fileName).path).getFiles("*.txt");
-                    i  = fs.length;
-                    $.writeln(i);
-                    while(i--) if(fs[i].displayName.match(Table.fNamePatt)) fs[i].remove();
-                },
-
-                process : function(arr, sign)
-                {
-                    fArr = [];
-                    sign = (sign || ",");
-                    behN = 35;
-                    
-                    for(i=0; i<arr.length; i++)
-                    {
-                        tmp = [];
-                        row = arr[i];
-                        spt = row.split(sign);
-                        for(k = 0; k<spt.length; k++)
-                        {
-                            tmp.push(spt[k]
-                                    .replace(/^\s*|\s*$/g, "")
-                                    .replace(RegExp("(.{"+behN+"})", "g"), "$1\n"));
-                        }
-                        fArr.push(tmp);
-                    }
-                    return fArr;
-                }
             })
         }),
 
@@ -5790,7 +5793,7 @@
                     return this.resolve();
                 },
                 
-                "/" : function(op){
+                '/' : function(op){
                 
                     return new Path([
                         this.toString(),

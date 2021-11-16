@@ -1404,7 +1404,7 @@
                     // 1) Translate by -P0
                     var T = P[0] * -1;
                     for(p in P) if(p.in(P)) P[p] = P[p] + T;
-                    // 2) Rotate by
+                    // 2) Rotate by θ (find θ first): x,y of last point
                     var x = P[P.length-1][0],
                         y = P[P.length-1][1];
 

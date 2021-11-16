@@ -1243,11 +1243,10 @@
                 // w/ Bernstein polynomials:
                 BR_pointAt: function(t)
                 {
-                    var sum = 0, P = this.points;
-                    for(var i=0; i<=n; i++)
-                    {
-                        sum += (Bezier.Bernstein(i, n, t) * P[i]);
-                    }
+                    var P = this.points;
+
+                    var sum = 0, i = -1;
+                    while(++i<=n) sum += (Bezier.Bernstein(i, n, t) * P[i]);
 
                     return sum;
                 },
@@ -1255,6 +1254,8 @@
                 // w/ Matrix operations:
                 M_pointAt: function(t)
                 {
+                    // QUADRATIC BEZIER CURVE EXAMPLE:
+
                     var T = M([
                         [1, t, t^2]
                     ]);
@@ -1362,6 +1363,8 @@
                 {
                     var B = this;
                     while(n--) B = B.elevate();
+
+                    return B;
                 }
             })
 
@@ -1392,8 +1395,29 @@
 
             // [CURVE ALIGNMENT]
             Bezier.prototype.xt({
-                
-                
+
+                // A = R*T*P:
+                alignAlongX: function()
+                {
+                    var P = this.points;
+
+                    // 1) Translate by -P0
+                    var T = P[0] * -1;
+                    // 2) Rotate by 
+                    var k = ((P[0][1] - P[2][1]) / (P[2][0] - P[0][0]))
+                    var R = M([
+                        [Math.cos(Math.atan(k)), -Math.sin(Math.atan(k))],
+                        [Math.sin(Math.atan(k)), Math.cos(Math.atan(k))]
+                    ]);
+
+                    for(var p in P) if(p.in(P))
+                    {
+                        P[p] = P[p] + T;
+                        P[p] = R * M(P[p]);
+                    }
+
+                    return aligned = new Bezier(P);
+                }
             })
 
             // [BOUNDING BOXES]
@@ -1476,7 +1500,7 @@
             
                 function str(key, holder) 
                 {        
-                    var i;          
+                    var i;
                     var k;          
                     var v;          
                     var length;

@@ -5980,27 +5980,41 @@
             // [LEXER/PARSER/GETTER]
             Python.xt({
                 
-                functions: function(p)
+                DEF_DEF_PATTERN: new RegExp("([\n]+def)|^def)\s+", 'g'),
+                DEF_NAME_PATT: new RegExp(".+", 'g'),
+                DEF_ARGS_PATT: new RegExp("\(.*\)"),
+
+                functions: function(FP)
                 {
-                    var m   = File(p).$read().match(/(([\n]+def)|^def)\s+.+\(.*\)/g),
+                    var P = new RegExp(
+                          DEF_DEF_PATTERN.source
+                        + DEF_NAME_PATT.source
+                        + DEF_ARGS_PATT.source
+                    );
+
+                    var M = File(FP).$read().match(P);
+                    var FS = [];
+                    //Name, Args, Z: Def Obj {def: [], nonDef:[]}
+                    var N, A, Z; 
+                    
                     fs  = [], nameArgs, name, args, aaa;
         
-                    for(var i=0, len=m.length; i< len;i++)
+                    for(m in M) if(m.in(M))
                     {
-                        nameArgs = m[i].replace(/[\n]+/g, "").replace(/def[\s]+/g, "").split("(");
-                        name     = nameArgs[0].replace(/\s*$/,"");
-                        args     = nameArgs[1].slice(0,-1).split(",");
-                        
-                        aaa      = { "_default": [], "non_default": []};
-        
-                        if(args[0]) for(var k=0, klen = args.length; k< klen; k++)
+                        m = m.replace(DEF_DEF_PATTERN, '').split('(');
+                        N = m[0];
+                        A = m[1].slice(0, -1).split(',');
+
+                        Z = { _default: [], non_default: []};
+                        for(a in A) if(a.in(A))
                         {
-                            arg = args[k].split('=');
-                            aaa[(arg.length-1)?"_default":"non_default"].push(arg[0]);
+                            a = a.split('=');
+                            Z[(a.length-1)?"_default":"non_default"].push(a[0]);
                         }
-                        fs.push({"name": name, "args": aaa});
+                        FS.push({name: N, args: Z});
                     }
-                    return fs;
+
+                    return FS;
                 }
             })
 
@@ -6186,11 +6200,6 @@
                         enabled: true
                     }));
                 },
-
-                make: function()
-                {
-                    return File(this.path).$create('');
-                }
             })
 
             var LS = Logger.LEVELS;

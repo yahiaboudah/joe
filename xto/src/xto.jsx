@@ -2216,6 +2216,8 @@
                     while(++i<len) seq += "[\"{0}\"]".re(ks[i]);;
 
                     eval("{0}={1};".re(seq, v.toString()));
+
+                    return oo;
                 },
 
                 getValue: function(oo, pp)
@@ -5832,6 +5834,8 @@
             
             $.global.FileInterface = function FileInterface()
             {
+                // do Object.adapt
+                this.intf0     = cfg.intf0;
                 this.extension = cfg.extension;
                 this.path      = cfg.filePath;
                 this.fileName  = File(this.path).name;
@@ -5846,7 +5850,7 @@
                 {
                     return Object.validateKeys(
                         intf,
-                        "info",
+                        ["info",
                         "contacts",
                         "active_req",
                         "info/reqs_made",
@@ -5855,7 +5859,7 @@
                         "active_req/road",
                         "active_req/trac",
                         "active_req/seed",
-                        "active_req/crop"
+                        "active_req/crop"]
                     );
                 },
 
@@ -5875,35 +5879,35 @@
                     return C;
                 }
             })
-            
+
             // [SETTERS/MODIFIERS]
             FileInterface.prototype.xt({
                 
                 make : function()
                 {
-                    return File(I.intfPath).$create(jj.ser(I.intf0, 1));
+                    return File(this.path).$create($.ser(this.intf0, 1));
                 },
                 
-                set : function()
+                set : function(IT)
                 {
-                    if(!this.validateIntf(intfObj)) throw Error("Invalid PyInterface Obj");
+                    var I = this;
+                    if(!I.validate(IT)) throw Error("Can't set invalid IT");
                 
-                    return File(this.intfPath).$write(jj.ser(intfObj, 1), 'w');
+                    return File(I.path).$write($.ser(IT, 1), 'w');
                 },
                 
-                modify : function(keysP, newV)
+                modify : function(keyPath, v)
                 {
-                    var intf = this.get();
-                
-                    Object.modify(
-                        intf,
-                        keysP,
-                        typeof newV == "function"?
-                        newV.call(null, Object.getValue(intf, keysP)):
-                        newV
-                    );
+                    var IT = this.get();
                     
-                    this.set(intf);
+                    this.set(
+                        Object.modify(
+                            IT,
+                            keyPath,
+                            v.is(Function)?
+                            v.call(IT, Object.getValue(IT, keyPath)):v
+                        )
+                    );
                 },
                 
                 post : function(request)

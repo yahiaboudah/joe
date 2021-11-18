@@ -5593,24 +5593,21 @@
             // [UTILS/PREPROCESSING]
             Table.xt({
 
-                // File name regex pattern table [4x6](2)
-                fRegex : new RegExp([
-                    
-                    "^(table)", // starts w/ table
-                    "\s+",      // space (1-)
-                    "\[\d+(x)\d+\]", // [(d)x(d)] (d): table dimens
-                    "\(\d+\)" // ((d)) (d): table number
-                
-                ].join(''), 'g'),
-
-                removeAll : function(FP)
+                transpose: function(T)
                 {
-                    var FS = Folder(FP || File($.fileName).path).getFiles("*.txt");
+                    var numCols = T[0].length;
+                    var C = [], i =-1;
 
-                    for(f in FS) if(f.in(FS))
-                    {
-                        if(f.getName().match(Table.fRegx)) f.remove();
+                    while(++i<numCols)
+                    {   
+                        C[i] = [];
+                        for(r in T) if(r.in(T))
+                        {
+                            C[i].push(T[r][i]);
+                        }
                     }
+
+                    return C;
                 },
 
                 process : function(A, sign)
@@ -5639,6 +5636,57 @@
                     }
 
                     return A;
+                },
+                // File name regex pattern table [4x6](2)
+                fRegex : new RegExp([
+                    
+                    "^(table)", // starts w/ table
+                    "\s+",      // space (1-)
+                    "\[\d+(x)\d+\]", // [(d)x(d)] (d): table dimens
+                    "\(\d+\)" // ((d)) (d): table number
+                
+                ].join(''), 'g'),
+
+                removeAll : function(FP)
+                {
+                    var FS = Folder(FP || File($.fileName).path).getFiles("*.txt");
+
+                    for(f in FS) if(f.in(FS))
+                    {
+                        if(f.getName().match(Table.fRegx)) f.remove();
+                    }
+                },
+            })
+
+            // [FOREACH]
+            Table.prototype.xt({
+
+                forEachRow: function(cb, modify)
+                {
+                    if(!(cb && cb.is(Function))) return;
+
+                    var T = this.table, r, row, res;
+                    for(r in T) if(r.in(T))
+                    {
+                        row = T[r];
+                        res = cb.call(this, r, row, T);
+                        if(modify) T[r] = res;
+                    }
+                },
+
+                forEachCol: function(cb, modify)
+                {
+                    if(!(cb && cb.is(Function))) return;
+
+                    var T = Table.transpose(this.table), c, col, res;
+                    for(c in T) if(c.in(T))
+                    {
+                        col = T[c];
+                        res = cb.call(this, c, col, T);
+                        if(modify) T[c] = res;
+                    }
+
+                    this.table = Table.transpose(T);
                 }
             })
 
@@ -5648,50 +5696,45 @@
                 toString: function(){
                     return this.render();
                 },
-                
-                maxColumnSizes : function(){
-            
-                    var tb = this.table,
-                        cs = [];
-                
-                    JL = "\n";
-                
-                    for(var c=0; c< tb[0].length; c++)
-                    {
-                        max = 0;
-                        for(var r=0; r< tb.length; r++)
-                        {   
-                            !tb[r][c]? tb[r][c] = "":0;
-                            /**************************/
-                            curr = (tb[r][c].split(JL)).max("length");
-                            /**************************/
-                            if(curr > max) max = curr;
+
+                getMaxColSizes: function()
+                {
+                    var MS = [];
+
+                    this.forEachCol(function(col){
+                        
+                        var max = 0;
+                        for(e in col) if(e.in(col))
+                        {
+                            e = e.split("\n");
+                            m = e[0].length, i = -1;
+                            while(k = e[++i]) if(k.length > m) m = k.length;
+                            if(m > max) max = m;
                         }
-                        cs.push(max);
-                    }
-                    return cs;
+
+                        MS.push(max)
+                    })
+
+                    return MS;
                 },
 
-                getMaxRowSizes : function(){
-            
-                    var tb = this.table,
-                        rs = [];
-                
-                    JL = "\n";
-                
-                    for(var r=0; r< tb.length; r++)
-                    {
-                        max = 0;
-                        for(var c=0; c< tb[0].length; c++)
+                getMaxRowSizes: function()
+                {
+                    var T = this.table;
+                        MS = [];
+                    
+                    this.forEachRow(function(row){
+
+                        var max = 0;
+                        for(e in row) if(e.in(row))
                         {
-                            /**************************/
-                            curr = tb[r][c].split(JL).length;
-                            /**************************/
-                            if(curr > max) max = curr;
+                            e = row[e];
+                            m = e.split("\n").length;
+                            if(m > max) max = m;
                         }
-                        rs.push(max);
-                    }
-                    return rs;
+
+                        MS.push(max);
+                    })
                 },
             })
 

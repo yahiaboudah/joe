@@ -2197,12 +2197,12 @@
                     return (oo == bo);
                 },
 
-                validateKeys: function(oo, /*keypath1, keypath2...*/)
+                validateKeys: function(oo, keys)
                 {
-                    var args = arguments.slice(1), i = -1,
-                        len  = args.length;
-
-                    while(++i<len) if(!Object.getValue(oo, args[i])) return false;
+                    for(k in keys) if(k.in(keys))
+                    {
+                        if(!Object.getValue(oo, k)) return false;
+                    }
 
                     return true;
                 },
@@ -5941,12 +5941,12 @@
                 
                 installed: function()
                 {
-                    return $.cmd("python --version").split(" ")[0] == "Python";
+                    return $.cmd("python --version").split(' ')[0] == "Python";
                 },
 
                 makeExec: function()
                 {
-                    return File(this.execPath).create(this.execStr);
+                    return File(Python.execPath).create(Python.execStr);
                 },        
                 
                 runExec: function()
@@ -6074,27 +6074,32 @@
                     }).runExec().get(false);
                 },
 
-                contact: function()
+                contact: function(FF)
                 {
-                    var ff = File(pp);
-                    if(!(ff.is(File) && ff.exists)) throw Error("Contact file invalid");
+                    var I  = this.INTERFACE;
+
+                    if(!FF.exists) throw Error("Contact file does not exist");
                     
-                    this.INTERFACE.modify("metadata/contacts/{0}".re(ff.getName()),
+                    I.modify("metadata/contacts/{0}".re(FF.getName()),
                     {
-                        path  : pp,
-                        funcs : this.functions(pp)
+                        path : FF.fsName,
+                        funcs: Python.functions(FF.fsName)
                     });
+
+                    return this;
                 },
 
-                build: function(contactName)
+                build: function(C) // Contact
                 {
-        
-                    if(contactName.checkFF() == 1) contactName = Python.contact(contactName);
+                    if(!is(C, File, String)) throw Error("Can't build contact");
+                    if(C.is(File)) C = Python.contact(C);
             
-                    var pyo  = {functions: []};
-                    intf     = I.getIntf();
-                    contact  = intf.contacts[contactName];
-            
+                    var PO = {FS: []},
+                        I  = this.INTERFACE,
+                        IT = I.get(),
+                        CO = IT.contacts[C];
+
+                    
                     if(!Object.validateKeys(contact, "path", "funcs")) throw Error("Contact is not valid");
             
                     var cSkills  = contact.funcs,

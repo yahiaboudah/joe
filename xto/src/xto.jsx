@@ -5593,43 +5593,52 @@
             // [UTILS/PREPROCESSING]
             Table.xt({
 
-                fNamePatt : new RegExp([
+                // File name regex pattern table [4x6](2)
+                fRegex : new RegExp([
                     
-                    "^(table)", // table
-                    "\s+",      // space
-                    "\[\d+(x)\d+\]", // [(d)x(d)] (d): number
-                    "\(\d+\)" // ((d)) (d): number
+                    "^(table)", // starts w/ table
+                    "\s+",      // space (1-)
+                    "\[\d+(x)\d+\]", // [(d)x(d)] (d): table dimens
+                    "\(\d+\)" // ((d)) (d): table number
                 
                 ].join(''), 'g'),
 
-                removeAll : function(path)
+                removeAll : function(FP)
                 {
-                    fs = Folder(path || File($.fileName).path).getFiles("*.txt");
-                    i  = fs.length;
-                    $.writeln(i);
-                    while(i--) if(fs[i].displayName.match(Table.fNamePatt)) fs[i].remove();
+                    var FS = Folder(FP || File($.fileName).path).getFiles("*.txt");
+
+                    for(f in FS) if(f.in(FS))
+                    {
+                        if(f.getName().match(Table.fRegx)) f.remove();
+                    }
                 },
 
-                process : function(arr, sign)
+                process : function(A, sign)
                 {
-                    fArr = [];
-                    sign = (sign || ",");
-                    behN = 35;
+                    var T = [];
+                    S = (sign || ",");
                     
-                    for(i=0; i<arr.length; i++)
+                    var jumpAtChar = 35, 
+                    temp = [], 
+                    row, els;
+
+                    for(a in A) if(a.in(A))
                     {
                         tmp = [];
-                        row = arr[i];
-                        spt = row.split(sign);
-                        for(k = 0; k<spt.length; k++)
+                        row = A[a];
+                        els = row.split(S);
+
+                        for(e in els) if(e.in(els))
                         {
-                            tmp.push(spt[k]
-                                    .replace(/^\s*|\s*$/g, "")
-                                    .replace(RegExp("(.{"+behN+"})", "g"), "$1\n"));
+                            tmp.push(e.trim().replace(
+                                RegExp("(.{{0}})".re(jumpAtChar), 'g'), "$1\n"
+                            ))
                         }
-                        fArr.push(tmp);
+
+                        T.push(tmp);
                     }
-                    return fArr;
+
+                    return A;
                 }
             })
 

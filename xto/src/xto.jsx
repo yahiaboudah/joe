@@ -5567,18 +5567,27 @@
         */
 
         CSTR$Table: (function(){
-                        
-            $.global.Table = function Table(table, margin, VD, HD)
+
+            $.global.Table = function Table(T, M, V, H)
             {
-                this.VD     = VD || "▓"; //Vertical Divider
-                this.HD     = HD || "■"; //Horizont Divider
-                
-                this.table  = table || [];
-                this.ftable = [];       // formatted table
-                this.margin = margin || 5;
-            
-                this.maxColSizes = this.maxColumnSizes();
-                this.maxRowSizes = this.getMaxRowSizes();
+                this.xt(Object.adapt({
+                    
+                    table: T,
+                    margin: M,
+                    VD: V,
+                    HD: H
+                },{
+                    
+                    VD: "▓",
+                    HD: "■",
+
+                    table: [],
+                    ftable: [],
+                    margin: 5,
+
+                    maxColSizes: this.maxColSizes(),
+                    maxRowSizes: this.maxRowSizes()
+                }))
             }
 
             // [UTILS/PREPROCESSING]
@@ -6079,7 +6088,7 @@
                         args: talk
                     
                     })
-                    
+
                     return Python.runExec().get(false);
                 },
 

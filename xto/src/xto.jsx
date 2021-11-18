@@ -6076,17 +6076,18 @@
 
                 contact: function(FF)
                 {
-                    var I  = this.INTERFACE;
+                    var I  = this.INTERFACE, N;
 
                     if(!FF.exists) throw Error("Contact file does not exist");
                     
-                    I.modify("metadata/contacts/{0}".re(FF.getName()),
+                    I.modify("metadata/contacts/{0}".re(N = FF.getName()),
                     {
+                        name : N,
                         path : FF.fsName,
                         funcs: Python.functions(FF.fsName)
                     });
 
-                    return this;
+                    return N;
                 },
 
                 build: function(C) // Contact
@@ -6097,51 +6098,46 @@
                     var PO = {FS: []},
                         I  = this.INTERFACE,
                         IT = I.get(),
-                        CO = IT.contacts[C];
+                        CO = IT.contacts[C],
+                        COValid = Object.validateKeys(CO, ["path", "funcs"]); 
 
-                    
-                    if(!Object.validateKeys(contact, "path", "funcs")) throw Error("Contact is not valid");
-            
-                    var cSkills  = contact.funcs,
-                        ttSkills = cSkills.length, i=-1;
-                    
-                    for(;++i < ttSkills;)
+                    if(!COValid) throw Error("Contact invalid");
+
+                    var COFuncs  = CO.funcs;
+                    for(f in COFuncs) if(f.in(COFuncs))
                     {
-            
-                        pyo[cSkills[i].name] = Function((function(){
-            
-                            var cPath   = $contactPath,
-                                name    = $skillName,
-                                nDefNum = nondefLen,
-                                defNum  = defLen;
-                            
-                            var args    = Array.prototype.slice.call(arguments),
-                                numArgs = args.length,
-                                ttArgs  = (nDefNum + defNum);
-                        
-                            const ERRS    = 
+                        PO[f.name] = Function((function(){
+
+                            var A  = arguments.slice(),
+                                NA = args.length;
+
+                            var ERR = function(T/*ype*/)
                             {
-                                extrArgs    : "Pyjsx:{0}() takes at most  {1} but {2} were given".f(name, ttArgs, numArgs),
-                                missingArgs : "Pyjsx:{0}() takes at least {1} non-default args but {2} were given".f(name, nDefNum, numArgs)
-                            };
-                        
-                            if(numArgs < nDefNum) throw Error(ERRS.missingArgs)
-                            if(numArgs > ttArgs ) throw Error(ERRS.extrArgs)
-                            
-                            return Python.call(cPath, name, args);              
-            
-                        }).body().replace({
-                            
-                            $contactPath : contact.path,
-                            $skillName   : cSkills[i].name,
-                            nondefLen    : cSkills[i].args[non_default].length,
-                            defLen       : cSkills[i].args[_default].length
-                        
-                        }));
-            
-                        pyo.functions.push(skill.name);
+                                var oo = {extra: "most", missing : "least"};
+                                var nn = {extra: $numNotDef + $numDef, missing: $numNotDef};
+
+                                return Error("PY:{0}() takes at {1} {2} args but {3} were given".re(
+                                    
+                                    $FName,
+                                    oo[T],
+                                    nn[T],
+                                    NA
+                                ));
+                            }
+
+                            if(NA < $numNotDef)            throw ERR("missing");
+                            if(NA > $numNotDef + $numDef ) throw ERR("extra");
+
+                            return Python.call($COPath, $FName, A);
+
+                        }).body({$COPath: CO.path, $FName: f.name,
+                                 $numNotDef: COFuncs.non_default.length,
+                                 $numDef   : COFuncs._default.length}));
+
+                        PO.functions.push(f.name);
                     }
-                        return pyo;
+
+                    return PO;
                 },
 
                 uninstall : function()

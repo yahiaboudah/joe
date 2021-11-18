@@ -80,18 +80,22 @@
         delete(Object.prototype.in);
         Object.prototype.in = function(oo)
         {
+            var T = this;
+
             switch(oo.constructor)
             {
                 case Object:
-                    return oo.hasOwnProperty(this);
+                    return oo.hasOwnProperty(T);
                 
                 case Array:
-                    for(var i=0; i<oo.length; i++)
+                    
+                    var i = -1;
+                    while(++i < oo.length)
                     {
                         if(oo[i] == this) return true;
                     }
                     return false;
-                
+                    
                 default:
                     return false;
             }
@@ -1221,12 +1225,21 @@
             
             $.global.Bezier = function Bezier(coords)
             {
-                this.points = Array.clone(coords);
+                this.points = [];
+                for(c in coords) if(!isNaN(c))
+                {
+                    this.points.push(coords[c]);
+                }
                 this.degree = this.points.length -1;
 
                 this.start = coords[0];
                 this.end   = coords[coords.length-1];
                 this.controls = (coords.shift(), coords.pop(), coords);
+            }
+
+            Bezier.prototype.toString = function()
+            {
+                return this.points.se();
             }
 
             // [VALUE AT T]
@@ -1242,8 +1255,8 @@
 
                     for(;t <= tn; t += step)
                     {
-                        p = this["{0}_pointAt".re(method || 'M')](t);
-                        P.push(p);
+                        // p = this["{0}_pointAt".re(method || 'M')](t);
+                        P.push(this.DC_pointAt(t));
                     }
 
                     return P;
@@ -1263,7 +1276,7 @@
                         pp[i] = (1-t) * p[i] + t * p[i+1];
                     }
 
-                    DC(t, pp);
+                    return DC(t, pp);
                 },
 
                 // w/ Bernstein polynomials:
@@ -1301,6 +1314,8 @@
             // [UTILITIES: BERNSTEIN, BINOMIAL COEFF..]
             Bezier.xt({
 
+                PASCALS: [[1]],
+
                 mapToDistance: function(A, offset)
                 {
                     if(!offset) offset = [0, 0];
@@ -1318,9 +1333,29 @@
                 },
 
                 // Binomial Coefficients:
+                // Implement caching..etc
                 BC: function(n, i)
                 {
+                    var P = Bezier.PASCALS;
+                    var N = P.length;
+                    if(n <= N) return P[n][i];
 
+                    var k = n;
+                    while(k > N)
+                    {
+                        A = [1];
+                        PA = P[P.length-1], i = -1;
+                        while(++i < PA.length-1)
+                        {
+                            A.push(PA[i] + PA[i+1]);
+                        }
+                        A.push(1);
+                        P.push(A);
+                        k++;
+                    }
+
+                    Bezier.PASCALS = P;
+                    return P[n][i];
                 },
 
                 Bernstein: function(i, n, t)

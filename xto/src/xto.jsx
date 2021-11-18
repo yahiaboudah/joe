@@ -2300,20 +2300,14 @@
                     return str;
                 },
 
-                write: function(obj, fName, appnd) {
+                write: function(obj, FP, appnd){
 
-                    var defaultWPath = Folder.desktop.fsName + "\\";
-                
-                    if(typeof obj   == "undefined") throw Error("Type of obj is undefined");
-                    if(typeof appnd == "undefined") appnd = true;
-                    if(typeof fName == "undefined") fName = defaultWPath;
-                
-                
-                    var sName = $.stack.split("\n")[0].slice(1, -1),
-                        fName = (fName + sName).replace(/\.jsx/, ".md"),
-                        ff    = new File(fName),
-                        wr    = Object.print(obj, true, false);
-                
+                    if(is(oo, undefined)) throw Error("Arg not an object");
+                    if(is(FP, undefined)) FP = File($.fileName).fsName; 
+                    if(is(ap, undefined)) ap = true;
+
+                    ff    = new File(FP + $.scriptName()).withExtension(".md"),
+                    wr    = Object.print(obj, true, false);
                     
                     if (ff.exists && apnd) ff.$write(wr, 'a');
                     else ff.$create(wr);
@@ -2328,18 +2322,18 @@
                     return new F();
                 },
 
-                objectFromArray: function(arr)
+                objectFromArray: function(A)
                 {    
                     var oo = {};
-                    for(a in arr) if(a.in(arr) && a.is(Array)) oo[a[0]] = a[1];
+                    for(a in A) if(a.in(A) && a.is(Array)) oo[[0]] = a[1];
 
                     return oo;
                 },
 
-                fromEntries: function(arr)
+                fromEntries: function(A)
                 {
                     var oo = {};
-                    for(x in arr) if(x.in(arr)) oo[x] = '';
+                    for(x in A) if(x.in(A)) oo[x] = '';
 
                     return oo;
                 },

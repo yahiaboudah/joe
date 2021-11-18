@@ -5593,8 +5593,15 @@
             // [UTILS/PREPROCESSING]
             Table.xt({
 
-                fNamePatt : /^(table)\s+\[\d+(x)\d+\]\(\d+\)/g,
+                fNamePatt : new RegExp([
+                    
+                    "^(table)", // table
+                    "\s+",      // space
+                    "\[\d+(x)\d+\]", // [(d)x(d)] (d): number
+                    "\(\d+\)" // ((d)) (d): number
                 
+                ].join(''), 'g'),
+
                 removeAll : function(path)
                 {
                     fs = Folder(path || File($.fileName).path).getFiles("*.txt");

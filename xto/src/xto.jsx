@@ -6142,10 +6142,8 @@
 
                 uninstall : function()
                 {
-                    var instFolder = Folder(this.instPath);
-                    if(instFolder.exists) instFolder.$remove();
+                    if((FD = Folder(Python.instPath)).exists) FD.$remove();
                 }
-
             })
         }),
 

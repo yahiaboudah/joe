@@ -5908,14 +5908,17 @@
                             v.call(IT, Object.getValue(IT, keyPath)):v
                         )
                     );
+
+                    return this;
                 },
                 
-                post : function(request)
+                post : function(R/*equest*/)
                 {
-                    if(!Object.validateKeys(request, "path", "func", "args")) throw Error("Request structure invalid");
-                
-                    this.modify("active_req", request);
-                    return PY;
+                    var RValid = Object.validateKeys(R, ["path", "func", "args"]);
+
+                    if(!RValid) throw Error("Can't post an invalid request");
+
+                    this.modify("active_req", R);
                 }
             })
         }),
@@ -6069,13 +6072,15 @@
 
                 call: function(script, about, talk)
                 {    
-                    return this.INTERFACE.post({
+                    this.INTERFACE.post({
             
                         path: script,
                         func: about,
                         args: talk
                     
-                    }).runExec().get(false);
+                    })
+                    
+                    return Python.runExec().get(false);
                 },
 
                 contact: function(FF)

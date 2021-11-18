@@ -5951,14 +5951,23 @@
                 
                 runExec: function()
                 {
-                    var sf = this.INTERFACE.signalFile;
-                    if(sf.exists) sf.remove();
+                    var I  = this.INTERFACE,
+                        SF = I.signalFile;
+
+                    if(SF.exists) SF.remove();
+
+                    I.modify("info/reqs_made", function(v){return v+1});
                     
-                    this.INTERFACE.modify("info/reqs_made", function(v){ return v+1});
-                    File(this.execPath).$execute();
-                    sf.$listen(this.execTime, false, undefined, true/*remove signal file once it appears*/);
+                    File(Python.execPath).$execute();
+                    File.prototype.listen.apply(SF, Object.values({
+                        
+                        wait: Python.execTime,
+                        debug: false,
+                        patience: undefined,
+                        cleanup: true,
+                    }));
                     
-                    return this.INTERFACE;
+                    return I;
                 },
                 
                 viewExec   : function(editor)
@@ -5996,15 +6005,13 @@
                     var FS = [];
                     //Name, Args, Z: Def Obj {def: [], nonDef:[]}
                     var N, A, Z; 
-                    
-                    fs  = [], nameArgs, name, args, aaa;
-        
+
                     for(m in M) if(m.in(M))
                     {
                         m = m.replace(DEF_DEF_PATTERN, '').split('(');
+                        
                         N = m[0];
                         A = m[1].slice(0, -1).split(',');
-
                         Z = { _default: [], non_default: []};
                         for(a in A) if(a.in(A))
                         {
@@ -6013,7 +6020,7 @@
                         }
                         FS.push({name: N, args: Z});
                     }
-
+                    
                     return FS;
                 }
             })
@@ -6023,15 +6030,16 @@
 
                 install: function()
                 {
-                    if(!this.installed()) throw Error("Python not installed");
+                    if(!Python.installed()) throw Error("Python not installed");
                     
-                    var fd = Folder(this.instPath);
-                    if(fd.exists) fd.$remove();   
+                    var IP = Python.instPath;
+                    var FD = Folder(IP);
+                    if(FD.exists) FD.remove();
                     
                     (
-                        fd.create(),
-                        this.INTERFACE.make(),
-                        this.makeExec()
+                        FD.create(),
+                        this.INTERFACE.make(IP),
+                        Python.makeExec()
                     );
 
                     return 1;
@@ -6040,15 +6048,19 @@
                 repair: function()
                 {
         
-                    if(!Folder(Python.instPath).exists) throw Error("Pyjsx not installed! (Run pyjsx.install())");
-            
-                    var ff      = File(I.intfPath),
-                        xf      = File(PY.execPath),
-                        ffvalid = I.validate(jj.deser(ff.$read())),
-                        xfvalid = (PY.execStr == xf.$read());
-            
-                    (ff.exists && ff.length && ffvalid) || I.make();
-                    (xf.exists && xf.length && xfvalid) || PY.makeExec();
+                    var IP = Python.instPath,
+                        I  = this.INTERFACE;
+
+                    if(!Folder(IP).exists) throw Error("Pyjsx not found");
+
+                    var FF = File(I.path);
+                        FF = FF.exsits && I.validate($.deser(FF.$read())); 
+                        
+                    var XF = File(Python.execPath);
+                        XF = XF.exists && (Python.execStr == XF.$read());
+
+                    if(!FF) I.make();
+                    if(!XF) Python.makeExec();
                 },
 
                 call: function(script, about, talk)
@@ -6059,7 +6071,7 @@
                         func: about,
                         args: talk
                     
-                    }).runExec().get(0);
+                    }).runExec().get(false);
                 },
 
                 contact: function()

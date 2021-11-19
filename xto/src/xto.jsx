@@ -292,15 +292,14 @@
         //-------------------------------------
         //------------- EXTRA -----------------
 
-        $.global.is = function(what)
-        {
-            var A = Array.prototype.slice.apply(arguments, 1);
-            return Object.prototype.is.apply(what, A);
-        }
-
         Object.prototype.slice = function(n)
         {
             return Array.prototype.slice.call(this, n);
+        }
+
+        $.global.is = function(what)
+        {
+            return Object.prototype.is.apply(what, arguments.slice(1));
         }
     });
 
@@ -836,10 +835,10 @@
             // First preprocess the name:
             var pWhat = what.split('$'), eWhat = EXTO, k =-1;
 
-            for(;++k<pWhat.length;) eWhat = eWhat[pWhat[k]];
+            while(++k<pWhat.length) eWhat = eWhat[pWhat[k]];
 
             var deps = eWhat? eWhat.DEPS:{}, i=-1;
-            for(;++i<deps.length;)
+            while(++i<deps.length)
             {
                 n = deps[i];
                 //NO FUNS[n]? continue:
@@ -1401,6 +1400,38 @@
 
             // [DEGREE ELEVATION]
             Bezier.prototype.xt({
+
+                // DE_MATRIX = [
+                //     [1,0,0,0],
+                //     [1/k, (k-1)/k,0,0],
+                //     [0, 2/k,(k-2)/k,0],
+                //     [0,0, 3/k, (k-3)/k],
+                //     [0,0,0,1]
+                // ],
+                
+                DE_Matrix: function()
+                {
+                    var P = this.points;
+                    var D = this.degree;
+                    var N = this.degree + 1;
+
+                    var DMX = new M(N+1, N);
+                    DMX.set(0, 0, 1);
+                    DMX.set(N, N-1, 1);
+
+                    while(++i < N)
+                    {
+                        DMX.set(i, i-1, i/N);
+                        DMX.set(i, i, (N-i)/N);
+                    }
+
+                    return DMX;
+                },
+
+                M_elevate: function()
+                {
+                    return this.DE_Matrix() * M(this.points);
+                },
 
                 elevate: function()
                 {

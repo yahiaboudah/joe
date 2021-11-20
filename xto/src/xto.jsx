@@ -1580,7 +1580,19 @@
             // [CURVATURE]
             Bezier.prototype.xt({
 
+                kappa: function(t)
+                {
+                    var B = this;
+                    var D = B.derivative();
+                    var S = D.deriv(t);
+                        D = D.M_pointAt(t);
 
+                    return (
+                        (D[0] * S[1] - S[0] * D[1])
+                        /
+                        Math.pow(D[0]*D[0] + D[1]*D[1], 1.5) 
+                    )
+                }
             })
         
         }),

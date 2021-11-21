@@ -1164,12 +1164,36 @@
                 this.numCols = A[0].length; 
             };
 
+            
+            // [PROPERTIES]
+            M.xt({
+
+                transpose: function(K)
+                {
+
+                },
+                
+                identity : function(dim)
+                {
+                    if(!(dim && dim.is(Number))) dim = 4;
+                    
+                    var mat = [], i = j = -1;
+                    while(++i < dim)
+                    {
+                        mat[i] = [];
+                        while(++j < dim) mat[i][j] = (i==j)?1:0;
+                    }
+                    
+                    return new M(mat);
+                }
+            })
+
             // [OPERATOR OVERLOADING]
             M.prototype.xt({
 
                 '*': function(K)
                 {
-                    var MX = this;
+                    var MX = this, R;
 
                     switch(K.constructor)
                     {
@@ -1180,9 +1204,28 @@
                             break;
                         
                         case M:
-                            // return result of Matrix
-                            // multiplication
-                            break;
+                            // 0) check if valid mult
+                            // 1) transpose K
+                            // 2) take dot of each K row with each MX row
+                            // 3) push value to R (result) matrix
+
+                            if(MX.numCols !== K.numRows) break;
+
+                            MX = MX.toArray();
+                            K  = M.transpose(K).toArray();
+                            R  = M(MX.numRows, K.numCols).fill('zeros').toArray();
+
+                            var i = -1, j = -1;
+                            while(++i < K.length)
+                            {
+                                while(++j < MX.length)
+                                {
+                                    R[j][i] = M.dot(K[i], MX[j])
+                                }
+                                j = -1;
+                            }
+
+                            return M(R);
                     }
                 },
 
@@ -1198,24 +1241,6 @@
                 forEach: function(cb)
                 {
 
-                }
-            })
-
-            // [PROPERTIES]
-            M.xt({
-                
-                identity : function(dim)
-                {
-                    if(!(dim && dim.is(Number))) dim = 4;
-                    
-                    var mat = [], i = j = -1;
-                    while(++i < dim)
-                    {
-                        mat[i] = [];
-                        while(++j < dim) mat[i][j] = (i==j)?1:0;
-                    }
-                    
-                    return new M(mat);
                 }
             })
         }),
@@ -1332,7 +1357,6 @@
                 },
 
                 // Binomial Coefficients:
-                // Implement caching..etc
                 BC: function(n, i)
                 {
                     var P = Bezier.PASCALS;

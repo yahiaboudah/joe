@@ -1360,6 +1360,24 @@
                 Bernstein: function(i, n, t)
                 {
                     return Bezier.BC(n, i) * ((1-t)^(n-i)) * (t^i);
+                },
+
+                // [Newton-Raphson for root-finding]
+                nraphson: function(F, DF, maxIter, tolerance)
+                {
+                    if(!is(maxIter, Number))   maxIter = 20;
+                    if(!is(tolerance, Number)) tolerance = 0.001;
+
+                    var x = 5, x0;
+                    
+                    var i = -1;
+                    while((++i < maxIter) && (Math.abs(x-x0) > tolerance))
+                    {
+                        x0 = x - F.call(x)/DF.call(x);
+                        x = x0;
+                    }
+
+                    return x0;
                 }
             })
 
@@ -4374,7 +4392,7 @@
                     S.name = axisName;
 
                     var axisProp = S.addProp("Effects/Axis");
-                    
+
                     // Just add Group 1
                     var G = S.addProp("Contents/ADBE Vector Group");
                     G.name = "line";

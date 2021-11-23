@@ -1240,7 +1240,17 @@
 
                 forEach: function(cb)
                 {
+                    var MX = this,
+                        C  = MX.numCols,
+                        R  = MX.numRows;
+                    
+                    var i,j; i = j = -1;
+                    while(++i<numRows) while(++j<numCols)
+                    {
+                        cb.call(MX[i][j]);
+                    }
 
+                    return MX;
                 }
             })
         }),

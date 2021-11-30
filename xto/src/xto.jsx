@@ -88,12 +88,7 @@
                     return oo.hasOwnProperty(T);
                 
                 case Array:
-                    
-                    var i = -1;
-                    while(++i < oo.length)
-                    {
-                        if(oo[i] == this) return true;
-                    }
+                    if(!isNaN(T) && oo[T]) return true;
                     return false;
                     
                 default:
@@ -1260,10 +1255,7 @@
             $.global.Bezier = function Bezier(coords)
             {
                 this.points = [];
-                for(c in coords) if(!isNaN(c))
-                {
-                    this.points.push(coords[c]);
-                }
+                for(c in coords) this.points.push(coords[c]);
                 this.degree = this.points.length -1;
 
                 this.start = coords[0];

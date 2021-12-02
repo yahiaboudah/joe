@@ -1575,9 +1575,9 @@
                     return Q;
                 },
 
-                BBox: function(tightness)
+                BBox: function(T/*ightness*/)
                 {
-                    switch(tightness)
+                    switch(T)
                     {
                         case 0: // do min/max of Bezier-polygon
                             break;

@@ -2414,7 +2414,7 @@
                         hdr = "",
                         max = 50;
                 
-                    hdr = "["+obj.constructor.name+"]: w/len: " + Object.size(obj);
+                    hdr = "[{0}]: w/len: {1}".re(obj.constructor.name, Object.size(obj));
                     str    = (frame(hdr, max) + Object.stringify(obj, lvl));
                 
                 

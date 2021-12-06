@@ -1946,7 +1946,7 @@
                     // WRITE THE [REQUEST]:
                     var req = makeRequest(method, url);
                 
-                    socket.write("{0}\r\n\r\n".f(req));
+                    socket.write("{0}\r\n\r\n".re(req));
                     if(config.payload) socket.write(config.payload);
                 
                 
@@ -3493,21 +3493,26 @@
                         Masks: "ADBE Mask Parade",
                         Effects: "ADBE Effect Parade",
                         Essential_Properties: "ADBE Layer Overrides" 
-                    },
-                
+                    }
+
                     TRANSFORM = 
                     {
                         Transform: "ADBE Transform Group",
+                        
                         Anchor_Point: "ADBE Anchor Point",
+                        
                         Position: "ADBE Position",
                         X_Position: "ADBE Position_0",
                         Y_Position: "ADBE Position_1",
                         Z_Position: "ADBE Position_2",
+                        
                         Scale: "ADBE Scale",
+
                         Orientation: "ADBE Orientation",
                         X_Rotation: "ADBE Rotate X",
                         Y_Rotation: "ADBE Rotate Y",
                         Z_Rotation: "ADBE Rotate Z",
+                        
                         Opacity: "ADBE Opacity"
                     },
                 
@@ -3521,10 +3526,12 @@
                     {
                         Geometry_Options: ["ADBE Plane Options Group", "ADBE Extrsn Options Group"],
                         Curvature: "ADBE Plane Curvature",
+                        
                         Segments: "ADBE Plane Subdivision",
+                        
                         Bevel_Depth: "ADBE Bevel Depth",
-                        Hole_Bevel_Depth: "ADBE Hole Bevel Depth",
-                        Extrusion_Depth: "ADBE Extrsn Depth"
+                        Extrusion_Depth: "ADBE Extrsn Depth",
+                        Hole_Bevel_Depth: "ADBE Hole Bevel Depth"
                     },
                 
                     THREEDMATERIALS = 
@@ -3704,111 +3711,111 @@
                         Back_Transparency_Rolloff: "ADBE 3DText Back XparRoll",
                         Back_Index_Of_Refraction: "ADBE 3DText Back IOR",
                 
-                        Bevel_Depth: "ADBE 3DText Bevel Depth",
-                        Extrustion_Depth: "ADBE 3DText Extrude Depth"
+                        Text_Bevel_Depth: "ADBE 3DText Bevel Depth",
+                        Text_Extrustion_Depth: "ADBE 3DText Extrude Depth"
                     },
                 
                     SHAPE =
                     {
                 
                         Shape_Layer: "ADBE Vector Layer",
-                        Contents: "ADBE Root Vectors Group"
+                        Root_Contents: "ADBE Root Vectors Group"
                         
                         //GROUP
                         ,Group: "ADBE Vector Group",
-                        Blend_Mode: "ADBE Vector Blend Mode",
-                        Contents: "ADBE Vectors Group",
-                        Transform: "ADBE Vector Transform Group",
-                        Material_Options: "ADBE Vector Materials Group"
+                        Vector_Blend_Mode: "ADBE Vector Blend Mode",
+                        Vector_Contents: "ADBE Vectors Group",
+                        Vector_Transform: "ADBE Vector Transform Group",
+                        Vector_Material_Options: "ADBE Vector Materials Group"
                         
                         // RECT
-                        ,Rectangle: "ADBE Vector Shape - Rect",
-                        Shape_Direction: "ADBE Vector Shape Direction",
-                        Size: "ADBE Vector Rect Size",
-                        Position: "ADBE Vector Rect Position",
-                        Roundness: "ADBE Vector Rect Roundness"
+                        ,Vector_Rect: "ADBE Vector Shape - Rect",
+                        Vector_Shape_Direction: "ADBE Vector Shape Direction",
+                        Vector_Rect_Size: "ADBE Vector Rect Size",
+                        Vector_Rect_Position: "ADBE Vector Rect Position",
+                        Vector_Rect_Roundness: "ADBE Vector Rect Roundness"
                 
                         //ELLIPSE
-                        ,Ellipseà: "ADBE Vector Shape - Ellipse",
-                        EllipseàShape_Direction: "ADBE Vector Shape Direction",
-                        EllipseàSize: "ADBE Vector Size",
-                        EllipseàPosition: "ADBE Vector Position"
+                        ,Vector_Ellipse: "ADBE Vector Shape - Ellipse",
+                        // Vector_Shape_Direction: "ADBE Vector Shape Direction",
+                        Vector_Size: "ADBE Vector Size",
+                        Vector_Position: "ADBE Vector Position"
                 
                         //POLYSTAR
                         ,Polystar: "ADBE Vector Shape - Star",
-                        PolystaràShape_Direction: "ADBE Vector Shape Direction",
-                        PolystaràType: "ADBE Vector Star Type",
-                        PolystaràPoints: "ADBE Vector Star Points",
-                        PolystaràPosition: "ADBE Vector Star Position",
-                        PolystaràRotation: "ADBE Vector Star Rotation",
-                        PolystaràInner_Radius: "ADBE Vector Star Inner Radius",
-                        PolystaràOuter_Radius: "ADBE Vector Star Outer Radius",
-                        PolystaràInner_Roundness: "ADBE Vector Star Inner Roundness",
-                        PolystaràOuter_Roundness: "ADBE Vector Star Outer Radius"
+                        // Vector_Shape_Direction: "ADBE Vector Shape Direction",
+                        Vector_Polystar_Type: "ADBE Vector Star Type",
+                        Vector_Polystar_Points: "ADBE Vector Star Points",
+                        Vector_Polystar_Position: "ADBE Vector Star Position",
+                        Vector_Polystar_Rotation: "ADBE Vector Star Rotation",
+                        Vector_Polystar_Inner_Radius: "ADBE Vector Star Inner Radius",
+                        Vector_Polystar_Outer_Radius: "ADBE Vector Star Outer Radius",
+                        Vector_Polystar_Inner_Roundness: "ADBE Vector Star Inner Roundness",
+                        Vector_Polystar_Outer_Roundness: "ADBE Vector Star Outer Radius"
                 
                         //PATH
                         ,Path: "ADBE Vector Shape",
                         PathGroup: "ADBE Vector Shape - Group",
-                        PathàShape_Direction: "ADBE Vector Shape Direction"
+                        // Vector_Shape_Direction: "ADBE Vector Shape Direction"
                 
                         //FILL
-                        ,Fill: "ADBE Vector Graphic - Fill",
-                        FillàBlendMode: "ADBE Vector Blend Mode",
-                        FillàComposite: "ADBE Vector Composite Order",
-                        FillàFillRule: "ADBE Vector Fill Rule",
-                        FillàColor: "ADBE Vector Fill Color",
-                        FillàOpacity: "ADBE Vector Fill Opacity"
+                        Vector_Fill: "ADBE Vector Graphic - Fill",
+                        Vector_BlendMode: "ADBE Vector Blend Mode",
+                        Vector_Composite: "ADBE Vector Composite Order",
+                        Vector_illRule: "ADBE Vector Fill Rule",
+                        Vector_Color: "ADBE Vector Fill Color",
+                        Vector_Opacity: "ADBE Vector Fill Opacity"
                 
                         // STROKE
-                        ,Stroke: "ADBE Vector Graphic - Stroke",
-                        StrokeàBlend_Mode: "ADBE Vector Blend Mode",
-                        StrokeàComposite: "ADBE Vector Composite Order",
-                        StrokeàColor: "ADBE Vector Stroke Color",
-                        StrokeàOpacity: "ADBE Vector Stroke Opacity",
-                        StrokeàStroke_Width: "ADBE Vector Stroke Width",
-                        StrokeàLine_Cap: "ADBE Vector Stroke Line Cap",
-                        StrokeàLine_Join: "ADBE Vector Stroke Line Join",
-                        StrokeàMiter_Limit: "ADBE Vector Stroke Miter Limit"
+                        ,Vector_Stroke: "ADBE Vector Graphic - Stroke",
+                        Vector_Stroke_Blend_Mode: "ADBE Vector Blend Mode",
+                        Vector_Stroke_Composite: "ADBE Vector Composite Order",
+                        Vector_Stroke_Color: "ADBE Vector Stroke Color",
+                        Vector_Stroke_Opacity: "ADBE Vector Stroke Opacity",
+                        Vector_Stroke_Stroke_Width: "ADBE Vector Stroke Width",
+                        Vector_Stroke_Line_Cap: "ADBE Vector Stroke Line Cap",
+                        Vector_Stroke_Line_Join: "ADBE Vector Stroke Line Join",
+                        Vector_Stroke_Miter_Limit: "ADBE Vector Stroke Miter Limit"
                 
                         // STROKE DASHES
-                        ,Dashes: "ADBE Vector Stroke Dashes",
-                        DashesàDash: "ADBE Vector Stroke Dash 1",
-                        DashesàGap: "ADBE Vector Stroke Gap 1",
-                        DashesàDash_2: "ADBE Vector Stroke Dash 2",
-                        DashesàGap_2: "ADBE Vector Stroke Gap 2",
-                        DashesàDash_3: "ADBE Vector Stroke Dash 3",
-                        DashesàGap_3: "ADBE Vector Stroke Gap 3",
-                        DashesàOffset: "ADBE Vector Stroke Offset"
+                        ,Vector_Stroke_Dashes: "ADBE Vector Stroke Dashes",
+                        Vector_Stroke_Dashes_Dash: "ADBE Vector Stroke Dash 1",
+                        Vector_Stroke_Dashes_Gap: "ADBE Vector Stroke Gap 1",
+                        Vector_Stroke_Dashes_Dash_2: "ADBE Vector Stroke Dash 2",
+                        Vector_Stroke_Dashes_Gap_2: "ADBE Vector Stroke Gap 2",
+                        Vector_Stroke_Dashes_Dash_3: "ADBE Vector Stroke Dash 3",
+                        Vector_Stroke_Dashes_Gap_3: "ADBE Vector Stroke Gap 3",
+                        Vector_Stroke_Dashes_Offset: "ADBE Vector Stroke Offset"
                 
                         //STROKE TAPER
-                        ,Taper: "ADBE Vector Stroke Taper",
-                        TaperàStart_Width: "ADBE Vector Taper Start Width",
-                        TaperàLength_Units: "ADBE Vector Taper Length Units",
-                        TaperàEnd_Width: "ADBE Vector Taper End Width",
-                        TaperàEnd_Ease: "ADBE Vector Taper End Ease",
-                        TaperàEnd_Length: "ADBE Vector Taper End Length",
-                        TaperàStart_Length: "ADBE Vector Taper Start Length",
-                        TaperàStart_Ease: "ADBE Vector Taper Start Ease"
+                        ,Vector_Stroke_Taper: "ADBE Vector Stroke Taper",
+                        Vector_Stroke_Taper_Start_Width: "ADBE Vector Taper Start Width",
+                        Vector_Stroke_Taper_Length_Units: "ADBE Vector Taper Length Units",
+                        Vector_Stroke_Taper_End_Width: "ADBE Vector Taper End Width",
+                        Vector_Stroke_Taper_End_Ease: "ADBE Vector Taper End Ease",
+                        Vector_Stroke_Taper_End_Length: "ADBE Vector Taper End Length",
+                        Vector_Stroke_Taper_Start_Length: "ADBE Vector Taper Start Length",
+                        Vector_Stroke_Taper_Start_Ease: "ADBE Vector Taper Start Ease"
                 
                         //STROKE WAVE
-                        ,Wave: "ADBE Vector Stroke Wave",
-                        Amount: "ADBE Vector Taper Wave Amount",
-                        Units: "ADBE Vector Taper Wave Units",
-                        Phase: "ADBE Vector Taper Wave Phase",
-                        WaveLength: "ADBE Vector Taper Wavelength"
+                        ,Vector_Stroke_Taper_Wave: "ADBE Vector Stroke Wave",
+                        Vector_Stroke_Taper_Wave_Amount: "ADBE Vector Taper Wave Amount",
+                        Vector_Stroke_Taper_Wave_Units: "ADBE Vector Taper Wave Units",
+                        Vector_Stroke_Taper_Wave_Phase: "ADBE Vector Taper Wave Phase",
+                        Vector_Stroke_Taper_Wave_WaveLength: "ADBE Vector Taper Wavelength"
                 
                         //GRADIENT FILL
-                        ,Gradient_Fill: "ADBE Vector Graphic - G-Fill",
-                        Blend_Mode: "ADBE Vector Blend Mode",
-                        Composite: "ADBE Vector Composite Order",
-                        Fill_Rule: "ADBE Vector Composite Order",
-                        Type: "ADBE Vector Grad Type",
-                        Start_Point: "ADBE Vector Grad Start Pt",
-                        End_Point: "ADBE Vector Grad End Pt",
-                        Highlight_Length: "ADBE Vector Grad HiLite Length",
-                        Highlight_Angle: "ADBE Vector Grad HiLite Angle",
-                        Colors: "ADBE Vector Grad Colors",
-                        Opacity: "ADBE Vector Fill Opacity"
+                        ,Vector_Gradient_Fill: "ADBE Vector Graphic - G-Fill",
+                        Vector_Blend_Mode: "ADBE Vector Blend Mode",
+                        Vector_Composite: "ADBE Vector Composite Order",
+                        Vector_Fill_Rule: "ADBE Vector Composite Order",
+                        Vector_Gradient_Type: "ADBE Vector Grad Type",
+                        Vector_Gradient_Start_Point: "ADBE Vector Grad Start Pt",
+                        Vector_Gradient_End_Point: "ADBE Vector Grad End Pt",
+                        Vector_Gradient_Highlight_Length: "ADBE Vector Grad HiLite Length",
+                        Vector_Gradient_Highlight_Angle: "ADBE Vector Grad HiLite Angle",
+                        Vector_Gradient_Colors: "ADBE Vector Grad Colors",
+                        Vector_Fill_Opacity: "ADBE Vector Fill Opacity"
                 
                         //GRADIENT STROKE:
                         ,Gradient_Stroke: "ADBE Vector Graphic - G-Stroke",
@@ -3892,7 +3899,6 @@
                         Size: "ADBE Vector Zigzag Size",
                         Ridges_per_segment: "ADBE Vector Zigzag Detail",
                         Points: "ADBE Vector Zigzag Points"
-                
                     }
 
                     var A = [TOP_LEVEL, TRANSFORM, AUDIO, THREED, THREEDMATERIALS, CAMERA, CAMERAIRIS, LIGHT, TEXT, SHAPE];
@@ -3901,7 +3907,7 @@
                     for(x in A) if(x.in(A))
                     {
                         C = A[x];
-                        for(k in C) if(x.in(C) && x == P) return C[k]
+                        for(k in C) if(x.in(C) && x == P) return C[k];
                     }
 
                     return "ADBE";

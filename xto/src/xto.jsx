@@ -4295,71 +4295,6 @@
             ╩ ╩ ╚═╝╩ ╩
         */
 
-        AFFX$Camera : (function(){
-
-            // [MATRIX RELATED OPERATIONS]
-            CameraLayer.prototype.xt({
-                
-                getAOV : function()
-                {
-                    var filmSize    = this.containingComp.height;
-                        focalLength = this.getProp("Camera Options/Zoom").value;
-    
-                    return MathEx.getAOV(filmSize, focalLength);
-                },
-
-                getWorldMatrix : function()
-                {
-                    return LayerEx.getWorldMatrix(camera = this);
-                },
-    
-                getLocalMatrix : function()
-                {
-                    var camera = this;
-                    var lookAtMatrix = LayerEx.getLookAt(camera);
-                    var localMatrix  = Matrix.multiplyArrayOfMatrices([
-    
-                        LayerEx.getRotationMatrix(camera),
-                        LayerEx.getOrientationMatrix(camera),
-                        Matrix.invert(lookAtMatrix),
-                        LayerEx.getPositionMatrix(camera),
-                    ]);
-            
-                    return localMatrix;
-                },
-    
-                getProjectedZ : function(w)
-                {
-                    var z = this.getProp("Camera Options/Zoom").value;
-                    return (z - (z / w));
-                },
-    
-                getViewMatrix : function()
-                {
-                    var viewMatrix;
-    
-                    return viewMatrix = Matrix.multiplyArrayOfMatrices([
-                        
-                        this.getLocalMatrix(camera),
-                        this.getWorldMatrix(camera),
-                    ]);
-                }
-            })
-        }),
-
-        AFFX$ItemCollection: (function()
-        // [REQURES COLLECTION INTERFACE]
-        {
-            ("function" != typeof CollectionInterface) || (function()
-            {
-                ItemCollection.prototype.xt(
-                {
-                    toArray: CollectionInterface.toArray,
-                    grab   : CollectionInterface.grab
-                })
-            })();
-        }),
-
         AFFX$LayerCollection: (function()
         // [REQUIRES COLLECTION INTERFACE]
         {    
@@ -4743,6 +4678,340 @@
             })
         }),
 
+        AFFX$ShapeLayer: (function(){
+
+
+            // [SETTERS/ MODIFIERS]
+            ShapeLayer.prototype.xt({
+                
+                moveFirstVertex : function(idx){
+                
+                    var i = 0,
+                        c = this.property("Contents"),
+                        n = c.numProperties + 1;
+                
+                    while(++i<n) c.property(i).moveFirstVertex(idx);
+                }
+            })
+
+            // [INFO / GETTERS]
+            ShapeLayer.prototype.xt({
+
+                area : function(t){
+
+                    c = this.containingComp;
+                    t = t || c.time;
+                
+                    sr = this.sourceRectAtTime(t, false); //sourceRect
+                    sc = this.transform.scale.value; //scale
+                    
+                    return Math.mult.apply(null,
+                        ([sr.width, sr.height] ^ (sc/100))
+                    );
+                },
+
+                alpha : function(t){
+                
+                    c = this.containingComp;
+                    t = t || c.time;
+            
+                    var sr = this.sourceRectAtTime(t, false),
+                    sc = this.transform.scale;
+            
+                    var wh = (sc/100) * ([sr.width, sr.height] /2)
+            
+                    p = [
+                        c.toWorld(this, [sr.left, 0])[0], 
+                        c.toWorld(this, [0, sr.top])[1]
+                    ] + wh;
+                    
+                    this.addProp("Effects/Color Control:cc").property("Color").expression = (function()
+                    {
+                        thisLayer.sampleImage($p,$wh)
+                    }).body({$p: p, $wh:wh});
+                    
+                    var rgba = this.getProp("Effects/cc").property("Color").value;
+                    this.removeProp("Effects/cc");
+                    return rgba[3];
+                },
+
+                areas : function(roundit){
+                    
+                    var areas     = [],
+                        isEnabled = [],
+                        contents  = this.property("Contents"),
+                        numProps  = contents.numProperties,
+                        i         = 0;
+                
+                    while(++i < numProps+1)
+                    {
+                        isEnabled.push(contents.property(i).enabled);
+                        contents.property(i).enabled = false;
+                    }   
+                    
+                    i = 0;
+                    while (++i< numProps+1)
+                    {
+                        if(i == 1)
+                        {
+                            contents.property(i).enabled = true;
+                            currArea = this.area() * this.alpha();
+                            areas.push(roundit?Math.round(currArea):currArea);
+                            continue;
+                        }
+            
+                        contents.property(i-1).enabled = false;
+                        contents.property(i+0).enabled = true;
+            
+                        currArea = this.area() * this.alpha();
+                        areas.push(roundit?Math.round(currArea): currArea);
+                    }   i = 0;
+                
+                    while(++i < numProps+1)
+                    {
+                        contents.property(i).enabled = isEnabled[i-1];
+                    }
+                
+                    return areas;
+                },
+
+                distances : function(origin)
+                {
+                
+                    prop = function(c, n, pp)
+                    {
+                        return c.property(n)
+                                .property("Transform")
+                                .property(pp).value;
+                    }
+                    num = function(v){
+                        return new Number(v);
+                    }
+                
+                    funcs = {
+                
+                        topleft: function(pos){
+                            return Math.sqrt(
+                                            (num(pos[0] - src.left) ^ 2) 
+                                          + (num(pos[1] - src.top ) ^ 2)
+                                   );
+                        },
+                        left: function(pos){
+                            return pos[0] - src.left;
+                        },
+                        right: function(pos){
+                            return wd - (pos[0] - src.left);
+                        },
+                        top: function(pos){
+                            return pos[1] - src.top;
+                        },
+                        bottom: function(pos){
+                            return ht - (pos[1] - src.top);
+                        },
+                        custom: function(pos){
+                            // TODO: Figure out the position coordinates of the
+                            // elements relative to the comp coordinate system.
+                            
+                            // Then simply subtract the distances to figure which
+                            // ones are closer than others.
+                        }
+                    }
+                
+                    var positions  = [],
+                        origin     = origin || "topleft";
+                        contents   = this.property("Contents"),
+                        numProps   = contents.numProperties;
+                        
+                    var src = this.sourceRectAtTime(this.containingComp.time, 0);
+                        wd  = src.width;
+                        ht  = src.height;
+                
+                    for(i=0;++i<numProps+1;) positions.push(prop(contents,i, "Position"))
+                
+                    return positions.map(funcs[origin]);    
+                },
+
+                grabProps : function()
+                // layer.grabProps("Group", "Shape"); => Group 1, Rectangle 1
+                {
+            
+                    var _TYPES = 
+                    [
+                        "Group",
+                        "Shape",
+                        "Graphic",
+                        "Filter"
+                    ];
+                
+                    var types = Array.prototype.slice.call(arguments);
+                
+                    types.forEach(function(type, idx){
+                        if(!_TYPES.includes(type)) this.remove(idx);
+                    })
+                
+                    var allProps = [];
+                
+                    for(var i = 1; i<this.content.numProperties+1; i++)
+                    {
+                        prop = this.content.property(i);
+                        mn = prop.matchName.split('-')[0].trim().split(" ").pop();
+                        if(types.includes(mn)) allProps.push(prop);
+                    }
+                
+                    return allProps;
+                }
+            });
+
+            // PROPS:
+            ShapeLayer.xt({
+                PROPS : 
+                {
+                    stroke    : ["composite", "color", "strokeWidth", "lineCap", "lineJoin", "miterLimit"],
+                    fill      : ["composite", "fillRule", "color"],
+                    transform : ["anchorPoint", "position", "scale", "skew", "skewAxis", "rotation", "opacity"],
+                    rect      : ["shapeDirection", "size", "position", "roundness"],
+                    ellipse   : ["shapeDirection", "size", "position"],
+                    star      : ["shapeDirection, type", "points", "position", "rotation", 
+                                "innerRadius", "outerRadius", "innerRoundness", "outerRoundness"]    
+                }
+            })
+        }),
+
+        AFFX$TextLayer: (function(){
+
+            TextLayer.prototype.xt({
+
+                config: function(cfg)
+                {
+                    var prop = textLayer.property("Source Text");
+                    var doc = textProp.value;
+                    doc.applyFill = cfg.applyFill;
+                    doc.fontSize = cfg.fontSize;
+                    doc.font = cfg.font;
+                    doc.fillColor = cfg.fill;
+                    prop.setValue(doc);
+
+                    return this;
+                },
+
+                animator: function(name)
+                {
+                    var am = this.Text.Animators.addProperty("ADBE Text Animator");
+                    am.name = name || "animator"; 
+                    return am;
+                },
+
+                fromJSONAndMarkersOf: function(layerName, jsonDataName, dataPointName)
+                {/**Expression to apply to a text layer source:
+                 * 
+                 * Example JSON:
+                 * 
+                 * [
+                 * {
+                 *    "animation": "move ball up"
+                 * },
+                 * {
+                 *    "animation": "move ball down" 
+                 * }
+                 * ]
+                 * 
+                 * On timeline:
+                 * 
+                 * (text = "move ball up")
+                 * |  <>    <>
+                 * (text = "move ball up")
+                 *  <>  |  <>
+                 * (text = "move ball down")
+                 * <>   <>   |
+                 */
+            
+                this.sourceText.expression =  (function(){
+            
+                    var m = thisComp.layer($layerName).marker;
+                    var t = time;
+                    var i = m.nearestKey(time).index;
+                
+                    if(m.nearestKey(t).time>t){ i--; } //if: |  <>
+                    i || (i = 1);
+                
+                    var obj = footage($footageName).sourceData;
+            
+                    obj[i][$dataPointName];
+                    
+                }).body({
+                    $layerName: layerName,
+                    $footageName: jsonDataName,
+                    $dataName : dataPointName
+                });
+                },
+            })
+        }),
+
+        AFFX$Camera : (function(){
+
+            // [MATRIX RELATED OPERATIONS]
+            CameraLayer.prototype.xt({
+                
+                getAOV : function()
+                {
+                    var filmSize    = this.containingComp.height;
+                        focalLength = this.getProp("Camera Options/Zoom").value;
+    
+                    return MathEx.getAOV(filmSize, focalLength);
+                },
+
+                getWorldMatrix : function()
+                {
+                    return LayerEx.getWorldMatrix(camera = this);
+                },
+    
+                getLocalMatrix : function()
+                {
+                    var camera = this;
+                    var lookAtMatrix = LayerEx.getLookAt(camera);
+                    var localMatrix  = Matrix.multiplyArrayOfMatrices([
+    
+                        LayerEx.getRotationMatrix(camera),
+                        LayerEx.getOrientationMatrix(camera),
+                        Matrix.invert(lookAtMatrix),
+                        LayerEx.getPositionMatrix(camera),
+                    ]);
+            
+                    return localMatrix;
+                },
+    
+                getProjectedZ : function(w)
+                {
+                    var z = this.getProp("Camera Options/Zoom").value;
+                    return (z - (z / w));
+                },
+    
+                getViewMatrix : function()
+                {
+                    var viewMatrix;
+    
+                    return viewMatrix = Matrix.multiplyArrayOfMatrices([
+                        
+                        this.getLocalMatrix(camera),
+                        this.getWorldMatrix(camera),
+                    ]);
+                }
+            })
+        }),
+
+        AFFX$ItemCollection: (function()
+        // [REQURES COLLECTION INTERFACE]
+        {
+            ("function" != typeof CollectionInterface) || (function()
+            {
+                ItemCollection.prototype.xt(
+                {
+                    toArray: CollectionInterface.toArray,
+                    grab   : CollectionInterface.grab
+                })
+            })();
+        }),
+
         AFFX$Layer: (function(){
 
             var C,L;
@@ -5063,275 +5332,6 @@
             ShapeLayer.prototype.getProp = AVLayer.prototype.getProp;
             ShapeLayer.prototype.removeProp = AVLayer.prototype.removeProp;
             ShapeLayer.prototype.addProp = AVLayer.prototype.addProp;
-        }),
-
-        AFFX$ShapeLayer: (function(){
-
-
-            // [SETTERS/ MODIFIERS]
-            ShapeLayer.prototype.xt({
-                
-                moveFirstVertex : function(idx){
-                
-                    var i = 0,
-                        c = this.property("Contents"),
-                        n = c.numProperties + 1;
-                
-                    while(++i<n) c.property(i).moveFirstVertex(idx);
-                }
-            })
-
-            // [INFO / GETTERS]
-            ShapeLayer.prototype.xt({
-
-                area : function(t){
-
-                    c = this.containingComp;
-                    t = t || c.time;
-                
-                    sr = this.sourceRectAtTime(t, false); //sourceRect
-                    sc = this.transform.scale.value; //scale
-                    
-                    return Math.mult.apply(null,
-                        ([sr.width, sr.height] ^ (sc/100))
-                    );
-                },
-
-                alpha : function(t){
-                
-                    c = this.containingComp;
-                    t = t || c.time;
-            
-                    var sr = this.sourceRectAtTime(t, false),
-                    sc = this.transform.scale;
-            
-                    var wh = (sc/100) * ([sr.width, sr.height] /2)
-            
-                    p = [
-                        c.toWorld(this, [sr.left, 0])[0], 
-                        c.toWorld(this, [0, sr.top])[1]
-                    ] + wh;
-                    
-                    this.addProp("Effects/Color Control:cc").property("Color").expression = (function()
-                    {
-                        thisLayer.sampleImage($p,$wh)
-                    }).body({$p: p, $wh:wh});
-                    
-                    var rgba = this.getProp("Effects/cc").property("Color").value;
-                    this.removeProp("Effects/cc");
-                    return rgba[3];
-                },
-
-                areas : function(roundit){
-                    
-                    var areas     = [],
-                        isEnabled = [],
-                        contents  = this.property("Contents"),
-                        numProps  = contents.numProperties,
-                        i         = 0;
-                
-                    while(++i < numProps+1)
-                    {
-                        isEnabled.push(contents.property(i).enabled);
-                        contents.property(i).enabled = false;
-                    }   
-                    
-                    i = 0;
-                    while (++i< numProps+1)
-                    {
-                        if(i == 1)
-                        {
-                            contents.property(i).enabled = true;
-                            currArea = this.area() * this.alpha();
-                            areas.push(roundit?Math.round(currArea):currArea);
-                            continue;
-                        }
-            
-                        contents.property(i-1).enabled = false;
-                        contents.property(i+0).enabled = true;
-            
-                        currArea = this.area() * this.alpha();
-                        areas.push(roundit?Math.round(currArea): currArea);
-                    }   i = 0;
-                
-                    while(++i < numProps+1)
-                    {
-                        contents.property(i).enabled = isEnabled[i-1];
-                    }
-                
-                    return areas;
-                },
-
-                distances : function(origin)
-                {
-                
-                    prop = function(c, n, pp)
-                    {
-                        return c.property(n)
-                                .property("Transform")
-                                .property(pp).value;
-                    }
-                    num = function(v){
-                        return new Number(v);
-                    }
-                
-                    funcs = {
-                
-                        topleft: function(pos){
-                            return Math.sqrt(
-                                            (num(pos[0] - src.left) ^ 2) 
-                                          + (num(pos[1] - src.top ) ^ 2)
-                                   );
-                        },
-                        left: function(pos){
-                            return pos[0] - src.left;
-                        },
-                        right: function(pos){
-                            return wd - (pos[0] - src.left);
-                        },
-                        top: function(pos){
-                            return pos[1] - src.top;
-                        },
-                        bottom: function(pos){
-                            return ht - (pos[1] - src.top);
-                        },
-                        custom: function(pos){
-                            // TODO: Figure out the position coordinates of the
-                            // elements relative to the comp coordinate system.
-                            
-                            // Then simply subtract the distances to figure which
-                            // ones are closer than others.
-                        }
-                    }
-                
-                    var positions  = [],
-                        origin     = origin || "topleft";
-                        contents   = this.property("Contents"),
-                        numProps   = contents.numProperties;
-                        
-                    var src = this.sourceRectAtTime(this.containingComp.time, 0);
-                        wd  = src.width;
-                        ht  = src.height;
-                
-                    for(i=0;++i<numProps+1;) positions.push(prop(contents,i, "Position"))
-                
-                    return positions.map(funcs[origin]);    
-                },
-
-                grabProps : function()
-                // layer.grabProps("Group", "Shape"); => Group 1, Rectangle 1
-                {
-            
-                    var _TYPES = 
-                    [
-                        "Group",
-                        "Shape",
-                        "Graphic",
-                        "Filter"
-                    ];
-                
-                    var types = Array.prototype.slice.call(arguments);
-                
-                    types.forEach(function(type, idx){
-                        if(!_TYPES.includes(type)) this.remove(idx);
-                    })
-                
-                    var allProps = [];
-                
-                    for(var i = 1; i<this.content.numProperties+1; i++)
-                    {
-                        prop = this.content.property(i);
-                        mn = prop.matchName.split('-')[0].trim().split(" ").pop();
-                        if(types.includes(mn)) allProps.push(prop);
-                    }
-                
-                    return allProps;
-                }
-            });
-
-            // PROPS:
-            ShapeLayer.xt({
-                PROPS : 
-                {
-                    stroke    : ["composite", "color", "strokeWidth", "lineCap", "lineJoin", "miterLimit"],
-                    fill      : ["composite", "fillRule", "color"],
-                    transform : ["anchorPoint", "position", "scale", "skew", "skewAxis", "rotation", "opacity"],
-                    rect      : ["shapeDirection", "size", "position", "roundness"],
-                    ellipse   : ["shapeDirection", "size", "position"],
-                    star      : ["shapeDirection, type", "points", "position", "rotation", 
-                                "innerRadius", "outerRadius", "innerRoundness", "outerRoundness"]    
-                }
-            })
-        }),
-
-        AFFX$TextLayer: (function(){
-
-            TextLayer.prototype.xt({
-
-                config: function(cfg)
-                {
-                    var prop = textLayer.property("Source Text");
-                    var doc = textProp.value;
-                    doc.applyFill = cfg.applyFill;
-                    doc.fontSize = cfg.fontSize;
-                    doc.font = cfg.font;
-                    doc.fillColor = cfg.fill;
-                    prop.setValue(doc);
-
-                    return this;
-                },
-
-                animator: function(name)
-                {
-                    var am = this.Text.Animators.addProperty("ADBE Text Animator");
-                    am.name = name || "animator"; 
-                    return am;
-                },
-
-                fromJSONAndMarkersOf: function(layerName, jsonDataName, dataPointName)
-                {/**Expression to apply to a text layer source:
-                 * 
-                 * Example JSON:
-                 * 
-                 * [
-                 * {
-                 *    "animation": "move ball up"
-                 * },
-                 * {
-                 *    "animation": "move ball down" 
-                 * }
-                 * ]
-                 * 
-                 * On timeline:
-                 * 
-                 * (text = "move ball up")
-                 * |  <>    <>
-                 * (text = "move ball up")
-                 *  <>  |  <>
-                 * (text = "move ball down")
-                 * <>   <>   |
-                 */
-            
-                this.sourceText.expression =  (function(){
-            
-                    var m = thisComp.layer($layerName).marker;
-                    var t = time;
-                    var i = m.nearestKey(time).index;
-                
-                    if(m.nearestKey(t).time>t){ i--; } //if: |  <>
-                    i || (i = 1);
-                
-                    var obj = footage($footageName).sourceData;
-            
-                    obj[i][$dataPointName];
-                    
-                }).body({
-                    $layerName: layerName,
-                    $footageName: jsonDataName,
-                    $dataName : dataPointName
-                });
-                },
-            })
         }),
 
         AFFX$PropertyGroup: (function(){
@@ -6209,15 +6209,15 @@
             Python.xt({
                 
                 DEF_DEF_PATTERN: new RegExp("([\n]+def)|^def)\s+", 'g'),
-                DEF_NAME_PATT: new RegExp(".+", 'g'),
-                DEF_ARGS_PATT: new RegExp("\(.*\)"),
+                DEF_NAME_PATT  : new RegExp(".+", 'g'),
+                DEF_ARGS_PATT  : new RegExp("\(.*\)"),
 
                 functions: function(FP)
                 {
                     var P = new RegExp(
                           DEF_DEF_PATTERN.source
-                        + DEF_NAME_PATT.source
-                        + DEF_ARGS_PATT.source
+                        + DEF_NAME_PATT  .source
+                        + DEF_ARGS_PATT  .source
                     );
 
                     var M = File(FP).$read().match(P);

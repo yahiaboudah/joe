@@ -2240,7 +2240,7 @@
 
         PRIM$OBJECT: (function(){
 
-            // [CONSTRUCTORS]: {fromArray, fromEntries, }
+            // [CONSTRUCTORS]: {create, fromArray, fromEntries}
             Object.xt({
                 
                 create: function(proto)
@@ -2264,14 +2264,14 @@
 
                 fromEntries: function(A)
                 {
-                    var oo = {};
-                    for(x in A) if(x.in(A)) oo[x] = '';
+                    var O = {};
+                    for(a in A) if(a.in(A)) O[A[a]] = '';
 
-                    return oo;
+                    return O;
                 },
             })
 
-            // [GETTERS]: {KEYS, VALUES, SIZE}
+            // [GETTERS]: {keys, values, size}
             Object.xt({
                 
                 keys: function(oo)
@@ -2312,7 +2312,7 @@
                 }
             })
 
-            // [SETTERS]: {MODIFY, ADAPT}
+            // [SETTERS]: {modify, adapt}
             Object.xt({
                 
                 modify: function(oo, pp, v)
@@ -2340,7 +2340,7 @@
 
             })
 
-            // [DEBUGGERS]: {INFO, WRITE, PRINT, INSPECT}
+            // [DEBUGGERS]: {info, write, print, inspect}
             Object.xt({
                 
                 info: function()
@@ -2440,7 +2440,7 @@
                 },
             })
 
-            // [VALIDATORS]
+            // [VALIDATORS]: {dcKeys, validate, validateKeys}
             Object.xt({
 
                 dcKeys: function cKeys(a, b){
@@ -2498,17 +2498,19 @@
                 }
             })
 
-            // [REMOVE FUNCTION]
-            Object.rm = function(varName)
-            {
-                eval([
-                    
-                    "{0} = undefined",
-                    "delete({0})"
+            // [REMOVERS]: {rm}
+            Object.xt({
 
-                ].join(";").re(varName))
-            }
+                rm : function(varName)
+                {
+                    eval([
+                        
+                        "{0} = undefined",
+                        "delete({0})"
 
+                    ].join(";").re(varName))
+                }
+            })
         }),
 
         PRIM$ARRAY: (function()

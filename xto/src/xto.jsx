@@ -2240,16 +2240,15 @@
 
         PRIM$OBJECT: (function(){
 
+            // [KEYS, VALUES, SIZE]
             Object.xt({
-
-                adapt: function(ob, oo)
-                {
-                    for(x in oo) if(x.in(oo) && x.in(ob) && !!(k = ob[x]))
-                    {
-                        oo[x] = k;   
-                    }
                 
-                    return oo;
+                keys: function(oo)
+                {
+                    var arr = [];
+                    for(x in oo) if(x.in(oo)) arr.push(x);
+
+                    return arr;
                 },
 
                 values: function(oo)
@@ -2260,20 +2259,60 @@
                     return arr;
                 },
 
-                keys: function(oo)
-                {
-                    var arr = [];
-                    for(x in oo) if(x.in(oo)) arr.push(x);
-
-                    return arr;
-                },
-
                 size: function(oo){
                     
                     var k = 0;
                     for (x in oo) if (x.in(oo)) k++;
                     return k;
                 },
+            })
+
+            // [MODIFY, ADAPT]
+            Object.xt({
+                
+                modify: function(oo, pp, v)
+                {
+                    var ks  = pp.split('/'),
+                        seq = "oo";
+                        
+                    var i = -1, len = ks.length;
+                    while(++i<len) seq += "[\"{0}\"]".re(ks[i]);;
+
+                    eval("{0}={1};".re(seq, v.toString()));
+
+                    return oo;
+                },
+
+                adapt: function(ob, oo)
+                {
+                    for(x in oo) if(x.in(oo) && x.in(ob) && !!(k = ob[x]))
+                    {
+                        oo[x] = k;   
+                    }
+                
+                    return oo;
+                }
+
+            })
+
+            // [VALUE]
+            Object.xt({
+                
+                value: function(oo, P/*ath*/)
+                {
+                    var K  = P.split('/'), // Keys
+                        S = "oo",          // Sequence
+                        V;                 // Value
+                        
+                    var i = -1;
+                    while(++i<K.length) S += "[\"{0}\"]".re(K[i]);
+                
+                    eval("V = {0};".re(S));
+                    return V;
+                }
+            })
+
+            Object.xt({
 
                 dcKeys: function cKeys(a, b){
 
@@ -2327,32 +2366,6 @@
                     }
 
                     return true;
-                },
-
-                modify: function(oo, pp, v)
-                {
-                    var ks  = pp.split('/'),
-                        seq = "oo";
-                        
-                    var i = -1, len = ks.length;
-                    while(++i<len) seq += "[\"{0}\"]".re(ks[i]);;
-
-                    eval("{0}={1};".re(seq, v.toString()));
-
-                    return oo;
-                },
-
-                getValue: function(oo, pp)
-                {
-                    var ks  = pp.split('/'),
-                        seq = "oo",
-                        val;
-                        
-                    var i = -1, len = ks.length;
-                    while(++i<len) seq += "[\"{0}\"]".re(ks[i]);;
-                
-                    eval("val={0};".re(seq));
-                    return val;
                 },
 
                 info: function()
@@ -2423,8 +2436,8 @@
                     return str;
                 },
 
-                write: function(obj, FP, appnd){
-
+                write: function(obj, FP, appnd)
+                {
                     if(is(oo, undefined)) throw Error("Arg not an object");
                     if(is(FP, undefined)) FP = File($.fileName).fsName; 
                     if(is(ap, undefined)) ap = true;

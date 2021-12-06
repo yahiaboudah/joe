@@ -2315,15 +2315,15 @@
             // [SETTERS]: {modify, adapt}
             Object.xt({
                 
-                modify: function(oo, pp, v)
+                modify: function(oo, P/*ath*/, V)
                 {
-                    var ks  = pp.split('/'),
-                        seq = "oo";
+                    var K = P.split('/'),
+                        S = "oo";
                         
-                    var i = -1, len = ks.length;
-                    while(++i<len) seq += "[\"{0}\"]".re(ks[i]);;
+                    var i = -1;
+                    while(++i<K.length) S += "[\"{0}\"]".re(K[i]);;
 
-                    eval("{0}={1};".re(seq, v.toString()));
+                    eval("{0} = {1};".re(S, V.toString()));
 
                     return oo;
                 },
@@ -2332,7 +2332,7 @@
                 {
                     for(x in oo) if(x.in(oo) && x.in(ob) && !!(k = ob[x]))
                     {
-                        oo[x] = k;   
+                        oo[x] = k;
                     }
                 
                     return oo;

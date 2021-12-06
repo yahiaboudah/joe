@@ -2240,7 +2240,38 @@
 
         PRIM$OBJECT: (function(){
 
-            // [KEYS, VALUES, SIZE]
+            // [CONSTRUCTORS]: {fromArray, fromEntries, }
+            Object.xt({
+                
+                create: function(proto)
+                {
+                    function F(){}
+                    F.prototype = proto;
+                
+                    return new F();
+                },
+
+                fromArray: function(A)
+                {    
+                    var O = {};
+                    for(a in A) if(a.in(A) && A[a].is(Array))
+                    {
+                        O[A[a][0]] = A[a][1];
+                    }
+
+                    return O;
+                },
+
+                fromEntries: function(A)
+                {
+                    var oo = {};
+                    for(x in A) if(x.in(A)) oo[x] = '';
+
+                    return oo;
+                },
+            })
+
+            // [GETTERS]: {KEYS, VALUES, SIZE}
             Object.xt({
                 
                 keys: function(oo)
@@ -2265,9 +2296,23 @@
                     for (x in oo) if (x.in(oo)) k++;
                     return k;
                 },
+
+                // Merge this with values
+                value: function(oo, P/*ath*/)
+                {
+                    var K  = P.split('/'), // Keys
+                        S = "oo",          // Sequence
+                        V;                 // Value
+                        
+                    var i = -1;
+                    while(++i<K.length) S += "[\"{0}\"]".re(K[i]);
+                
+                    eval("V = {0};".re(S));
+                    return V;
+                }
             })
 
-            // [MODIFY, ADAPT]
+            // [SETTERS]: {MODIFY, ADAPT}
             Object.xt({
                 
                 modify: function(oo, pp, v)
@@ -2295,79 +2340,9 @@
 
             })
 
-            // [VALUE]
+            // [DEBUGGERS]: {INFO, WRITE, PRINT, INSPECT}
             Object.xt({
                 
-                value: function(oo, P/*ath*/)
-                {
-                    var K  = P.split('/'), // Keys
-                        S = "oo",          // Sequence
-                        V;                 // Value
-                        
-                    var i = -1;
-                    while(++i<K.length) S += "[\"{0}\"]".re(K[i]);
-                
-                    eval("V = {0};".re(S));
-                    return V;
-                }
-            })
-
-            Object.xt({
-
-                dcKeys: function cKeys(a, b){
-
-                    if(!(
-                        
-                        a && b &&
-                        a.is(Object) && b.is(Object) &&
-                        Object.size(a) == Object.size(b)
-
-                    ))  return false;
-
-                    for(x in a) if(x.in(a)){
-                        
-                        if(!x.in(b)) return false;
-                        
-                        if(a[x].is(Object))
-                        {
-                            if(!(
-                                
-                                b[x].is(Object) &&
-                                Object.dcKeys(a[x], b[x])
-                            
-                            )) return false;
-                        }
-                    }
-
-                    return true;
-                },
-
-                validate:  function(oo, bo)
-                {   // I don't like this function
-                    var type = function(v)
-                    {
-                        if(v.in([undefined, null])) return 'undefined';
-                        if(typeof v == 'xml')       return 'xml';
-                        return v.constructor.name.toLowerCase();
-                    }
-                
-                    if(type(oo) != type(bo))  return false; 
-                    if(type(oo) == 'object')  return Object.dcKeys(oo, bo);
-                    if(type(oo) == 'array')   return !(oo<bo || oo<bo);
-                
-                    return (oo == bo);
-                },
-
-                validateKeys: function(oo, keys)
-                {
-                    for(k in keys) if(k.in(keys))
-                    {
-                        if(!Object.getValue(oo, k)) return false;
-                    }
-
-                    return true;
-                },
-
                 info: function()
                 {
                 
@@ -2450,30 +2425,6 @@
                     return ff.fsName;
                 },
 
-                create: function(proto)
-                {
-                    function F(){}
-                    F.prototype = proto;
-                
-                    return new F();
-                },
-
-                objectFromArray: function(A)
-                {    
-                    var oo = {};
-                    for(a in A) if(a.in(A) && a.is(Array)) oo[[0]] = a[1];
-
-                    return oo;
-                },
-
-                fromEntries: function(A)
-                {
-                    var oo = {};
-                    for(x in A) if(x.in(A)) oo[x] = '';
-
-                    return oo;
-                },
-
                 inspect: function(oo)
                 {
                     var ps = Object.fromEntries(oo.reflect.properties),
@@ -2487,16 +2438,77 @@
                         ff: fs
                     };
                 },
-
-                rm : function(oo)
-                {
-                    eval([
-                        "{0} = undefined",
-                        "delete({0})"
-                    ].join(";").re(oo))
-                }
-
             })
+
+            // [VALIDATORS]
+            Object.xt({
+
+                dcKeys: function cKeys(a, b){
+
+                    if(!(
+                        
+                        a && b &&
+                        a.is(Object) && b.is(Object) &&
+                        Object.size(a) == Object.size(b)
+
+                    ))  return false;
+
+                    for(x in a) if(x.in(a)){
+                        
+                        if(!x.in(b)) return false;
+                        
+                        if(a[x].is(Object))
+                        {
+                            if(!(
+                                
+                                b[x].is(Object) &&
+                                Object.dcKeys(a[x], b[x])
+                            
+                            )) return false;
+                        }
+                    }
+
+                    return true;
+                },
+
+                validate:  function(oo, bo)
+                {   // I don't like this function
+                    var type = function(v)
+                    {
+                        if(v.in([undefined, null])) return 'undefined';
+                        if(typeof v == 'xml')       return 'xml';
+                        return v.constructor.name.toLowerCase();
+                    }
+                
+                    if(type(oo) != type(bo))  return false; 
+                    if(type(oo) == 'object')  return Object.dcKeys(oo, bo);
+                    if(type(oo) == 'array')   return !(oo<bo || oo<bo);
+                
+                    return (oo == bo);
+                },
+
+                validateKeys: function(oo, keys)
+                {
+                    for(k in keys) if(k.in(keys))
+                    {
+                        if(!Object.getValue(oo, k)) return false;
+                    }
+
+                    return true;
+                }
+            })
+
+            // [REMOVE FUNCTION]
+            Object.rm = function(varName)
+            {
+                eval([
+                    
+                    "{0} = undefined",
+                    "delete({0})"
+
+                ].join(";").re(varName))
+            }
+
         }),
 
         PRIM$ARRAY: (function()

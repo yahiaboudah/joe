@@ -1,10 +1,8 @@
 
-
 var a = {
     aze: 55,
-    zz: "ikkanze"
+    zz: "ikkanze",
+    ee: "knaze"
 }
 
-var x = Array(a);
-
-$.writeln(x.length);
+$.writeln(x.toSource());

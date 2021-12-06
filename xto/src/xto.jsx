@@ -4371,7 +4371,6 @@
                     return L;
                 },
 
-
                 axis: function(numDashes, text)
                 {
                     var C = this[0].containingComp,
@@ -4498,7 +4497,7 @@
                         }
                 },
 
-                dynamicLine: function(x0 ,y0 ,x1 ,y1)
+                lineConnector: function(x0 ,y0 ,x1 ,y1)
                 {
                     var c = this[0].containingComp;
                     
@@ -4607,7 +4606,7 @@
                                             .addTextFill(jj.color);
                     }
                   
-                    return text.config(style);                  
+                    return text.config(style);
                 },
                 
                 plot: function(
@@ -4674,12 +4673,10 @@
 
                     return shapeLayer;
                 },
-                
             })
         }),
 
         AFFX$ShapeLayer: (function(){
-
 
             // [SETTERS/ MODIFIERS]
             ShapeLayer.prototype.xt({
@@ -4864,7 +4861,8 @@
 
             // PROPS:
             ShapeLayer.xt({
-                PROPS : 
+                
+                PROPS :
                 {
                     stroke    : ["composite", "color", "strokeWidth", "lineCap", "lineJoin", "miterLimit"],
                     fill      : ["composite", "fillRule", "color"],
@@ -5447,6 +5445,7 @@
                   if((keyTime < t) && lr == "L") return keyIndex;
                   if((keyTime < t) && lr == "R") return keyIndex+1;
                 },
+
                 // TEXT RELATED: [ANIMATORS]:
                 // Find a way to verify that the property is a text Animator.
                 addTextFill: function(color)
@@ -5477,9 +5476,11 @@
 
                 getParent: function(level)
                 {
-                    var p = this;
-                    while(level--) p = p.parent;
-                    return p;
+                    var P = this,
+                        L = level || 1;
+
+                    while(L--) P = P.parent;
+                    return P;
                 },
 
                 copyPropertiesTo: function(target)

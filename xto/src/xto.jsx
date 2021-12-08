@@ -902,11 +902,12 @@
             if(!(efun = EXTO[what])) return;
             var arr  = [];
 
-            for(var i=0; i< efun.length; i++)
+            var i = -1;
+            while(++i<efun.length)
             {
                 curr = efun[i];
-                curr = (curr[0] == '-')? curr.shift(): curr;
-                jcur = [something, efun[i]].join('.');
+                // curr = (curr[0] == '-')? curr.shift(): curr;
+                jcur = [what, efun[i]].join('.');
     
                 arr.push(jcurr);
             }
@@ -916,12 +917,10 @@
         
         functions: function()
         {
-            var arr = [];
-            for(x in EXTO) if(x.in(EXTO))
-            {
-                Array.prototype.push.apply(arr, S.functionsOf(x));
-            }
-            return arr;
+            var A = [];
+            for(x in EXTO) if(x.in(EXTO)) A.push(S.functionsOf(x));
+
+            return A;
         }
     })
 

@@ -1835,7 +1835,7 @@
                         return reviver.call(holder, key, value);
                     }
             
-                    text = String(text);
+                    text = new String(text);
                     rx_dangerous.lastIndex = 0;
                     
                     if (rx_dangerous.test(text))

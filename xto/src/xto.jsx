@@ -1913,9 +1913,33 @@
                 
                 
                     var socket       = new Socket(),
-                        URL_PATTERN  = (/^(.*):\/\/([A-Za-z0-9\-\.]+):?([0-9]+)?(.*)$/),
-                        HTTP_PATTERN = (/^HTTP\/([\d\.?]+) (\d+) (.*)\r/),
-                        HTTP_REGEX   = (/(.*): (.*)\r/g);
+                        
+                        URL_PATTERN  = new RegExp(
+                            [
+                                "^(.*):\/\/",
+                                "([A-Za-z0-9\-\.]+)",
+                                ":?([0-9]+)?",
+                                "(.*)$"
+                            ].join('')
+                        ),
+                        
+                        HTTP_PATTERN = new RegExp(
+                            [
+                                "/^HTTP\/",
+                                "[\d\.?]+",
+                                "\d+",
+                                ".*\r/",
+                            ].join('')
+                        ),
+                        
+                        HTTP_REGEX   = new RegExp(
+                            [
+                                "(.*):",
+                                "(.*)\r"
+
+                            ].join(''),
+                            'g'
+                        );
                 
                     var url    = URL_PATTERN.exec(config.url),
                         method = config.method || 'GET';

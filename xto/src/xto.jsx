@@ -890,7 +890,7 @@
     // [INFO]
     S.xt({
 
-        version: '1.0.2',
+        version: '1.1.2',
         
         getTODO: function()
         {

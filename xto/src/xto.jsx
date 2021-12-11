@@ -2294,15 +2294,38 @@
                 },
             })
 
-            // [GETTERS]: {keys, values, size}
+            // [GETTERS]: {pureKeys, keys, values, size}
             Object.xt({
-                
-                keys: function(oo)
-                {
-                    var arr = [];
-                    for(x in oo) if(x.in(oo)) arr.push(x);
 
-                    return arr;
+                /*
+                pureKeys returns the keyPaths that lead to a value that
+                is not an Object
+                */
+                pureKeys: function pureKeys(oo)
+                {
+                    var K = [];
+                    for(x in oo) if(x.in(oo))
+                    {
+                        v = oo[x];
+                        if(!v.is(Object))
+                        {
+                            K.push(x.toString());
+                            continue;
+                        }
+
+                        subK = pureKeys(v), i=-1;
+                        while(++i<subK.length) subK[i] = "{0}/{1}".re(x, subK[i]);
+                        K.push.apply(null, subK);
+                    }
+
+                    return K;
+                },
+
+                keys: function keys(oo)
+                {
+                    var A = [];
+                    for(x in oo) if(x.in(oo)) A.push(x);
+                    return A;
                 },
 
                 /*

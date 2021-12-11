@@ -2305,33 +2305,28 @@
                     return arr;
                 },
 
-                values: function(oo)
+                /*
+                * Returns an array of values if no P is specified
+                * Otherwise returns the value for the specified KeyPath
+                */
+                value: function(oo, P)
                 {
-                    var arr = [];
-                    for(x in oo) if(x.in(oo)) arr.push(oo[x]);
+                    var V, S = "oo", P = is(P, String)?P.split('/'):false;
 
-                    return arr;
-                },
+                    if(!P && (V=[])) for(x in oo) if(x.in(oo)) V.push(oo[x]);
+                    if(V) return V;
 
-                size: function(oo){
-                    
-                    var k = 0;
-                    for (x in oo) if (x.in(oo)) k++;
-                    return k;
-                },
-
-                // Merge this with values
-                value: function(oo, P/*ath*/)
-                {
-                    var K  = P.split('/'), // Keys
-                        S = "oo",          // Sequence
-                        V;                 // Value
-                        
                     var i = -1;
-                    while(++i<K.length) S += "[\"{0}\"]".re(K[i]);
-                
+                    while(++i<P.length) S += "[\"{0}\"]".re(P[i]);
                     eval("V = {0};".re(S));
+
                     return V;
+                },
+
+                size: function(oo, k)
+                {
+                    if(oo && (k = 0)) for(x in oo) if(x.in(oo)) k++;
+                    return k;
                 }
             })
 

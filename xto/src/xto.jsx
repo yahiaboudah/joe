@@ -3512,10 +3512,9 @@
 
         AFFX$App: (function(){
 
-
             // [AECMD NUMBERS]
             app.xt({
-                AECMD: 
+                AECMD:
                 {
                     SAVE_AS_FRAME: 2104
                 }
@@ -3523,26 +3522,26 @@
 
             // [MATCH NAMES FUNCTION: app.MN("Masks") => ..]
             app.xt({
-
+                
                 MN: function(P)
                 {
-                    const TOP_LEVEL = 
+                    TOP_LEVEL =
                     {
-                        Marker: "ADBE Marker"    ,
-                        Time_Remap: "ADBE Time Remapping",
-                        Motion_Trackers: "ADBE MTrackers",
-                        Masks: "ADBE Mask Parade",
-                        Effects: "ADBE Effect Parade",
+                        Marker:           "ADBE Marker",
+                        Time_Remap:       "ADBE Time Remapping",
+                        Motion_Trackers:  "ADBE MTrackers",
+                        Masks:            "ADBE Mask Parade",
+                        Effects:          "ADBE Effect Parade",
                         Essential_Properties: "ADBE Layer Overrides" 
                     }
 
                     TRANSFORM = 
                     {
-                        Transform: "ADBE Transform Group",
+                        Transform:    "ADBE Transform Group",
                         
                         Anchor_Point: "ADBE Anchor Point",
                         
-                        Position: "ADBE Position",
+                        Position:   "ADBE Position",
                         X_Position: "ADBE Position_0",
                         Y_Position: "ADBE Position_1",
                         Z_Position: "ADBE Position_2",
@@ -3550,9 +3549,9 @@
                         Scale: "ADBE Scale",
 
                         Orientation: "ADBE Orientation",
-                        X_Rotation: "ADBE Rotate X",
-                        Y_Rotation: "ADBE Rotate Y",
-                        Z_Rotation: "ADBE Rotate Z",
+                        X_Rotation : "ADBE Rotate X",
+                        Y_Rotation : "ADBE Rotate Y",
+                        Z_Rotation : "ADBE Rotate Z",
                         
                         Opacity: "ADBE Opacity"
                     },
@@ -3593,8 +3592,8 @@
                 
                     CAMERA =
                     {
-                        Camera_Options: "ADBE Camera Options Group",
-                        Zoom: "ADBE Camera Options Group",
+                        Options: "ADBE Camera Options Group",
+                        Zoom: "ADBE Camera Zoom",
                         Depth_Of_Field: "ADBE Camera Depth of Field",
                         Focus_Distance: "ADBE Camera Focus Distance",
                         Aperture: "ADBE Camera Aperture",
@@ -4430,6 +4429,7 @@
 
                     // Just add Group 1
                     var G = S.addProp("Contents/ADBE Vector Group");
+                    var G = S.addProp("Contents/ADBE Vector Group");
                     G.name = "line";
                     
                     // add a path prop:
@@ -4444,7 +4444,9 @@
                     }.body();
 
                     // add a stroke prop:
+                    // ADBE Vector Graphic - Stroke
                     var STROKE = S.addProp("Contents/{0}/Contents/ADBE Vector Graphic - Stroke".re(G.name))
+                    STROKE.getProp(N("Width")).setValue(4);
                     STROKE.getProp("ADBE Vector Stroke Width").setValue(4);
 
                     // Now create the other dashes:
@@ -4727,6 +4729,21 @@
 
             // [SETTERS/ MODIFIERS]
             ShapeLayer.prototype.xt({
+
+                add : function(what, name)
+                {
+                    var matchNames = 
+                    {
+                        group : "ADBE Vector Group",
+                    }
+
+                    var S = this,
+                        P = matchNames[what] || matchNames["group"],
+                        G = S.property("Contents").addProperty(P);
+
+                    G.name = name || "{0}#{1}".re(what, S.numOf(P))
+                    return G;
+                },
                 
                 moveFirstVertex : function(idx){
                 

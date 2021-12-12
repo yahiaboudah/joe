@@ -4355,7 +4355,7 @@
 
             LayerCollection.prototype.xt({
 
-                $add : function(what, args, cfg)
+                $add : function(what, cfg, args)
                 {
                     var T = this, F, V, L;
                 
@@ -4379,7 +4379,7 @@
                         NULL: {duration: this.containingComp.duration}
                     }
 
-                    if(F = that["add{0}".re(what.title())])
+                    if(F = T["add{0}".re(what.title())])
                     {
                         V = Object.values(Object.adapt(Configs[what.toUpperCase()], args));
                         L = F.apply(T, V);
@@ -4420,17 +4420,11 @@
                 axis: function(numDashes, text)
                 {
                     var C = this[0].containingComp,
-                        S = this.$add("Shape");
-
-                    var axisName = "";
-                    S.name = axisName;
+                        S = this.$add("Shape", {name: "Axis"});
 
                     var axisProp = S.add("effect:Axis");
-                    var axisProp = S.addProp("Effects/Axis");
 
-                    // Just add Group 1
-                    var G = S.addProp("Contents/ADBE Vector Group");
-                    var G = S.addProp("Contents/ADBE Vector Group");
+                    var G = S.add("content:group");
                     G.name = "line";
                     
                     // add a path prop:

@@ -3,5 +3,11 @@
 
 var shapeLayer = app.project.activeItem.layer(1);
 
-var G = shapeLayer.add("group");
-$.writeln(G.name);
+ShapeLayer.prototype.$get = function(v)
+{
+    return "{0} is set".re(v);
+}
+
+var G = shapeLayer.$get("jabze");
+
+$.writeln(G)

@@ -4483,65 +4483,65 @@
                             $i: i
                         });
                         S.getProp("Contents/{0}/Contents/Stroke 1/Stroke Width").setValue(4);
-                        }
+                    }
 
-                        var endValue = ((100*numDashes)-100)/2;
-                        S.getProp("Effects/Axis/Start").setValue(-endValue);
-                        S.getProp("Effects/Axis/End")  .setValue(endValue);
+                    var endValue = ((100*numDashes)-100)/2;
+                    S.getProp("Effects/Axis/Start").setValue(-endValue);
+                    S.getProp("Effects/Axis/End")  .setValue(endValue);
 
-                        if(!text) return;
+                    if(!text) return;
 
-                        i = -1;
-                        while(++i<numDahses)
+                    i = -1;
+                    while(++i<numDahses)
+                    {
+                        var TL = this.$add("text", {shy: true});
+
+                        // [EDIT TEXT LAYER PROPERTY EXPRESSIONS]
+
+                        // [SOURCE TEXT EXPRESSION]
+                        TL.sourceText.expression = function()
                         {
-                            var TL = this.$add("text", {shy: true});
+                            var FX = thisComp.layer("$SName").effect("Axis");
+                            var num = FX("Count") + $i * FX("Basis");
 
-                            // [EDIT TEXT LAYER PROPERTY EXPRESSIONS]
+                            (Math.round(10*num)/10)
+                        }.body({$i:i})
+                        TL.name = TL.sourceText.value;
+                    
+                        //[ANCHOR POINT EXPRESSION]
+                        TL.transform.anchorPoint.expression = function()
+                        {
+                            var S = sourceRectAtTime(time, false);
+                            [S.width/2 + S.left, S.height/2 + S.top];
+                        }.body();
+                    
+                        // [TEXT POSITION EXPRESSION]
+                        TL.transform.position.expression = function()
+                        {
+                            var LA = thisComp.layer("$SName");
+                            var FX = LA.effect("Axis");
+                            var SP = FX("Space");
 
-                            // [SOURCE TEXT EXPRESSION]
-                            TL.sourceText.expression = function()
+                            var x = (thisComp.width/2) + $i * SP + FX("Start") + LA.transform.position[0] -960;
+                            var y = LA.transform.position[1] + 55;
+
+                            [x, u]
+
+                        }.body({$SName: S.name, $i:i})
+
+                        // [OPACITY EXPRESSION]
+                        TL.transform.opacity.expression = function()
+                        {
+                            var FX = thisComp.layer("$SName").effect("Axis");
+                            var PS = transform.position[0] - thisComp.width/2;
+
+                            if(PS - FX("End") < -10) 100
+                            else
                             {
-                                var FX = thisComp.layer("$SName").effect("Axis");
-                                var num = FX("Count") + $i * FX("Basis");
-
-                                (Math.round(10*num)/10)
-                            }.body({$i:i})
-                            TL.name = TL.sourceText.value;
-                        
-                            //[ANCHOR POINT EXPRESSION]
-                            TL.transform.anchorPoint.expression = function()
-                            {
-                                var S = sourceRectAtTime(time, false);
-                                [S.width/2 + S.left, S.height/2 + S.top];
-                            }.body();
-                        
-                            // [TEXT POSITION EXPRESSION]
-                            TL.transform.position.expression = function()
-                            {
-                                var LA = thisComp.layer("$SName");
-                                var FX = LA.effect("Axis");
-                                var SP = FX("Space");
-
-                                var x = (thisComp.width/2) + $i * SP + FX("Start") + LA.transform.position[0] -960;
-                                var y = LA.transform.position[1] + 55;
-
-                                [x, u]
-
-                            }.body({$SName: S.name, $i:i})
-
-                            // [OPACITY EXPRESSION]
-                            TL.transform.opacity.expression = function()
-                            {
-                                var FX = thisComp.layer("$SName").effect("Axis");
-                                var PS = transform.position[0] - thisComp.width/2;
-
-                                if(PS - FX("End") < -10) 100
-                                else
-                                {
-                                    100 * Math.exp(-Math.pow(FX("End")-PS, 1)/(2*30*30))
-                                }
+                                100 * Math.exp(-Math.pow(FX("End")-PS, 1)/(2*30*30))
                             }
                         }
+                    }
                 },
 
                 lineConnector: function(x0 ,y0 ,x1 ,y1)
@@ -4761,7 +4761,7 @@
 
                         if(is(cfg.stroke, Number))
                         {
-                            G.addProperty(matchNames["stroke"]).property(matchNames["strokeWidth"]) = cfg.stroke;
+                            G.addProperty(matchNames["stroke"]).property(matchNames["strokeWidth"]).setValue(cfg.stroke);
                         }
                     }
 

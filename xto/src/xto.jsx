@@ -4411,6 +4411,15 @@
                             {
                                 L.name = T[0].containingComp.newName(cfg.name);
                             }
+
+                            if(is(cfg.fx, Array))
+                            {
+                                var fx = cfg.fx, i= -1;
+                                while(++i<fx.length)
+                                {
+                                    L.add("effect:{0}".re(fx[i]));
+                                }
+                            }
                             break;
                     }
 
@@ -4420,12 +4429,19 @@
                 axis: function(numDashes, text)
                 {
                     var C = this[0].containingComp,
-                        S = this.$add("Shape", {name: "Axis"});
+                        S = this.$add("Shape", {name: "Axis", fx: ["Axis"]}),
+                        L = S.add("content:group", "line"); //Line G(roup)
 
-                    var axisProp = S.add("effect:Axis");
-
-                    var G = S.add("content:group");
-                    G.name = "line";
+                    var LP = L.add("path"); // Line Path
+                    LP.expression = new Expression(function(){
+                        
+                        createPath(points = [
+                                             [effect("Axis")("Start"), 0],
+                                             [effect("Axis")("End")  , 0]
+                                            ],
+                                   inTangents = [], outTangents = [],
+                                   is_closed = false)
+                    });
                     
                     // add a path prop:
                     S.addProp("Contents/{0}/Contents/ADBE Vector Shape - Group".re(G.name));

@@ -4425,6 +4425,7 @@
                     var axisName = "";
                     S.name = axisName;
 
+                    var axisProp = S.add("effect:Axis");
                     var axisProp = S.addProp("Effects/Axis");
 
                     // Just add Group 1
@@ -4729,19 +4730,28 @@
 
             // [SETTERS/ MODIFIERS]
             ShapeLayer.prototype.xt({
-
+                
+                /**
+                 * effect:Axis
+                 * content:group
+                */
                 add : function(what, name)
                 {
+                    what  = what.split(':');
+                    var T = what[0], P = what[1]; //Type & Property
+
                     var matchNames = 
                     {
                         group : "ADBE Vector Group",
                     }
 
                     var S = this,
-                        P = matchNames[what] || matchNames["group"],
-                        G = S.property("Contents").addProperty(P);
+                        G = S.property(T == "effect"? "Effects": "Contents");
+                        G = G.canAddProperty(P)? G.addProperty(P): // can add P? add it
+                            G.canAddProperty(matchNames[P])?G.addProperty(matchNames[P]): // try calling the matchName
+                            undefined; // otherwise G is undefined
 
-                    G.name = name || "{0}#{1}".re(what, S.numOf(P))
+                    G?G.name = name || "{0}#{1}".re(what, S.numOf(P)):0;
                     return G;
                 },
                 

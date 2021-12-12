@@ -4430,11 +4430,15 @@
                 {
                     var C = this[0].containingComp,
                         S = this.$add("Shape", {name: "Axis", fx: ["Axis"]}),
-                        L = S.add("content:group", "line"); //Line G(roup)
+                        
+                        L = S.add("content:group", {
+                            name: "Line",
+                            stroke: 4
+                        }); //Line G(roup)
 
                     var LP = L.add("path"); // Line Path
                     LP.expression = new Expression(function(){
-                        
+
                         createPath(points = [
                                              [effect("Axis")("Start"), 0],
                                              [effect("Axis")("End")  , 0]
@@ -4442,23 +4446,6 @@
                                    inTangents = [], outTangents = [],
                                    is_closed = false)
                     });
-                    
-                    // add a path prop:
-                    S.addProp("Contents/{0}/Contents/ADBE Vector Shape - Group".re(G.name));
-                    S.getProp("Contents/{0}/Contents/Path 1/Path".re(G.name)).expression = function()
-                    {
-                        var start = effect("Axis")("Start");
-                        var end   = effect("Axis")("End");
-                        createPath(points = [[start, 0], [end, 0]],
-                                   inTangents = [], outTangents = [],
-                                   is_closed = false) 
-                    }.body();
-
-                    // add a stroke prop:
-                    // ADBE Vector Graphic - Stroke
-                    var STROKE = S.addProp("Contents/{0}/Contents/ADBE Vector Graphic - Stroke".re(G.name))
-                    STROKE.getProp(N("Width")).setValue(4);
-                    STROKE.getProp("ADBE Vector Stroke Width").setValue(4);
 
                     // Now create the other dashes:
                     var i = -1;
@@ -4745,7 +4732,7 @@
                  * effect:Axis
                  * content:group
                 */
-                add : function(what, name)
+                add : function(what, cfg)
                 {
                     what  = what.split(':');
                     var T = what[0], P = what[1]; //Type & Property
@@ -4753,6 +4740,8 @@
                     var matchNames = 
                     {
                         group : "ADBE Vector Group",
+                        stroke: "ADBE Vector Graphic - Stroke",
+                        strokeWidth: "ADBE Vector Stroke Width"
                     }
 
                     var S = this,
@@ -4760,8 +4749,22 @@
                         G = G.canAddProperty(P)? G.addProperty(P): // can add P? add it
                             G.canAddProperty(matchNames[P])?G.addProperty(matchNames[P]): // try calling the matchName
                             undefined; // otherwise G is undefined
+                    
+                    if(!G) return G;
 
-                    G?G.name = name || "{0}#{1}".re(what, S.numOf(P)):0;
+                    if(cfg)
+                    {
+                        if(is(cfg.name, String))
+                        {
+                            G.name = "{0}#{1}".re(cfg.name, S.numOf(P));
+                        }
+
+                        if(is(cfg.stroke, Number))
+                        {
+                            G.addProperty(matchNames["stroke"]).property(matchNames["strokeWidth"]) = cfg.stroke;
+                        }
+                    }
+
                     return G;
                 },
                 

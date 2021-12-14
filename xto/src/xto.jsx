@@ -981,6 +981,7 @@
                 {
                     var S = ShapeBank.getBank()[name];
 
+                    // Seperate independet variables from dependent ones
                     var P = S.params, I = {}, D = {};
                     
                     for(p in P) if(p.in(P))
@@ -989,12 +990,16 @@
                         else D[p] = is((fn = eval(P[p])), Function)? fn:undefined; 
                     }
 
-                    props = Object.adapt(props, I)
+                    props = Object.adapt(props, I);
 
                     // loop through all:
                     var i = -1;
                     while(++i < S.vertices.length)
                     {
+                        // Replace all "radius" strings with the actual value supplied
+                        // in passed props Object, find a solution for dependent
+                        // variables
+
                         var vx = S.vertices[i][0],
                             vy = S.vertices[i][1];
 

@@ -1,13 +1,13 @@
 
 {
     "simple": {
-        "variables": {"x": 0, "y": "function(){return this.x*2}"},
+        "params": {"x": 0, "y": "function(){return this.x*2}"},
         "vertices": ["x", "y"]
     },
 
     "circle": {
 
-        "paramaters": {"radius": 8, "stretch": "function(){return this.radius / 1.81066;}"},
+        "params": {"radius": 8, "stretch": "function(){return this.radius / 1.81066;}"},
 
         "vertices"   : [["-radius",0],[0,"radius"],["radius",0],[0,"-radius"]],
         "inTangents" : [[0,"-radius"],["-stretch",0],[0,"stretch"],["stretch",0]],

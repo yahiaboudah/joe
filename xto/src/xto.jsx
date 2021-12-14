@@ -960,6 +960,61 @@
 
     FUNS =
     {
+        /*
+            ╔╗ ┌─┐┌┐┌┬┌─┌─┐
+            ╠╩╗├─┤│││├┴┐└─┐
+            ╚═╝┴ ┴┘└┘┴ ┴└─┘
+        */
+       ShapeBank: function()
+       {
+           $.global.ShapeBank = function ShapeBank(){};
+
+           $.global.ShapeBank.xt({
+               
+                bank: 0,
+                getBank: function()
+                {
+                    return ShapeBank.bank || (ShapeBank.bank = JSON.parse("shapeBank.json"));       
+                },
+
+                shape: function(name, props)
+                {
+                    var S = ShapeBank.getBank()[name];
+
+                    var P = S.params, I = {}, D = {};
+                    
+                    for(p in P) if(p.in(P))
+                    {
+                        if(is(P[p], Number) && !is(P[p], String)) I[p] = P[p]
+                        else D[p] = is((fn = eval(P[p])), Function)? fn:undefined; 
+                    }
+
+                    props = Object.adapt(props, I)
+
+                    // loop through all:
+                    var i = -1;
+                    while(++i < S.vertices.length)
+                    {
+                        var vx = S.vertices[i][0],
+                            vy = S.vertices[i][1];
+
+                        var ix = S.intang[i][0],
+                            iy = S.intang[i][1];
+
+                        var ox = S.outang[i][0],
+                            oy = S.outang[i][1];
+
+                        S.vertices[i][0] = eval(vx._replace(I));
+                        S.intang[i][0]   = eval(ix._replace(I));
+                        S.outang[i][0]   = eval(ox._replace(I));
+
+                        S.vertices[i][1] = eval(vy._replace(I));
+                        S.intang[i][1]   = eval(iy._replace(I));
+                        S.outang[i][1]   = eval(oy._replace(I));
+                    }
+                }
+           })
+       },
 
         /*
             ██████╗  █████╗ ███████╗██╗ ██████╗

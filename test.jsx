@@ -1,13 +1,25 @@
 
 //@include "xto/src/xto.jsx"
 
-var shapeLayer = app.project.activeItem.layer(1);
+function replaceAll(x, R)
+{    
+    var S = x;
+    for(x in R) if(x.in(R)) S = S.split(x).join(R[x])
 
-ShapeLayer.prototype.$get = function(v)
-{
-    return "{0} is set".re(v);
+    return S;
 }
 
-var G = shapeLayer.$get("jabze");
+// var shapeLayer = app.project.activeItem.layer(1);
 
-$.writeln(G)
+// ShapeLayer.prototype.$get = function(v)
+// {
+//     return "{0} is set".re(v);
+// }
+
+// var G = shapeLayer.$get("jabze");
+
+// ShapeBank.shape("circle", {radius: 5});
+
+// $.writeln(G)
+
+// loop and replace

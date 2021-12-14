@@ -300,6 +300,7 @@
 
     var EXTO =
     {
+        // BASIC
         MATH:
         {
             MATH:
@@ -504,6 +505,7 @@
             }
         },
 
+        // APP
         AFFX:
         {
             Global:
@@ -684,6 +686,7 @@
             }
         },
 
+        // EXTRA
         CSTR:
         {
             Table:

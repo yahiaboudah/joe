@@ -10,8 +10,8 @@
         "paramaters": {"radius": 8, "stretch": "function(){return this.radius / 1.81066;}"},
 
         "vertices"   : [["-radius",0],[0,"radius"],["radius",0],[0,"-radius"]],
-        "inTangents" : [[0,-stretch],["-stretch",0],[0,stretch],[stretch,0]],
-        "outTangents": [[0,stretch],[stretch,0],[0,-stretch],[-stretch,0]],
+        "inTangents" : [[0,"-radius"],["-stretch",0],[0,"stretch"],["stretch",0]],
+        "outTangents": [[0,"stretch"],["stretch",0],[0,"-stretch"],["-stretch",0]],
         "closed"     : true
     }
 }

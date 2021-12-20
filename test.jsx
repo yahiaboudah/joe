@@ -4,11 +4,11 @@ xto.load("$$$$/DATA");
 
 try
 {
-    var hh = new HTTP("http://jsonplaceholder.typicode.com/posts/");
+    var hh = new HTTP("http://jsonplaceholder.typicode.com/posts/1/comments");
     hh.request("GET");
     var rr = hh.response();
     $.writeln(rr.statusMessage);
-    $.writeln($.deser(rr.payload)[88].body);
+    $.writeln(rr.payload);
 }
 
 catch(e) {$.writeln("Error in line: {0}".re(e.line))}

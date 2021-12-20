@@ -965,7 +965,7 @@
             ╠╩╗├─┤│││├┴┐└─┐
             ╚═╝┴ ┴┘└┘┴ ┴└─┘
         */
-       ShapeBank: function()
+       ShapeBank: (function()
        {
            $.global.ShapeBank = function ShapeBank(){};
 
@@ -1019,7 +1019,7 @@
                     }
                 }
            })
-       },
+       }),
 
         /*
             ██████╗  █████╗ ███████╗██╗ ██████╗
@@ -4976,6 +4976,11 @@
                     for(i=0;++i<numProps+1;) positions.push(prop(contents,i, "Position"))
                 
                     return positions.map(funcs[origin]);    
+                },
+
+                numProp: function(propName)
+                {
+                    
                 },
 
                 grabProps : function()

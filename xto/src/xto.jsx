@@ -1749,7 +1749,7 @@
                     throw Error("HTTP: Failed to Connect to {0}".re(L));
                 }
             }
-
+            
             // [PATTERNS]
             HTTP.xt({
 
@@ -1786,101 +1786,87 @@
                 }
             })
 
-            // [HTTP]
-            $.xt({
-                
-                http: function(config)
+            // [REQUST MAKING]
+            HTTP.prototype.xt({
+
+                request: function(M/*ethod*/, config)
                 {
-                    /*
-                    config = {
-                        url : "http://www.youtube.com",
-                        method: "get"
-                    }
-                    */
+                    // PAYLOAD & HEADERS (default/serialization):
+                    config.payload = $.ser(config.payload || {});
+                    config.headers = config.headers || {};
+                    config.connectionType = config.connectionType || close;
 
-                    // Request making:
-                    // ================================
-                    // WRITE THE [REQUEST]:
-                    function makeRequest($method, $url)
-                    {
-                        var request = 
-                        [
-                            "{0} {1} HTTP/1.0".re($method, $url.path),
-                            "Connection: close",
-                            "Host: {0}".re($url.host)
-                        
-                        ].join("\r\n"), header;
-                
-                        // PÄYLOAD:
-                        config.payload || (config.payload = {});
-                        if(typeof config.payload === "object")
-                        {
-                            config.payload = $.ser(config.payload);
-                            config.headers = config.headers || {};
-                
-                            config.headers["Content-Type"]   = "application/json";
-                            config.headers["Content-Length"] = config.payload.length;
-                        }
-                
-                        // ADD [HEADER] INFO:
-                        for(h in config.headers) request += "\r\n{0}: {1}".f(h, config.headers[h]);
-                        return request;
-                    }
-                    var req = makeRequest(method, url);
-                
-                    socket.write("{0}\r\n\r\n".re(req));
-                    if(config.payload) socket.write(config.payload);
+                    // BASIC REQUEST STRUCTURE
+                    var R =
+                    [
+                        "{0} {1} HTTP/1.0",
+                        "Host: {2}",
+                        "Connection: {3}"
 
+                    ].join("\r\n").re(M, this.U.path, this.U.host, config.connectionType), h, H;
+
+                    // Default headers
+                    H = config.headers.xt({
+                        "Content-Type"  : "application/json",
+                        "Content-Length": config.payload.length 
+                    })
+
+                    // Insert all headers into Request
+                    for(h in H) if(h.in(H)) R += "\r\n{0}: {1}".re(h, H[h]);
+                
+                    // Write the Request (return whatever Socket.write() returns)
+                    return this.S.write("{0}\r\n\r\n{1}".re(R, config.payload));
                     //=======================================================
-                
-                    // Response Handling:
-                    // ================================
-                    var payload, http = {};
-                    for(var data = socket.read(); !socket.eof;)
-                    {
-                        data += socket.read();
-                    }
-                
-                    var response = data.indexOf("\r\n\r\n");
+                }
+            })
 
-                    //--------------------------------------------------------------------------
-                    if(response == -1) throw Error("No HTTP payload found in the response.");//|
-                    //--------------------------------------------------------------------------
-                    
-                    response = data.substr(0, response);
-                    payload  = data.substr(response + 4); // after response..
+            // [RESPONSE HANDLING]
+            HTTP.prototype.xt({
                 
-                    var http = PATTERNS.HTTP.exec(response), header;
+                handleResponse: function(config)
+                {
+                    var data,
+                        payload, payloadIndex, response, 
+                        http, header;
                     
+                    // Socket.read(), read all data
+                    for(data = this.S.read(); !this.S.eof; data += this.S.read());
+
+                    payloadIndex = data.indexOf("\r\n\r\n");
+                    //--------------------------------------------------------------------------
+                    if(payloadIndex == -1) throw Error("HTTP: No Payload found in Response.");//|
+                    //--------------------------------------------------------------------------
+
+                    response = data.substr(0, payloadIndex);
+                    payload  = data.substr(payloadIndex + 4); // after response..
+                
+                    var http = HTTP.PATTERNS.HTTP.exec(response);
                     //-----------------------------------------------------------------
-                    if(!http) throw Error("No HTTP payload found in the response!");//|
+                    if(!http) throw Error("HTTP: Response is Invalid");//|
                     //-----------------------------------------------------------------
                 
-                    http = 
+                    http =
                     {
                         ver           : Number(http[1]),
                         status        : Number(http[2]),
                         statusMessage : http[3],
-                        headers       : {}
+                        headers       : {},
+                        payload       : payload
                     }
-                
-                    while(header = PATTERNS.HTTP_HEADER.exec(response))
+                    // Collect all headers in Response
+                    while(header = HTTP.PATTERNS.HTTP_HEADER.exec(response))
                     {
                         http.headers[header[1]] = header[2];
                     }
-                
-                    var contenttype = (http.headers["Content-Type"] || http.headers["content-type"] || '').split(";");
-                    var charset     = config.charset || (contenttype[1] ? /charset=(.*)/.exec(contenttype[1])[1] : null);
-                
+
+                    // Deal with ContentType and Charset
+                    var contentType = (http.headers["Content-Type"] || http.headers["content-type"] || '').split(";");
+                    var charset     = config.charset || 
+                                      (contentType[1] ? /charset=(.*)/.exec(contentType[1])[1] : null);
+                    
                     if(charset) payload = payload.toString(charset);
-                    contenttype = contenttype[0];
-                
-                    if(config.forcejson || contenttype == "application/json")
-                    {
-                        http.payload = $.deser(payload);
-                    }
-                
-                    else http.payload = payload;
+                    contentType = contentType[0];
+                    if(config.forcejson || contenttype == "application/json") http.payload = $.deser(payload);
                     
                     return http;
                 }

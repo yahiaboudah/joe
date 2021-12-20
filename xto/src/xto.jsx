@@ -4997,6 +4997,54 @@
                 numProp: function(propName)
                 {
 
+                    var propTypes = 
+                    {
+                        Graphic: 
+                        {
+                            Stroke: "Stroke",
+                            GradientStroke: "G-Stroke",
+                            Fill: "Fill",
+                            GradientFill : "G-Fill"
+                        },
+                        
+                        Filter: 
+                        {
+                            MergePaths: "Merge",
+                            OffsetPaths: "Offset",
+                            PuckerAndBloat: "PB",
+                            RoundCorners: "RC",
+                            TrimPaths: "Trim",
+                            TwistPaths: "Twist",
+                            WigglePaths: "Roughen",
+                            WiggleTransform: "Wiggler",
+                            ZigZag: "ZigZag",
+                        },
+                    
+                        Shape: 
+                        {
+                            PolyStar: "Star",
+                            Rectangle: "Rect",
+                            Ellipse: "Ellipse",
+                            Custom: "Group"
+                        }
+                    };
+
+                    if(_in(propName, ["Shape", "Filter", "Graphic", "Group"]))
+                    {
+                        propName = "ADBE Vector {0}{1}".re(propName, propName != "Group"?" - .*":"");
+                    }
+                
+                    var x;
+                    for(propType in propTypes) if(propType.in(propTypes))
+                    {
+                        if(!!(x = propType[propName])) propName = "ADBE Vector {0} - {1}".re(propType, x); 
+                    }
+
+                    propName = new RegExp(propName || "ADBE Vector .*", 'g');
+                    var c = this.property("Contents"), i = 0, k = 0;
+                    while(++ i<c.numProperties+1) if(propName.test(c.property(i).matchName)) k++;
+                
+                    return k;
                 },
 
                 grabProps : function()

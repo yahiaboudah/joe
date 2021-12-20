@@ -847,7 +847,9 @@
         
             // Deal with DEP:
             // First preprocess the name:
-            var pWhat = what.split('$'), eWhat = EXTO, k =-1;
+            var pWhat = what.split('/'), eWhat = EXTO, k =-1;
+
+            $.writeln(pWhat.length);
 
             while(++k<pWhat.length) eWhat = eWhat[pWhat[k]];
 
@@ -869,7 +871,7 @@
                 f.call($.global);
             }
     
-            FUNS[what.toUpperCase()].call($.global);
+            FUNS[what.replace('/', '$').toUpperCase()].call($.global);
         },
 
         unload: function(what)
@@ -1727,6 +1729,7 @@
 
         $$$$$DATA: (function(){
 
+            /*
             $.global.HTTP = function HTTP(url)
             {
                 this.S = new Socket(), L;
@@ -1789,7 +1792,7 @@
             // [REQUST MAKING]
             HTTP.prototype.xt({
 
-                request: function(M/*ethod*/, config)
+                request: function(M, config)
                 {
                     // PAYLOAD & HEADERS (default/serialization):
                     config.payload = $.ser(config.payload || {});
@@ -1871,6 +1874,8 @@
                     return http;
                 }
             })
+
+            */
 
             // [JSON]
             $.json = (function()

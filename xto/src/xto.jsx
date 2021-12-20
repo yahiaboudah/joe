@@ -2089,7 +2089,7 @@
                                 .replace(rx_four, "")
                         )
                     ){
-                        j = eval("(" + text + ")");
+                        j = eval("({0})".re(text));
                         return (typeof reviver === "function")
                             ? walk({"": j}, "")
                             : j;

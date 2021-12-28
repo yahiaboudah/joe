@@ -6275,10 +6275,28 @@
         CSTR$FileInterface: (function()
         {
             
-            $.global.FileInterface = function FileInterface()
+            $.global.FileInterface = function FileInterface(cfg)
             {
                 // do Object.adapt
-                this.intf0     = cfg.intf0;
+                this.intf0     = Object.adapt(cfg.intf0, {
+                    
+                    info:
+                    {
+                        contacts : [],
+                        reqs_made: [],
+                        reqs_exec: 0,
+                        reqs_arch: []
+                    },
+
+                    active_req:
+                    {
+                        road: "",
+                        trac: "",
+                        seed: "",
+                        crop: ""
+                    }
+
+                });
                 this.extension = cfg.extension;
                 this.path      = cfg.filePath;
                 this.fileName  = File(this.path).name;
@@ -6293,16 +6311,19 @@
                 {
                     return Object.validateKeys(
                         intf,
-                        ["info",
-                        "contacts",
-                        "active_req",
-                        "info/reqs_made",
-                        "info/reqs_exec",
-                        "info/past_reqs",
-                        "active_req/road",
-                        "active_req/trac",
-                        "active_req/seed",
-                        "active_req/crop"]
+                        [
+                            "info",
+                            "info/contacts",
+                            "info/reqs_made",
+                            "info/reqs_exec",
+                            "info/past_reqs",
+                            
+                            "active_req",
+                            "active_req/road",
+                            "active_req/trac",
+                            "active_req/seed",
+                            "active_req/crop"
+                        ]
                     );
                 },
 
@@ -6313,8 +6334,6 @@
 
                 crop : function(clean)
                 {
-                    if(is(clean, undefined)) clean = true;
-
                     var I = this.get(),         
                         C = I.active_req.crop;
 
@@ -6368,10 +6387,10 @@
 
         CSTR$PYTHON: (function(){
 
-            $.global.Python = function Python(INTF){
+            $.global.Python = function Python(FInterface){
 
-                // pass new FileInterface()
-                this.INTERFACE = INTF;
+                this.INTERFACE = is(FInterface, FileInterface)? FInterface:
+                                 File(FInterface).exists      ? new FileInterface({})
             };
 
             Python.instPath = "C:/Users/me/Desktop/PYJSX";
@@ -6379,7 +6398,67 @@
             // [BASIC ATTRIBUTES]
             Python.xt({
                 
-                execFunc : "def pyjsx_run():\n    import json, sys, os\n    inst_path  = '"+Python.instPath+"/'\n    intf_path   =  (inst_path + 'PyIntf.pyintf')\n    exec_signal =  (inst_path + 'executed.tmp')\n    def strr(ss):\n        if(ss in ['true', 'false']): return ss.title()\n        if(type(ss) is str):         return '\"' + ss + '\"'\n        return str(ss)\n    with open(intf_path, 'r') as f:\n        c= f.read()\n    if not c: return 'Python Error: interface corrupt'\n    intff = json.loads(c)\n    AR    = intff['active_req']\n    path  = AR   ['road']\n    func  = AR   ['trac']\n    name  = '.'.join(path.split('/')[-1].split('.')[0:-1])\n    args  = ','.join(strr(e) for e in AR['seed'])\n    sys.path.append(os.path.dirname(path))\n    try:\n        exec('import ' + name + ' as s')\n        result = eval('s.' + func + '(' + args + ')')\n    except Exception as e:\n        result = 'Python Error: ' + str(e).replace('\\\'', '\\\\\\\'')\n    intff['active_req']['crop'] = result\n    intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1\n    with open(intf_path, 'w', encoding='utf8') as f:\n        f.write(json.dumps(intff, indent =4))\n    with open(exec_signal, 'w') as execf:\n        execf.write('')\n    return 0\npyjsx_run()",
+                execFunc :
+                        [
+                           "def pyjsx_run():",
+
+                           /* ** Import:
+                                JSON (ser/deser),
+                                SYS  (append script path to SYS variables), 
+                                OS   (get dirname of a path)
+                           */
+                           "    import json, sys, os",
+                           
+                           // ** Convert Javascript arguments into Python arguments:
+                           "    def strr(ss):",
+                           "        if(ss in ['true', 'false']): return ss.title()",
+                           "        if(type(ss) is str):         return '\"' + ss + '\"'",
+                           "        return str(ss)",
+
+                           // ** Basic Path variables: InstallationFolder, FileInterface, Signal
+                           "    inst_path   = '{0}/'".re(Python.instPath),
+                           "    intf_path   = inst_path + 'PyIntf.pyintf'",
+                           "    exec_signal = inst_path + 'executed.tmp'",
+                           
+                           // ** Read the FileInterface
+                           "    with open(intf_path, 'r') as f:",
+                           "        c = f.read()",
+                           "    if not c: return 'Python Error: interface corrupt'",
+                           
+                           // ** Load the FileInterface and append Path to SYS
+                           "    intff = json.loads(c)",
+                           "    AR    = intff['active_req']",
+                           "    path  = AR   ['road']",
+                           "    func  = AR   ['trac']",
+                           "    name  = '.'.join(path.split('/')[-1].split('.')[0:-1])",
+                           "    args  = ','.join(strr(e) for e in AR['seed'])",
+                           "    sys.path.append(os.path.dirname(path))",
+                           
+                           // ** Execution:
+                           "    try:",
+                           "        exec('import ' + name + ' as s')",
+                           "        result = eval('s.' + func + '(' + args + ')')",
+                           "    except Exception as e:",
+                           "        result = 'Python Error: ' + str(e).replace('\\\'', '\\\\\\\'')",
+                           
+                           // ** Update the FileInterface with the function result (CROP):
+                           "    intff['active_req']['crop'] = result",
+                           "    intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1",
+                           
+                           // ** Serialize and dump FileInterface:
+                           "    with open(intf_path, 'w', encoding='utf8') as f:",
+                           "        f.write(json.dumps(intff, indent =4))",
+                           
+                           // ** Create the Signal File:
+                           "    with open(exec_signal, 'w') as execf:",
+                           "        execf.write('')",
+                           
+                           "    return 0",
+                           
+                           // ** Run Main (pyjsx_run())
+                           "pyjsx_run()"
+                        ].join("\n"),
+                
                 execPath : "{0}/exec.pyw".re(Python.instPath),
                 
                 execTime   : 180,
@@ -6446,9 +6525,9 @@
                 functions: function(FP)
                 {
                     var P = new RegExp(
-                          DEF_DEF_PATTERN.source
-                        + DEF_NAME_PATT  .source
-                        + DEF_ARGS_PATT  .source
+                          Python.DEF_DEF_PATTERN.source
+                        + Python.DEF_NAME_PATT  .source
+                        + Python.DEF_ARGS_PATT  .source
                     );
 
                     var M = File(FP).$read().match(P);
@@ -6458,6 +6537,7 @@
 
                     for(m in M) if(m.in(M))
                     {
+                        // ** Split Name From Args, remove "DEF"
                         m = m.replace(DEF_DEF_PATTERN, '').split('(');
                         
                         N = m[0];

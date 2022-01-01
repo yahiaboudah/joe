@@ -3467,7 +3467,6 @@
                             
                             if(!value) return "null";
                             
-                            $.writeln(gap);
                             gap += indent;
                             partial = [];
 
@@ -6350,9 +6349,7 @@
                 this.signal    = "{0}/executed.tmp".re(this.path);
 
                 // do Object.adapt
-                this.intf0     = Object.adapt(cfg.intf0, {
-                    
-                    extraStuff: 44,
+                this.intf0     = Object.adapt(cfg.intf0 || {}, {
 
                     info:
                     {
@@ -6418,7 +6415,7 @@
                 
                 make : function()
                 {
-                    return File(this.path).forceCreate(ser(this.intf0, 1));
+                    return File(this.path).forceCreate(ser(this.intf0, undefined, 4));
                 },
                 
                 set : function(intf)
@@ -6426,7 +6423,7 @@
                     var I = this;
                     if(!I.validate(intf)) throw Error("FileInterface: Invalid Interface");
                 
-                    return File(I.path).$write($.ser(intf, 1), 'w');
+                    return File(I.path).$write(ser(intf, undefined, 4), 'w');
                 },
                 
                 modify : function(keyPath, v)

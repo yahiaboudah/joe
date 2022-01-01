@@ -3,12 +3,7 @@ xto.load("CSTR/Python");
 
 var III = new FileInterface({
 
-    filePath: "C:/Users/bouda/Desktop/PYJSX/myInterface.txt",
-    intf0: {
-        info: {
-            contacts: ["D:/PythonScripts/pythonScript.py"]
-        }
-    }
+    filePath: "C:/Users/bouda/Desktop/myInterface.txt",
 });
 
 var python = new Python(III);

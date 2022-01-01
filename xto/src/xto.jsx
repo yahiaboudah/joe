@@ -184,7 +184,18 @@
         delete(Object.prototype.xt);
         Object.prototype.xt = function(oo)
         {
-            for(x in oo) if(oo.hasOwnProperty(x)) this[x] = oo[x];
+            var T = this;
+
+            if(T.constructor == Array)
+            {
+                var i = -1;
+                while(++i < T.length) for(x in oo) if(oo.hasOwnProperty(x))
+                {
+                    T[i][x] = oo[x];
+                }        
+            }
+
+            else for(x in oo) if(oo.hasOwnProperty(x)) this[x] = oo[x];
 
             return this;
         }
@@ -3506,24 +3517,24 @@
                         }
                 }
             
-                // Date.prototype.toJSON = function ()
-                // {
-                //     return isFinite(this.valueOf())?
-                //         (
-                //             "{0}-{1}-{2}T{3}:{4}:{5}Z".re(
-                //                 this.getUTCFullYear(),
-                //                 this.getUTCMonth(),
-                //                 this.getUTCDate(),
-                //                 this.getUTCHours(),
-                //                 this.getUTCMinutes(),
-                //                 this.getUTCSeconds()
-                //             )
-                //         ) : null;
-                // }
+                Date.prototype.toJSON = function ()
+                {
+                    return isFinite(this.valueOf())?
+                        (
+                            "{0}-{1}-{2}T{3}:{4}:{5}Z".re(
+                                this.getUTCFullYear(),
+                                this.getUTCMonth(),
+                                this.getUTCDate(),
+                                this.getUTCHours(),
+                                this.getUTCMinutes(),
+                                this.getUTCSeconds()
+                            )
+                        ) : null;
+                }
                 
-                // [Boolean.prototype, Number.prototype, String.prototype].xt({
-                //     toJSON: function(){return this.valueOf()}
-                // })
+                [Boolean.prototype, Number.prototype, String.prototype].xt({
+                    toJSON: function(){return this.valueOf()}
+                })
 
                 var gap;
                 var indent;
@@ -6414,7 +6425,7 @@
                 
                 make : function()
                 {
-                    return File(this.path).forceCreate(ser(this.intf0));
+                    return File(this.path).forceCreate(ser(this.intf0, 1));
                 },
                 
                 set : function(intf)

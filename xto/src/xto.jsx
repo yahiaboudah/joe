@@ -6277,15 +6277,18 @@
             
             $.global.FileInterface = function FileInterface(cfg)
             {
+                this.path      = cfg.filePath;
+                this.signal    = "{0}/executed.tmp".re(this.path);
+
                 // do Object.adapt
                 this.intf0     = Object.adapt(cfg.intf0, {
                     
                     info:
                     {
-                        contacts : [],
-                        reqs_made: [],
+                        reqs_made: 0,
                         reqs_exec: 0,
-                        reqs_arch: []
+                        reqs_arch: [],
+                        contacts : [],
                     },
 
                     active_req:
@@ -6297,11 +6300,6 @@
                     }
 
                 });
-                this.extension = cfg.extension;
-                this.path      = cfg.filePath;
-                this.fileName  = File(this.path).name;
-                this.structure = cfg.structure;
-                this.signal    = "{0}/executed.tmp".re(this.path)
             }
 
             // [INFO/GETTERS/VALIDATORS]
@@ -6316,7 +6314,7 @@
                             "info/contacts",
                             "info/reqs_made",
                             "info/reqs_exec",
-                            "info/past_reqs",
+                            "info/reqs_arch",
                             
                             "active_req",
                             "active_req/road",
@@ -6347,27 +6345,29 @@
                 
                 make : function()
                 {
+                    // also make the executable .py file, and the folder?
+                    // Entire folder containing the file interface
                     return File(this.path).$create($.ser(this.intf0, 1));
                 },
                 
-                set : function(IT)
+                set : function(intf)
                 {
                     var I = this;
-                    if(!I.validate(IT)) throw Error("Can't set invalid IT");
+                    if(!I.validate(intf)) throw Error("FileInterface: Invalid Interface");
                 
-                    return File(I.path).$write($.ser(IT, 1), 'w');
+                    return File(I.path).$write($.ser(intf, 1), 'w');
                 },
                 
                 modify : function(keyPath, v)
                 {
-                    var IT = this.get();
+                    var I = this.get();
                     
                     this.set(
                         Object.modify(
-                            IT,
+                            I,
                             keyPath,
                             v.is(Function)?
-                            v.call(IT, Object.getValue(IT, keyPath)):v
+                            v.call(I, Object.getValue(I, keyPath)):v
                         )
                     );
 
@@ -6376,21 +6376,28 @@
                 
                 post : function(R/*equest*/)
                 {
-                    var RValid = Object.validateKeys(R, ["path", "func", "args"]);
+                    if(!Object.validateKeys(R, ["path", "func", "args"]))
+                    {
+                        throw Error("FileInterface: Invalid Request");
+                    }
 
-                    if(!RValid) throw Error("Can't post an invalid request");
-
-                    this.modify("active_req", R);
+                    this.modify("active_req", 
+                    {
+                        road: R.path,
+                        trac: R.func,
+                        seed: R.args,
+                        crop: undefined
+                    });
                 }
             })
         }),
 
         CSTR$PYTHON: (function(){
 
-            $.global.Python = function Python(FInterface){
-
-                this.INTERFACE = is(FInterface, FileInterface)? FInterface:
-                                 File(FInterface).exists      ? new FileInterface({})
+            $.global.Python = function Python(FInterface)
+            {
+                this.INTERFACE = is(FInterface, FileInterface)? FInterface: new FileInterface();
+                return this;
             };
 
             Python.instPath = "C:/Users/me/Desktop/PYJSX";

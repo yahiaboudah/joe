@@ -3440,7 +3440,7 @@
                 }
             
                 function str(key, holder) 
-                {        
+                {
                     var i;
                     var k;          
                     var v;          
@@ -3457,19 +3457,17 @@
                     if(is(rep, Function)) value = rep.call(holder, key, value);
             
                     switch(typeof value)
-                    {
-                        case "string":
-                            return quote(value);
-                        
+                    {                        
                         case "boolean":
-                        case "number":
-                            if(!isFinite(value)) return "null";
-                        case "null":
-                            return String(value);
+                        case "number" : if(!isFinite(value)) return "null";
+                        case "null"   : return String(value);
 
+                        case "string": return quote(value);
                         case "object":
                             
                             if(!value) return "null";
+                            
+                            $.writeln(gap);
                             gap += indent;
                             partial = [];
 
@@ -3493,7 +3491,7 @@
                             if(rep && is(rep, Object))
                             {
                                 length = rep.length >>> 0, i = -1;
-                                for (;++i<length;)
+                                while(++i<length)
                                 {
                                     if(rep[i].isnt(String)) continue;
                                     k = rep[i], v = str(k, value);
@@ -3508,16 +3506,17 @@
                                 if(!v) continue;
                                 partial.push("{0}:{1}{2}".re(quote(k), gap?" ":"", v));
                             }
-            
+                            
                             v = !partial.length? "{}" : gap
                                 ? "{\n{0}{1}\n{2}}".re(gap, partial.join(",\n" + gap), mind)
                                 : "{{0}}".re(partial.join(","));
+                            
                             gap = mind;
                             return v;
                         }
                 }
             
-                Date.prototype.toJSON = function ()
+                Date.prototype.toJSON = function()
                 {
                     return isFinite(this.valueOf())?
                         (
@@ -3531,10 +3530,9 @@
                             )
                         ) : null;
                 }
-                
-                [Boolean.prototype, Number.prototype, String.prototype].xt({
-                    toJSON: function(){return this.valueOf()}
-                })
+                Boolean.prototype.toJSON = function() {return this.valueOf()};
+                String.prototype.toJSON  = function() {return this.valueOf()};
+                Number.prototype.toJSON  = function() {return this.valueOf()};
 
                 var gap;
                 var indent;
@@ -3555,21 +3553,16 @@
                 {
             
                     rep = replacer;
-                    var repCond = (replacer && typeof replace !== "function" &&(
+                    var repCond = (replacer && typeof replacer !== "function" &&(
                         typeof replacer !== "object" || typeof replacer.length !== "number"
                     ));
                     if(repCond) throw new Error("JJ.stringify");
             
-                    var i      = -1,
-                        gap    = "";
-                        indent = "";
-            
-                    switch (typeof space)
-                    {
-                        case "string": indent = space; break;
-                        case "number": for(;++i <space;) indent += " "; break;
-                    }
-            
+                    var i      = -1;
+                    indent = "";
+                    while(++i < space) indent += " ";
+                    gap    = "";
+
                     return str("", {"": value});
                 }
             
@@ -3625,14 +3618,14 @@
             
             $.global.xt({
 
-                ser: function(data)
+                ser: function(value, replacer, space)
                 {
-                    return $.global.JSON.stringify(data);
+                    return $.global.JSON.stringify(value, replacer, space);
                 },
 
-                deser: function(data)
+                deser: function(text, reviver)
                 {
-                    return $.global.JSON.parse(data);
+                    return $.global.JSON.parse(text, reviver);
                 }
             })
         }),

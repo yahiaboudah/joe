@@ -518,6 +518,30 @@
                 FUNS: [
                     //wow such empty!
                 ]
+            },
+
+            Http:
+            {
+                PRFX: "Http.prototype.",
+                DEPS: [],
+                FUNS : 
+                [
+                    "request",
+                    "responose", "rawResponse"      
+                ]
+            },
+
+            Json:
+            {
+                PRFX: "$.global.",
+                DEPS: [],
+                FUNS: 
+                [
+                    "JSON.stringify",
+                    "JSON.parse",
+                    "ser",
+                    "deser"
+                ]
             }
         },
 
@@ -708,7 +732,7 @@
             Table:
             {
                 PRFX: "$.global.",
-                DEPS: ["MATH$COMPLEX", "MATH$MATH"],
+                DEPS: ["MATH/Complex", "MATH/Math"],
                 FUNS: [
                     "Table"
                 ],
@@ -736,10 +760,14 @@
             Python:
             {
                 PRFX: "$.global.",
-                DEPS: [
-                    "$$$$$Misc",
-                    "DATA$File",
-                    "DATA$Folder"
+                DEPS: 
+                [
+                    "PRIM/Object",
+                    "CSTR/FileInterface",
+                    "$$$$/Data",
+                    "DATA/File",
+                    "DATA/Folder",
+                    "DATA/Json"
                 ],
                 FUNS: [
                     "Python"               
@@ -850,21 +878,25 @@
             var pWhat = what.split('/'), eWhat = EXTO, k =-1;
             while(++k<pWhat.length) eWhat = eWhat[pWhat[k]];
 
-            var deps = eWhat? eWhat.DEPS:{}, i=-1;
+            var deps = eWhat? eWhat.DEPS:[], i=-1;
             while(++i<deps.length)
             {
                 n = deps[i];
-                //NO FUNS[n]? continue:
+                n = n.replace(/\//g, '$').toUpperCase();
+
+                //Dependecy does not exist in FUNS? continue:
                 if(!(f = FUNS[n])) continue;
                 
-                //LOADED? add parent to LOADED.asDepend[n], continue:
+                //Already loaded before? push new parent:
                 if(n.in(S.LOADED.asDepend))
                 {
                     S.LOADED.asDepend[n].push(what);
                     continue;
                 }
-                //NOT LOADED? add to S.LOADED.asDepend ({dep: [parent]}):
+                //Never loaded? add to S.LOADED.asDepend ({dep: [parent]}):
                 S.LOADED.asDepend[n] = [what];
+                
+                //Call the DEP
                 f.call($.global);
             }
     
@@ -1725,383 +1757,6 @@
         */
 
         $$$$$DATA: (function(){
-
-            $.global.HTTP = function HTTP(url)
-            {
-                this.S = new Socket();
-                
-                var url = HTTP.PATTERNS.URL.exec(url), L;
-                
-                if(url === null)     throw Error("HTTP: Invalid URL");
-                if(url[1] != "http") throw Error("HTTP: Invalid Scheme");
-            
-                this.U = 
-                {
-                    scheme: url[1],
-                    host  : url[2],
-                    port  : url[3] || 80,
-                    path  : url[4]
-                }
-            
-                if(!this.S.open(L = "{0}:{1}".re(this.U.host, this.U.port), "binary"))
-                {
-                    throw Error("HTTP: Failed to Connect to {0}".re(L));
-                }
-            }
-            
-            // [PATTERNS]
-            HTTP.xt({
-            
-                PATTERNS:
-                {
-                    // Use brackets to extract groups later with patt.exec(str)
-            
-                    URL  : new RegExp(
-                        [
-                            "^(.*):\/\/",         // => anything://
-                            "([A-Za-z0-9\-\.]+)", // => www.mywebsite.com
-                            ":?([0-9]+)?",        // => :8080 (optional)
-                            "(.*)$"               // => knazekn (anything at the end)
-                        
-                        ].join('')                // => anything://www.mywebsite.com:8080knazekn
-                    ),
-                    
-                    HTTP : new RegExp(
-                        [
-                            "^HTTP\/",      // => HTTP/
-                            "([0-9]\.[0-9]) ", // => 1.1
-                            "([0-9]+) ",       // => 403
-                            "(.*)",        // =>  Forbidden    
-                        ].join('')          // HTTP/1.1 403 Forbidden
-                    ),
-                    
-                    HTTP_HEADER : new RegExp(
-                        [
-                            "(.*):",    // => khazekhaze:
-                            "(.*)\r"    // => oihairhknq
-                        ].join(''),
-                        'g'
-                    )
-                }
-            })
-            
-            // [REQUST MAKING]
-            HTTP.prototype.xt({
-            
-                request: function(M/*ethod*/, config)
-                {
-                    // PAYLOAD & HEADERS (default/serialization):
-                    config = config || {};
-                    config.payload = $.ser(config.payload || {});
-                    config.headers = config.headers || {};
-                    config.connectionType = config.connectionType || "close";
-            
-                    // BASIC REQUEST STRUCTURE
-                    var R =
-                    [
-                        "{0} {1} HTTP/1.0",
-                        "Host: {2}",
-                        "Connection: {3}"
-            
-                    ].join("\r\n").re(M, this.U.path, this.U.host, config.connectionType), h, H;
-            
-                    // Default headers
-                    H = config.headers.xt({
-                        "Content-Type"  : "application/json",
-                        "Content-Length": config.payload.length 
-                    })
-            
-                    // Insert all headers into Request
-                    for(h in H) if(h.in(H)) R += "\r\n{0}: {1}".re(h, H[h]);
-                
-                    // Write the Request (return whatever Socket.write() returns)
-                    return this.S.write("{0}\r\n\r\n{1}".re(R, config.payload));
-                    //=======================================================
-                }
-            })
-            
-            // [RESPONSE HANDLING]
-            HTTP.prototype.xt({
-            
-                rawResponse: function()
-                {
-                    // Socket.read(), read all data
-                    for(var data = this.S.read(); !this.S.eof; data += this.S.read());
-                    return data;
-                },
-                
-                response: function(config)
-                {
-                    config = config || {};
-            
-                    var data,
-                        payload, payloadIndex, response,
-                        http, header;
-                    
-                    data = this.rawResponse();
-                    payloadIndex = data.indexOf("\r\n\r\n");
-                    //--------------------------------------------------------------------------
-                    if(payloadIndex == -1) throw Error("HTTP: No Payload found in Response.");//|
-                    //--------------------------------------------------------------------------
-            
-                    response = data.substr(0, payloadIndex);
-                    payload  = data.substr(payloadIndex + 4); // after response..
-                
-                    var http = HTTP.PATTERNS.HTTP.exec(response);
-                    //-----------------------------------------------------------------
-                    if(!http) throw Error("HTTP: Response is Invalid");//|
-                    //-----------------------------------------------------------------
-                
-                    http =
-                    {
-                        ver           : Number(http[1]),
-                        status        : Number(http[2]),
-                        statusMessage : http[3],
-                        headers       : {},
-                        payload       : payload
-                    }
-                    // Collect all headers in Response
-                    while(header = HTTP.PATTERNS.HTTP_HEADER.exec(response))
-                    {
-                        http.headers[header[1]] = header[2];
-                    }
-            
-                    // Deal with ContentType and Charset
-                    var contentType = (http.headers["Content-Type"] || http.headers["content-type"] || '').split(";");
-                    var charset     = config.charset || 
-                                      (contentType[1] ? /charset=(.*)/.exec(contentType[1])[1] : null);
-                    
-                    if(charset) payload = payload.toString(charset);
-                    contentType = contentType[0];
-                    if(config.forcejson || contentType == "application/json") http.payload = $.deser(payload);
-                    
-                    return http;
-                }
-            })
-            
-
-            // [JSON]
-            $.json = (function()
-            {
-                var JJ = {};
-            
-                "use strict";
-            
-                var rx_one = /^[\],:{}\s]*$/;
-                var rx_two = /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g;
-                var rx_three = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;
-                var rx_four = /(?:^|:|,)(?:\s*\[)+/g;
-                var rx_escapable = /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
-                var rx_dangerous = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
-            
-                function f(n)
-                {
-                    return "{0}{1}".re(
-                        (n < 10)? '0': '',
-                        n
-                    )
-                }
-            
-                function quote(string)
-                {
-                    rx_escapable.lastIndex = 0;
-                    var isRxEsc = rx_escapable.test(string);
-                    if(!isRxEsc) return "\"{0}\"".re(string);
-
-                    return "\"{0}\"".re(string.replace(rx_escapable, function(a){
-                        
-                        var c = meta[a];
-                        return c.is(String)
-                               ? c
-                               : "\\u" + ("0000" + a.charCodeAt(0).toString(16)) .slice(-4);
-                    }));
-                }
-            
-                function str(key, holder) 
-                {        
-                    var i;
-                    var k;          
-                    var v;          
-                    var length;
-                    var mind = gap;
-                    var partial;
-                    var value = holder[key];
-            
-                    if(is(value, Object) && is(value.toJSON, Function))
-                    {
-                        value = value.toJSON(key);
-                    }
-
-                    if(is(rep, Function)) value = rep.call(holder, key, value);
-            
-                    switch(typeof value)
-                    {
-                        case "string":
-                            return quote(value);
-                        
-                        case "boolean":
-                        case "number":
-                            if(!isFinite(value)) return "null";
-                        case "null":
-                            return String(value);
-
-                        case "object":
-                            
-                            if(!value) return "null";
-                            gap += indent;
-                            partial = [];
-
-                            if(value.is(Array))
-                            {
-                                length = value.length, i = -1;
-                                for(;++i<length;) partial[i] = str(i, value) || "null";
-            
-                                v = !partial.length? "[]"
-                                    : gap ?
-                                        "[\n{0}]".re(
-                                            gap
-                                            + partial.join(",\n" + gap) + "\n"
-                                            + mind
-                                        )
-                                        : "[{0}]".re(partial.join(','));
-                                gap = mind;
-                                return v;
-                            }
-            
-                            if(rep && is(rep, Object))
-                            {
-                                length = rep.length >>> 0, i = -1;
-                                for (;++i<length;)
-                                {
-                                    if(rep[i].isnt(String)) continue;
-                                    k = rep[i], v = str(k, value);
-                                    if(!v) continue;
-                                    partial.push("{0}:{1}{2}".re(quote(k), gap?" ":"", v));
-                                }
-                            } 
-                            
-                            else for(k in value) if(k.in(value))
-                            {
-                                v = str(k, value);
-                                if(!v) continue;
-                                partial.push("{0}:{1}{2}".re(quote(k), gap?" ":"", v));
-                            }
-            
-                            v = !partial.length? "{}" : gap
-                                ? "{\n{0}{1}\n{2}}".re(gap, partial.join(",\n" + gap), mind)
-                                : "{{0}}".re(partial.join(","));
-                            gap = mind;
-                            return v;
-                        }
-                }
-            
-                // Date.prototype.toJSON = function ()
-                // {
-                //     return isFinite(this.valueOf())?
-                //         (
-                //             "{0}-{1}-{2}T{3}:{4}:{5}Z".re(
-                //                 this.getUTCFullYear(),
-                //                 this.getUTCMonth(),
-                //                 this.getUTCDate(),
-                //                 this.getUTCHours(),
-                //                 this.getUTCMinutes(),
-                //                 this.getUTCSeconds()
-                //             )
-                //         ) : null;
-                // }
-                
-                // [Boolean.prototype, Number.prototype, String.prototype].xt({
-                //     toJSON: function(){return this.valueOf()}
-                // })
-
-                var gap;
-                var indent;
-                var meta = 
-                {    
-                    "\b": "\\b",
-                    "\t": "\\t",
-                    "\n": "\\n",
-                    "\f": "\\f",
-                    "\r": "\\r",
-                    "\"": "\\\"",
-                    "\\": "\\\\"
-                };
-            
-                var rep;
-            
-                JJ.stringify = function(value, replacer, space)
-                {
-            
-                    rep = replacer;
-                    var repCond = (replacer && typeof replace !== "function" &&(
-                        typeof replacer !== "object" || typeof replacer.length !== "number"
-                    ));
-                    if(repCond) throw new Error("JJ.stringify");
-            
-                    var i      = -1,
-                        gap    = "";
-                        indent = "";
-            
-                    switch (typeof space)
-                    {
-                        case "string": indent = space; break;
-                        case "number": for(;++i <space;) indent += " "; break;
-                    }
-            
-                    return str("", {"": value});
-                }
-            
-                JJ.parse = function (text, reviver)
-                {
-                    var j;
-                    function walk(holder, key)
-                    {
-                        var k;
-                        var v;
-                        var value = holder[key];
-                        if(value.is(Object)) for(k in value) if(k.in(value))
-                        {
-                            v = walk(value, k);
-                            if(v.isnt(undefined)) value[k] = v;
-                            else delete value[k];
-                        }
-                        return reviver.call(holder, key, value);
-                    }
-            
-                    text = new String(text);
-                    rx_dangerous.lastIndex = 0;
-                    
-                    if (rx_dangerous.test(text))
-                    {
-                        text = text.replace(rx_dangerous, function (a) {
-                            return (
-                                "\\u"
-                                + ("0000" + a.charCodeAt(0).toString(16)).slice(-4)
-                            );
-                        });
-                    }
-            
-                    if(
-                        rx_one.test(
-                            text
-                                .replace(rx_two, "@")
-                                .replace(rx_three, "]")
-                                .replace(rx_four, "")
-                        )
-                    ){
-                        j = eval("({0})".re(text));
-                        return (typeof reviver === "function")
-                            ? walk({"": j}, "")
-                            : j;
-                    }
-            
-                    throw new SyntaxError("JJ.parse");
-                }
-            
-                return JJ;
-            })();
-            $.ser   = function(data) {return $.json.stringify(data);}
-            $.deser = function(data) {return $.json.parse(data);}
 
             // [CLIPBOARD]
             $.xt({
@@ -3342,6 +2997,18 @@
                     this.encoding = encoding || "UTF-8";
                     return (this.$write((text || ""), 'w'), this);
                 },
+
+                forceCreate: function(text, encoding)
+                {
+                    var id = this;
+                    while(!(nd = Folder(id.parent)).exists)
+                    {
+                        nd.create();
+                        id = nd;
+                    }
+                    
+                    return this.create(text, encoding);
+                },
                 
                 $execute : function(sleep, cb, doClose)
                 {
@@ -3563,6 +3230,399 @@
             Socket.prototype.xt({
 
 
+            })
+        }),
+
+        DATA$HTTP: (function(){
+
+            $.global.HTTP = function HTTP(url)
+            {
+                this.S = new Socket();
+                
+                var url = HTTP.PATTERNS.URL.exec(url), L;
+                
+                if(url === null)     throw Error("HTTP: Invalid URL");
+                if(url[1] != "http") throw Error("HTTP: Invalid Scheme");
+            
+                this.U = 
+                {
+                    scheme: url[1],
+                    host  : url[2],
+                    port  : url[3] || 80,
+                    path  : url[4]
+                }
+            
+                if(!this.S.open(L = "{0}:{1}".re(this.U.host, this.U.port), "binary"))
+                {
+                    throw Error("HTTP: Failed to Connect to {0}".re(L));
+                }
+            }
+            
+            // [PATTERNS]
+            HTTP.xt({
+            
+                PATTERNS:
+                {
+                    // Use brackets to extract groups later with patt.exec(str)
+            
+                    URL  : new RegExp(
+                        [
+                            "^(.*):\/\/",         // => anything://
+                            "([A-Za-z0-9\-\.]+)", // => www.mywebsite.com
+                            ":?([0-9]+)?",        // => :8080 (optional)
+                            "(.*)$"               // => knazekn (anything at the end)
+                        
+                        ].join('')                // => anything://www.mywebsite.com:8080knazekn
+                    ),
+                    
+                    HTTP : new RegExp(
+                        [
+                            "^HTTP\/",      // => HTTP/
+                            "([0-9]\.[0-9]) ", // => 1.1
+                            "([0-9]+) ",       // => 403
+                            "(.*)",        // =>  Forbidden    
+                        ].join('')          // HTTP/1.1 403 Forbidden
+                    ),
+                    
+                    HTTP_HEADER : new RegExp(
+                        [
+                            "(.*):",    // => khazekhaze:
+                            "(.*)\r"    // => oihairhknq
+                        ].join(''),
+                        'g'
+                    )
+                }
+            })
+            
+            // [REQUST MAKING]
+            HTTP.prototype.xt({
+            
+                request: function(M/*ethod*/, config)
+                {
+                    // PAYLOAD & HEADERS (default/serialization):
+                    config = config || {};
+                    config.payload = $.ser(config.payload || {});
+                    config.headers = config.headers || {};
+                    config.connectionType = config.connectionType || "close";
+            
+                    // BASIC REQUEST STRUCTURE
+                    var R =
+                    [
+                        "{0} {1} HTTP/1.0",
+                        "Host: {2}",
+                        "Connection: {3}"
+            
+                    ].join("\r\n").re(M, this.U.path, this.U.host, config.connectionType), h, H;
+            
+                    // Default headers
+                    H = config.headers.xt({
+                        "Content-Type"  : "application/json",
+                        "Content-Length": config.payload.length 
+                    })
+            
+                    // Insert all headers into Request
+                    for(h in H) if(h.in(H)) R += "\r\n{0}: {1}".re(h, H[h]);
+                
+                    // Write the Request (return whatever Socket.write() returns)
+                    return this.S.write("{0}\r\n\r\n{1}".re(R, config.payload));
+                    //=======================================================
+                }
+            })
+            
+            // [RESPONSE HANDLING]
+            HTTP.prototype.xt({
+            
+                rawResponse: function()
+                {
+                    // Socket.read(), read all data
+                    for(var data = this.S.read(); !this.S.eof; data += this.S.read());
+                    return data;
+                },
+                
+                response: function(config)
+                {
+                    config = config || {};
+            
+                    var data,
+                        payload, payloadIndex, response,
+                        http, header;
+                    
+                    data = this.rawResponse();
+                    payloadIndex = data.indexOf("\r\n\r\n");
+                    //--------------------------------------------------------------------------
+                    if(payloadIndex == -1) throw Error("HTTP: No Payload found in Response.");//|
+                    //--------------------------------------------------------------------------
+            
+                    response = data.substr(0, payloadIndex);
+                    payload  = data.substr(payloadIndex + 4); // after response..
+                
+                    var http = HTTP.PATTERNS.HTTP.exec(response);
+                    //-----------------------------------------------------------------
+                    if(!http) throw Error("HTTP: Response is Invalid");//|
+                    //-----------------------------------------------------------------
+                
+                    http =
+                    {
+                        ver           : Number(http[1]),
+                        status        : Number(http[2]),
+                        statusMessage : http[3],
+                        headers       : {},
+                        payload       : payload
+                    }
+                    // Collect all headers in Response
+                    while(header = HTTP.PATTERNS.HTTP_HEADER.exec(response))
+                    {
+                        http.headers[header[1]] = header[2];
+                    }
+            
+                    // Deal with ContentType and Charset
+                    var contentType = (http.headers["Content-Type"] || http.headers["content-type"] || '').split(";");
+                    var charset     = config.charset || 
+                                      (contentType[1] ? /charset=(.*)/.exec(contentType[1])[1] : null);
+                    
+                    if(charset) payload = payload.toString(charset);
+                    contentType = contentType[0];
+                    if(config.forcejson || contentType == "application/json") http.payload = $.deser(payload);
+                    
+                    return http;
+                }
+            })
+
+        }),
+
+        DATA$JSON: (function(){
+
+            $.global.JSON = (function()
+            {
+                var JJ = {};
+            
+                "use strict";
+            
+                var rx_one = /^[\],:{}\s]*$/;
+                var rx_two = /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g;
+                var rx_three = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;
+                var rx_four = /(?:^|:|,)(?:\s*\[)+/g;
+                var rx_escapable = /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+                var rx_dangerous = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+            
+                function f(n)
+                {
+                    return "{0}{1}".re(
+                        (n < 10)? '0': '',
+                        n
+                    )
+                }
+            
+                function quote(string)
+                {
+                    rx_escapable.lastIndex = 0;
+                    var isRxEsc = rx_escapable.test(string);
+                    if(!isRxEsc) return "\"{0}\"".re(string);
+
+                    return "\"{0}\"".re(string.replace(rx_escapable, function(a){
+                        
+                        var c = meta[a];
+                        return c.is(String)
+                               ? c
+                               : "\\u" + ("0000" + a.charCodeAt(0).toString(16)) .slice(-4);
+                    }));
+                }
+            
+                function str(key, holder) 
+                {        
+                    var i;
+                    var k;          
+                    var v;          
+                    var length;
+                    var mind = gap;
+                    var partial;
+                    var value = holder[key];
+            
+                    if(is(value, Object) && is(value.toJSON, Function))
+                    {
+                        value = value.toJSON(key);
+                    }
+
+                    if(is(rep, Function)) value = rep.call(holder, key, value);
+            
+                    switch(typeof value)
+                    {
+                        case "string":
+                            return quote(value);
+                        
+                        case "boolean":
+                        case "number":
+                            if(!isFinite(value)) return "null";
+                        case "null":
+                            return String(value);
+
+                        case "object":
+                            
+                            if(!value) return "null";
+                            gap += indent;
+                            partial = [];
+
+                            if(value.is(Array))
+                            {
+                                length = value.length, i = -1;
+                                for(;++i<length;) partial[i] = str(i, value) || "null";
+            
+                                v = !partial.length? "[]"
+                                    : gap ?
+                                        "[\n{0}]".re(
+                                            gap
+                                            + partial.join(",\n" + gap) + "\n"
+                                            + mind
+                                        )
+                                        : "[{0}]".re(partial.join(','));
+                                gap = mind;
+                                return v;
+                            }
+            
+                            if(rep && is(rep, Object))
+                            {
+                                length = rep.length >>> 0, i = -1;
+                                for (;++i<length;)
+                                {
+                                    if(rep[i].isnt(String)) continue;
+                                    k = rep[i], v = str(k, value);
+                                    if(!v) continue;
+                                    partial.push("{0}:{1}{2}".re(quote(k), gap?" ":"", v));
+                                }
+                            } 
+                            
+                            else for(k in value) if(k.in(value))
+                            {
+                                v = str(k, value);
+                                if(!v) continue;
+                                partial.push("{0}:{1}{2}".re(quote(k), gap?" ":"", v));
+                            }
+            
+                            v = !partial.length? "{}" : gap
+                                ? "{\n{0}{1}\n{2}}".re(gap, partial.join(",\n" + gap), mind)
+                                : "{{0}}".re(partial.join(","));
+                            gap = mind;
+                            return v;
+                        }
+                }
+            
+                // Date.prototype.toJSON = function ()
+                // {
+                //     return isFinite(this.valueOf())?
+                //         (
+                //             "{0}-{1}-{2}T{3}:{4}:{5}Z".re(
+                //                 this.getUTCFullYear(),
+                //                 this.getUTCMonth(),
+                //                 this.getUTCDate(),
+                //                 this.getUTCHours(),
+                //                 this.getUTCMinutes(),
+                //                 this.getUTCSeconds()
+                //             )
+                //         ) : null;
+                // }
+                
+                // [Boolean.prototype, Number.prototype, String.prototype].xt({
+                //     toJSON: function(){return this.valueOf()}
+                // })
+
+                var gap;
+                var indent;
+                var meta = 
+                {    
+                    "\b": "\\b",
+                    "\t": "\\t",
+                    "\n": "\\n",
+                    "\f": "\\f",
+                    "\r": "\\r",
+                    "\"": "\\\"",
+                    "\\": "\\\\"
+                };
+            
+                var rep;
+            
+                JJ.stringify = function(value, replacer, space)
+                {
+            
+                    rep = replacer;
+                    var repCond = (replacer && typeof replace !== "function" &&(
+                        typeof replacer !== "object" || typeof replacer.length !== "number"
+                    ));
+                    if(repCond) throw new Error("JJ.stringify");
+            
+                    var i      = -1,
+                        gap    = "";
+                        indent = "";
+            
+                    switch (typeof space)
+                    {
+                        case "string": indent = space; break;
+                        case "number": for(;++i <space;) indent += " "; break;
+                    }
+            
+                    return str("", {"": value});
+                }
+            
+                JJ.parse = function (text, reviver)
+                {
+                    var j;
+                    function walk(holder, key)
+                    {
+                        var k;
+                        var v;
+                        var value = holder[key];
+                        if(value.is(Object)) for(k in value) if(k.in(value))
+                        {
+                            v = walk(value, k);
+                            if(v.isnt(undefined)) value[k] = v;
+                            else delete value[k];
+                        }
+                        return reviver.call(holder, key, value);
+                    }
+            
+                    text = new String(text);
+                    rx_dangerous.lastIndex = 0;
+                    
+                    if (rx_dangerous.test(text))
+                    {
+                        text = text.replace(rx_dangerous, function (a) {
+                            return (
+                                "\\u"
+                                + ("0000" + a.charCodeAt(0).toString(16)).slice(-4)
+                            );
+                        });
+                    }
+            
+                    if(
+                        rx_one.test(
+                            text
+                                .replace(rx_two, "@")
+                                .replace(rx_three, "]")
+                                .replace(rx_four, "")
+                        )
+                    ){
+                        j = eval("({0})".re(text));
+                        return (typeof reviver === "function")
+                            ? walk({"": j}, "")
+                            : j;
+                    }
+            
+                    throw new SyntaxError("JJ.parse");
+                }
+            
+                return JJ;
+            })();
+            
+            $.global.xt({
+
+                ser: function(data)
+                {
+                    return $.global.JSON.stringify(data);
+                },
+
+                deser: function(data)
+                {
+                    return $.global.JSON.parse(data);
+                }
             })
         }),
 
@@ -6272,17 +6332,24 @@
             
         }),
 
-        CSTR$FileInterface: (function()
+        CSTR$FILEINTERFACE: (function()
         {
             
             $.global.FileInterface = function FileInterface(cfg)
             {
-                this.path      = cfg.filePath;
+                cfg = cfg || {};
+
+                var defInterfPath = "C:/Users/bouda/AppData/Roaming/PYJSX/DEFAULT INTERFACES/"; 
+                var len = Folder(defInterfPath).getFiles().length + 1;
+
+                this.path      = cfg.filePath || "{0}pyjsx #{1}.intf".re(defInterfPath, len);
                 this.signal    = "{0}/executed.tmp".re(this.path);
 
                 // do Object.adapt
                 this.intf0     = Object.adapt(cfg.intf0, {
                     
+                    extraStuff: 44,
+
                     info:
                     {
                         reqs_made: 0,
@@ -6300,6 +6367,8 @@
                     }
 
                 });
+
+                this.make();
             }
 
             // [INFO/GETTERS/VALIDATORS]
@@ -6327,7 +6396,7 @@
 
                 get : function()
                 {
-                    return $.deser(File(this.path).$read());
+                    return deser(File(this.path).$read());
                 },
 
                 crop : function(clean)
@@ -6345,9 +6414,7 @@
                 
                 make : function()
                 {
-                    // also make the executable .py file, and the folder?
-                    // Entire folder containing the file interface
-                    return File(this.path).$create($.ser(this.intf0, 1));
+                    return File(this.path).forceCreate(ser(this.intf0));
                 },
                 
                 set : function(intf)
@@ -6400,7 +6467,7 @@
                 return this;
             };
 
-            Python.instPath = "C:/Users/me/Desktop/PYJSX";
+            Python.path = "C:/Users/bouda/AppData/Roaming/PYJSX";
             
             // [BASIC ATTRIBUTES]
             Python.xt({
@@ -6482,7 +6549,7 @@
 
                 makeExec: function()
                 {
-                    return File(Python.execPath).create(Python.execStr);
+                    return File(Python.execPath).$create(Python.execStr);
                 },        
                 
                 runExec: function()
@@ -6684,6 +6751,7 @@
                     if((FD = Folder(Python.instPath)).exists) FD.$remove();
                 }
             })
+            
         }),
 
         CSTR$Logger: (function(){

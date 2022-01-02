@@ -10,5 +10,3 @@
 
 // $.writeln(Python.path);
 // $.writeln(III.path);
-
-// for each(x in arr) $.writeln(x)

@@ -6525,15 +6525,19 @@
                "pyjsx_run()"
             ].join("\n");
 
-            if(!PYJSX_FOLDER.exists)
-            {
-                PYJSX_FOLDER.create();
-                File("{0}/exec.pyw".re(PYJSX_FOLDER.fsName)).create(PYJSX_EXESTR);
-            }
+            File("{0}/exec.pyw".re(PYJSX_FOLDER.fsName)).forceCreate(PYJSX_EXESTR);
 
             $.global.Python = function Python(FInterface)
             {
                 this.INTERFACE = is(FInterface, FileInterface)? FInterface: new FileInterface();
+                
+                if((ff = File("{0}/interfaces.json".re(PYJSX_FOLDER.fsName))).exists
+                   && is(dd = deser(ff.$read()), Array))
+                {
+                    ff.$write(ser(dd.push(FInterface.path)));
+                }
+                else ff.create(ser([FInterface.path]));
+
                 return this;
             };
 

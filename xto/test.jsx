@@ -1,12 +1,14 @@
-//@include "src/xto.jsx"
-xto.load("CSTR/Python");
+// //@include "src/xto.jsx"
+// xto.load("CSTR/Python");
 
-var III = new FileInterface({
+// var III = new FileInterface({
 
-    filePath: "C:/Users/bouda/Desktop/myInterface.txt",
-});
+//     filePath: "C:/Users/bouda/Desktop/myInterface.txt",
+// });
 
-var python = new Python(III);
+// var python = new Python(III);
 
-$.writeln(Python.path);
-$.writeln(III.path);
+// $.writeln(Python.path);
+// $.writeln(III.path);
+
+// for each(x in arr) $.writeln(x)

@@ -775,7 +775,6 @@
                 [
                     "PRIM/Object",
                     "CSTR/FileInterface",
-                    "$$$$/Data",
                     "DATA/File",
                     "DATA/Folder",
                     "DATA/Json"
@@ -6553,7 +6552,7 @@
                 
                 isPythonInstalled: function()
                 {
-                    return $.cmd("python --version").split(' ')[0] == "Python";
+                    return system.callSystem("python --version").split(' ')[0] == "Python";
                 },
                 
                 runExec: function()

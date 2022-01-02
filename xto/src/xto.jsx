@@ -6524,9 +6524,9 @@
                // ** Run Main (pyjsx_run())
                "pyjsx_run()"
             ].join("\n");
-
             File("{0}/exec.pyw".re(PYJSX_FOLDER.fsName)).forceCreate(PYJSX_EXESTR);
 
+            // [PYTHON COSNTRUCTOR]
             $.global.Python = function Python(FInterface)
             {
                 this.INTERFACE = is(FInterface, FileInterface)? FInterface: new FileInterface();
@@ -6541,74 +6541,9 @@
                 return this;
             };
 
-            Python.path = "C:/Users/bouda/AppData/Roaming/PYJSX";
-            
             // [BASIC ATTRIBUTES]
             Python.xt({
-                
-                execFunc :
-                        [
-                           "def pyjsx_run():",
 
-                           /* ** Import:
-                                JSON (ser/deser),
-                                SYS  (append script path to SYS variables), 
-                                OS   (get dirname of a path)
-                           */
-                           "    import json, sys, os",
-                           
-                           // ** Convert Javascript arguments into Python arguments:
-                           "    def strr(ss):",
-                           "        if(ss in ['true', 'false']): return ss.title()",
-                           "        if(type(ss) is str):         return '\"' + ss + '\"'",
-                           "        return str(ss)",
-
-                           // ** Basic Path variables: InstallationFolder, FileInterface, Signal
-                           "    inst_path   = '{0}/'".re(Python.instPath),
-                           "    intf_path   = inst_path + 'PyIntf.pyintf'",
-                           "    exec_signal = inst_path + 'executed.tmp'",
-                           
-                           // ** Read the FileInterface
-                           "    with open(intf_path, 'r') as f:",
-                           "        c = f.read()",
-                           "    if not c: return 'Python Error: interface corrupt'",
-                           
-                           // ** Load the FileInterface and append Path to SYS
-                           "    intff = json.loads(c)",
-                           "    AR    = intff['active_req']",
-                           "    path  = AR   ['road']",
-                           "    func  = AR   ['trac']",
-                           "    name  = '.'.join(path.split('/')[-1].split('.')[0:-1])",
-                           "    args  = ','.join(strr(e) for e in AR['seed'])",
-                           "    sys.path.append(os.path.dirname(path))",
-                           
-                           // ** Execution:
-                           "    try:",
-                           "        exec('import ' + name + ' as s')",
-                           "        result = eval('s.' + func + '(' + args + ')')",
-                           "    except Exception as e:",
-                           "        result = 'Python Error: ' + str(e).replace('\\\'', '\\\\\\\'')",
-                           
-                           // ** Update the FileInterface with the function result (CROP):
-                           "    intff['active_req']['crop'] = result",
-                           "    intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1",
-                           
-                           // ** Serialize and dump FileInterface:
-                           "    with open(intf_path, 'w', encoding='utf8') as f:",
-                           "        f.write(json.dumps(intff, indent =4))",
-                           
-                           // ** Create the Signal File:
-                           "    with open(exec_signal, 'w') as execf:",
-                           "        execf.write('')",
-                           
-                           "    return 0",
-                           
-                           // ** Run Main (pyjsx_run())
-                           "pyjsx_run()"
-                        ].join("\n"),
-                
-                execPath : "{0}/exec.pyw".re(Python.path),
-                
                 execTime   : 180,
                 extensions : ["py", "pyw"]
             })
@@ -6616,15 +6551,10 @@
             // [SETUP/TOOLS]
             Python.xt({
                 
-                installed: function()
+                isPythonInstalled: function()
                 {
                     return $.cmd("python --version").split(' ')[0] == "Python";
                 },
-
-                makeExec: function()
-                {
-                    return File(Python.execPath).$create(Python.execStr);
-                },        
                 
                 runExec: function()
                 {
@@ -6646,18 +6576,6 @@
                     
                     return I;
                 },
-                
-                viewExec   : function(editor)
-                {
-                    $.cmd("{1} {0}".re(File(this.execPath).fsName, (editor || "notepad")));
-                },
-
-                editExec   : function(fs)
-                {
-                    this.execFunc = fs.is(File)? fs.$read():fs;
-                },
-
-                //========================================
             })
 
             // [LEXER/PARSER/GETTER]

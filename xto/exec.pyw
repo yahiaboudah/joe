@@ -3,12 +3,39 @@ import json
 
 class FileInterface():
 
+    # static props:
+    #   structure (FileInterface basic structure)
+    intf_struct = {
+
+        "MAJ": ('info', 'active_req'), # major
+        "INF": ('contacts', 'requests_arch', 'requests_exec', 'requests_made'), # info
+        "ACR": ('road', 'trac', 'seed', 'crop') # active request
+    }
+
+    # imports:
+    #   json (data ser/deser)
+    #   sys  ()
+    #   os   ()
+    import json, sys, os
+
+    @classmethod
+    def validate_structure(oo):
+        if(
+                all(k in oo               for k in intf_struct['MAJ'])
+            and all(k in oo['info']       for k in intf_struct['INF'])
+            and all(k in oo['active_req'] for k in intf_struct['ACR'])
+        ): return True
+
     @classmethod
     def load_interfaces(self, user_name = "bouda"):
 
         path = "C:/Users/{0}/AppData/Roaming/PYJSX/interfaces.json".format(user_name)
         with open(path, 'r') as f: 
             interfaces = json.loads(f.read())
+        
+        for i in interfaces:
+            pass
+
         return interfaces
     
     def __init__(self):

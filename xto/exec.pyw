@@ -5,6 +5,8 @@
 #   os   (path operations)
 import json, os, sys
 
+# Utils for
+#   file_name
 class Utils():
 
     @classmethod
@@ -17,6 +19,21 @@ class dotdict(dict):
     __delattr__ = dict.__delitem__
 
 class FileInterface():
+
+    def __init__(self, intf_path):
+
+        self.value = 
+        self.path = intf_path
+        self.update_self()
+
+    def update_self(self):
+
+        intf = self.grab_interface(self.path)
+        if(not intf): raise ValueError("FileInterface:Constructor:Invalid Interface")
+        self.value = intf
+    
+    def update_source(self):
+        pass
 
     # static props:
     #   structure (FileInterface basic structure)
@@ -75,14 +92,11 @@ class FileInterface():
             loaded.append(i)
 
         return loaded
-    
-    def __init__(self):
-        pass
 
 class PYJSX():
 
     @classmethod
-    def jspy_args(ss):
+    def jspy_args(self, ss):
         
         #boolean
         if(ss in ['true', 'false']): return ss.title()
@@ -93,7 +107,7 @@ class PYJSX():
         return str(ss)
     
     @classmethod
-    def process_intf(intf):
+    def process_intf(self, intf):
 
         pp = intf['active_req']['road']
         if(not os.path.exsits(pp)): raise ValueError("Python:PYJSX:process_intf: Invalid Road")
@@ -107,7 +121,7 @@ class PYJSX():
         })
     
     @classmethod
-    def execute_request(request):
+    def execute_request(self, request):
 
         # append to sys path
         sys.path.append(os.path.dirname(request.path))
@@ -121,33 +135,19 @@ class PYJSX():
             exec('import {0} as {1}'.format(n, n_as))
             result = eval('{name_as}.{func}({args})'.format(
                         name_as = n_as,
-                        func = f, args = a
-                        )
+                        func = f, args = a )
                     )
-            
+
         except Exception as e:
-            result = 'Python Error: {e}'.format(str(e).replace('\'', '\\\'')) 
+            result = 'Python:PYJSX:execute_request:{err}'.format(err = str(e).replace('\'', '\\\''))
+        
+        return result
+
 
 
 print(FileInterface.load_interfaces())
 
 # def pyjsx_run():
-
-#         AR    = intff['active_req']
-#         path  = AR   ['road']
-#         func  = AR   ['trac']
-#         args  = AR   ['seed']
-        
-#         name  = '.'.join(path.split('/')[-1].split('.')[0:-1])
-#         args  = ','.join(strr(e) for e in args)
-#         sys.path.append(os.path.dirname(path))
-        
-#         try:
-#             exec('import ' + name + ' as s')
-#             result = eval('s.' + func + '(' + args + ')')
-            
-#         except Exception as e:
-#             result = 'Python Error: {e}'.format(str(e).replace('\'', '\\\'')) 
         
 #         intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1
 #         intff['active_req']['crop'] = result

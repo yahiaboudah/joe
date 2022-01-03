@@ -1,6 +1,4 @@
 
-import json
-
 class FileInterface():
 
     # static props:
@@ -46,19 +44,34 @@ class FileInterface():
     @classmethod
     def load_interfaces(self, user_name = "bouda"):
 
+        loaded = []
+
         path = "C:/Users/{0}/AppData/Roaming/PYJSX/interfaces.json".format(user_name)
         with open(path, 'r') as f: 
             interfaces = json.loads(f.read())
         
         for i in interfaces:
-
             i = self.grab_interface(i)
             if(not i): continue
+            loaded.append(i)
 
-        return interfaces
+        return loaded
     
     def __init__(self):
         pass
+
+class PYJSX():
+
+    @classmethod
+    def jspy_args(ss):
+        
+        #boolean
+        if(ss in ['true', 'false']): return ss.title()
+        #string
+        if(type(ss) is str):         return '"{0}"'.format(ss)
+        
+        #any
+        return str(ss)
 
 print(FileInterface.load_interfaces())
 

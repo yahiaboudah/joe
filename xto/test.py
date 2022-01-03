@@ -20,6 +20,8 @@ oo = {
     }
 }
 
-import os
+import os.path as os_path
 
-print(os.path.exists("C:/Users/bouda/Desktop/python-3.10.1-amd64.exe"))
+print(os_path.basename("C:/Users/bouda/Desktop/python-3.10.1-amd64.exe"))
+
+print("inaze.onaze.knaze.".replace('.', '_'))

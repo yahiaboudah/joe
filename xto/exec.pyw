@@ -1,4 +1,21 @@
 
+# imports:
+#   json (data ser/deser)
+#   sys  (path append)
+#   os   (path operations)
+import json, os, sys
+
+class Utils():
+
+    @classmethod
+    def file_name(pp):
+        return '.'.join(pp.split('/')[-1].split('.')[0:-1])
+
+class dotdict(dict):
+    __getattr__ = dict.get
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+
 class FileInterface():
 
     # static props:
@@ -9,12 +26,6 @@ class FileInterface():
         "INF": ('contacts', 'requests_arch', 'requests_exec', 'requests_made'), # info
         "ACR": ('road', 'trac', 'seed', 'crop') # active request
     }
-
-    # imports:
-    #   json (data ser/deser)
-    #   sys  ()
-    #   os   (path operations)
-    import json, sys, os
 
     @classmethod
     def validate_structure(self, oo):
@@ -40,6 +51,14 @@ class FileInterface():
         if(not self.validate_structure(c)): return None
 
         return c
+    
+    @classmethod
+    def grab_signal(self, pp):
+
+        return '{dir_name}/executed_{intf_name}.tmp'.format(
+                            dir_name  = os.path.dirname(pp),
+                            intf_name = os.path.basename(pp)
+                    )
 
     @classmethod
     def load_interfaces(self, user_name = "bouda"):
@@ -72,40 +91,55 @@ class PYJSX():
         
         #any
         return str(ss)
+    
+    @classmethod
+    def process_intf(intf):
+
+        pp = intf['active_req']['road']
+        if(not os.path.exsits(pp)): raise ValueError("Python:PYJSX:process_intf: Invalid Road")
+
+        return dotdict({
+
+            path: pp,
+            name: Utils.file_name(pp),
+            func: intf['active_req']['trac'],
+            args: ','.join(self.jspy_args(arg) for arg in args) 
+        })
+    
+    @classmethod
+    def execute_request(request):
+
+        # append to sys path
+        sys.path.append(os.path.dirname(request.path))
+
+        n = request.name
+        n_as = n.replace('.', '_')
+        f = request.func
+        a = request.args
+        # execute and harvest
+        try:
+            exec('import {0} as {1}'.format(n, n_as))
+            result = eval('{name_as}.{func}({args})'.format(
+                        name_as = n_as,
+                        func = f, args = a
+                        )
+                    )
+            
+        except Exception as e:
+            result = 'Python Error: {e}'.format(str(e).replace('\'', '\\\'')) 
+
 
 print(FileInterface.load_interfaces())
 
 # def pyjsx_run():
-    
-#     import json, sys, os
-    
-#     def strr(ss):
-#         if(ss in ['true', 'false']): return ss.title()
-#         if(type(ss) is str):         return '"' + ss + '"'
-#         return str(ss)
 
-#     # load the interfaces array first:
-#     interfaces = "C:/Users/bouda/AppData/Roaming/PYJSX/interfaces.txt"
-#     with open(interfaces, 'w') as f:
-#         interfaces = json.loads(interfaces)
-
-#     for interf in interfaces:
-
-#         intf_path   = interf
-#         intf_name   = os.path.basename(interf)
-#         exec_signal = os.path.dirname(interf) + '/executed_{N}.tmp'.format(N = intf_name)
-
-
-#         with open(intf_path, 'r') as f: c = f.read()
-#         if not c: return 'Python Error: interface corrupt'
-        
-#         intff = json.loads(c)
 #         AR    = intff['active_req']
 #         path  = AR   ['road']
 #         func  = AR   ['trac']
+#         args  = AR   ['seed']
         
 #         name  = '.'.join(path.split('/')[-1].split('.')[0:-1])
-#         args  = ','.join(strr(e) for e in AR['seed'])
+#         args  = ','.join(strr(e) for e in args)
 #         sys.path.append(os.path.dirname(path))
         
 #         try:

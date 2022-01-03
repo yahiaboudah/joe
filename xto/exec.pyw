@@ -20,20 +20,22 @@ class dotdict(dict):
 
 class FileInterface():
 
-    def __init__(self, intf_path):
+    def __init__(self, intf_path = "C:"):
 
-        self.value = 
+        self.value = {
+            "info": {"contacts": [], "requests_arch": [], "requests_made":0, "requests_exec": 0},
+            "active_req": {"road": "", "trac": "", "seed": [], "crop": ""}
+        }
         self.path = intf_path
-        self.update_self()
+        self.update_from_source()
 
-    def update_self(self):
-
-        intf = self.grab_interface(self.path)
-        if(not intf): raise ValueError("FileInterface:Constructor:Invalid Interface")
-        self.value = intf
+    def update_from_source(self):
+        self.value = self.grab_interface(self.path) or self.value
     
     def update_source(self):
-        pass
+        pp = self.path
+        with open(pp, 'w') as f:
+            json.dump(self.value, f, ensure_ascii= False, indent=4)
 
     # static props:
     #   structure (FileInterface basic structure)
@@ -143,21 +145,19 @@ class PYJSX():
         
         return result
 
+# print(FileInterface.load_interfaces())
 
-
-print(FileInterface.load_interfaces())
-
-# def pyjsx_run():
-        
-#         intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1
-#         intff['active_req']['crop'] = result
-        
-#         # dump new interface with crop result
-#         with open(intf_path, 'w', encoding='utf8') as f:
-#             f.write(json.dumps(intff, indent =4))
-
-#         # write signal file
-#         with open(exec_signal, 'w') as ef: ef.write('')
+# main business
+def run():
     
-#     return 0
-# pyjsx_run()
+    intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1
+    intff['active_req']['crop'] = result
+    
+    # dump new interface with crop result
+    with open(intf_path, 'w', encoding='utf8') as f:
+        f.write(json.dumps(intff, indent =4))
+
+    # write signal file
+    with open(exec_signal, 'w') as ef: ef.write('')
+
+if __name__ == "__main__": run()

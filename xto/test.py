@@ -1,21 +1,7 @@
 
+from pyes.utils import Utils as u
 
-oo = {
+pp = "C:/Users/bouda/Desktop/someshit.txt"
 
-    "info": {
-
-        "contacts": [],
-        "requests_arch": [],
-        "requests_made": 0,
-        "requests_exec": 0
-    },
-
-    "active_req":
-    {
-        "road": "",
-        "trac": "",
-        "seed": "", 
-        "crop": "",
-        "someshit": ""
-    }
-}
+print(u.file_name(pp))
+print(u.get_user())

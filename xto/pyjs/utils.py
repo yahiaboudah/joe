@@ -9,11 +9,11 @@ import json, os, sys
 class Utils():
 
     @classmethod
-    def file_name(pp):
+    def file_name(self, pp):
         return '.'.join(pp.split('/')[-1].split('.')[0:-1])
 
     @classmethod
-    def get_user():
+    def get_user(self):
         return os.path.split(os.path.expanduser('~'))[-1]
 
 class dotdict(dict):

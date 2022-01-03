@@ -15,16 +15,33 @@ class FileInterface():
     # imports:
     #   json (data ser/deser)
     #   sys  ()
-    #   os   ()
+    #   os   (path operations)
     import json, sys, os
 
     @classmethod
-    def validate_structure(oo):
+    def validate_structure(self, oo):
+
+        S = self.intf_struct
         if(
-                all(k in oo               for k in intf_struct['MAJ'])
-            and all(k in oo['info']       for k in intf_struct['INF'])
-            and all(k in oo['active_req'] for k in intf_struct['ACR'])
+                all(k in oo               for k in S['MAJ'])
+            and all(k in oo['info']       for k in S['INF'])
+            and all(k in oo['active_req'] for k in S['ACR'])
         ): return True
+
+        return False
+
+    @classmethod
+    def grab_interface(self, pp):
+        
+        if(not os.path.exists(pp)): return None
+        
+        with open(pp ,'r') as f:
+            c = f.read()
+        
+        c = json.loads(c)
+        if(not self.validate_structure(c)): return None
+
+        return c
 
     @classmethod
     def load_interfaces(self, user_name = "bouda"):
@@ -34,7 +51,9 @@ class FileInterface():
             interfaces = json.loads(f.read())
         
         for i in interfaces:
-            pass
+
+            i = self.grab_interface(i)
+            if(not i): continue
 
         return interfaces
     

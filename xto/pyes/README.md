@@ -1,2 +1,3 @@
-# pyes
-Extendscript to Python
+# PYJSX
+
+Send requests to python, call python functions from within extendscript easily.

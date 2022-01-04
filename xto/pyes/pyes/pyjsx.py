@@ -7,7 +7,7 @@ class PYJSX():
         #boolean
         if(ss in ['true', 'false']): return ss.title()
         #string
-        if(type(ss) is str):         return '"{0}"'.format(ss)
+        if(type(ss) == str):         return '\"{0}\"'.format(ss)
         
         #any
         return str(ss)
@@ -23,7 +23,7 @@ class PYJSX():
             path: pp,
             name: Utils.file_name(pp),
             func: intf['active_req']['trac'],
-            args: ','.join(self.jspy_args(arg) for arg in args) 
+            args: ','.join(self.jspy_args(arg) for arg in intf['active_req']['seed']) 
         })
     
     @classmethod

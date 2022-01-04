@@ -6462,6 +6462,7 @@
         CSTR$PYTHON: (function(){
 
             //Check if pyjsx exists?
+            // New method, try to install pyjsx using pip?
             var PYJSX_FOLDER = Folder("C:/Users/bouda/AppData/Roaming/PYJSX");
             var PYJSX_EXESTR =
             [
@@ -6523,13 +6524,15 @@
                // ** Run Main (pyjsx_run())
                "pyjsx_run()"
             ].join("\n");
-            File("{0}/exec.pyw".re(PYJSX_FOLDER.fsName)).forceCreate(PYJSX_EXESTR);
+            // ** Disable forceCreate for now:
+            // File("{0}/exec.pyw".re(PYJSX_FOLDER.fsName)).forceCreate(PYJSX_EXESTR);
 
             // [PYTHON COSNTRUCTOR]
             $.global.Python = function Python(FInterface)
             {
                 this.INTERFACE = is(FInterface, FileInterface)? FInterface: new FileInterface();
                 
+                // Make the file that holds interfaces addresses
                 if((ff = File("{0}/interfaces.json".re(PYJSX_FOLDER.fsName))).exists
                    && is(dd = deser(ff.$read()), Array))
                 {
@@ -6560,11 +6563,23 @@
                     var I  = this.INTERFACE,
                         SF = I.signal;
 
+                    /*
+                        Remove potential old signal file 
+                    */
                     if(SF.exists) SF.remove();
 
+                    // Add metadata to the INTERFACE
                     I.modify("info/reqs_made", function(v){return v+1});
                     
+                    /*This is where execution happens:
+                    */
                     File(Python.execPath).$execute();
+                    /*
+                    End of execution
+                    */
+
+                    // Wait for the creation of the signal file:
+                    // ****************************************
                     File.prototype.listen.apply(SF, Object.values({
                         
                         wait: Python.execTime,
@@ -6573,6 +6588,7 @@
                         cleanup: true,
                     }));
                     
+                    // Return the INTERFACE object as a result:
                     return I;
                 },
             })

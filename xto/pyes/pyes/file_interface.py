@@ -33,7 +33,7 @@ class FileInterface():
             }
         }, ignore_extra_keys=True, description= "File Interface Schema")
     
-    def __init__(self, intf_path = "C:/Users/{0}/AppData/Roaming/PYJSX/INTFS/".format(Utils.get_user())):
+    def __init__(self, intf_path = "C:/Users/{0}/AppData/Roaming/PYJSX/INTFS/intf1.json".format(Utils.get_user())):
 
         self.value = self._default_value
         self.path = intf_path
@@ -50,20 +50,22 @@ class FileInterface():
 
     # [GRABBERS]
     def grab_raw(self):
-            with open(self.path, 'r') as f: c = f.read()
-            return c
+        with open(self.path, 'r') as f: c = f.read()
+        return c
 
     def grab_proper(self):
 
-        if(os.path.exists(pp)): return None
-        with open(pp ,'r') as f: 
-            try:    v = self.recover(json.loads(f.read() or ""))
-            except: v = None
+        if(os.path.exists(self.path)): return None
+        with open(self.path ,'r') as f:
+            cc = json.loads(f.read() or "") 
+            
+        try   : v = self.recover(cc)
+        except: v = None
 
         return v
 
     def pull(self, auto_repair = False):
-        proper_pulled = self.grab_proper(self.path) 
+        proper_pulled = self.grab_proper() 
         if(proper_pulled is not None): 
             self.value = proper_pulled
             if(auto_repair):

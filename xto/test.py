@@ -1,7 +1,16 @@
 
-from pyes.utils import Utils as u
+from pyes.pyjsx import *
+from pyes.file_interface import *
 
-pp = "C:/Users/bouda/Desktop/someshit.txt"
+# ff = FileInterface("C:/Users/bouda/Desktop/myInterface.json")
+# ww = ff.value
+# print(ww)
 
-print(u.file_name(pp))
-print(u.get_user())
+pp = "C:/Users/bouda/Desktop/extra/extraSon/myInterface2.json"
+ff = FileInterface(intf_path = pp)
+
+print(type([4,"aze", {"ww": "knaze"}]))
+
+# pp = "C:/Users/bouda/Desktop/someshit.txt"
+# print(Utils.file_name(pp))
+# print(Utils.get_user())

@@ -1,3 +1,4 @@
+from pyes.utils import *
 # PYJSX
 class PYJSX():
 
@@ -16,14 +17,14 @@ class PYJSX():
     def process_intf(self, intf):
 
         pp = intf['active_req']['road']
-        if(not os.path.exsits(pp)): raise ValueError("Python:PYJSX:process_intf: Invalid Road")
+        if(not os.path.exists(pp)): raise ValueError("Python:PYJSX:process_intf: Invalid Road")
 
         return dotdict({
 
-            path: pp,
-            name: Utils.file_name(pp),
-            func: intf['active_req']['trac'],
-            args: ','.join(self.jspy_args(arg) for arg in intf['active_req']['seed']) 
+            "path": pp,
+            "name": Utils.file_name(pp),
+            "func": intf['active_req']['trac'],
+            "args": ','.join(self.jspy_args(arg) for arg in intf['active_req']['seed']) 
         })
     
     @classmethod

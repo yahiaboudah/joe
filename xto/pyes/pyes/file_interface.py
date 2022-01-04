@@ -2,37 +2,48 @@ from pyes.utils import *
 # File Interface Class
 class FileInterface():
 
-    _default_value = {
-            "info": {"contacts": [], "requests_arch": [], "requests_made":0, "requests_exec": 0},
-            "active_req": {"road": "", "trac": "", "seed": [], "crop": ""}
+    _key_paths = {
+        'info/contacts': list,
+        'info/requests_made': int,
+        'info/requests_exec': int,
+        'info/requests_arch': list,
+        'active_req/road': str,
+        'active_req/trac': str,
+        'active_req/seed': list,
+        'active_req/crop': str
     }
 
-    @classmethod
-    def _default_schema():
-        #list, positive int, path
-        listt = lambda c: c if (type(c) == list) else []
-        pintt = lambda n: n if (type(n) == int and n>0) else 0
-        pathh = lambda p: p if os.path.exists(p) else ""
+    _default_value = dotdict({
+            "info": {"contacts": [], "requests_arch": [], "requests_made":0, "requests_exec": 0},
+            "active_req": {"road": "", "trac": "", "seed": [], "crop": ""}
+    })
 
-        return Schema({
+    _schema_lambs = dotdict({
+
+        "listt" : lambda c: c if (type(c) == list) else [],
+        "pintt" : lambda n: n if (type(n) == int and n>0) else 0,
+        "pathh" : lambda p: p if os.path.exists(p) else ""
+    })
+
+    _default_schema = Schema({
 
             "info":
             {
-                "contacts": Use(listt),
-                "requests_arch": Use(listt),
-                "requests_made": Use(pintt),
-                "requests_exec": Use(pintt)
+                "contacts": Use(_schema_lambs.listt),
+                "requests_arch": Use(_schema_lambs.listt),
+                "requests_made": Use(_schema_lambs.pintt),
+                "requests_exec": Use(_schema_lambs.pintt)
             },
             
             "active_req":
             {
-                "road": Use(pathh),
+                "road": Use(_schema_lambs.pathh),
                 "trac": Use(str),
-                "seed": Use(listt),
+                "seed": Use(_schema_lambs.listt),
                 "crop": Use(lambda s:s)
             }
         }, ignore_extra_keys=True, description= "File Interface Schema")
-    
+
     def __init__(self, intf_path = "C:/Users/{0}/AppData/Roaming/PYJSX/INTFS/intf1.json".format(Utils.get_user())):
 
         self.value = self._default_value
@@ -43,10 +54,23 @@ class FileInterface():
     
     # [VALIDATORS]
     def validate(self, oo):
-        return self._default_schema().is_valid(oo)
+        return self._default_schema.is_valid(oo)
 
+    # Handle missing and existing args:
     def recover(self, oo):
-        return self._default_schema().validate(oo)
+
+        try:
+            recovered = self._default_schema.validate(oo)
+        except:
+            recovered = dotdict(self._default_value)
+            oo = dotdict(oo)
+
+            for k, v in self._key_paths.items():
+                val = oo.find(k)
+                if(val and type(val) == v):
+                    recovered.update(k, val)
+        
+        return recovered
 
     # [GRABBERS]
     def grab_raw(self):
@@ -55,14 +79,11 @@ class FileInterface():
 
     def grab_proper(self):
 
-        if(os.path.exists(self.path)): return None
+        if(not os.path.exists(self.path)): return None
         with open(self.path ,'r') as f:
             cc = json.loads(f.read() or "") 
             
-        try   : v = self.recover(cc)
-        except: v = None
-
-        return v
+        return self.recover(cc)
 
     def pull(self, auto_repair = False):
         proper_pulled = self.grab_proper() 
@@ -87,3 +108,8 @@ class FileInterface():
             new_value if self.validate(new_value) else self.value,
             ensure_ascii= False, indent=4  
         ))
+    
+    def update(self, k_path, val, source = True):
+
+        self.value = dotdict(self.value).update(k_path, val)
+        if(source): self.push()

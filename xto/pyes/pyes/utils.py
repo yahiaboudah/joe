@@ -45,13 +45,22 @@ class dotdict(dict):
         for i in range(0, len(keys)):
             data = data + "[\"{0}\"]".format(keys[i])
         
-        data = "{0} = {2}{1}{2}".format(data, value, "\'" if (type(value) == str) else '')
+        # preprocess the crop value before
+        # hitting "exec"
+        if(type(value) == str):
+            value = value.replace('\n', '\\n')
+            value = "\"{0}\"".format(value)
+
+        data = "{0} = {1}".format(data, value)
         exec(data)
+
+        return self
         
     def find(self, key_path):
         keys = key_path.split('/')
         curr = self
 
-        for i in range(0, len(keys)): 
-            curr = curr[keys[i]]
+        for i in range(0, len(keys)):
+            try: curr = curr[keys[i]]
+            except: return None
         return curr

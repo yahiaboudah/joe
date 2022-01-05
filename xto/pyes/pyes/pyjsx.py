@@ -14,17 +14,22 @@ class PYJSX():
         return str(ss)
     
     @classmethod
-    def process_intf(self, intf):
+    def extract_request(self, intf):
 
+        # Super basic request checking:
         pp = intf['active_req']['road']
+        ff = intf['active_req']['trac']
+        ss = intf['active_req']['seed']
         if(not os.path.exists(pp)): raise ValueError("Python:PYJSX:process_intf: Invalid Road")
+        if(not type(ff) == str):    raise ValueError("Python:PYJSX:process_intf: Invalid Trac")
+        if(not type(ff) == list):   raise ValueError("Python:PYJSX:process_intf: Invalid Seed")
 
         return dotdict({
 
             "path": pp,
             "name": Utils.file_name(pp),
-            "func": intf['active_req']['trac'],
-            "args": ','.join(self.jspy_args(arg) for arg in intf['active_req']['seed']) 
+            "func": ff,
+            "args": ','.join(self.jspy_args(arg) for arg in ss) 
         })
     
     @classmethod
@@ -49,3 +54,9 @@ class PYJSX():
             result = 'Python:PYJSX:execute_request:{err}'.format(err = str(e).replace('\'', '\\\''))
         
         return result
+
+        @classmethod
+        def execute_intf(self, intf):
+            return self.execute_request(
+                self.extract_request(intf)
+            )

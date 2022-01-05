@@ -17,6 +17,26 @@ class PYJSX_Upgrader():
     _VP = "{parent}/pyes/_version.py".format(parent= _PP)
     _version = run_path(_VP)['__version__']
 
+    _commands = OrderedDict({
+
+        "dist": OrderedDict({
+            'make': 'python setup.py sdist',
+            'remove': 'rd dist /s /q',
+            'remove_egg': 'rd pyjsx.egg-info /s /q'
+        }),
+
+        "pypi": OrderedDict({
+            'upload': 'twine upload dist/* --config-file twine.pypirc'
+        }),
+        
+        "ppip": OrderedDict({
+            'install_latest': 'pip install --force-reinstall --no-cache-dir pyjsx',
+            'show': 'pip show pyjsx'
+        }),
+
+        "fold": OrderedDict({}) 
+    })
+
     @classmethod
     def upgrade_version(self):
 
@@ -45,26 +65,25 @@ class PYJSX_Upgrader():
         self.upgrade_version()
         self.modify_file()
 
-    @classmethod
-    def run_commands(self, timeout = 9):
+    # @classmethod
+    # def run_commands(self, timeout = 9):
 
-        commands = OrderedDict({
-            #pacakge and ship
-            "dist": 'python setup.py sdist',
-            "pypi": 'twine upload dist/* --config-file twine.pypirc',
-            #clean
-            "rmds": 'rmdir dist /s /q',
-            "rmin": 'rmdir pyjsx.egg-info /s /q',
-            #sleep
-            'wait': 'timeout {timeout}'.format(timeout = timeout),
-            #reinstall
-            # 'fpip': 'pip install --no-cache-dir --upgrade -vvv pyjsx=={v}'.format(v= self._version),
-            # 'spip': 'pip show pyjsx'
-        })
-        cfg = {'shell': True, 'cwd': self._PP}
+    #     commands = OrderedDict({
+    #         #pacakge and ship
+    #         "dist": 'python setup.py sdist',
+    #         #clean
+    #         "rmds": 'rmdir dist /s /q',
+    #         "rmin": 'rmdir pyjsx.egg-info /s /q',
+    #         #sleep
+    #         'wait': 'timeout {timeout}'.format(timeout = timeout),
+    #         #reinstall
+    #         # 'fpip': 'pip install --no-cache-dir --upgrade -vvv pyjsx=={v}'.format(v= self._version),
+    #         # 'spip': 'pip show pyjsx'
+    #     })
+    #     cfg = {'shell': True, 'cwd': self._PP}
 
-        for c in commands.values():
-            cmd.call(c, **cfg)
+    #     for c in commands.values():
+    #         cmd.call(c, **cfg)
 
 if __name__ == '__main__':
     PYJSX_Upgrader.upgrade()

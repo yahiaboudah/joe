@@ -6,6 +6,11 @@ from runpy import run_path
 from collections import OrderedDict
 import subprocess as cmd
 
+'''
+TODO:
+    take dist zip file, and unzip it inside site-packages!
+'''
+
 class PYJSX_Upgrader():
 
     _PP = 'C:/oi/joe/xto/pyes/'
@@ -58,7 +63,7 @@ class PYJSX_Upgrader():
         })
         cfg = {'shell': True, 'cwd': self._PP}
 
-        for c in commands.values(): 
+        for c in commands.values():
             cmd.call(c, **cfg)
 
 if __name__ == '__main__':

@@ -55,8 +55,8 @@ class PYJSX():
         
         return result
 
-        @classmethod
-        def execute_intf(self, intf):
-            return self.execute_request(
-                self.extract_request(intf)
-            )
+    @classmethod
+    def execute_intf(self, intf):
+        return self.execute_request(
+            self.extract_request(intf)
+        )

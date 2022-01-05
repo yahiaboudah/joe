@@ -1,7 +1,7 @@
 
 cfg = {
     'name': 'pyjsx',
-    'version':'0.2.0',
+    'version':'0.2.1',
     'description':'Extendscript to Python Bridging',
     'license':'GNU',
     'long_description':'',

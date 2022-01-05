@@ -7,8 +7,6 @@ pp = "C:/Users/bouda/Desktop/myInterface.txt"
 ff = FileInterface(intf_path = pp)
 py = PYJSX()
 
-intf = ff.grab_proper()
-req  = py.process_intf(intf)
+res = PYJSX.execute_intf(ff.grab_proper())
 
-res = py.execute_request(req)
 ff.update('active_req/crop', res)

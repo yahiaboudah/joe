@@ -1,12 +1,9 @@
-from pyes.pyjsx import *
-from pyes.file_interface import *
 
-pp = "C:/Users/bouda/Desktop/myInterface.txt"
+import shutil
+pp = 'C:/oi/joe/xto/pyes/pyes'
+sp = 'C:/Users/bouda/Desktop/dev/Python/lib/site-packages/pyes/'
 
-
-ff = FileInterface(intf_path = pp)
-py = PYJSX()
-
-res = PYJSX.execute_intf(ff.grab_proper())
-
-ff.update('active_req/crop', res)
+try:
+    shutil.copytree(pp, sp, dirs_exist_ok=True)
+except Exception as e:
+    print("Error is {0}".format(e))

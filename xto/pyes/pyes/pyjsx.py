@@ -22,7 +22,7 @@ class PYJSX():
         ss = intf['active_req']['seed']
         if(not os.path.exists(pp)): raise ValueError("Python:PYJSX:process_intf: Invalid Road")
         if(not type(ff) == str):    raise ValueError("Python:PYJSX:process_intf: Invalid Trac")
-        if(not type(ff) == list):   raise ValueError("Python:PYJSX:process_intf: Invalid Seed")
+        if(not type(ss) == list):   raise ValueError("Python:PYJSX:process_intf: Invalid Seed")
 
         return dotdict({
 
@@ -51,7 +51,7 @@ class PYJSX():
                     )
 
         except Exception as e:
-            result = 'Python:PYJSX:execute_request:{err}'.format(err = str(e).replace('\'', '\\\''))
+            result = 'PYJSX:execute_request:{err}'.format(err = str(e).replace('\'', '\\\''))
         
         return result
 

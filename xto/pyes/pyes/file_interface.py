@@ -44,7 +44,7 @@ class FileInterface():
             }
         }, ignore_extra_keys=True, description= "File Interface Schema")
 
-    def __init__(self, intf_path = "C:/Users/{0}/AppData/Roaming/PYJSX/INTFS/intf1.json".format(Utils.get_user())):
+    def __init__(self, intf_path = "C:/Users/{0}/AppData/Roaming/PYJSX/INTFS/intf.json".format(Utils.get_user())):
 
         self.value = self._default_value
         self.path = intf_path
@@ -113,3 +113,6 @@ class FileInterface():
 
         self.value = dotdict(self.value).update(k_path, val)
         if(source): self.push()
+    
+    def create_signal(self):
+        with open(self.grab_signal(), '+w') as f: 0

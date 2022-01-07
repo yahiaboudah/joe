@@ -1,11 +1,16 @@
-
-//@include "src/xto.es"
+//@include "src/xto.jsx"
 xto.load("CSTR/Python");
 
-var k = new FileInterface({
+py = new Python();
+ff = new FileInterface({path: "C:/Users/bouda/desktop/test.json"})
+// ff.modify("active_req/crop", 'new crop from test.jsx')
+$.writeln(ff.set({"active_req": {"crop": "new_crop from jsx"}}))
 
-    filePath: "C:/Users/bouda/Desktop/myInterface.txt",
-});
+// cc = py.call("roadtoheaven", "function", ["params1", "params2"])
 
-
-$.writeln(k.path);
+// try
+// {
+//     var rs = py.call("C:/Users/bouda/Desktop/pytest.py", "cutedog", [20]);
+//     alert("Python result: {0}".re(rs));
+// }
+// catch(e) {alert(e)}

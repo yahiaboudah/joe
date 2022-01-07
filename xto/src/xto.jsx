@@ -2285,11 +2285,7 @@
 
                 validateKeys: function(oo, keys)
                 {
-                    for(k in keys) if(k.in(keys))
-                    {
-                        if(!Object.getValue(oo, k)) return false;
-                    }
-
+                    for(k in oo) if(k.in(oo) && !k.in(keys)) return false;
                     return true;
                 }
             })
@@ -6340,22 +6336,20 @@
             $.global.FileInterface = function FileInterface(cfg)
             {
                 cfg = cfg || {};
+                var defInterfPath = "C:/Users/bouda/AppData/Roaming/PYJSX/INTFS/"; 
 
-                var defInterfPath = "C:/Users/bouda/AppData/Roaming/PYJSX/DEFAULT INTERFACES/"; 
-                var len = Folder(defInterfPath).getFiles().length + 1;
-
-                this.path      = cfg.filePath || "{0}pyjsx #{1}.intf".re(defInterfPath, len);
-                this.signal    = "{0}/executed.tmp".re(this.path);
+                this.path      = cfg.path || "{0}intf.json".re(defInterfPath);
+                this.signal    = "{0}/executed_{1}.tmp".re(this.path, File(this.path).displayName);
 
                 // do Object.adapt
                 this.intf0     = Object.adapt(cfg.intf0 || {}, {
 
                     info:
                     {
-                        reqs_made: 0,
-                        reqs_exec: 0,
-                        reqs_arch: [],
                         contacts : [],
+                        requests_arch: [],
+                        requests_made: 0,
+                        requests_exec: 0
                     },
 
                     active_req:
@@ -6368,7 +6362,7 @@
 
                 });
 
-                this.make();
+                // this.forceMake();
             }
 
             // [INFO/GETTERS/VALIDATORS]
@@ -6412,17 +6406,16 @@
             // [SETTERS/MODIFIERS]
             FileInterface.prototype.xt({
                 
-                make : function()
+                forceMake : function()
                 {
                     return File(this.path).forceCreate(ser(this.intf0, undefined, 4));
                 },
                 
                 set : function(intf)
                 {
-                    var I = this;
-                    if(!I.validate(intf)) throw Error("FileInterface: Invalid Interface");
-                
-                    return File(I.path).$write(ser(intf, undefined, 4), 'w');
+                    return File(this.path).$write(
+                        ser(Object.adapt(intf, this.intf0), undefined, 4), 'w'
+                    );
                 },
                 
                 modify : function(keyPath, v)
@@ -6433,15 +6426,15 @@
                         Object.modify(
                             I,
                             keyPath,
-                            v.is(Function)?
-                            v.call(I, Object.getValue(I, keyPath)):v
+                            is(v, Function)?
+                            v.call(I, Object.value(I, keyPath)):v
                         )
                     );
 
                     return this;
                 },
                 
-                post : function(R/*equest*/)
+                post : function(R) //Request
                 {
                     if(!Object.validateKeys(R, ["path", "func", "args"]))
                     {
@@ -6453,95 +6446,114 @@
                         road: R.path,
                         trac: R.func,
                         seed: R.args,
-                        crop: undefined
+                        crop: ''
                     });
                 }
             })
         }),
 
+
         CSTR$PYTHON: (function(){
-
-            //Check if pyjsx exists?
-            // New method, try to install pyjsx using pip?
-            var PYJSX_FOLDER = Folder("C:/Users/bouda/AppData/Roaming/PYJSX");
-            var PYJSX_EXESTR =
-            [
-               "def pyjsx_run():",
-
-               /* ** Import:
-                    JSON (ser/deser),
-                    SYS  (append script path to SYS variables), 
-                    OS   (get dirname of a path)
-               */
-               "    import json, sys, os",
-               
-               // ** Convert Javascript arguments into Python arguments:
-               "    def strr(ss):",
-               "        if(ss in ['true', 'false']): return ss.title()",
-               "        if(type(ss) is str):         return '\"' + ss + '\"'",
-               "        return str(ss)",
-
-               // ** Basic Path variables: InstallationFolder, FileInterface, Signal
-               "    inst_path   = '{0}/'".re(PYJSX_FOLDER.fsName.replace(/\\/g, '/')),
-               "    intf_path   = inst_path + 'PyIntf.pyintf'",
-               "    exec_signal = inst_path + 'executed.tmp'",
-               
-               // ** Read the FileInterface
-               "    with open(intf_path, 'r') as f:",
-               "        c = f.read()",
-               "    if not c: return 'Python Error: interface corrupt'",
-               
-               // ** Load the FileInterface and append Path to SYS
-               "    intff = json.loads(c)",
-               "    AR    = intff['active_req']",
-               "    path  = AR   ['road']",
-               "    func  = AR   ['trac']",
-               "    name  = '.'.join(path.split('/')[-1].split('.')[0:-1])",
-               "    args  = ','.join(strr(e) for e in AR['seed'])",
-               "    sys.path.append(os.path.dirname(path))",
-               
-               // ** Execution:
-               "    try:",
-               "        exec('import ' + name + ' as s')",
-               "        result = eval('s.' + func + '(' + args + ')')",
-               "    except Exception as e:",
-               "        result = 'Python Error: ' + str(e).replace('\\\'', '\\\\\\\'')",
-               
-               // ** Update the FileInterface with the function result (CROP):
-               "    intff['active_req']['crop'] = result",
-               "    intff['info']['reqs_exec'] = intff['info']['reqs_exec'] + 1",
-               
-               // ** Serialize and dump FileInterface:
-               "    with open(intf_path, 'w', encoding='utf8') as f:",
-               "        f.write(json.dumps(intff, indent =4))",
-               
-               // ** Create the Signal File:
-               "    with open(exec_signal, 'w') as execf:",
-               "        execf.write('')",
-               
-               "    return 0",
-               
-               // ** Run Main (pyjsx_run())
-               "pyjsx_run()"
-            ].join("\n");
-            // ** Disable forceCreate for now:
-            // File("{0}/exec.pyw".re(PYJSX_FOLDER.fsName)).forceCreate(PYJSX_EXESTR);
-
+            
             // [PYTHON COSNTRUCTOR]
             $.global.Python = function Python(FInterface)
             {
+                var PYJSX_FOLDER = Folder("C:/Users/bouda/Appdata/Roaming/PYJSX/");
                 this.INTERFACE = is(FInterface, FileInterface)? FInterface: new FileInterface();
                 
-                // Make the file that holds interfaces addresses
-                if((ff = File("{0}/interfaces.json".re(PYJSX_FOLDER.fsName))).exists
-                   && is(dd = deser(ff.$read()), Array))
-                {
-                    ff.$write(ser(dd.push(FInterface.path)));
+                // Make the file that holds interfaces' addresses
+                ff = File("{0}/interfaces.json".re(PYJSX_FOLDER.fsName));
+                dd = deser(ff.$read());
+                pp = this.INTERFACE.path;
+
+                if(ff.exists && dd.is(Array)){
+                    if(!pp.in(dd)) ff.$write(ser(dd.push(this.INTERFACE.path)));
                 }
-                else ff.create(ser([FInterface.path]));
+                else ff.create(ser([this.INTERFACE.path]));
 
                 return this;
             };
+
+            
+            // [MAIN TRIO: call, build, contact]
+            Python.prototype.xt({
+                
+                call: function(boss, about, talk)
+                {
+                    this.INTERFACE.post({
+                        path: boss,
+                        func: about,
+                        args: talk
+                    })
+                    return "posted it";
+                },
+
+                contact: function(FF)
+                {
+                    var I  = this.INTERFACE, N;
+
+                    if(!FF.exists) throw Error("Contact file does not exist");
+                    
+                    I.modify("info/contacts/{0}".re(N = FF.getName()),
+                    {
+                        name : N,
+                        path : FF.fsName,
+                        funcs: Python.functions(FF.fsName)
+                    });
+
+                    return N;
+                },
+
+                build: function(C) // Contact
+                {
+                    if(!is(C, File, String)) throw Error("Can't build contact");
+                    if(C.is(File)) C = this.contact(C);
+            
+                    var PO = {FS: []},
+                        I  = this.INTERFACE,
+                        IT = I.get(),
+                        CO = IT.contacts[C],
+                        COValid = Object.validateKeys(CO, ["path", "funcs"]); 
+
+                    if(!COValid) throw Error("Contact invalid");
+
+                    var COFuncs  = CO.funcs;
+                    for(f in COFuncs) if(f.in(COFuncs))
+                    {
+                        PO[f.name] = Function((function(){
+
+                            var A  = arguments.slice(),
+                                NA = args.length;
+
+                            var ERR = function(T)
+                            {
+                                var oo = {extra: "most", missing : "least"};
+                                var nn = {extra: $numNotDef + $numDef, missing: $numNotDef};
+
+                                return Error("PY:{0}() takes at {1} {2} args but {3} were given".re(
+                                    
+                                    $FName,
+                                    oo[T],
+                                    nn[T],
+                                    NA
+                                ));
+                            }
+
+                            if(NA < $numNotDef)            throw ERR("missing");
+                            if(NA > $numNotDef + $numDef ) throw ERR("extra");
+
+                            return Python.call($COPath, $FName, A);
+
+                        }).body({$COPath: CO.path, $FName: f.name,
+                                 $numNotDef: COFuncs.non_default.length,
+                                 $numDef   : COFuncs._default.length}));
+
+                        PO.functions.push(f.name);
+                    }
+
+                    return PO;
+                }
+            })
 
             // [BASIC ATTRIBUTES]
             Python.xt({
@@ -6563,20 +6575,14 @@
                     var I  = this.INTERFACE,
                         SF = I.signal;
 
-                    /*
-                        Remove potential old signal file 
-                    */
+                    // Remove potential old signal file
                     if(SF.exists) SF.remove();
 
                     // Add metadata to the INTERFACE
                     I.modify("info/reqs_made", function(v){return v+1});
                     
-                    /*This is where execution happens:
-                    */
+                    //This is where execution happens:
                     File(Python.execPath).$execute();
-                    /*
-                    End of execution
-                    */
 
                     // Wait for the creation of the signal file:
                     // ****************************************
@@ -6670,91 +6676,12 @@
                     if(!XF) Python.makeExec();
                 },
 
-                call: function(script, about, talk)
-                {    
-                    this.INTERFACE.post({
-            
-                        path: script,
-                        func: about,
-                        args: talk
-                    
-                    })
-
-                    return Python.runExec().get(false);
-                },
-
-                contact: function(FF)
-                {
-                    var I  = this.INTERFACE, N;
-
-                    if(!FF.exists) throw Error("Contact file does not exist");
-                    
-                    I.modify("metadata/contacts/{0}".re(N = FF.getName()),
-                    {
-                        name : N,
-                        path : FF.fsName,
-                        funcs: Python.functions(FF.fsName)
-                    });
-
-                    return N;
-                },
-
-                build: function(C) // Contact
-                {
-                    if(!is(C, File, String)) throw Error("Can't build contact");
-                    if(C.is(File)) C = Python.contact(C);
-            
-                    var PO = {FS: []},
-                        I  = this.INTERFACE,
-                        IT = I.get(),
-                        CO = IT.contacts[C],
-                        COValid = Object.validateKeys(CO, ["path", "funcs"]); 
-
-                    if(!COValid) throw Error("Contact invalid");
-
-                    var COFuncs  = CO.funcs;
-                    for(f in COFuncs) if(f.in(COFuncs))
-                    {
-                        PO[f.name] = Function((function(){
-
-                            var A  = arguments.slice(),
-                                NA = args.length;
-
-                            var ERR = function(T/*ype*/)
-                            {
-                                var oo = {extra: "most", missing : "least"};
-                                var nn = {extra: $numNotDef + $numDef, missing: $numNotDef};
-
-                                return Error("PY:{0}() takes at {1} {2} args but {3} were given".re(
-                                    
-                                    $FName,
-                                    oo[T],
-                                    nn[T],
-                                    NA
-                                ));
-                            }
-
-                            if(NA < $numNotDef)            throw ERR("missing");
-                            if(NA > $numNotDef + $numDef ) throw ERR("extra");
-
-                            return Python.call($COPath, $FName, A);
-
-                        }).body({$COPath: CO.path, $FName: f.name,
-                                 $numNotDef: COFuncs.non_default.length,
-                                 $numDef   : COFuncs._default.length}));
-
-                        PO.functions.push(f.name);
-                    }
-
-                    return PO;
-                },
-
                 uninstall : function()
                 {
                     if((FD = Folder(Python.instPath)).exists) FD.$remove();
                 }
             })
-            
+
         }),
 
         CSTR$Logger: (function(){

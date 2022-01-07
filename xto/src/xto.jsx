@@ -309,6 +309,12 @@
         //-------------------------------------
         //------------- EXTRA -----------------
 
+        // Equivalent of JSON.stringify
+        Object.prototype.$toSource = function()
+        {
+
+        }
+
         Object.prototype.slice = function(n)
         {
             return Array.prototype.slice.call(this, n);
@@ -322,6 +328,17 @@
         $.global._in = function(what, oo)
         {
             return Object.prototype.in.call(what, oo);
+        }
+
+
+        // String.prototype extensions:
+        String.prototype['*'] = function(op, joinChar){
+            
+            var ss = this, ts = [ss];
+            if(isNaN(op = Math.floor(op))) return ss;
+            
+            while(op--) ts.push(ss);
+            return ts.join(joinChar);
         }
     });
 
@@ -2111,15 +2128,16 @@
             // [SETTERS]: {modify, adapt}
             Object.xt({
                 
-                modify: function(oo, P/*ath*/, V)
+                modify: function(oo, P, V)
                 {
                     var K = P.split('/'),
                         S = "oo";
                         
                     var i = -1;
-                    while(++i<K.length) S += "[\"{0}\"]".re(K[i]);;
+                    while(++i<K.length) S += "[\"{0}\"]".re(K[i]);
 
-                    eval("{0} = {1};".re(S, V.toString()));
+                    // turn toString to $toSource
+                    eval("{0} = {2}{1}{2};".re(S, V.$toSource(), is(V, String)?"\"":""));
 
                     return oo;
                 },
@@ -3545,17 +3563,14 @@
             
                 JJ.stringify = function(value, replacer, space)
                 {
-            
                     rep = replacer;
-                    var repCond = (replacer && typeof replacer !== "function" &&(
-                        typeof replacer !== "object" || typeof replacer.length !== "number"
-                    ));
-                    if(repCond) throw new Error("JJ.stringify");
+                    if(is(rep, String, Object, Number)) throw new Error("JSON: Invalid Replacer");
             
-                    var i      = -1;
+                    var i = -1;
                     indent = "";
                     while(++i < space) indent += " ";
-                    gap    = "";
+                    indent = new String(" ") * space;
+                    gap = "";
 
                     return str("", {"": value});
                 }
@@ -6441,13 +6456,13 @@
                         throw Error("FileInterface: Invalid Request");
                     }
 
-                    this.modify("active_req", 
-                    {
-                        road: R.path,
-                        trac: R.func,
-                        seed: R.args,
-                        crop: ''
-                    });
+                    this.modify("active_req/seed", ["gekk"]);
+                    // {
+                    //     road: R.path,
+                    //     trac: R.func,
+                    //     seed: R.args,
+                    //     crop: ''
+                    // });
                 }
             })
         }),
@@ -6478,10 +6493,10 @@
             // [MAIN TRIO: call, build, contact]
             Python.prototype.xt({
                 
-                call: function(boss, about, talk)
+                call: function(script, about, talk)
                 {
                     this.INTERFACE.post({
-                        path: boss,
+                        path: script,
                         func: about,
                         args: talk
                     })

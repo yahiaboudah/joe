@@ -3,7 +3,9 @@ xto.load("CSTR/Python");
 
 py = new Python();
 ff = new FileInterface({path: "C:/Users/bouda/desktop/test.json"})
-// ff.post({path: "roadtohaven", func: "therethere", args: ["dumbass", "params"]})
+ff.post({path: "stuff", func: "cutecat", args: ["some", "params"]})
+ff.modify("active_req/crop", "some new shit I got you brother");
+$.writeln(ff.crop())
 
 // cc = py.call("roadtoheaven", "function", ["params1", "params2"])
 

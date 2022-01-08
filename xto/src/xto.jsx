@@ -556,7 +556,9 @@
             Folder:
             {
                 PRFX: "Folder.prototype.",
-                DEPS: [],
+                DEPS: [
+                    "DATA/File"
+                ],
                 FUNS : 
                 [
                     //clear
@@ -1854,25 +1856,22 @@
                 {
                     return [
                         "Set WshShell = CreateObject(\"WScript.Shell\")", 
-                        "WshShell.Run chr(34) & {0} & Chr(34), 0".format(bat.fsName),
+                        "WshShell.Run chr(34) & \"{0}\" & Chr(34), 0".re(batPath),
                         "Set WshShell = Nothing"
                     ].join('\n');
                 },
 
-                cmd: function(myCommand, silentMode, sp, sleep)
+                cmd: function(myCommand, silentMode)
                 {
-                    var TEMP = Folder("C:/Users/bouda/AppData/Local/Temp/");
                     silentMode = is(silentMode, undefined)?true: silentMode;
-                    
-                    var bat = File("C:/Users/bouda/AppData/Local/Temp/XTO_$$$$$DATA_cmd.bat");
-                    (bat.open('w'), bat.write(myCommand), bat.close());
-                    
-                    var vbs = File("C:/Users/bouda/AppData/Local/Temp/XTO_$$$$$DATA_cmd.vbs");
-                    (vbs.open('w'), vbs.write($.silentCmdVBS(bat)), vbs.close())
 
-                    // run the bat file using a vbs script
-                    vbs.execute();
-                    if(is(sleep, Number)) $.sleep(sleep);
+                    if(!silentMode) return system.callSystem("cmd;{0}".re(myCommand));
+
+                    (Folder.temp / "XTO_$$$$$DATA_cmd.vbs").create(
+                        $.silentCmdVBS(
+                            (Folder.temp / "XTO_$$$$$DATA_cmd.bat").create(myCommand).fsName.replace('/', '\\')
+                        )
+                    ).$execute(0, function(){this.remove()})
                 },
 
                 wget: function(fp, link)
@@ -3091,7 +3090,7 @@
                     this.execute();
 
                     if(doClose) this.$close();
-                    if(!!sleep) $.sleep(sleep);
+                    if(sleep && is(sleep, Number)) $.sleep(sleep);
                     if(cb && cb.is(Function)) cb.call(this);
         
                     return this;
@@ -3236,6 +3235,15 @@
 
         DATA$FOLDER: (function()
         {
+            // [OPERATOR OVERLOADING]
+            Folder.prototype.xt({
+
+                '/': function(op)
+                {
+                    var pp = '{0}/{1}'.re(this.fsName, op);
+                    return op.split('.').length? File(pp): Folder(pp);
+                }
+            })
 
             // [REMOVERS/ CLEANERS]
             Folder.prototype.xt({

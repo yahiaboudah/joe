@@ -95,8 +95,8 @@ class PYJSX_Upgrader():
             shutil.rmtree("{0}pyjsx.egg-info/".format(path))
 
 def run():
-    # PYJSX_Upgrader.upgrade_version()
+    PYJSX_Upgrader.upgrade_version()
     PYJSX_Upgrader.push_local()
-    # PYJSX_Upgrader.push_pypi()
+    PYJSX_Upgrader.push_pypi()
 
 if __name__ == '__main__': run()

@@ -6516,6 +6516,34 @@
             // [MAIN TRIO: call, build, contact]
             Python.prototype.xt({
                 
+                execute: function()
+                {
+                    var I  = this.INTERFACE,
+                        SF = I.signal;
+
+                    // Remove potential old signal file
+                    if(SF.exists) SF.remove();
+
+                    // Add metadata to the INTERFACE
+                    I.modify("info/reqs_made", function(v){return v+1});
+                    
+                    //This is where execution happens:
+                    File(Python.execPath).$execute();
+
+                    // Wait for the creation of the signal file:
+                    // ****************************************
+                    File.prototype.listen.apply(SF, Object.values({
+                        
+                        wait: Python.execTime,
+                        debug: false,
+                        patience: undefined,
+                        cleanup: true,
+                    }));
+                    
+                    // Return the INTERFACE object as a result:
+                    return I;
+                },
+
                 call: function(script, about, talk)
                 {
                     this.INTERFACE.post({
@@ -6523,7 +6551,7 @@
                         func: about,
                         args: talk
                     })
-                    return "posted it";
+                    this.execute();
                 },
 
                 contact: function(FF)
@@ -6606,35 +6634,7 @@
                 isPythonInstalled: function()
                 {
                     return system.callSystem("python --version").split(' ')[0] == "Python";
-                },
-                
-                runExec: function()
-                {
-                    var I  = this.INTERFACE,
-                        SF = I.signal;
-
-                    // Remove potential old signal file
-                    if(SF.exists) SF.remove();
-
-                    // Add metadata to the INTERFACE
-                    I.modify("info/reqs_made", function(v){return v+1});
-                    
-                    //This is where execution happens:
-                    File(Python.execPath).$execute();
-
-                    // Wait for the creation of the signal file:
-                    // ****************************************
-                    File.prototype.listen.apply(SF, Object.values({
-                        
-                        wait: Python.execTime,
-                        debug: false,
-                        patience: undefined,
-                        cleanup: true,
-                    }));
-                    
-                    // Return the INTERFACE object as a result:
-                    return I;
-                },
+                }
             })
 
             // [LEXER/PARSER/GETTER]

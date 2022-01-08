@@ -3,8 +3,7 @@ xto.load("CSTR/Python");
 
 py = new Python();
 ff = new FileInterface({path: "C:/Users/bouda/desktop/test.json"})
-ff.modify("active_req/crop", "fuck yu")
-
+// ff.post({path: "roadtohaven", func: "therethere", args: ["dumbass", "params"]})
 
 // cc = py.call("roadtoheaven", "function", ["params1", "params2"])
 

@@ -312,18 +312,18 @@
         Object.prototype._toSource = function()
         {
             var T = this;
-
+            
             switch(T.constructor)
             {
                 case String: return "\"{0}\"".re(T);
                 case Array:
                     var i =-1;
-                    while(++i<T.length) T[i] = T[i].toSource()
+                    while(++i<T.length) T[i] = T[i]._toSource()
                     return "[{0}]".re(T.join(','));
 
                 case Object:
                     var kvpairs = []
-                    for(k in T) if(k.in(T)) kvpairs.push("\"{0}\":{1}".re(k, T[k].toSource()))
+                    for(k in T) if(k.in(T)) kvpairs.push("\"{0}\":{1}".re(k, T[k]._toSource()))
                     return "{{0}}".re(kvpairs.join(','));
                 
                 case Number:
@@ -337,7 +337,7 @@
                     return Object.prototype.re.apply("{0}-{1}-{2}T{3}:{4}:{5}Z", ss);
 
                 default: 
-                    return T.toSource();
+                    return T._toSource();
             }
         }
         
@@ -1966,27 +1966,15 @@
                     entr = (entr && entr.is(Number))?entr:20;
                     chrc = (chrc || '■'); 
             
-                    if(!String.prototype['*']) String.prototype.xt({
-                        
-                        '*': function(op, joinChar)
-                        {
-                            $.global.str = function(s){return new String(s)};
-
-                            var ss = this, ts = [ss];
-                            if(isNaN(op = Math.floor(op))) return ss;
-
-                            while(op--) ts.push(ss);
-                            return ts.join(joinChar);
-                        },
-
+                    String.prototype.xt({
                         isEmoji: function()
                         {
                             return this.length == 2;
                         }
                     })
             
-                    var B   = str(chrc),
-                        S   = str(" ");
+                    var B   = new String(chrc),
+                        S   = new String(" ");
                     
                     var EMOJ_WIDTH = B.isEmoji()? 1.8: 1;
                     var tsize = (entr * 2) + (((strr.length + 4) /chrc.length));
@@ -2094,6 +2082,19 @@
 
             // [GETTERS]: {pureKeys, keys, values, size}
             Object.xt({
+                
+                keyExists: function(oo, keyPath)
+                {
+                    var i=-1, K = keyPath.split('/'), S = "oo", hasProp;
+                    while(++i<K.length)
+                    {
+                        hasProp = eval("{0}.hasOwnProperty(\"{1}\")".re(S, K[i]));
+                        if(!hasProp) return false;
+                        S += "[\"{0}\"]".re(K[i]);
+                    }
+
+                    return true;
+                },
 
                 /*
                 pureKeys returns the keyPaths that lead to a value that
@@ -2160,8 +2161,9 @@
                         
                     var i = -1;
                     while(++i<K.length) S += "[\"{0}\"]".re(K[i]);
-
-                    eval("{0} = {1};".re(S, V._toSource()));
+                    
+                    var expr = "{0} = {1};".re(S, V._toSource());
+                    eval(expr);
 
                     return oo;
                 },
@@ -2327,7 +2329,12 @@
 
                 validateKeys: function(oo, keys)
                 {
-                    for(k in oo) if(k.in(oo) && !k.in(keys)) return false;
+                    var i =-1;
+                    while(++i<keys.length)
+                    {
+                        if(!Object.keyExists(oo, keys[i])) return false;
+                    }
+                    
                     return true;
                 }
             })
@@ -6403,16 +6410,16 @@
             // [INFO/GETTERS/VALIDATORS]
             FileInterface.prototype.xt({
                 
-                validate : function(intf)
+                validate: function(intf)
                 {
                     return Object.validateKeys(
                         intf,
                         [
                             "info",
                             "info/contacts",
-                            "info/reqs_made",
-                            "info/reqs_exec",
-                            "info/reqs_arch",
+                            "info/requests_made",
+                            "info/requests_exec",
+                            "info/requests_arch",
                             
                             "active_req",
                             "active_req/road",
@@ -6476,13 +6483,9 @@
                         throw Error("FileInterface: Invalid Request");
                     }
 
-                    this.modify("active_req/seed", ["gekk"]);
-                    // {
-                    //     road: R.path,
-                    //     trac: R.func,
-                    //     seed: R.args,
-                    //     crop: ''
-                    // });
+                    this.modify("active_req/road", R.path);
+                    this.modify("active_req/trac", R.func);
+                    this.modify("active_req/seed", R.args);
                 }
             })
         }),

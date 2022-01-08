@@ -206,9 +206,7 @@
             var O = this, T;
 
             var A = Array.prototype.slice.call(arguments),
-                T = (O === undefined || O === null)?
-                    undefined: 
-                    this.constructor; //type
+                T = (O == "undefined")? undefined: O.constructor; //type
 
             var i = -1;
             while(++i<A.length) if(T == A[i]) return true;
@@ -348,6 +346,7 @@
 
         $.global.is = function(what)
         {
+            if(what == undefined) what = "undefined";
             return Object.prototype.is.apply(what, arguments.slice(1));
         }
 
@@ -417,7 +416,10 @@
             Data:
             {
                 PRFX: "$.",
-                DEPS: [],
+                DEPS: [
+                    "Data/Folder",
+                    "Data/File"
+                ],
                 FUNS: 
                 [
                     "log",
@@ -1856,22 +1858,23 @@
                 {
                     return [
                         "Set WshShell = CreateObject(\"WScript.Shell\")", 
-                        "WshShell.Run chr(34) & \"{0}\" & Chr(34), 0".re(batPath),
+                        "WshShell.Run chr(34) & \"{0}\" & Chr(34), 0",
                         "Set WshShell = Nothing"
-                    ].join('\n');
+                    ].join("\n").re(batPath);
                 },
 
                 cmd: function(myCommand, silentMode)
                 {
                     silentMode = is(silentMode, undefined)?true: silentMode;
 
-                    if(!silentMode) return system.callSystem("cmd;{0}".re(myCommand));
+                    if(!silentMode) return system.callSystem("cmd /c \"{0}\"".re(myCommand));
 
-                    (Folder.temp / "XTO_$$$$$DATA_cmd.vbs").create(
+                    var vbs = (Folder.temp / "XTO_DOLLAR_DATA_cmd.vbs").create(
                         $.silentCmdVBS(
-                            (Folder.temp / "XTO_$$$$$DATA_cmd.bat").create(myCommand).fsName.replace('/', '\\')
+                            (bat= (Folder.temp / "XTO_DOLLAR_DATA_cmd.bat").create(myCommand)).fsName.replace('/', '\\')
                         )
-                    ).$execute(0, function(){this.remove()})
+                    );
+                    vbs.$execute(100, function(){this.remove(); bat.remove()});
                 },
 
                 wget: function(fp, link)
@@ -2186,14 +2189,18 @@
                     return oo;
                 },
 
-                adapt: function(ob, oo)
+                // Work on nested adapt:
+                adapt: function adapt(oo, O, nested) //O is the template object
                 {
-                    for(x in oo) if(x.in(oo) && x.in(ob) && !!(k = ob[x]))
+                    if(!is(oo, Object)) return O;
+                    if(is(nested, undefined)) nested= true;
+                    for(var k in O) if(k.in(O) && k.in(oo) && !!(v=oo[k]))
                     {
-                        oo[x] = k;
+                        if(is(O[k], Object) && nested) O[k] = adapt(v, O[k], nested);
+                        else O[k] = v;
                     }
-                
-                    return oo;
+
+                    return O;
                 }
 
             })
@@ -3083,7 +3090,7 @@
                     return this.create(text, encoding);
                 },
                 
-                $execute : function(sleep, cb, doClose)
+                $execute: function(sleep, cb, doClose)
                 {
                     if(is(doClose, undefined)) doClose = 0;
 
@@ -6402,7 +6409,6 @@
 
         CSTR$FILEINTERFACE: (function()
         {
-            
             $.global.FileInterface = function FileInterface(cfg)
             {
                 cfg = cfg || {};
@@ -6459,17 +6465,17 @@
                     );
                 },
 
-                get : function()
+                get: function()
                 {
                     return deser(File(this.path).$read());
                 },
 
-                crop : function(clean)
+                crop: function(clean)
                 {
                     var I = this.get(),         
-                        C = I.active_req.crop;
+                        C = I.active_req['crop'];
 
-                    if(clean) this.set((I.active_req = '', I));
+                    if(clean) this.set((I.active_req = undefined, I));
                     return C;
                 }
             })
@@ -6550,25 +6556,23 @@
                     $.cmd('pyjsx-run --file-interface {0}'.re(this.INTERFACE.path), true);
                 },
 
-                execute: function()
+                execute: function(signalFileDebug)
                 {
                     var I  = this.INTERFACE, SF = I.signal,
 
                     SF_config = Object.value({
 
                         wait: Python.execTime,
-                        debug: true,
+                        debug: signalFileDebug,
                         patience: undefined,
                         cleanup: true,
                     });
-                    // remove old signal if any:
+
                     if(SF.exists) SF.remove();
-                    // req_made++
                     I.modify("info/requests_made", function(v){return v+1});
-                    //execute, anticipate signal:
                     this.run_pyjsx();
                     File.prototype.listen.apply(SF, SF_config);
-                    // Return the INTERFACE object as a result:
+
                     return I;
                 },
 

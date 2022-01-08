@@ -308,13 +308,39 @@
         //=====================================
         //-------------------------------------
         //------------- EXTRA -----------------
-
-        // Equivalent of JSON.stringify
-        Object.prototype.$toSource = function()
+        
+        Object.prototype._toSource = function()
         {
+            var T = this;
 
+            switch(T.constructor)
+            {
+                case String: return "\"{0}\"".re(T);
+                case Array:
+                    var i =-1;
+                    while(++i<T.length) T[i] = T[i].toSource()
+                    return "[{0}]".re(T.join(','));
+
+                case Object:
+                    var kvpairs = []
+                    for(k in T) if(k.in(T)) kvpairs.push("\"{0}\":{1}".re(k, T[k].toSource()))
+                    return "{{0}}".re(kvpairs.join(','));
+                
+                case Number:
+                case Boolean: 
+                    return T;
+
+                case Date:
+                    var struct = "FullYear-Month-Date-Hours-Minutes-Seconds", i = -1, ff = struct.split('-'), ss =[];
+                    while(++i<ff.length) ss.push(Date.prototype["getUTC{0}".re(ff[i])].call(T));
+
+                    return Object.prototype.re.apply("{0}-{1}-{2}T{3}:{4}:{5}Z", ss);
+
+                default: 
+                    return T.toSource();
+            }
         }
-
+        
         Object.prototype.slice = function(n)
         {
             return Array.prototype.slice.call(this, n);
@@ -330,12 +356,12 @@
             return Object.prototype.in.call(what, oo);
         }
 
-
-        // String.prototype extensions:
+        // String * operator:
         String.prototype['*'] = function(op, joinChar){
             
+            joinChar = joinChar || "";
             var ss = this, ts = [ss];
-            if(isNaN(op = Math.floor(op))) return ss;
+            if(isNaN(op = Math.floor(op || 0))) return ss;
             
             while(op--) ts.push(ss);
             return ts.join(joinChar);
@@ -2130,14 +2156,12 @@
                 
                 modify: function(oo, P, V)
                 {
-                    var K = P.split('/'),
-                        S = "oo";
+                    var K = P.split('/'), S = "oo";
                         
                     var i = -1;
                     while(++i<K.length) S += "[\"{0}\"]".re(K[i]);
 
-                    // turn toString to $toSource
-                    eval("{0} = {2}{1}{2};".re(S, V.$toSource(), is(V, String)?"\"":""));
+                    eval("{0} = {1};".re(S, V._toSource()));
 
                     return oo;
                 },
@@ -3505,12 +3529,12 @@
                                 length = rep.length >>> 0, i = -1;
                                 while(++i<length)
                                 {
-                                    if(rep[i].isnt(String)) continue;
+                                    if(!rep[i].is(String)) continue;
                                     k = rep[i], v = str(k, value);
                                     if(!v) continue;
                                     partial.push("{0}:{1}{2}".re(quote(k), gap?" ":"", v));
                                 }
-                            } 
+                            }
                             
                             else for(k in value) if(k.in(value))
                             {
@@ -3535,7 +3559,7 @@
                             "{0}-{1}-{2}T{3}:{4}:{5}Z".re(
                                 this.getUTCFullYear(),
                                 this.getUTCMonth(),
-                                this.getUTCDate(),
+                                this.getUTCDate(), //Date or day?
                                 this.getUTCHours(),
                                 this.getUTCMinutes(),
                                 this.getUTCSeconds()
@@ -3564,15 +3588,12 @@
                 JJ.stringify = function(value, replacer, space)
                 {
                     rep = replacer;
-                    if(is(rep, String, Object, Number)) throw new Error("JSON: Invalid Replacer");
-            
-                    var i = -1;
-                    indent = "";
-                    while(++i < space) indent += " ";
-                    indent = new String(" ") * space;
-                    gap = "";
+                    if(rep && !rep.is(Function, Array)) throw new Error("JSON: Invalid Replacer");
 
-                    return str("", {"": value});
+                    indent = is(space, String)?space:is(space, Number)?new String(' ') * space:indent;
+                    gap = '';
+
+                    return str('', {'': value});
                 }
             
                 JJ.parse = function (text, reviver)
@@ -3586,8 +3607,7 @@
                         if(value.is(Object)) for(k in value) if(k.in(value))
                         {
                             v = walk(value, k);
-                            if(v.isnt(undefined)) value[k] = v;
-                            else delete value[k];
+                            v? (value[k] = v): (delete value[k]);
                         }
                         return reviver.call(holder, key, value);
                     }

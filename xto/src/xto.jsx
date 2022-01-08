@@ -3133,17 +3133,18 @@
                 {
                     if(!(is(patience, Number))) patience = 60000;
     
-                    var ttdelay = 0;
+                    var ttdelay = 0, i=0, delay =0;
                     while(1)
                     {
-                        if(this.exists) return (cleanup?this.remove():this);
+                        if(this.exists) return (cleanup? this.remove():this);
                         if(ttdelay > patience) return;
 
-                        $.sleep(wait == 'exp'? ~~ Math.pow(2, (i+6)): wait);
+                        $.sleep(delay = (wait == 'exp'? ~~ Math.pow(2, (i+6)): wait));
                         if(debug) $.writeln(
-                            "File not found, sleeping for {0}..".re(wait)
+                            "File not found, sleeping for {0}..".re(delay)
                         );
                         ttdelay += delay;
+                        i++;
                     }
                 }
             })
@@ -3597,7 +3598,7 @@
                     rep = replacer;
                     if(rep && !rep.is(Function, Array)) throw new Error("JSON: Invalid Replacer");
 
-                    indent = is(space, String)?space:is(space, Number)?new String(' ') * space:indent;
+                    indent = is(space, String)?space:is(space, Number)?new String(' ') * space:'';
                     gap = '';
 
                     return str('', {'': value});
@@ -4282,7 +4283,7 @@
                         frameRate: 24
                     });
 
-                    var comp = this.items.addComp.apply(this.items, Object.values(cfg));
+                    var comp = this.items.addComp.apply(this.items, Object.value(cfg));
                     comp.bgColor = cfg.bgColor || [21,21,21];
                     return comp;
                 },
@@ -4571,7 +4572,7 @@
 
                     if(F = T["add{0}".re(what.title())])
                     {
-                        V = Object.values(Object.adapt(Configs[what.toUpperCase()], args));
+                        V = Object.value(Object.adapt(Configs[what.toUpperCase()], args));
                         L = F.apply(T, V);
                     }
 
@@ -6381,7 +6382,8 @@
                 var defInterfPath = "C:/Users/bouda/AppData/Roaming/PYJSX/INTFS/"; 
 
                 this.path      = cfg.path || "{0}intf.json".re(defInterfPath);
-                this.signal    = "{0}/executed_{1}.tmp".re(this.path, File(this.path).displayName);
+                this.file = File(this.path);
+                this.signal    = File("{0}/executed_{1}.tmp".re(this.file.path, this.file.displayName));
 
                 // do Object.adapt
                 this.intf0     = Object.adapt(cfg.intf0 || {}, {
@@ -6505,7 +6507,7 @@
                 pp = this.INTERFACE.path;
 
                 if(ff.exists && dd.is(Array)){
-                    if(!pp.in(dd)) ff.$write(ser(dd.push(this.INTERFACE.path)));
+                    if(!pp.in(dd)) ff.$write(ser(dd.concat(this.INTERFACE.path), undefined, 2));
                 }
                 else ff.create(ser([this.INTERFACE.path]));
 
@@ -6516,30 +6518,29 @@
             // [MAIN TRIO: call, build, contact]
             Python.prototype.xt({
                 
+                run_pyjsx: function()
+                {
+                    system.callSystem('pyjsx-run --file-interface {0}'.re(this.INTERFACE.path));
+                },
+
                 execute: function()
                 {
-                    var I  = this.INTERFACE,
-                        SF = I.signal;
+                    var I  = this.INTERFACE, SF = I.signal,
 
-                    // Remove potential old signal file
-                    if(SF.exists) SF.remove();
+                    SF_config = Object.value({
 
-                    // Add metadata to the INTERFACE
-                    I.modify("info/reqs_made", function(v){return v+1});
-                    
-                    //This is where execution happens:
-                    File(Python.execPath).$execute();
-
-                    // Wait for the creation of the signal file:
-                    // ****************************************
-                    File.prototype.listen.apply(SF, Object.values({
-                        
                         wait: Python.execTime,
-                        debug: false,
+                        debug: true,
                         patience: undefined,
                         cleanup: true,
-                    }));
-                    
+                    });
+                    // remove old signal if any:
+                    if(SF.exists) SF.remove();
+                    // req_made++
+                    I.modify("info/requests_made", function(v){return v+1});
+                    //execute, anticipate signal:
+                    this.run_pyjsx();
+                    File.prototype.listen.apply(SF, SF_config);
                     // Return the INTERFACE object as a result:
                     return I;
                 },
@@ -6623,9 +6624,8 @@
 
             // [BASIC ATTRIBUTES]
             Python.xt({
-
                 execTime   : 180,
-                extensions : ["py", "pyw"]
+                extensions : ["py", "pyw"],
             })
 
             // [SETUP/TOOLS]

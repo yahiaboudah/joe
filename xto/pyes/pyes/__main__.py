@@ -12,6 +12,7 @@ PARSER_CFG = {
 def run(path):
     ff = FileInterface(intf_path=path)
     rr = PYJSX.execute_intf(ff.grab_proper())
+    ff.update('info/requests_exec', lambda x: x+1)
     ff.update('active_req/crop', rr)
     ff.create_signal()
 

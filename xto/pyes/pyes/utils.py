@@ -46,10 +46,12 @@ class dotdict(dict):
             data = data + "[\"{0}\"]".format(keys[i])
         
         # preprocess the crop value before
-        # hitting "exec"
+        # if value is a function:
+        if(callable(value)):
+            value = value.__call__(self.find(key_path))
+
         if(type(value) == str):
-            value = value.replace('\n', '\\n')
-            value = "\"{0}\"".format(value)
+            value = "\"{0}\"".format(value.replace('\n', '\\n'))
 
         data = "{0} = {1}".format(data, value)
         exec(data)

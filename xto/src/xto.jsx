@@ -816,6 +816,7 @@
                 PRFX: "$.global.",
                 DEPS: 
                 [
+                    "$$$$/DATA",
                     "PRIM/Object",
                     "CSTR/FileInterface",
                     "DATA/File",
@@ -1848,6 +1849,31 @@
 
             // [CMD]
             $.xt({
+                
+                silentCmdVBS: function(batPath)
+                {
+                    return [
+                        "Set WshShell = CreateObject(\"WScript.Shell\")", 
+                        "WshShell.Run chr(34) & {0} & Chr(34), 0".format(bat.fsName),
+                        "Set WshShell = Nothing"
+                    ].join('\n');
+                },
+
+                cmd: function(myCommand, silentMode, sp, sleep)
+                {
+                    var TEMP = Folder("C:/Users/bouda/AppData/Local/Temp/");
+                    silentMode = is(silentMode, undefined)?true: silentMode;
+                    
+                    var bat = File("C:/Users/bouda/AppData/Local/Temp/XTO_$$$$$DATA_cmd.bat");
+                    (bat.open('w'), bat.write(myCommand), bat.close());
+                    
+                    var vbs = File("C:/Users/bouda/AppData/Local/Temp/XTO_$$$$$DATA_cmd.vbs");
+                    (vbs.open('w'), vbs.write($.silentCmdVBS(bat)), vbs.close())
+
+                    // run the bat file using a vbs script
+                    vbs.execute();
+                    if(is(sleep, Number)) $.sleep(sleep);
+                },
 
                 wget: function(fp, link)
                 {   // get images from the web with cmd utility: [WGET]
@@ -2029,14 +2055,7 @@
                 {
                     var hx = $.colorPicker();
                     return  rgba? $.hexToRgb(hx): hx;
-                },
-
-                cmd: function(myCommand, sp, sleep)
-                {
-                    var oo = system.callSystem((sp?"cmd /c \"{0}\"":"{0}").re(myCommand));
-                    if(sleep && sleep.is(Number)) $.sleep(sleep);
-                    return oo;
-                },
+                }
                 //===========================================================================
             })
         }),
@@ -6520,7 +6539,7 @@
                 
                 run_pyjsx: function()
                 {
-                    system.callSystem('pyjsx-run --file-interface {0}'.re(this.INTERFACE.path));
+                    $.cmd('pyjsx-run --file-interface {0}'.re(this.INTERFACE.path), true);
                 },
 
                 execute: function()

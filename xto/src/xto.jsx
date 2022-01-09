@@ -2168,8 +2168,8 @@
                         v = oo[x];
                         if(is(v, Object))
                         {
-                            if(noObject == false) K.push(x);
-                            ks = pureKeys(v), i=-1;
+                            if(!noObject) K.push(x);
+                            ks = allKeys(v, noObject), i=-1;
                             while(++i<ks.length) K.push("{0}/{1}".re(x, ks[i]));
                         }
                         else K.push(x);

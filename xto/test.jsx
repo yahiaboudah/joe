@@ -5,6 +5,6 @@ xto.load("PRIM/Object");
 
 oo = {"kk": 5, "naze": {"hh": {"haha": 77}}};
 
-$.writeln(Object.pureKeys(oo, true))
+$.writeln(Object.allKeys(oo, true))
 
 // var py = new Python(new FileInterface({path: "C:/Users/bouda/desktop/test.json"}));

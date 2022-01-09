@@ -407,7 +407,7 @@
         }
     });
 
-    var EXTO =
+    var EXTO=
     {
         // BASIC
         MATH:
@@ -901,7 +901,9 @@
             FileInterface:
             {
                 PRFX: "FileInterface.prototype.",
-                DEPS: [],
+                DEPS: [
+                    "DATA/File"
+                ],
                 FUNS: 
                 [
                     "validate",
@@ -974,7 +976,11 @@
             // Deal with DEP:
             // First preprocess the name:
             var pWhat = what.split('/'), eWhat = EXTO, k =-1;
-            while(++k<pWhat.length) eWhat = eWhat[pWhat[k]];
+            while(++k<pWhat.length)
+            {
+                try{ eWhat = eWhat[pWhat[k]]; }
+                catch(e){ throw Error("XTO:Loading Error: " + e); }
+            }
 
             var deps = eWhat? eWhat.DEPS:[], i=-1;
             while(++i<deps.length)
@@ -2186,8 +2192,7 @@
                 },
 
                 /*
-                * Returns an array of values if no P is specified
-                * Otherwise returns the value for the specified KeyPath
+                * Create nested Object.value
                 */
                 value: function(oo, P)
                 {
@@ -2196,9 +2201,8 @@
                     if(!P && (V=[])) for(x in oo) if(x.in(oo)) V.push(oo[x]);
                     if(V) return V;
 
-                    var i = -1;
-                    while(++i<P.length) S += "[\"{0}\"]".re(P[i]);
-                    eval("V = {0};".re(S));
+                    var expr = "V = {0};".re(P._join(function(x){return "[\"{0}\"],".re(x)}).slice(0,-1)); 
+                    eval(expr);
 
                     return V;
                 },
@@ -6481,9 +6485,12 @@
                     );
                 },
 
-                get: function()
+                get: function(keyPath)
                 {
-                    return deser(File(this.path).$read());
+                    var oo = deser(File(this.path).$read());
+                    if(is(keyPath, undefined)) return oo;
+
+                    return Object.value(oo, keyPath);
                 },
 
                 crop: function(clean)
@@ -6602,18 +6609,15 @@
                     this.execute();
                 },
 
-                contact: function(FF)
+                contact: function(contactFile)
                 {
-                    var I  = this.INTERFACE, N;
+                    var I = this.INTERFACE, N;
+                    var F = File(contactFile);
 
-                    if(!FF.exists) throw Error("Contact file does not exist");
+                    if(!F.exists) throw Error("Invalid Contact File");
                     
-                    I.modify("info/contacts/{0}".re(N = FF.getName()),
-                    {
-                        name : N,
-                        path : FF.fsName,
-                        funcs: Python.functions(FF.fsName)
-                    });
+                    $.writeln(I.get("info/contacts").se());
+                    I.modify("info/contacts",[]);
 
                     return N;
                 },
@@ -6691,36 +6695,28 @@
                 DEF_NAME_PATT  : new RegExp(".+", 'g'),
                 DEF_ARGS_PATT  : new RegExp("\(.*\)"),
 
-                functions: function(FP)
+                functions: function(ff)
                 {
-                    var P = new RegExp(
-                          Python.DEF_DEF_PATTERN.source
-                        + Python.DEF_NAME_PATT  .source
-                        + Python.DEF_ARGS_PATT  .source
-                    );
-
-                    var M = File(FP).$read().match(P);
-                    var FS = [];
+                    var FUNCS = [];
+                    ff = File(ff).$read();
+                    var P = /(.*def|^def)\s+(.+)\((.*)\)/g;
                     //Name, Args, Z: Def Obj {def: [], nonDef:[]}
                     var N, A, Z; 
 
-                    for(m in M) if(m.in(M))
+                    while(m = P.exec(ff))
                     {
-                        // ** Split Name From Args, remove "DEF"
-                        m = m.replace(DEF_DEF_PATTERN, '').split('(');
-                        
-                        N = m[0];
-                        A = m[1].slice(0, -1).split(',');
+                        N = m[2];
+                        A = m[3].split(',');
                         Z = { _default: [], non_default: []};
-                        for(a in A) if(a.in(A))
+
+                        for each(a in A) if(!is(a, Function))
                         {
                             a = a.split('=');
                             Z[(a.length-1)?"_default":"non_default"].push(a[0]);
                         }
-                        FS.push({name: N, args: Z});
-                    }
-                    
-                    return FS;
+                        FUNCS.push({name: N, args: Z});
+                    }                    
+                    return FUNCS;
                 }
             })
 

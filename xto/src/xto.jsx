@@ -365,6 +365,46 @@
             while(op--) ts.push(ss);
             return ts.join(joinChar);
         }
+
+        // Special Array _join that accepts a function arg:
+        Array.prototype._join = function(chr){
+            var A = this, s = "";
+
+            if(is(chr, undefined)) return A.join('');
+
+            switch(chr.constructor)
+            {
+                case Function:
+                    var i = -1;
+                    while(++i<A.length) s+= chr(A[i]);
+                    break;
+                
+                case String: 
+                    s = A.join(chr);
+                    break;
+
+                default: s = A.join(chr.toString())
+            }
+            
+            return s;
+        }
+
+        // Function bind function:
+        Function.prototype.bind = function(T) //This 
+        {
+            var F = this;
+            var A = arguments.slice(1);
+        
+            return function B()
+            {
+                var a = A.concat(arguments.slice());
+                if(!this instanceof B) return F.apply(T, a);
+
+                return eval('new F({0})'.re(a._join(
+                    function(x){return 'a[{0}],'.re(x)}
+                )).slice(0,-1));
+            }
+        }
     });
 
     var EXTO =
@@ -2106,12 +2146,11 @@
                 
                 keyExists: function(oo, keyPath)
                 {
-                    var i=-1, K = keyPath.split('/'), S = "oo", hasProp;
+                    var K = keyPath.split('/'), i= -1;
                     while(++i<K.length)
                     {
-                        hasProp = eval("{0}.hasOwnProperty(\"{1}\")".re(S, K[i]));
-                        if(!hasProp) return false;
-                        S += "[\"{0}\"]".re(K[i]);
+                        if(!oo.hasOwnProperty(K[i])) return false;
+                        oo = oo[K[i]];
                     }
 
                     return true;
@@ -2121,21 +2160,19 @@
                 pureKeys returns the keyPaths that lead to a value that
                 is not an Object
                 */
-                pureKeys: function pureKeys(oo)
+                allKeys: function allKeys(oo, noObject)
                 {
-                    var K = [];
-                    for(x in oo) if(x.in(oo))
+                    var K = ks = [];
+                    for(var x in oo) if(x.in(oo))
                     {
                         v = oo[x];
-                        if(!v.is(Object))
+                        if(is(v, Object))
                         {
-                            K.push(x.toString());
-                            continue;
+                            if(noObject == false) K.push(x);
+                            ks = pureKeys(v), i=-1;
+                            while(++i<ks.length) K.push("{0}/{1}".re(x, ks[i]));
                         }
-
-                        subK = pureKeys(v), i=-1;
-                        while(++i<subK.length) subK[i] = "{0}/{1}".re(x, subK[i]);
-                        K.push.apply(null, subK);
+                        else K.push(x);
                     }
 
                     return K;
@@ -2176,14 +2213,13 @@
             // [SETTERS]: {modify, adapt}
             Object.xt({
                 
-                modify: function(oo, P, V)
+                modify: function(oo, P, V, debug)
                 {
-                    var K = P.split('/'), S = "oo";
-                        
-                    var i = -1;
-                    while(++i<K.length) S += "[\"{0}\"]".re(K[i]);
-                    
+                    var K = P.split('/'),
+                        S = "oo{0}".re(K._join(function(x){return "[\"{0}\"]".re(x)}));
+
                     var expr = "{0} = {1};".re(S, V._toSource());
+                    if(debug) $.writeln("{0}(path={1},value={2}): expr={3}".re(caller.name,P,V,expr))
                     eval(expr);
 
                     return oo;
@@ -2687,26 +2723,6 @@
             
             // [BIND BODY TIME]
             Function.prototype.xt({
-                
-                bind: function(T/*thisArg*/) 
-                {
-                    var F = this;
-                    var A = arguments.slice(1);
-                
-                    return function B()
-                    {
-                        var a = A.concat(arguments.slice());
-                        var aLen = a.length, 
-                            i    = -1;
-                        
-                        if(!this instanceof B) return F.apply(T, a);
-                
-                        var _a = [];
-                        while(++i<aLen) _a.push('a[{0}]'.re(i));
-
-                        return eval('new F({0})'.re(_a.join(',')));
-                    }
-                },
                 
                 body: function(repConfig)
                 {   

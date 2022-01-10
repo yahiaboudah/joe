@@ -6577,6 +6577,16 @@
                     }
 
                     return C;
+                },
+
+                //===================================
+                validateDef: function(oo)
+                {
+                    return Object.validateKeys(
+                        oo,
+                        "name",
+                        "args"
+                    ) && Object.validateKeys(oo["args"], "_default", "non_default");
                 }
             })
 
@@ -6709,48 +6719,40 @@
                     if(is(contact, Object) && I.validateContact(contact)) 1;
                     else throw Error("Invalid Contact");
             
-                    var PO = {FS: []},
-                        IT = I.get(),
-                        CO = IT.contacts[C],
-                        COValid = Object.validateKeys(CO, ["path", "funcs"]); 
-
-                    if(!COValid) throw Error("Contact invalid");
-
-                    var COFuncs  = CO.funcs;
-                    for(f in COFuncs) if(f.in(COFuncs))
+                    var B = {functionNames: []}; //Built Object
+                    
+                    var defs  = contact["defs"], i=-1;
+                    while(++i<defs.length) if(I.validateDef(def = defs[i]))
                     {
-                        PO[f.name] = Function((function(){
+                        B[def.name] = function()
+                        {
+                            var A = arguments.slice(), i=-1,
+                            kwargs = {}, args = [];
 
-                            var A  = arguments.slice(),
-                                NA = args.length;
-
-                            var ERR = function(T)
+                            while(++i < A.length) if(a = A[i])
                             {
-                                var oo = {extra: "most", missing : "least"};
-                                var nn = {extra: $numNotDef + $numDef, missing: $numNotDef};
-
-                                return Error("PY:{0}() takes at {1} {2} args but {3} were given".re(
-                                    
-                                    $FName,
-                                    oo[T],
-                                    nn[T],
-                                    NA
-                                ));
+                                if(is(a, Object) && a["kwargs"] === true)
+                                {
+                                    kwargs = a["kwargs"];
+                                    delete kwargs["kwargs"];   
+                                }
+                                else args.push(a);
                             }
 
-                            if(NA < $numNotDef)            throw ERR("missing");
-                            if(NA > $numNotDef + $numDef ) throw ERR("extra");
+                            if(args.length !== def.args["non_default"])
+                            {
+                                throw Error("Invalid Arguments Length");
+                            }
 
-                            return Python.call($COPath, $FName, A);
+                            return this.call(this.path, this.defName, {args:args, kwargs: kwargs})
+                        
+                        }.bind({path: contact.path, defName: def.name}));
 
-                        }).body({$COPath: CO.path, $FName: f.name,
-                                 $numNotDef: COFuncs.non_default.length,
-                                 $numDef   : COFuncs._default.length}));
-
-                        PO.functions.push(f.name);
+                        B.functionNames.push(def.name);
+                        return B;
                     }
 
-                    return PO;
+                    return B;
                 }
             })
 

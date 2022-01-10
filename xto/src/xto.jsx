@@ -6766,7 +6766,7 @@
 
                     var FUNCS = [];
                     ff = File(ff).$read();
-                    var P = /(.*def|^def)\s+(.+)\((.*)\)/g;
+                    var P = /(.*def|^def)\s+(.+)\((.*)\)\s*\:/g;
 
                     //Name, Args, Z: Def Obj {_default: [], non_default:[]}
                     var N, A, Z;

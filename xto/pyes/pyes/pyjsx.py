@@ -24,12 +24,15 @@ class PYJSX():
         if(not type(ff) == str):    raise ValueError("Python:PYJSX:process_intf: Invalid Trac")
         if(not type(ss) == list):   raise ValueError("Python:PYJSX:process_intf: Invalid Seed")
 
+        all_args   = ','.join(self.jspy_args(arg) for arg in ss['args'])
+        all_kwargs = ','.join(('{0}={1}'.format(k, jspy_args(v))) for (k,v) in ss['kwargs'].items())
+
         return dotdict({
 
             "path": pp,
             "name": Utils.file_name(pp),
             "func": ff,
-            "args": ','.join(self.jspy_args(arg) for arg in ss) 
+            "args": ','.join(all_args, all_kwargs) 
         })
     
     @classmethod

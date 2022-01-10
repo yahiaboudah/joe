@@ -6526,7 +6526,7 @@
                     {
                         name: name || F.getName(),
                         path: P,
-                        defs: defs_cb.call({path: path})
+                        defs: defs_cb.call({"path": path})
                     }
                     //-----------------------------------------------
                     var contacts = this.get("info/contacts") || [];
@@ -6538,6 +6538,7 @@
                     contacts = contacts.concat(C);
 
                     this.modify("info/contacts", contacts);
+                    $.writeln("From ADD_CONTACT: {0}".re(typeof C["defs"][0]))
                     return C;
                 },
 
@@ -6724,8 +6725,8 @@
                     var defs  = contact["defs"], i=-1;
                     while(++i<defs.length) if((def = defs[i]))
                     {
-                        // Wow, speechless, deserialiazation didn't hit this level
-                        $.writeln((contact["defs"][0]));
+                        //deserialiazation didn't hit this level
+                        $.writeln((contact["defs"]));
                         continue;
                         B[def.name] = (function()
                         {
@@ -6777,10 +6778,6 @@
             // [LEXER/PARSER/GETTER]
             Python.xt({
                 
-                DEF_DEF_PATTERN: new RegExp("([\n]+def)|^def)\s+", 'g'),
-                DEF_NAME_PATT  : new RegExp(".+", 'g'),
-                DEF_ARGS_PATT  : new RegExp("\(.*\)"),
-
                 functions: function(ff)
                 {
                     if(this && this.path) ff = this.path;
@@ -6789,9 +6786,8 @@
                     ff = File(ff).$read();
                     var P = /(.*def|^def)\s+(.+)\((.*)\)/g;
 
-                    //Name, Args, Z: Def Obj {def: [], nonDef:[]}
+                    //Name, Args, Z: Def Obj {_default: [], non_default:[]}
                     var N, A, Z;
-
                     while(m = P.exec(ff))
                     {
                         N = m[2];
@@ -6803,8 +6799,8 @@
                             a = a.split('=');
                             Z[(a.length-1)?"_default":"non_default"].push(a[0]);
                         }
-                        FUNCS.push({name: N, args: Z});
-                    }                    
+                        FUNCS.push({"name": N, "args": Z});
+                    }
                     return FUNCS;
                 }
             })

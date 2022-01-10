@@ -2196,12 +2196,11 @@
                 */
                 value: function(oo, P)
                 {
-                    var V, S = "oo", P = is(P, String)?P.split('/'):false;
-
+                    var V, P = is(P, String)?P.split('/'):false;
                     if(!P && (V=[])) for(x in oo) if(x.in(oo)) V.push(oo[x]);
                     if(V) return V;
 
-                    var expr = "V = {0};".re(P._join(function(x){return "[\"{0}\"],".re(x)}).slice(0,-1)); 
+                    var expr = "V = oo{0};".re(P._join(function(x){return "[\"{0}\"]".re(x)}));
                     eval(expr);
 
                     return V;
@@ -2223,7 +2222,7 @@
                         S = "oo{0}".re(K._join(function(x){return "[\"{0}\"]".re(x)}));
 
                     var expr = "{0} = {1};".re(S, V._toSource());
-                    if(debug) $.writeln("{0}(path={1},value={2}): expr={3}".re(caller.name,P,V,expr))
+                    if(debug) $.writeln("{0}(path={1},value={2}): expr={3}".re("Object.modify",P,V,expr))
                     eval(expr);
 
                     return oo;
@@ -3064,14 +3063,14 @@
                     return (this.close(), this);
                 },
                 
-                $write : function(txt, mode)
+                $write: function(txt, mode)
                 {
                     return this.isOpen?
                            (this.write(txt, mode), this.$close(), this):
                            (this.$open(mode).write(txt), this.$close(), this);
                 },
                 
-                $read : function()
+                $read: function()
                 {
                     if(!this.exists) throw Error("Can't read a non-existent file!");
                         
@@ -3080,7 +3079,7 @@
                     return d;
                 },
                 
-                clear : function(txt)
+                clear: function(txt)
                 {
                     return (this.$write(txt || ""), this);
                 },
@@ -6500,6 +6499,84 @@
 
                     if(clean) this.set((I.active_req = undefined, I));
                     return C;
+                },
+
+                contactExists: function(contactName)
+                {
+                    var C = this.get("info/contacts"), i=-1,n;
+
+                    while(++i<C.length)
+                    {
+                        n = C[i]["name"];
+                        if(n && n == contactName) return true; 
+                    }
+
+                    return false;
+                },
+
+                // (0): Contact added, (1): Contact exists
+                addContact: function(path, defs_cb, name, overwrite)
+                {
+                    var F = File(path);
+                    if(!F.exists) throw Error("Invalid Contact Path");
+                    if(!is(defs_cb, Function)) throw Error("Invalid DEFS Callback");
+                    var P = F.fsName.replace(/\\/g, '/');
+                    //-----------------------------------------------
+                    var C = 
+                    {
+                        name: name || F.getName(),
+                        path: P,
+                        defs: defs_cb.call({path: path})
+                    }
+                    //-----------------------------------------------
+                    var contacts = this.get("info/contacts") || [];
+                    if(this.contactExists(name))
+                    {
+                        if(overwrite) contacts = this.removeContact(contacts, name);
+                        else return 1;
+                    }
+                    contacts = contacts.concat(C);
+
+                    this.modify("info/contacts", contacts);
+                    return C;
+                },
+
+                // Needs an upgrade (Schema):
+                validateContact: function(oo)
+                {
+                    return Object.validateKeys(
+                        oo,
+                        "name",
+                        "path",
+                        "defs"
+                    )
+                },
+
+                getContact: function(contactName)
+                {
+                    var C = I.get("info/contacts"), i=-1;
+
+                    while(++i<C.length) if(C[i]["name"] == contactName)
+                    {
+                        C = C[i];
+                        // Schema checking
+                        // ...
+                        break;
+                    }
+
+                    return C;
+                },
+
+                removeContact: function(contactName, contacts)
+                {
+                    var C = contacts || I.get("info/contacts"), i=-1;
+
+                    while(++i<C.length) if(C[i]["name"] == contactName)
+                    {
+                        C.splice(i, 1);
+                    }
+
+                    return C;
                 }
             })
 
@@ -6609,26 +6686,30 @@
                     this.execute();
                 },
 
-                contact: function(contactFile)
+                contact: function(contactPath, contactName, overwrite)
                 {
-                    var I = this.INTERFACE, N;
-                    var F = File(contactFile);
-
-                    if(!F.exists) throw Error("Invalid Contact File");
-                    
-                    $.writeln(I.get("info/contacts").se());
-                    I.modify("info/contacts",[]);
-
-                    return N;
+                    // Returns the Contact Object
+                    return this.INTERFACE.addContact(
+                        contactPath, Python.functions, contactName,
+                        overwrite
+                    );
                 },
 
-                build: function(C) // Contact
+                buildContacts: function()
                 {
-                    if(!is(C, File, String)) throw Error("Can't build contact");
-                    if(C.is(File)) C = this.contact(C);
+
+                },
+
+                build: function(contact) // Contact
+                {
+                    var I = this.INTERFACE;
+
+                    if(is(contact, String) && (contact = File(contact)).exists) 1;
+                    if(is(contact, File)) contact = this.contact(contact);
+                    if(is(contact, Object) && I.validateContact(contact)) 1;
+                    else throw Error("Invalid Contact");
             
                     var PO = {FS: []},
-                        I  = this.INTERFACE,
                         IT = I.get(),
                         CO = IT.contacts[C],
                         COValid = Object.validateKeys(CO, ["path", "funcs"]); 
@@ -6697,11 +6778,14 @@
 
                 functions: function(ff)
                 {
+                    if(this && this.path) ff = this.path;
+
                     var FUNCS = [];
                     ff = File(ff).$read();
                     var P = /(.*def|^def)\s+(.+)\((.*)\)/g;
+
                     //Name, Args, Z: Def Obj {def: [], nonDef:[]}
-                    var N, A, Z; 
+                    var N, A, Z;
 
                     while(m = P.exec(ff))
                     {

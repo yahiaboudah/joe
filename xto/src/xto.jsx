@@ -6545,11 +6545,11 @@
                 validateContact: function(oo)
                 {
                     return Object.validateKeys(
-                        oo,
+                        oo,[
                         "name",
                         "path",
                         "defs"
-                    )
+                    ])
                 },
 
                 getContact: function(contactName)
@@ -6584,9 +6584,10 @@
                 {
                     return Object.validateKeys(
                         oo,
+                        [
                         "name",
                         "args"
-                    ) && Object.validateKeys(oo["args"], "_default", "non_default");
+                    ]) && Object.validateKeys(oo["args"], ["_default", "non_default"]);
                 }
             })
 
@@ -6712,19 +6713,21 @@
 
                 build: function(contact) // Contact
                 {
-                    var I = this.INTERFACE;
+                    var I = this.INTERFACE, thatPy = this;
 
                     if(is(contact, String) && (contact = File(contact)).exists) 1;
                     if(is(contact, File)) contact = this.contact(contact);
                     if(is(contact, Object) && I.validateContact(contact)) 1;
                     else throw Error("Invalid Contact");
             
-                    var B = {functionNames: []}; //Built Object
-                    
+                    var B = {"functionNames": []}; //Built Object
                     var defs  = contact["defs"], i=-1;
-                    while(++i<defs.length) if(I.validateDef(def = defs[i]))
+                    while(++i<defs.length) if((def = defs[i]))
                     {
-                        B[def.name] = function()
+                        // Wow, speechless, deserialiazation didn't hit this level
+                        $.writeln((contact["defs"][0]));
+                        continue;
+                        B[def.name] = (function()
                         {
                             var A = arguments.slice(), i=-1,
                             kwargs = {}, args = [];
@@ -6744,9 +6747,9 @@
                                 throw Error("Invalid Arguments Length");
                             }
 
-                            return this.call(this.path, this.defName, {args:args, kwargs: kwargs})
+                            return this.python.call(this.path, this.defName, {args:args, kwargs: kwargs});
                         
-                        }.bind({path: contact.path, defName: def.name}));
+                        }).bind({"python": thatPy, "path": contact.path, "defName": def.name});
 
                         B.functionNames.push(def.name);
                         return B;

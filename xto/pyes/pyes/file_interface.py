@@ -9,18 +9,22 @@ class FileInterface():
         'info/requests_arch': list,
         'active_req/road': str,
         'active_req/trac': str,
-        'active_req/seed': list,
+        'active_req/seed': dict,
         'active_req/crop': str
     }
 
     _default_value = dotdict({
             "info": {"contacts": [], "requests_arch": [], "requests_made":0, "requests_exec": 0},
-            "active_req": {"road": "", "trac": "", "seed": [], "crop": ""}
+            "active_req": {"road": "", "trac": "", "seed": {"args": [], "kwargs":{}}, "crop": ""}
     })
 
     _schema_lambs = dotdict({
-
-        "listt" : lambda c: c if (type(c) == list) else [],
+        
+        "seed_dict": lambda sd: 
+        sd if(type(sd) == dict and type(sd["args"]) == list 
+                and type(sd["kwargs"]) == dict)
+            else {"args":[], "kwargs": {}},
+        "listt" : lambda c: c if (type(c) == list) else {},
         "pintt" : lambda n: n if (type(n) == int and n>0) else 0,
         "pathh" : lambda p: p if os.path.exists(p) else ""
     })
@@ -39,7 +43,7 @@ class FileInterface():
             {
                 "road": Use(_schema_lambs.pathh),
                 "trac": Use(str),
-                "seed": Use(_schema_lambs.listt),
+                "seed": Use(_schema_lambs.seed_dict),
                 "crop": Use(lambda s:s)
             }
         }, ignore_extra_keys=True, description= "File Interface Schema")

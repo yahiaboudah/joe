@@ -22,17 +22,17 @@ class PYJSX():
         ss = intf['active_req']['seed']
         if(not os.path.exists(pp)): raise ValueError("Python:PYJSX:process_intf: Invalid Road")
         if(not type(ff) == str):    raise ValueError("Python:PYJSX:process_intf: Invalid Trac")
-        if(not type(ss) == list):   raise ValueError("Python:PYJSX:process_intf: Invalid Seed")
+        if(not type(ss) == dict):   raise ValueError("Python:PYJSX:process_intf: Invalid Seed")
 
         all_args   = ','.join(self.jspy_args(arg) for arg in ss['args'])
-        all_kwargs = ','.join(('{0}={1}'.format(k, jspy_args(v))) for (k,v) in ss['kwargs'].items())
+        all_kwargs = ','.join(('{0}={1}'.format(k, self.jspy_args(v))) for (k,v) in ss['kwargs'].items())
 
         return dotdict({
 
             "path": pp,
             "name": Utils.file_name(pp),
             "func": ff,
-            "args": ','.join(all_args, all_kwargs) 
+            "args": '{0},{1}'.format(all_args, all_kwargs) 
         })
     
     @classmethod

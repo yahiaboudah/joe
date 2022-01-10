@@ -321,7 +321,7 @@
 
                 case Object:
                     var kvpairs = []
-                    for(k in T) if(k.in(T)) kvpairs.push("\"{0}\":{1}".re(k, T[k]._toSource()))
+                    for(k in T) if(k.in(T)) kvpairs.push("\"{0}\":{1}".re(k.toString(), T[k]._toSource()));
                     return "{{0}}".re(kvpairs.join(','));
                 
                 case Number:
@@ -394,15 +394,9 @@
         {
             var F = this;
             var A = arguments.slice(1);
-        
-            return function B()
-            {
-                var a = A.concat(arguments.slice());
-                if(!this instanceof B) return F.apply(T, a);
 
-                return eval('new F({0})'.re(a._join(
-                    function(x){return 'a[{0}],'.re(x)}
-                )).slice(0,-1));
+            return function(){
+                return F.apply(T, arguments.slice());
             }
         }
     });
@@ -1920,7 +1914,7 @@
                             (bat= (Folder.temp / "XTO_DOLLAR_DATA_cmd.bat").create(myCommand)).fsName.replace('/', '\\')
                         )
                     );
-                    vbs.$execute(100, function(){this.remove(); bat.remove()});
+                    vbs.$execute(100, function(){this.remove(); bat.remove();});
                 },
 
                 wget: function(fp, link)
@@ -6501,44 +6495,42 @@
                     return C;
                 },
 
-                contactExists: function(contactName)
+                contactExists: function(contactPath)
                 {
-                    var C = this.get("info/contacts"), i=-1,n;
-
+                    var C = this.get("info/contacts"), i=-1;
                     while(++i<C.length)
                     {
-                        n = C[i]["name"];
-                        if(n && n == contactName) return true; 
+                        if(C[i]["path"] == contactPath) return true;
                     }
 
                     return false;
                 },
 
                 // (0): Contact added, (1): Contact exists
-                addContact: function(path, defs_cb, name, overwrite)
+                addContact: function(path, defs_cb, contactName, overwrite)
                 {
                     var F = File(path);
-                    if(!F.exists) throw Error("Invalid Contact Path");
-                    if(!is(defs_cb, Function)) throw Error("Invalid DEFS Callback");
+                    if(!(F.exists && is(defs_cb, Function))) throw Error("Invalid Contact Path or Parser Function");
+
                     var P = F.fsName.replace(/\\/g, '/');
-                    //-----------------------------------------------
-                    var C = 
+                    var contacts = this.get("info/contacts");
+                    //----------------------------------------------
+                    if(this.contactExists(P))
                     {
-                        name: name || F.getName(),
+                        if(overwrite) contacts = this.removeContact(P, contacts);
+                        else return 1;    
+                    }
+                    //-----------------------------------------------
+                    var C =
+                    {
+                        name: contactName || F.getName(),
                         path: P,
                         defs: defs_cb.call({"path": path})
                     }
                     //-----------------------------------------------
-                    var contacts = this.get("info/contacts") || [];
-                    if(this.contactExists(name))
-                    {
-                        if(overwrite) contacts = this.removeContact(contacts, name);
-                        else return 1;
-                    }
-                    contacts = contacts.concat(C);
+                    contacts[contacts.length] = deser(ser(C));
 
                     this.modify("info/contacts", contacts);
-                    $.writeln("From ADD_CONTACT: {0}".re(typeof C["defs"][0]))
                     return C;
                 },
 
@@ -6568,11 +6560,11 @@
                     return C;
                 },
 
-                removeContact: function(contactName, contacts)
+                removeContact: function(contactPath, contacts)
                 {
-                    var C = contacts || I.get("info/contacts"), i=-1;
+                    var C = contacts || this.get("info/contacts"), i=-1;
 
-                    while(++i<C.length) if(C[i]["name"] == contactName)
+                    while(++i<C.length) if(C[i]["path"] == contactPath)
                     {
                         C.splice(i, 1);
                     }
@@ -6595,22 +6587,22 @@
             // [SETTERS/MODIFIERS]
             FileInterface.prototype.xt({
                 
-                forceMake : function()
+                forceMake: function()
                 {
                     return File(this.path).forceCreate(ser(this.intf0, undefined, 4));
                 },
                 
-                set : function(intf)
+                set: function(intf)
                 {
                     return File(this.path).$write(
                         ser(Object.adapt(intf, this.intf0), undefined, 4), 'w'
                     );
                 },
                 
-                modify : function(keyPath, v)
+                modify: function(keyPath, v)
                 {
                     var I = this.get();
-                    
+
                     this.set(
                         Object.modify(
                             I,
@@ -6623,7 +6615,7 @@
                     return this;
                 },
                 
-                post : function(R) //Request
+                post: function(R) //Request
                 {
                     if(!Object.validateKeys(R, ["path", "func", "args"]))
                     {
@@ -6665,7 +6657,7 @@
                 
                 run_pyjsx: function()
                 {
-                    $.cmd('pyjsx-run --file-interface {0}'.re(this.INTERFACE.path), true);
+                    $.cmd('pyjsx-run --file-interface {0}'.re(this.INTERFACE.path.replace(/\//g, '\\')), true);
                 },
 
                 execute: function(signalFileDebug)
@@ -6695,7 +6687,7 @@
                         func: about,
                         args: talk
                     })
-                    this.execute();
+                    return this.execute().crop();
                 },
 
                 contact: function(contactPath, contactName, overwrite)
@@ -6703,13 +6695,8 @@
                     // Returns the Contact Object
                     return this.INTERFACE.addContact(
                         contactPath, Python.functions, contactName,
-                        overwrite
+                        is(overwrite, undefined)?true:overwrite
                     );
-                },
-
-                buildContacts: function()
-                {
-
                 },
 
                 build: function(contact) // Contact
@@ -6721,14 +6708,11 @@
                     if(is(contact, Object) && I.validateContact(contact)) 1;
                     else throw Error("Invalid Contact");
             
-                    var B = {"functionNames": []}; //Built Object
+                    var B = {functionNames: []}; //Built Object
                     var defs  = contact["defs"], i=-1;
-                    while(++i<defs.length) if((def = defs[i]))
+                    while(++i<defs.length) if(def = defs[i])
                     {
-                        //deserialiazation didn't hit this level
-                        $.writeln((contact["defs"]));
-                        continue;
-                        B[def.name] = (function()
+                        B[def.name] = ((function()
                         {
                             var A = arguments.slice(), i=-1,
                             kwargs = {}, args = [];
@@ -6743,17 +6727,16 @@
                                 else args.push(a);
                             }
 
-                            if(args.length !== def.args["non_default"])
+                            if(args.length !== def.args["non_default"].length)
                             {
                                 throw Error("Invalid Arguments Length");
                             }
 
                             return this.python.call(this.path, this.defName, {args:args, kwargs: kwargs});
                         
-                        }).bind({"python": thatPy, "path": contact.path, "defName": def.name});
+                        }).bind({"python": thatPy, "path": contact.path, "defName": def.name}));
 
                         B.functionNames.push(def.name);
-                        return B;
                     }
 
                     return B;
@@ -6776,8 +6759,7 @@
             })
 
             // [LEXER/PARSER/GETTER]
-            Python.xt({
-                
+            Python.xt({ 
                 functions: function(ff)
                 {
                     if(this && this.path) ff = this.path;

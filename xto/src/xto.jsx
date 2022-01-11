@@ -51,17 +51,8 @@
 /**********************************************************************************/
 
 (function(H, S)
-{
-
-    var TODO = 
-    [
-        "Object.getKeyByValue",
-        "Object.getKeysByValue",
-        "ShapeLayer.prototype.reverseEngineer",
-        "ShapeLayer.prototype.clone",
-        "Object.getPrototypeOf",
-    ]
-    
+{   
+    //TODO :fix some garbage
     var YOLO = "youwillneverguessthispassword";
     var FUNS = {};
     var BASC = (function(){
@@ -1039,11 +1030,6 @@
     S.xt({
 
         version: '1.1.2',
-        
-        getTODO: function()
-        {
-            return TODO;
-        },
 
         functionsOf: function(what)
         {
@@ -1074,32 +1060,16 @@
 
     //[DEBUG/EXAMINE]
     S.xt({
-        
-        code: function(what, where)
+        getTODOS: function()
         {
-            if(!(fun = FUNS[what])) return;
-
-            var callerFile = File(File($.stack).fsName || where);
+            var A = [],
+                R = /(\n|\r|\t)*\s*\/\/\s*TODO\s*\:\s*(.*)/g,
+                F, M, cc;
             
-            callerFile.open("a");
-            callerFile.write([
-                
-                "\n\n\n\n",
-                "var " + what.split('.').join('') + "= ",
-                fun.toString()
-    
-            ].join(""));
-            return callerFile.close();
-        },
-        update: function(pass, what, fn)
-        {
-            if(
-                   (pass !== YOLO)
-                || (!EXTO[what])
-                || fn.isnt(Function)
-            ) return;
-    
-            FUNS[what] = fn;
+            ((F = File($.fileName)).open('r'), cc = F.read(), F.close())
+
+            while(M = R.exec(cc)) A.push(M[2]);
+            return A;
         }
     })
 
@@ -2141,23 +2111,10 @@
                 },
             })
 
-            // [GETTERS]: {pureKeys, keys, values, size}
+            // [GETTERS]: {pureKeys, keys, values, size, keyExists}
             Object.xt({
-                
-                keyExists: function(oo, keyPath)
-                {
-                    var K = keyPath.split('/'), i= -1;
-                    while(++i<K.length)
-                    {
-                        if(!oo.hasOwnProperty(K[i])) return false;
-                        oo = oo[K[i]];
-                    }
-
-                    return true;
-                },
-
                 /*
-                pureKeys returns the keyPaths that lead to a value that
+                allKeys returns the keyPaths that lead to a value that
                 is not an Object
                 */
                 allKeys: function allKeys(oo, noObject)
@@ -2340,7 +2297,19 @@
 
             // [VALIDATORS]: {dcKeys, validate, validateKeys}
             Object.xt({
+                               
+                keyExists: function(oo, keyPath)
+                {
+                    var K = keyPath.split('/'), i= -1;
+                    while(++i<K.length)
+                    {
+                        if(!oo.hasOwnProperty(K[i])) return false;
+                        oo = oo[K[i]];
+                    }
 
+                    return true;
+                },
+                
                 dcKeys: function cKeys(a, b){
 
                     if(!(
@@ -2394,20 +2363,6 @@
                     }
                     
                     return true;
-                }
-            })
-
-            // [REMOVERS]: {rm}
-            Object.xt({
-
-                rm : function(varName)
-                {
-                    eval([
-                        
-                        "{0} = undefined",
-                        "delete({0})"
-
-                    ].join(";").re(varName))
                 }
             })
         }),

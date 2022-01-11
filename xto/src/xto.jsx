@@ -4384,27 +4384,27 @@
 
                 setTime : function(t, all)
                 {
-                if(t.isnt(Number)) return this;
-                all  = all.is(undefined)? 1:all;
-            
-                //==============/
-                this.duration = t;
-                //==============/
-            
-                this.layers.grab().forEach(function(layer){
-                    
-                    var isLocked = layer.locked;
-                    layer.locked = false;
-            
-                    //-----------------------------------------------------------
-                    layer.outPoint = t;
-                    if(all && layer.source.is(CompItem)) setTime(t, layer.source);
-                    //------------------------------------------------------------
-            
-                    layer.locked = isLocked;
-                })
+                    if(t.isnt(Number)) return this;
+                    all  = all.is(undefined)? 1:all;
                 
-                return this;
+                    //==============/
+                    this.duration = t;
+                    //==============/
+                
+                    this.layers.grab().forEach(function(layer){
+                        
+                        var isLocked = layer.locked;
+                        layer.locked = false;
+                
+                        //-----------------------------------------------------------
+                        layer.outPoint = t;
+                        if(all && layer.source.is(CompItem)) setTime(t, layer.source);
+                        //------------------------------------------------------------
+                
+                        layer.locked = isLocked;
+                    })
+                    
+                    return this;
                 },
             
                 workAreaDomain : function(){
@@ -5173,7 +5173,7 @@
                         "Filter"
                     ];
                 
-                    var types = Array.prototype.slice.call(arguments);
+                    var types = arguments.slice();
                 
                     types.forEach(function(type, idx){
                         if(!_TYPES.includes(type)) this.remove(idx);
@@ -6554,7 +6554,7 @@
             };
 
             
-            // [MAIN TRIO: call, build, contact]
+            // [main logic]
             Python.prototype.xt({
                 
                 run_pyjsx: function()
@@ -6645,14 +6645,11 @@
                 }
             })
 
-            // [BASIC ATTRIBUTES]
-            Python.xt({
-                execTime   : 180,
-                extensions : ["py", "pyw"],
-            })
-
             // [SETUP/TOOLS]
             Python.xt({
+                
+                execTime   : 180,
+                extensions : ["py", "pyw"],  
                 
                 isPythonInstalled: function()
                 {

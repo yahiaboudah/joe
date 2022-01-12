@@ -367,7 +367,7 @@
             {
                 case Function:
                     var i = -1;
-                    while(++i<A.length) s+= chr(A[i]);
+                    while(++i<A.length) s+= chr(A[i], i);
                     break;
                 
                 case String: 
@@ -1351,13 +1351,29 @@
 
                 show: function(joinChar)
                 {
+                    var frame = {
+                        topleft: "╔",
+                        topright: "╗",
+                        bottomright: "╝",
+                        bottomleft: "╚",
+                        line: "┊"
+                    }
+
                     var A = this.value, i = -1, j, row;
+                    var msg = [];
                     while(++i<A.length)
                     {   
                         j = -1; row = [];
                         while(++j<A[0].length) row.push(A[i][j])
-                        $.writeln("{0}\r".re(row.join(joinChar || '  ')));
+                        msg.push(row.join(joinChar || (joinChar = '  ')));
                     }
+
+                    $.writeln(msg._join(function(e, i){
+                        if(i == 0) return "{0} {1} {2}\r".re(frame.topleft, e, frame.topright);
+                        if(i == msg.length-1) return "{0} {1} {2}".re(frame.bottomleft, e, frame.bottomright);
+
+                        return "{0} {1} {0}\r".re(frame.line, e);
+                    }));
                 }
             })
 
@@ -1662,7 +1678,7 @@
                         && this.numRows == K.numRows
                         && this.numCols = K.numCols
                         && this.every(function(e, i, j){
-                            return e == K[i][j]
+                            return e == K.value[i][j]
                         })
                     )
                 }
@@ -2425,10 +2441,26 @@
                     return V;
                 },
 
-                size: function(oo, k)
+                nestedSize: function nestedSize(oo)
                 {
-                    if(oo && (k = 0)) for(x in oo) if(x.in(oo)) k++;
-                    return k;
+                    var S = {size: 0};
+
+                    var k, e;
+                    for(k in oo) if(k.in(oo))
+                    {
+                        e = oo[k];
+                        if(is(e, Object)) (S[k] = nestedSize(e), S.size++);
+                        else S.size++;
+                    }
+
+                    return S;
+                },
+
+                size: function(oo)
+                {
+                    var k, S;
+                    for(k in oo) if(k.in(oo)) S++;
+                    return S;
                 }
             })
 

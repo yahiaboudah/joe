@@ -1,13 +1,17 @@
 //@include "src/xto.jsx"
-xto.load("MATH/MATRIX");
+xto.load("PRIM/Object");
 
-var aa = new M([
-    [1,1],
-    [1,1]
-]);
+var t = {
 
-var bb = new M([
-    [2,2],
-    [2,2],
-]);
+    "hello": 5,
+    "there": 4,
+    "naze": "8888",
+    "yoyo": {
+        "kinaze": {
+            "oaze": 77,
+            "naze": 75
+        }
+    }
+}
 
+$.writeln(Object.size(t).se());

@@ -1352,28 +1352,160 @@
                 }
             })
 
-            M.prototype.transpose = function()
-            {
-                var A = this.value;
-                var R = [], i=-1, j=-1, col;
-                while(++i<A[0].length)
+            // [GETTERS]
+            M.prototype.xt({
+                
+                det: function()
                 {
-                     col = []; j=-1;
-                     while(++j<A.length) col.push(A[j][i]);
-                     R.push(col);
+                    var A = this;
+                    var R, i=-1, n = A.value.length;
+
+                    var lum = M.zeros(n, n),
+                        perm= M.zeros(n, 1);
+
+                    R = this.decompose(A, lum, perm);  // -1 or +1
+                    while(++i<n) R *= lum[i][i];
+
+                    return R;
+                },
+
+                decompose: function(lum, perm)
+                {
+                                    
+                    var A = this;
+                    var toggle = +1; // even (+1) or odd (-1) row permutatuions
+                    var n = A.value.length;
+
+                    var lum = new M(A.value);
+                    var perm = [], i=-1;
+                    while(++i<n) perm.push(i);
+
+                    while(++j<n-1)
+                    {
+                        var max = Math.abs(lum[j][j]);
+                        var piv = j;
+
+                        var i = j;
+                        while(++i<n)
+                        {
+                            var xij = Math.abs(lum[i][j]);
+                            if(xij > max) (max = xij, piv = i)
+                        }
+
+                        if (piv != j) 
+                        {
+                            var tmp = lum[piv]; (lum[piv] = lum[j], lum[j] = tmp);
+                            var t = perm[piv]; (perm[piv] = perm[j], perm[j] = t);
+
+                            toggle = -toggle;
+                        }
+
+                        var xjj = lum[j][j];
+                        if (xjj != 0) 
+                        {
+                            var i = j;
+                            while(++i<n)
+                            {
+                                var xij = lum[i][j] / xjj;
+                                lum[i][j] = xij;
+                                var k = j;
+                                while(++k <n) lum[i][k] -= xij * lum[j][k]
+                            }
+                        }
+
+                    } // j
+
+                    return toggle;  // for determinant
+                },
+
+                inverse: function()
+                {
+                    var A =this;
+                    var n = A.value.length, R, lum, perm;
+
+                    R = lum = M.zeros(n, n);
+                    b = perm = M.zeros(n, 1);
+
+                    this.decompose(lum, perm);  // ignore return
+                    while(++i<n) 
+                    {
+                        while(++j<n) b[j] = (i == perm[j])? 1:0;
+                        
+                        var x = reduce(lum, b);
+                        while(++j<n) R[j][i] = x[j];
+                    }
+
+                    return new M(R);
                 }
+            })
 
-                return new M(R);
-            }
-
-            // [PROPERTIES]
+            // [standard functions]
             M.xt({
 
-                transpose: function(K)
+                dot: function(A, B)
                 {
+                    if(A.length !== B.length) return;
 
+                    var i=-1, R=0;
+                    while(++i<A.length) R += (A[i] * B[i]);
+
+                    return R;
                 },
-                
+
+                zeros: function(numRow, numCol)
+                {
+                    var A = [], i=-1, j;
+                    while(++i<numRow)
+                    {
+                        A[i] = []; j=-1;
+                        while(++j<numCol) A[i].push(0);
+                    }
+
+                    return new M(A);
+                }
+            })
+
+            // [Shape Shifters]
+            M.prototype.xt({
+
+                invert: function()
+                {
+                    // det != 0
+                    var n = this.length, R, lum, perm;
+
+                    R = lum = M.zeros(n, n);
+                    b = perm = M.zeros(n, 1);
+
+                    this.decompose(lum, perm);  // ignore return
+                    
+                    while(++i<n) 
+                    {
+                        while(++j<n) b[j] = (i == perm[j])? 1:0;
+                        
+                        var x = M.reduce(lum, b);
+                        while(++j<n) R[j][i] = x[j];
+                    }
+
+                    return R;
+                },
+            
+                transpose: function()
+                {
+                    var A = this.value;
+                    var R = [], i=-1, j=-1, col;
+                    while(++i<A[0].length)
+                    {
+                        col = []; j=-1;
+                        while(++j<A.length) col.push(A[j][i]);
+                        R.push(col);
+                    }
+
+                    return new M(R);
+                }
+            })
+
+            // [PROPERTIES]
+            M.xt({                
                 identity : function(dim)
                 {
                     if(!(dim && dim.is(Number))) dim = 4;
@@ -1394,64 +1526,95 @@
 
                 '*': function(K)
                 {
-                    var MX = this, R;
+                    var MX = this.value, R;
 
                     switch(K.constructor)
                     {
                         case Number:
-                            MX.forEach(function(e){
-                                return K * e;
+                            this.forEach(function(e){
+                                return 2 * e;
+                            });
+                            break;
+                        
+                        case M:
+                            if(this.numCols != K.numRows) return 2;
+                        
+                            K  = K.transpose().value;
+                            R  = M.zeros(this.numRows, K.numCols).value;
+
+                            var i=-1, j;
+                            while(++i<K.length){
+                                j = -1;
+                                while(++j<MX.length) R[j][i] = M.dot(K[i], MX[j])
+                            }
+
+                            return new M(R);
+                        
+                        default: return 1;
+                    }
+                },
+
+                '/': function(K)
+                {
+                    switch(K.constructor)
+                    {
+                        case Number:
+                            this.forEach(function(e){
+                                return e / K;
                             })
                             break;
                         
                         case M:
-                            // 0) check if valid mult
-                            // 1) transpose K
-                            // 2) take dot of each K row with each MX row
-                            // 3) push value to R (result) matrix
+                            K = K.invert();
+                            if(this.numCols != K.numCols || this.numRows != K.numRows) return 2;
 
-                            if(MX.numCols !== K.numRows) break;
-
-                            MX = MX.toArray();
-                            K  = M.transpose(K).toArray();
-                            R  = M(MX.numRows, K.numCols).fill('zeros').toArray();
-
-                            var i = -1, j = -1;
-                            while(++i < K.length)
-                            {
-                                while(++j < MX.length)
-                                {
-                                    R[j][i] = M.dot(K[i], MX[j])
-                                }
-                                j = -1;
-                            }
-
-                            return M(R);
+                            this['*'](K);
                     }
                 },
 
-                '+': function()
+                '+': function(K)
                 {
+                    switch(K.constructor)
+                    {
+                        case Number:
+                            this.forEach(function(e){
+                                return e + K;
+                            })
+                            break;
+                        
+                        case M:
+                            if(this.numCols != K.numCols || this.numRows != K.numRows) return 2;
 
+                            this.forEach(function(e, i, j){
+                                return e + K.value[i][j];
+                            })
+                    }
+                },
+
+                // Hadamard
+                '^': function(K)
+                {
+                    if(!is(K, M)) return 2;
+
+                    if(this.numCols != K.numCols || this.numRows != K.numRows) return 2;
+
+                    this.forEach(function(e, i, j){
+                        return e * K.value[i][j];
+                    })
                 }
             })
 
             // [ITERATORS]
-            M.xt({
+            M.prototype.xt({
 
                 forEach: function(cb)
                 {
-                    var MX = this.value,
-                        C  = MX.numCols,
-                        R  = MX.numRows;
-                    
-                    var i,j; i = j = -1;
-                    while(++i<numRows) while(++j<numCols)
+                    var i=-1, j;
+                    while(++i<this.numRows)
                     {
-                        MX[i][j] = cb.call(MX[i][j]);
+                        j =-1;
+                        while(++j<this.numCols) this.value[i][j] = cb.call(undefined, this.value[i][j], i, j);    
                     }
-
-                    this.value = MX;
                 }
             })
         }),

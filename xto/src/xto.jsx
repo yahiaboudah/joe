@@ -1332,13 +1332,22 @@
 
             $.global.M = function M(A){
                 
-                this.value = A;
-                this.numRows = A.length;
-                this.numCols = A[0].length; 
+                this.value = (is(A, Array) && is(A[0], Array))? A: [[]];
+                this.numRows = this.value.length;
+                this.numCols = this.value[0].length;
             };
 
-            // [DISPLAY/VIEW]
-            M.prototype.xt({ 
+            // [HELPERS]
+            M.prototype.xt({
+
+                toVector: function()
+                {
+                    var A = this;
+                    if(A.numRows == 1) return A.value[0];
+                    if(A.numCols == 1) return A.transpose().value[0];
+
+                    return 2;
+                },
 
                 show: function(joinChar)
                 {
@@ -1363,7 +1372,7 @@
                     var lum = M.zeros(n, n),
                         perm= M.zeros(n, 1);
 
-                    R = this.decompose(A, lum, perm);  // -1 or +1
+                    R = this.decompose(lum.value, perm.toVector());  // -1 or +1
                     while(++i<n) R *= lum[i][i];
 
                     return R;
@@ -1376,10 +1385,10 @@
                     var toggle = +1; // even (+1) or odd (-1) row permutatuions
                     var n = A.value.length;
 
-                    var lum = new M(A.value);
-                    var perm = [], i=-1;
-                    while(++i<n) perm.push(i);
+                    var luma = new M(A.value), lum = A.value;
+                    var perm = M.zeros(n, 1).toVector();
 
+                    var j = -1;
                     while(++j<n-1)
                     {
                         var max = Math.abs(lum[j][j]);
@@ -1462,6 +1471,34 @@
                     }
 
                     return new M(A);
+                },
+
+                reduce: function(lum, b)
+                {
+                    var n = lum.length;
+                    var x = M.zeros(n, 1);
+                    
+                    var i=-1;
+                    while(++i<n) x[i] = b[i];
+
+                    for (var i = 1; i < n; ++i) {
+                        var sum = x[i];
+                        for (var j = 0; j < i; ++j) {
+                        sum -= lum[i][j] * x[j];
+                        }
+                        x[i] = sum;
+                    }
+
+                    x[n - 1] /= lum[n - 1][n - 1];
+                    for (var i = n - 2; i >= 0; --i) {
+                        var sum = x[i];
+                        for (var j = i + 1; j < n; ++j) {
+                        sum -= lum[i][j] * x[j];
+                        }
+                        x[i] = sum / lum[i][i];
+                    }
+
+                    return x;
                 }
             })
 
@@ -1486,7 +1523,7 @@
                         while(++j<n) R[j][i] = x[j];
                     }
 
-                    return R;
+                    return new M(R);
                 },
             
                 transpose: function()

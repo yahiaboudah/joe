@@ -1332,11 +1332,40 @@
 
             $.global.M = function M(A){
                 
+                this.value = A;
                 this.numRows = A.length;
                 this.numCols = A[0].length; 
             };
 
-            
+            // [DISPLAY/VIEW]
+            M.prototype.xt({ 
+
+                show: function(joinChar)
+                {
+                    var A = this.value, i = -1, j, row;
+                    while(++i<A.length)
+                    {   
+                        j = -1; row = [];
+                        while(++j<A[0].length) row.push(A[i][j])
+                        $.writeln("{0}\r".re(row.join(joinChar || '  ')));
+                    }
+                }
+            })
+
+            M.prototype.transpose = function()
+            {
+                var A = this.value;
+                var R = [], i=-1, j=-1, col;
+                while(++i<A[0].length)
+                {
+                     col = []; j=-1;
+                     while(++j<A.length) col.push(A[j][i]);
+                     R.push(col);
+                }
+
+                return new M(R);
+            }
+
             // [PROPERTIES]
             M.xt({
 
@@ -1360,7 +1389,7 @@
                 }
             })
 
-            // [OPERATOR OVERLOADING]
+            // [OPERATORS]
             M.prototype.xt({
 
                 '*': function(K)
@@ -1412,17 +1441,17 @@
 
                 forEach: function(cb)
                 {
-                    var MX = this,
+                    var MX = this.value,
                         C  = MX.numCols,
                         R  = MX.numRows;
                     
                     var i,j; i = j = -1;
                     while(++i<numRows) while(++j<numCols)
                     {
-                        cb.call(MX[i][j]);
+                        MX[i][j] = cb.call(MX[i][j]);
                     }
 
-                    return MX;
+                    this.value = MX;
                 }
             })
         }),

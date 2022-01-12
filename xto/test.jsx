@@ -1,9 +1,9 @@
 //@include "src/xto.jsx"
+xto.load("MATH/MATRIX");
 
-// xto.load("CSTR/Python");
-// var py = new Python(fi = new FileInterface({path: "C:/Users/bouda/desktop/test.json"}));
-// var pytest = py.build("C:/Users/bouda/Desktop/pytest.py");
-// var fname = pytest.file_name("C:/Users/bouda/Desktop/g.jpg");
-// clearOutput();
+var aa = new M([
+    [1,2,3],
+    [4,5,6]
+]);
 
-// write("fname");
+aa.transpose().show();

@@ -2426,6 +2426,21 @@
                     return A;
                 },
 
+                detailedKeys: function detailedKeys(oo)
+                {
+                    var DK = {"keys": []}
+
+                    var k, e;
+                    for(k in oo) if(k.in(oo))
+                    {
+                        e = oo[k];
+                        if(is(e, Object)) (DK[k] = detailedKeys(e), DK.keys.push(k));
+                        else DK.keys.push(k);
+                    }
+
+                    return DK;
+                },
+
                 /*
                 * Create nested Object.value
                 */
@@ -2437,6 +2452,21 @@
 
                     var expr = "V = oo{0};".re(P._join(function(x){return "[\"{0}\"]".re(x)}));
                     eval(expr);
+
+                    return V;
+                },
+
+                detailedValues: function detailedValues(oo)
+                {
+                    var V = {"values": []};
+                    
+                    var k,e;
+                    for(k in oo) if(k.in(oo))
+                    {
+                        e = oo[k];
+                        if(is(e, Object)) (V[k] = detailedValues(e) ,V["values"].push(e));
+                        else V.values.push(e);
+                    }
 
                     return V;
                 },

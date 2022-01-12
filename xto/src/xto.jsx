@@ -1628,6 +1628,21 @@
                     }
                 },
 
+                '-': function(K)
+                {
+                    switch (K.constructor) {
+                        case Number:
+                            this['+'](-K);
+                            break;
+                        
+                        case M:
+                            K.forEach(function(e){return -e});
+                            this['+'](K);
+                        
+                        default: return 2;
+                    }
+                },
+
                 // Hadamard
                 '^': function(K)
                 {

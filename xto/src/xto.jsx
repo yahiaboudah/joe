@@ -1638,6 +1638,18 @@
                     this.forEach(function(e, i, j){
                         return e * K.value[i][j];
                     })
+                },
+
+                '==': function(K)
+                {
+                    return (
+                        is(K, M)
+                        && this.numRows == K.numRows
+                        && this.numCols = K.numCols
+                        && this.every(function(e, i, j){
+                            return e == K[i][j]
+                        })
+                    )
                 }
             })
 
@@ -1652,6 +1664,18 @@
                         j =-1;
                         while(++j<this.numCols) this.value[i][j] = cb.call(undefined, this.value[i][j], i, j);    
                     }
+                },
+
+                every: function(cb)
+                {
+                    var i=-1, j;
+                    while(++i<this.numRows)
+                    {
+                        j = -1;
+                        while(++j<this.numCols) if(!cb.call(undefined, this.value[i][j], i, j)) return false;
+                    }
+
+                    return true;
                 }
             })
         }),

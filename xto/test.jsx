@@ -2,8 +2,8 @@
 xto.load("MATH/MATRIX");
 
 var aa = new M([
-    [1,2],
-    [4,5]
+    [1,1],
+    [1,1]
 ]);
 
 var bb = new M([
@@ -11,5 +11,3 @@ var bb = new M([
     [2,3,4],
 ]);
 
-
-aa.inverse().show()

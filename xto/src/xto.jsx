@@ -3008,9 +3008,9 @@
                 
                 body: function(repConfig)
                 {   
-                    var _replace = function(S, cfg)
+                    var _replace = function(SS, cfg)
                     {
-                        var S = S;
+                        var S = SS;
                         for(x in cfg) if(x.in(cfg))
                         {
                             S = S.split(x).join(cfg[x])

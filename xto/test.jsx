@@ -3,22 +3,49 @@ xto.load("PRIM/Function");
 xto.load("PRIM/Array");
 xto.load("PRIM/Object");
 xto.load("PRIM/String");
+xto.load("DATA/JSON");
 
-Function.prototype.expression = function(cfg)
+
+function Expression(fn, cfg)
 {
-    var F = this.toString();
-    var R = /GEN\[\((.*)\)\,(.*)\,(.*)\,(.*)\]/g;
-    var G = [];
+  this.func = fn;
+  this.config = cfg;
+  this.result = this.func.toString();
 
-    while(match = R.exec(F))
+  this.parseGen();
+  this.standardReplace(true);
+  
+  return this.result;
+}
+
+// [PROPS]
+Expression.xt({
+  PATTERNS: {
+    "GEN": /GEN\[\((.*)\)\,(.*)\,(.*)\,(.*)\]/g
+  }
+})
+
+Expression.prototype.xt({
+  standardReplace: function()
+  {
+    this.result = this.result._replace(this.config);
+  }
+})
+
+Expression.prototype.xt({
+
+  parseGen: function()
+  {
+    var F = this.result;
+    var cfg = this.config;
+    var G = [], i=-1;
+
+    while(match = Expression.PATTERNS.GEN.exec(F))
     {
         G.push({
             firstIndex: match.index,
             lastIndex: match.index + match[0].length,
-            config : {
-              "$p0": [4, 5, 7],
-              "$p1": [1, 2, 3]
-            },
+            config : {},
             expr: match[1],
             keys: match[1].match(/\$(\w+)/g),
             startsWith: match[2],
@@ -27,53 +54,72 @@ Function.prototype.expression = function(cfg)
         })
     }
 
-    var g = G[0], vals, genSize = Object.first(g.config).length >>> 0;
-
-    $.writeln(Object.values(g.config).constructor.name);
-    
-    var valid = Object.values(g.config).every(function(v){
-        return is(v, Array) && v.length == genSize
-    }) && Object.validateKeys(cfg, Object.keys(g.config));
-
-    var genResult = [], i=-1;
-    while(++i<genSize)
+    var g, R, j;
+    while(++i<G.length)
     {
-      genResult.push(
-        g.expr._replace(cfg, function(v){return v[i]})
-      );
+          R = []; j =-1;
+          g = G[i];
+          
+          // get relevant keys:
+          var k;
+          for(k in cfg) if(k.in(cfg) && k.in(g.keys)) g.config[k] = cfg[k];
+
+          // get array size:
+          var genSize = g.config[Object.first(g.config)].length >>> 0;
+          
+          //if array sizes don't match, continue:
+          var real_config = Object.values(g.config).filter(function(v){
+            
+          })
+
+          Object.mostRecurring(oo, Array, "length");
+
+          if(!(
+            Object.values(g.config).every(function(v){
+              return is(v, Array) && v.length == genSize
+            }))
+          )
+          {
+            $.writeln("Invalid GEN expression");
+            if()
+          }
+
+          while(++j<genSize)
+          {
+            R.push(g.expr._replace(g.config, function(v){return v[j]}));
+          }
+
+          R = deser(g.startsWith) + R.join(deser(g.joinedWith)) + deser(g.endsWith);
+
+          // Replace 
+          F = F.replaceBetween(
+            g.firstIndex,
+            g.lastIndex,
+            R
+          )
     }
 
-    genResult = g.startsWith + genResult.join(g.joinedWith) + g.endsWith;
-
-    F.replaceBetween(
-      g.firstIndex,
-      g.lastIndex,
-      genResult
-    );
-
-    return genResult;
-
-}
-
-// function getExpression(points){
-  
-//     return .expression({
-      
-//       $p0: [[0, points.length], points, i, 0],
-//       $p1: [[0, points.length], points, i, 1]
-//     }) 
-// }
-
-function dogshit(){
-  var i = textIndex -1;
-  if(
-    GEN[($p0 <= i && $p1 <= 78), "", "0", "||\n"]
-  ){100}else{0};
-}
-
-var e = dogshit.expression({
-  "$p0": [2,3,4],
-  "$p1": [2,3,5]
+    this.result = F;
+  }
 })
 
-$.writeln(e);
+Function.prototype.expression = function(cfg)
+{
+    var F = this.toString();
+    
+
+    return F._replace(cfg);
+}
+
+
+$.writeln(new Expression(function(){
+    var i = textIndex -1;
+    if(
+      GEN[(($p0 <= i && $p1 <= 78 && $p4 <=55)), "", "||\n0", "||\n"]
+    ){100}else{$p3};
+  }, {
+    "$p0": [2,3,5],
+    "$p1": [2,3,1],
+    "$p4": 44,
+    "$p3": 45
+}).result)

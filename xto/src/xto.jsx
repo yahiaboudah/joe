@@ -2502,6 +2502,43 @@
                     var k, S;
                     for(k in oo) if(k.in(oo)) S++;
                     return S;
+                },
+
+                mostRecurring: function(oo, cns, prop)
+                {
+                    var x,v;
+                    var bb = {};
+                    var cc = {};
+                    var dd = {};
+
+                    for(x in oo) if(x.in(oo))
+                    {
+                        v = oo[x];
+                        if(is(v, cns)) bb[x] = v[prop];
+                    }
+
+                    for(x in bb) if(x.in(bb))
+                    {
+                        if(bb[x].in(cc)) cc[bb[x]] = cc[bb[x]]+1;
+                        else cc[bb[x]] = 1;
+                    }
+
+                    var max = 0, L;
+                    for(x in cc) if(x.in(cc))
+                    {
+                        if(cc[x] > max)
+                        {
+                            max = cc[x];
+                            L = x;
+                        }
+                    }
+                    
+                    for(x in bb) if(x.in(bb))
+                    {
+                        if(bb[x] == L) dd[x] = oo[x];
+                    }
+
+                    return dd;
                 }
             })
 

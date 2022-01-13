@@ -1,28 +1,14 @@
 
-delete(Array.prototype.every);
 //@include "src/xto.jsx";
-xto.load("PRIM/String");
-xto.load("PRIM/Array");
+xto.load("PRIM/Object");
 
-var f,l;
+var a = {
 
-var ss = "hello world hello  sister";
-var rr = /(hello)(\s+)/g;
-
-while(m = rr.exec(ss))
-{
-    ss = ss.replaceBetween(
-        m.index,
-        m.index + m[1].length,
-        "hi"
-    );
+    "hi": [4,7],
+    "hia": [4,7],
+    "hell": [4,7,7],
+    "nono": [4,4,7],
+    "nonoff": [4,4,7],
 }
 
-
-try{
-    $.writeln([1, 1].every(function(x){return x == 1;}))
-}
-catch(e)
-{
-    $.writeln(e);
-}
+$.writeln(Object.mostRecurring(a, Array, "length").se())

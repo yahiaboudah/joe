@@ -502,7 +502,7 @@
                     "range",
                     "oneDimIndexFunc", "twoDimIndexFunc",
                     
-                    "forEach", "forEvery",
+                    "forEach", "eve",
                     "indexOf", "remove", "includes", 
                     "rotate", 
                     "reduce", "map", 
@@ -2726,6 +2726,21 @@
                 }
             })
 
+            // [every]
+            Array.prototype.every = function(cb, thisArg)
+            {
+                if(!is(cb, Function)) throw TypeError("CB not a function");
+
+                var k,O = Object(this);
+
+                for(k in O) if(k.in(O))
+                {
+                    if(cb.call(thisArg, O[k], k, O) == false) return false;
+                }
+                
+                return true;
+            }
+
             // [Array Functions]
             Array.prototype.xt({
 
@@ -2835,20 +2850,6 @@
                     }
                     
                     return A;
-                },
-
-                forEvery: function(cb, thisArg)
-                {
-                    if(!cb.is(Function)) throw TypeError("CB not a function");
-
-                    var k,O = Object(this);
-
-                    for(k in O) if(k.in(O))
-                    {
-                        if(cb.call(thisArg, O[k], k, O) == false) return false;
-                    }
-                    
-                    return true;
                 },
 
                 filter: function(cb, thisArg)

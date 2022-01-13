@@ -28,8 +28,10 @@ Function.prototype.expression = function(cfg)
     }
 
     var g = G[0], vals, genSize = Object.first(g.config).length >>> 0;
+
+    $.writeln(Object.values(g.config).constructor.name);
     
-    var valid = Object.value(g.config).every(function(v){
+    var valid = Object.values(g.config).every(function(v){
         return is(v, Array) && v.length == genSize
     }) && Object.validateKeys(cfg, Object.keys(g.config));
 

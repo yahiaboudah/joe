@@ -1,7 +1,8 @@
 
+delete(Array.prototype.every);
 //@include "src/xto.jsx";
 xto.load("PRIM/String");
-
+xto.load("PRIM/Array");
 
 var f,l;
 
@@ -17,4 +18,11 @@ while(m = rr.exec(ss))
     );
 }
 
-$.writeln(ss);
+
+try{
+    $.writeln([1, 1].every(function(x){return x == 1;}))
+}
+catch(e)
+{
+    $.writeln(e);
+}

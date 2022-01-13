@@ -2397,6 +2397,12 @@
 
             // [GETTERS]: {pureKeys, keys, values, size, keyExists}
             Object.xt({
+
+                first: function(oo)
+                {
+                    for(x in oo) if(x.in(oo)) return x;
+                },
+
                 /*
                 allKeys returns the keyPaths that lead to a value that
                 is not an Object
@@ -2446,12 +2452,17 @@
                 */
                 value: function(oo, P)
                 {
-                    var V, P = is(P, String)?P.split('/'):false;
-                    if(!P && (V=[])) for(x in oo) if(x.in(oo)) V.push(oo[x]);
-                    if(V) return V;
+                    if(!is(P, String)) return undefined;
+                    var V;
+                    eval("V = oo{0};".re(P.split('/')._join(function(x){return "[\"{0}\"]".re(x)})));
 
-                    var expr = "V = oo{0};".re(P._join(function(x){return "[\"{0}\"]".re(x)}));
-                    eval(expr);
+                    return V;
+                },
+
+                values: function(oo)
+                {
+                    var V = [];
+                    for(x in oo) if(x.in(oo)) V.push(oo[x]);
 
                     return V;
                 },
@@ -3155,6 +3166,11 @@
             // [REPLACERS]
             String.prototype.xt({
 
+                replaceBetween: function(start, end, what)
+                {
+                    return "{1}{0}{2}".re(what, this.substring(0, start), this.substring(end));
+                },
+
                 replaceSeq : function(C/*, str1, str2..*/)
                 {
                     var startIdx = 1;
@@ -3170,10 +3186,13 @@
                     return S;
                 },
             
-                _replace : function(R)
+                _replace: function(R, cb)
                 {    
                     var S = this;
-                    for(x in R) if(x.in(R)) S = S.split(x).join(R[x])
+                    for(x in R) if(x.in(R))
+                    {
+                        S = S.split(x).join(is(cb, Function)? cb.call(undefined, R[x]): R[x])
+                    }
 
                     return S;
                 },

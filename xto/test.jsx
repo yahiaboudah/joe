@@ -1,5 +1,8 @@
 //@include "src/xto.jsx"
 xto.load("PRIM/Function");
+xto.load("PRIM/Array");
+xto.load("PRIM/Object");
+xto.load("PRIM/String");
 
 Function.prototype.expression = function(cfg)
 {
@@ -10,10 +13,12 @@ Function.prototype.expression = function(cfg)
     while(match = R.exec(F))
     {
         G.push({
+            firstIndex: match.index,
+            lastIndex: match.index + match[0].length,
             config : {
               "$p0": [4, 5, 7],
               "$p1": [1, 2, 3]
-            }
+            },
             expr: match[1],
             keys: match[1].match(/\$(\w+)/g),
             startsWith: match[2],
@@ -24,21 +29,28 @@ Function.prototype.expression = function(cfg)
 
     var g = G[0], vals, genSize = Object.first(g.config).length >>> 0;
     
-    var valid = Object.values(g.config).every(function(v){
+    var valid = Object.value(g.config).every(function(v){
         return is(v, Array) && v.length == genSize
-    })
+    }) && Object.validateKeys(cfg, Object.keys(g.config));
 
-    // var rr = /GEN\[.*\]/g;
-    // var mm = rr.exec(this.body())[0];
+    var genResult = [], i=-1;
+    while(++i<genSize)
+    {
+      genResult.push(
+        g.expr._replace(cfg, function(v){return v[i]})
+      );
+    }
 
-    // mm = mm.slice(4,-1); i = mm.length;
+    genResult = g.startsWith + genResult.join(g.joinedWith) + g.endsWith;
 
-    // var segmentPattern = /\)\,\"/g;
-    // var segmentMatch   = segmentPattern.exec(mm);
+    F.replaceBetween(
+      g.firstIndex,
+      g.lastIndex,
+      genResult
+    );
 
-    // segmentString = mm.slice(1, segmentPattern.lastIndex);
+    return genResult;
 
-    // return mm;
 }
 
 // function getExpression(points){
@@ -57,4 +69,9 @@ function dogshit(){
   ){100}else{0};
 }
 
-dogshit.expression()
+var e = dogshit.expression({
+  "$p0": [2,3,4],
+  "$p1": [2,3,5]
+})
+
+$.writeln(e);

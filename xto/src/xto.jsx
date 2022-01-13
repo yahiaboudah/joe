@@ -654,6 +654,20 @@
                 ]
             },
 
+            Expression:
+            {
+                PRFX: "$.global.",
+                DEPS: [
+                    "PRIM/String",
+                    "PRIM/Object",
+                    "DATA/Json"
+                ],
+                FUNS: [
+                    "parseGen",
+                    "standardReplace"
+                ]
+            },
+
             CompItem:
             {
                 PRFX: "CompItem.prototype.",
@@ -4091,7 +4105,25 @@
         }),
 
         AFFX$Expression: (function(){
-            
+
+            // Example
+            // =========================================
+            // $.writeln(new Expression(function(){
+
+            //     var i = textIndex -1;
+            //     if(
+            //          GEN[(($p0 <= i && $p1 <= 78 && $p3 <=55)), "", "||\n0", "||\n"]
+            //     ){100}else{$p3};
+
+            //          GEN[($p0 == "is great"), "", "\n", "\n"]
+            //     }, 
+            //     {
+            //     "$p0": [2,3,5],
+            //     "$p1": [2,3,1],
+            //     "$p3": 45
+            // }).result); ==> valid expression string
+
+
             function Expression(fn, cfg)
             {
                 this.func = fn;
@@ -4171,8 +4203,6 @@
                         );
 
                         offset += (R.length -( g.lastIndex - g.firstIndex));
-
-                        $.writeln(F);
                     }
 
                     this.result = F;

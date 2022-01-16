@@ -2238,35 +2238,31 @@
                     );
                 },
 
-                inspect: function(k, detail)
+                reflct: function(k)
                 {
-                    var io = 
+                    var props = k.reflect.properties, i=-1;
+                    var funcs = k.reflect.methods, j=-1;
+
+                    var P = {},
+                        F = {};
+
+                    while(++i<props.length) P[props[i]] = k[props[i]];
+                    while(++j<funcs.length)
                     {
-                        type : typeof k,
-                        cns  : k.constructor.name,
-                        strr : k.toString(),
-                        PPS  : k.reflect.properties,
-                        FUNS : k.reflect.methods
-                    }
-                
-                    if(!detail)
-                    {
-                        io.PPS  = io.PPS.join(",");
-                        io.FUNS = io.FUNS.join(",");
-                        return io;
+                        try
+                        {
+                            F[funcs[j]] = k[funcs[j]].call(undefined);
+                        }
+                        catch(e)
+                        {
+                            F[funcs[j]] = "undefined";
+                        }
                     }
 
-                    var ppo = {}, foo = {};
-                    for(var i=-1; ++i<io.PPS.length;)  ppo[io.PPS[i]]  = obj[io.PPS[i]];
-                    for(var i=-1; ++i<io.FUNS.length;) ffo[io.FUNS[i]] = obj[io.FUNS[i]].apply(obj, []);
-
-                    return 
-                    (
-                        io.PPS  = ppo,
-                        io.FUNS = ffo,
-                        io
-                    );
-                
+                    return {
+                        props: P,
+                        funcs: F
+                    }
                 },
 
                 scan: function(what)

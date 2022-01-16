@@ -2217,11 +2217,8 @@
                 },
 
                 $sleep: function(ms, msg){
-                    
-                    if(!ms) return;
-                    if(msg && msg.is(String)){
-                        $.writeln("{0}: Sleeping for {1}..".re(msg, ms));
-                    }
+                    if(!is(ms, Number)) return;
+                    if(is(msg, String)) $.writeln("{0}: Sleeping for {1} ms..".re(msg, ms));
 
                     $.sleep(ms);
                 },
@@ -2252,17 +2249,6 @@
                         FUNS : k.reflect.methods
                     }
                 
-                    if(io.cns == "Object")
-                    {
-                        var keys = [];
-                        for(x in k) if(k.hasOwnProperty(x))
-                        {
-                            keys.push(x);
-                            io.PPS.remove(x, function(z){return z.toString()});
-                        }
-                        io["keys"] = keys;
-                    }
-                
                     if(!detail)
                     {
                         io.PPS  = io.PPS.join(",");
@@ -2283,9 +2269,21 @@
                 
                 },
 
-                scan: function()
+                scan: function(what)
                 {
-                    return $.summary();
+                    
+                    var oo = {};
+                    
+                    var lines = $.summary().split("\n"), i=-1,
+                        re = /(\d+)\s+(\w+)/, m;
+
+                    while(++i<lines.length)
+                    {
+                        m = re.exec(lines[i]);
+                        if(m) oo[m[2]] = m[1];
+                    }
+
+                    return what && oo[what]?oo[what]: oo;
                 }
             })
 
@@ -2513,7 +2511,7 @@
 
                 size: function(oo)
                 {
-                    var k, S;
+                    var k, S=0;
                     for(k in oo) if(k.in(oo)) S++;
                     return S;
                 },
@@ -2792,24 +2790,24 @@
                 return true;
             }
 
+            Array.prototype.forEach = function(cb, thisArg)
+            {
+                if(!cb.is(Function)) throw TypeError("CB not a function");
+
+                var O = Object(this);
+                for(x in O) if(x.in(O)){
+
+                    cb.apply(
+                        thisArg || {}, 
+                        [O[x], x, O].concat(arguments.slice())
+                    )
+                }
+        
+                return this;
+            }
+
             // [Array Functions]
             Array.prototype.xt({
-
-                forEach: function(cb, thisArg)
-                {
-                    if(!cb.is(Function)) throw TypeError("CB not a function");
-
-                    var O = Object(this);
-                    for(x in O) if(x.in(O)){
-
-                        cb.apply(
-                            thisArg || {}, 
-                            [O[x], x, O].concat(arguments.slice())
-                        )
-                    }
-            
-                    return this;
-                },
 
                 indexOf: function(e, fromIdx) {
             

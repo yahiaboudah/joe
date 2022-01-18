@@ -122,15 +122,17 @@
                     return RegExp("\\{" + k + "\\}", "gi");
                 },
         
-                str: function(ss, argsArr)
+                str: function(ss, A)
                 {
                     var i = -1;
-        
-                    while(++i <argsArr.length) ss = ss.replace(this.pat(i), argsArr[i]);
+                    while(++i <A.length)
+                    {
+                        ss = ss.replace(ff.pat(i), A[i]);
+                    }
                     return ss;
                 },
         
-                obj: function(oo, argsArr)
+                obj: function(oo, A)
                 {
                     var newo = {Array: [], Object: {}}[oo.constructor.name],
                         k;
@@ -138,15 +140,16 @@
                     for(x in oo) if(oo.hasOwnProperty(x))
                     {
                         k = oo[x];
+                        x = ff.str(x, A);
                         switch (k.constructor)
                         {   
                             case String:
-                                newo[x] = ff.str(k, argsArr);
+                                newo[x] = ff.str(k, A);
                                 break;
         
                             case Object:
                             case Array:
-                                newo[x] = ff.obj(k, argsArr);
+                                newo[x] = ff.obj(k, A);
                                 break;
         
                             default: 

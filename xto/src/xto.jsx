@@ -5460,14 +5460,16 @@
 
                     if(cfg)
                     {
-                        if(is(cfg.name, String))
-                        {
-                            G.name = "{0}#{1}".re(cfg.name, S.numOf(P));
-                        }
+                        if(is(cfg.name, String)) G.name = cfg.name;
 
                         if(is(cfg.stroke, Number))
                         {
                             G.addProperty(matchNames["stroke"]).property(matchNames["strokeWidth"]).setValue(cfg.stroke);
+                        }
+
+                        if(is(cfg.fillColor, Array))
+                        {
+                            G.property("Color").setValue(cfg.fillColor);
                         }
                     }
 
@@ -5860,7 +5862,7 @@
 
             var C,L;
             if(is(C = app.project.activeItem, CompItem)
-            && !is(L = C.selectedLayers[0], undefined))
+            && !is(L = C.layer(1), undefined))
             {
                 $.global.layr = L; 
             }
@@ -5891,6 +5893,16 @@
                         default:
                             break;
                     }
+                },
+
+                centerAnchorPoint: function(time)
+                {
+                    var src = this.sourceRectAtTime(this.containingComp.time,false),
+                        xy = [src.width/2  + src.left, src.height/2 + src.top];
+
+                    time?
+                    this.anchorPoint.setValueAtTime(time, xy):
+                    this.anchorPoint.setValue(xy);
                 },
                 
                 transformIt: function(PROP, value, t, groupChecked)
@@ -6234,7 +6246,7 @@
                 set: function(propName, value, time)
                 {
                     time?
-                    this.property(propName).setValueAtTime(value, time):
+                    this.property(propName).setValueAtTime(time, value):
                     this.property(propName).setValue(value)
                 },
             })

@@ -95,12 +95,6 @@ comp.drop(index)
 
 // }
 
-// ???????????????????????
-Object.modifyProp = function(prop, oo)
-{
-  for(var k in oo) k[prop] = oo[k];
-}
-
 Object.values(oo);
 // Object.values = function(oo)
 // {
@@ -109,14 +103,16 @@ Object.values(oo);
 //   return vs;
 // }
 
-ShapeLayer.prototype.addFill = function()
-{
-  this.content.addProperty(MATCH_NAMES.FILL)
-}
+shape.add("Contents:fill", {fillColor: [20,100,70,2]/255});
+// ShapeLayer.prototype.addFill = function()
+// {
+//   this.content.addProperty(MATCH_NAMES.FILL)
+// }
 
-ShapeLayer.prototype.addStroke = function(){
-  addStroke.apply(null, [this].concat(Object.values(arguments)))
-};
+shape.add("Contents:stroke", {strokeWidth: 6, strokeColor: [1,0,0,1]});
+// ShapeLayer.prototype.addStroke = function(){
+//   addStroke.apply(null, [this].concat(Object.values(arguments)))
+// };
 
 AVLayer.prototype.centerAnchor = function(){
   centerAnchorPoint.call(null, this.containingComp, this);

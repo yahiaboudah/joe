@@ -225,6 +225,7 @@
             
             function _se(k, dt)
             {
+                if(k === undefined) return "undefined";
                 if(!!dt) indent = dt;
                 var str = "",
                     kC  = k.constructor.name;
@@ -241,6 +242,7 @@
                             }[kC];
 
                         var v,
+                            x,
                             C,
                             LINK    = " : ";
                             vindent = indent;
@@ -248,7 +250,7 @@
                         for(x in k) if(k.hasOwnProperty(x))
                         {
                             v = k[x];
-                            C = v.constructor.name;
+                            C = ((v === undefined)? undefined:v.constructor.name);
                             LINK += "[" + C + "] ";
 
                             if( C == "Object"
@@ -281,10 +283,10 @@
                         break;
 
                     default:
-                        str = k.toString();
+                        str += k.toString();
                         break;
                 }
-                
+
                 return str;
             }
 
@@ -2241,15 +2243,14 @@
                     );
                 },
 
-                reflct: function(k)
+                reflct: function(k, what)
                 {
                     var props = k.reflect.properties, i=-1;
                     var funcs = k.reflect.methods, j=-1;
 
-                    var P = {},
+                    var P = {}, propKey,
                         F = {};
 
-                    while(++i<props.length) P[props[i]] = k[props[i]];
                     while(++j<funcs.length)
                     {
                         try
@@ -2262,10 +2263,17 @@
                         }
                     }
 
+                    while(++i<props.length)
+                    {
+                        propKey = props[i].toString();
+                        if(propKey == '__proto__') continue;
+                        P[propKey] = k[props[i]];
+                    }
+
                     return {
                         props: P,
                         funcs: F
-                    }
+                    }[what];
                 },
 
                 scan: function(what)
@@ -4086,7 +4094,7 @@
             └─┘┴ ┴└─┘┴─┘└─┘ ┴ └─┘┘└┘
         */
 
-        AFFX$BridgeTalk: (function(){
+        AFFX$BRIDGETALK: (function(){
             
             BridgeTalk.xt({
                 
@@ -4101,7 +4109,7 @@
             })
         }),
 
-        AFFX$Expression: (function(){
+        AFFX$EXPRESSION: (function(){
 
             // Example
             // =========================================
@@ -4208,7 +4216,7 @@
 
         }),
 
-        AFFX$App: (function(){
+        AFFX$APP: (function(){
 
             // [AECMD NUMBERS]
             app.xt({
@@ -4500,7 +4508,7 @@
                         Vector_Fill: "ADBE Vector Graphic - Fill",
                         Vector_BlendMode: "ADBE Vector Blend Mode",
                         Vector_Composite: "ADBE Vector Composite Order",
-                        Vector_illRule: "ADBE Vector Fill Rule",
+                        Vector_FillRule: "ADBE Vector Fill Rule",
                         Vector_Color: "ADBE Vector Fill Color",
                         Vector_Opacity: "ADBE Vector Fill Opacity"
                 
@@ -4737,7 +4745,7 @@
             })
         }),
 
-        AFFX$Project: (function(){
+        AFFX$PROJECT: (function(){
 
             $.global.proj = app.project;
 
@@ -4804,10 +4812,10 @@
             })
         }),
         
-        AFFX$CompItem: (function()
+        AFFX$COMPITEM: (function()
         {
             var I;
-            if(!(is(I = app.project.activeItem, CompItem))) $.global.comp = I;
+            if(is(I = app.project.activeItem, CompItem)) $.global.comp = I;
 
             // [PROPERTIES]
             CompItem.xt({
@@ -4927,7 +4935,7 @@
             // REQUIRES (PROJECT, File.prototype.importAE)
             CompItem.prototype.xt({
 
-                drop : function(P/*roject*/, i/*temIndex*/)
+                drop : function(P, i) //Project, itemIndex
                 {
                     if(!(is(P, Project))) P = app.project;
                     return this.layers.add(P.items[i + 1])
@@ -4936,9 +4944,7 @@
                 importAndDrop : function(FP, force, inv, i)
                 {
                     var F = File(FP),
-                        I = app.project.getItemsWith("name",function(name){
-                            return name == F.name;
-                        });
+                        I = app.project.getItemsWith("name",function(name){return name == F.name;});
 
                     // layer:
                     var L = this.layers.add(
@@ -5039,7 +5045,7 @@
             ╩ ╩ ╚═╝╩ ╩
         */
 
-        AFFX$LayerCollection: (function()
+        AFFX$LAYERCOLLECTION: (function()
         // [REQUIRES COLLECTION INTERFACE]
         {    
             ("function" != typeof CollectionInterface) || (function()
@@ -5421,7 +5427,7 @@
             })
         }),
 
-        AFFX$ShapeLayer: (function(){
+        AFFX$SHAPELAYER: (function(){
 
             // [SETTERS/ MODIFIERS]
             ShapeLayer.prototype.xt({
@@ -5430,7 +5436,7 @@
                  * effect:Axis
                  * content:group
                 */
-                add : function(what, cfg)
+                add: function(what, cfg)
                 {
                     what  = what.split(':');
                     var T = what[0], P = what[1]; //Type & Property
@@ -5439,7 +5445,9 @@
                     {
                         group : "ADBE Vector Group",
                         stroke: "ADBE Vector Graphic - Stroke",
-                        strokeWidth: "ADBE Vector Stroke Width"
+                        strokeWidth: "ADBE Vector Stroke Width",
+                        fill: "ADBE Vector Graphic - Fill",
+                        fillColor: "ADBE Vector Fill Color",
                     }
 
                     var S = this,
@@ -5713,7 +5721,7 @@
             })
         }),
 
-        AFFX$TextLayer: (function(){
+        AFFX$TEXTLAYER: (function(){
 
             TextLayer.prototype.xt({
 
@@ -5783,7 +5791,7 @@
             })
         }),
 
-        AFFX$Camera : (function(){
+        AFFX$CAMERA: (function(){
 
             // [MATRIX RELATED OPERATIONS]
             CameraLayer.prototype.xt({
@@ -5835,7 +5843,7 @@
             })
         }),
 
-        AFFX$ItemCollection: (function()
+        AFFX$ITEMCOLLECTION: (function()
         // [REQURES COLLECTION INTERFACE]
         {
             ("function" != typeof CollectionInterface) || (function()
@@ -5848,7 +5856,7 @@
             })();
         }),
 
-        AFFX$Layer: (function(){
+        AFFX$LAYER: (function(){
 
             var C,L;
             if(is(C = app.project.activeItem, CompItem)
@@ -6116,7 +6124,7 @@
             LightLayer.prototype.xt(LayerExt);
         }),
 
-        AFFX$AVLayer: (function(){
+        AFFX$AVLAYER: (function(){
             
             AVLayer.prototype.xt(
             {
@@ -6170,7 +6178,7 @@
             ShapeLayer.prototype.addProp = AVLayer.prototype.addProp;
         }),
 
-        AFFX$PropertyGroup: (function(){
+        AFFX$PROPERTYGROUP: (function(){
 
             // [INFO/GETTERS]
             PropertyGroup.prototype.xt({
@@ -6375,7 +6383,7 @@
             ╚═╝╚═╝╩╚═╩╩   ╩ ╚═╝╩
         */
         
-        SCUI$Window: (function(){
+        SCUI$WINDOW: (function(){
 
             Window.prototype.xt({
                 
@@ -6447,7 +6455,7 @@
             })
         }),
 
-        SCUI$DropDownList: (function(){
+        SCUI$DROPDOWNLIST: (function(){
             
             DropDownList.prototype.makeGroupVisible = function(g) // g: group var name
             /**
@@ -6472,7 +6480,7 @@
             }
         }),
 
-        SCUI$XYLayout: (function(){
+        SCUI$XYLAYOUT: (function(){
             
             $.global.CustomLayout = function CustomLayout(c){
                 this.c = c; // c: container
@@ -6549,7 +6557,7 @@
             ╚═╝╚═╝╝╚╝╚═╝ ╩ ╩╚═╚═╝╚═╝ ╩ ╚═╝╩╚═╚═╝
         */
 
-        CSTR$Table: (function(){
+        CSTR$TABLE: (function(){
 
             $.global.Table = function Table(T, M, V, H)
             {
@@ -7036,7 +7044,6 @@
             })
         }),
 
-
         CSTR$PYTHON: (function(){
             
             // [PYTHON COSNTRUCTOR]
@@ -7236,7 +7243,7 @@
 
         }),
 
-        CSTR$Logger: (function(){
+        CSTR$LOGGER: (function(){
 
             $.global.Logger = function Logger(){};
 
@@ -7323,7 +7330,7 @@
             }
         }),
 
-        CSTR$Xester: (function(){
+        CSTR$XESTER: (function(){
 
             $.global.Xester = function Xester(){}
 
@@ -7353,7 +7360,7 @@
             ╚╩╝╩╚═╩ ╩╩  ╩  ╚═╝╩╚═╚═╝
         */
         
-        WRPR$SShape: (function(){
+        WRPR$SSHAPE: (function(){
             
             $.global.SShape = function SShape(cfg)
             {
@@ -7368,7 +7375,7 @@
             };
         }),
 
-        WRPR$WWindow: (function()
+        WRPR$WWINDOW: (function()
         //[REQUIRES Window.prototype, Array.prototype, Function.prototype]
         {
             $.global.WWindow = function WWindow(cfg)

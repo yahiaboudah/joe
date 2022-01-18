@@ -6218,7 +6218,25 @@
                   while(++i <this.numproperties) P.push(this.property(i));
 
                   return P;
-                }
+                },
+            })
+
+            // [PROPERTY GETTERS AND SETTERS]
+            PropertyGroup.prototype.xt({
+
+                // Use a callback selector function instead of a name
+                get: function(propName, time)
+                {
+                    var pp = this.property(propName);
+                    return (time? pp.valueAtTime(time): pp.value);
+                },
+                
+                set: function(propName, value, time)
+                {
+                    time?
+                    this.property(propName).setValueAtTime(value, time):
+                    this.property(propName).setValue(value)
+                },
             })
 
             // [SETTERS/ MODIFIERS]

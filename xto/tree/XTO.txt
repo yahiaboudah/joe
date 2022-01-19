@@ -107,9 +107,60 @@ XTO
                 fromEntries
             Debuggers
         Array
+            range
+            clone
+            prototype
+                every
+                forEach
+                indexOf
+                includes
+                remove
+                rotate
+                reduce
+                map
+                filter
+                select
+                sortedIndices
+
+                math2
+                mapToDistance
+                getIndex
+
+                '+'
+                '-'
+                '*'
+                '/'
+
         Function
-        Number
+            prototype
+                body
+                time
+
+                getArgs
+                params
+                check
         String
+            prototype
+
+                inspectPath
+
+                replaceBetween
+                replaceSeq
+                _replace
+                fstr
+
+                startsWith
+                padding
+
+                title
+                trim
+                pushAt
+
+                '*'
+        Number
+            prototype
+                inRange
+                '^'
     
     Data
         Local
@@ -272,4 +323,21 @@ XTO
     
     ASCII art
         Table
+            transpose
+            process
+            removeAll
+            prototype
+                forEachRow
+                forEachCol
+
+                toString
+                getMaxColSizes
+                getMaxRowSizes
+
+
+                format
+                render
+
+                write
+                show
         Tree

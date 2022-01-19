@@ -186,7 +186,7 @@
                 while(++i < T.length) for(x in oo) if(oo.hasOwnProperty(x))
                 {
                     T[i][x] = oo[x];
-                }        
+                }
             }
 
             else for(x in oo) if(oo.hasOwnProperty(x)) this[x] = oo[x];
@@ -713,7 +713,9 @@
             LayerCollection:
             {
                 PRFX: "LayerCollection.prototype.",
-                DEPS: [],
+                DEPS: [
+                    "PRIM/String"
+                ],
                 FUNS: 
                 [
                     "toArray", "grab",
@@ -2579,8 +2581,10 @@
                 // Work on nested adapt:
                 adapt: function adapt(oo, O, nested) //O is the template object
                 {
+                    if(!is(O, Object)) throw Error("Template Obejct is undefined!")
                     if(!is(oo, Object)) return O;
-                    if(is(nested, undefined)) nested= true;
+                    if(is(nested, undefined)) nested = true;
+                 
                     for(var k in O) if(k.in(O) && k.in(oo) && !!(v=oo[k]))
                     {
                         if(is(O[k], Object) && nested) O[k] = adapt(v, O[k], nested);
@@ -3293,18 +3297,18 @@
             // [SETTERS/ MODIFIERS]
             String.prototype.xt({
                 
-                title : function()
+                title: function()
                 {
                     var S = this;
-                    return S.toUpperCase() + S.slice(1);
+                    return S.toUpperCase()[0] + S.slice(1);
                 },
                 
-                trim : function()
+                trim: function()
                 {
                     return this.replace(/^\s*|\s*$/,'');
                 },
                 
-                pushAt : function(atIndex, pushChar, Delete, numDelete)
+                pushAt: function(atIndex, pushChar, Delete, numDelete)
                 {
                     if(!Delete)    Delete = 1;
                     if(!numDelete) numDelete = 1;
@@ -5048,55 +5052,71 @@
         AFFX$LAYERCOLLECTION: (function()
         // [REQUIRES COLLECTION INTERFACE]
         {    
-            ("function" != typeof CollectionInterface) || (function()
-            {
-                LayerCollection.prototype.xt(
-                {
-                    toArray: CollectionInterface.toArray,
-                    grab   : CollectionInterface.grab
-                })
-            })();
+            // Where the fuck is CollectionInterface?
+            // ==========================================================
+            // ("function" != typeof CollectionInterface) || (function()
+            // {
+            //     LayerCollection.prototype.xt(
+            //     {
+            //         toArray: CollectionInterface.toArray,
+            //         grab   : CollectionInterface.grab
+            //     })
+            // })();
 
             LayerCollection.prototype.xt({
 
-                $add : function(what, cfg, args)
+                containingComp: function()
                 {
-                    var T = this, F, V, L;
-                
-                    var Configs = 
-                    {
-                        SHAPE: {},
-                        TEXT: {text: "text"},
-                        TEXTBOX: {width: 250, height: 250},
-                        SOLID: 
+                    var N = this.addShape();
+                    var C = N.containingComp;
+
+                    N.remove();
+                    delete(N);
+
+                    return C;
+                },
+
+                $add: function(what, cfg, args)
+                {
+                    var CC = this.containingComp();
+                    $.writeln(CC.name);
+                    var CONFIG = {
+                        
+                        "SHAPE": {},
+                        "TEXT": {text: "text"},
+                        "TEXTBOX": {width: 250, height: 250},
+                        "SOLID": 
                         {
                             color: [21,21,21],
                             name: "solid",
-                            width: this.containingComp.width,
-                            height: this.containingComp.height,
-                            pixelAspect: this.containingComp.aspectRatio,
-                            duration: this.containingComp.duration,
+                            width: CC.width,
+                            height: CC.height,
+                            pixelAspect: CC.aspectRatio,
+                            duration: CC.duration,
                         },
 
-                        CAMERA: {name: "cam", centerPoint: [960, 540]},
-                        LIGHT: {name: "light", centerPoint: [960, 540]},
-                        NULL: {duration: this.containingComp.duration}
-                    }
+                        "CAMERA": {name: "cam", centerPoint: [960, 540]},
+                        "LIGHT": {name: "light", centerPoint: [960, 540]},
+                        "NULL": {duration: CC.duration}
+                    };
 
+                    var T = this, F, V, L;
                     if(F = T["add{0}".re(what.title())])
                     {
-                        V = Object.value(Object.adapt(Configs[what.toUpperCase()], args));
-                        L = F.apply(T, V);
+                        L = F.apply(T,
+                            Object.values(Object.adapt(args, CONFIG[what.toUpperCase()], 0))
+                        );
                     }
 
+                    if(!L) return 0;
                     if(!cfg) return L;
 
                     switch(what)
                     {
-                        case "Shape":
-                            if(cfg.path == true)
+                        case "shape":
+                            if(is(cfg.path, String))
                             {
-                                L.content.addProperty(app.MN("PathGroup"));
+                                L.content.addProperty("ADBE Vector Shape - Group").name = cfg.path;
                             }
                             break;
 
@@ -5111,20 +5131,18 @@
                             break;
                         
                         default: 
-                            if(is(cfg.name, String))
-                            {
-                                L.name = T[0].containingComp.newName(cfg.name);
-                            }
-
-                            if(is(cfg.fx, Array))
-                            {
-                                var fx = cfg.fx, i= -1;
-                                while(++i<fx.length)
-                                {
-                                    L.add("effect:{0}".re(fx[i]));
-                                }
-                            }
                             break;
+                    }
+
+                    if(is(cfg.name, String)) L.name = (cfg.name);
+
+                    if(is(cfg.fx, Array))
+                    {
+                        var fx = cfg.fx, i= -1;
+                        while(++i<fx.length)
+                        {
+                            L.add("effect:{0}".re(fx[i]));
+                        }
                     }
 
                     return L;
@@ -5476,6 +5494,20 @@
                     return G;
                 },
                 
+                get: function(matchName, all)
+                {
+                    var L = this, i=0, PP = [];
+                    while(++i<L.content.numProperties+1)
+                    {
+                        if(L.content.property(i).matchName == matchName)
+                        {
+                            PP.push(L.content.property(i));
+                        }
+                    }
+
+                    return all?PP:PP[0];
+                },
+                
                 moveFirstVertex : function(idx){
                 
                     var i = 0,
@@ -5488,6 +5520,81 @@
 
             // [INFO / GETTERS]
             ShapeLayer.prototype.xt({
+
+                numProp: function(propName){
+
+                    const propTypes = {
+                        "Graphic": 
+                        {
+                            Stroke: "Stroke",
+                            GradientStroke: "G-Stroke",
+                            Fill: "Fill",
+                            GradientFill : "G-Fill"
+                        },
+                        
+                        "Filter": 
+                        {
+                            MergePaths: "Merge",
+                            OffsetPaths: "Offset",
+                            PuckerAndBloat: "PB",
+                            RoundCorners: "RC",
+                            TrimPaths: "Trim",
+                            TwistPaths: "Twist",
+                            WigglePaths: "Roughen",
+                            WiggleTransform: "Wiggler",
+                            ZigZag: "ZigZag",
+                        },
+                    
+                        "Shape": 
+                        {
+                            PolyStar: "Star",
+                            Rectangle: "Rect",
+                            Ellipse: "Ellipse",
+                            Custom: "Group"
+                        }
+                    }
+
+                    if(_in(propName, ["Shape", "Filter", "Graphic", "Group"]))
+                    {
+                        propName = "ADBE Vector {0}{1}".re(propName, propName != "Group"?" - .*":"");
+                    }
+                
+                    var x;
+                    for(propType in propTypes) if(propType.in(propTypes))
+                    {
+                        if(!!(x = propType[propName])) propName = "ADBE Vector {0} - {1}".re(propType, x); 
+                    }
+
+                    propName = new RegExp(propName || "ADBE Vector .*", 'g');
+                    var c = this.property("Contents"), i = 0, k = 0;
+                    while(++ i<c.numProperties+1) if(propName.test(c.property(i).matchName)) k++;
+                
+                    return k;
+                },
+
+                grabProps : function()
+                // layer.grabProps("Group", "Shape"); => Group 1, Rectangle 1
+                {
+            
+                    var _TYPES = 
+                    [
+                        "Group",
+                        "Shape",
+                        "Graphic",
+                        "Filter"
+                    ];
+                
+                    var T = arguments.slice(), A= [], i=-1;
+                    var C = this.content;
+
+                    while(++i<C.numProperties+1){
+                        prop = C.property(i);
+                        mn = prop.matchName.split('-')[0].trim().split(" ").pop();
+                        if(types.includes(mn)) allProps.push(prop);
+                    }
+                
+                    return A;
+                },
 
                 area : function(t){
 
@@ -5621,89 +5728,6 @@
                     for(i=0;++i<numProps+1;) positions.push(prop(contents,i, "Position"))
                 
                     return positions.map(funcs[origin]);    
-                },
-
-                numProp: function(propName)
-                {
-
-                    var propTypes = 
-                    {
-                        Graphic: 
-                        {
-                            Stroke: "Stroke",
-                            GradientStroke: "G-Stroke",
-                            Fill: "Fill",
-                            GradientFill : "G-Fill"
-                        },
-                        
-                        Filter: 
-                        {
-                            MergePaths: "Merge",
-                            OffsetPaths: "Offset",
-                            PuckerAndBloat: "PB",
-                            RoundCorners: "RC",
-                            TrimPaths: "Trim",
-                            TwistPaths: "Twist",
-                            WigglePaths: "Roughen",
-                            WiggleTransform: "Wiggler",
-                            ZigZag: "ZigZag",
-                        },
-                    
-                        Shape: 
-                        {
-                            PolyStar: "Star",
-                            Rectangle: "Rect",
-                            Ellipse: "Ellipse",
-                            Custom: "Group"
-                        }
-                    };
-
-                    if(_in(propName, ["Shape", "Filter", "Graphic", "Group"]))
-                    {
-                        propName = "ADBE Vector {0}{1}".re(propName, propName != "Group"?" - .*":"");
-                    }
-                
-                    var x;
-                    for(propType in propTypes) if(propType.in(propTypes))
-                    {
-                        if(!!(x = propType[propName])) propName = "ADBE Vector {0} - {1}".re(propType, x); 
-                    }
-
-                    propName = new RegExp(propName || "ADBE Vector .*", 'g');
-                    var c = this.property("Contents"), i = 0, k = 0;
-                    while(++ i<c.numProperties+1) if(propName.test(c.property(i).matchName)) k++;
-                
-                    return k;
-                },
-
-                grabProps : function()
-                // layer.grabProps("Group", "Shape"); => Group 1, Rectangle 1
-                {
-            
-                    var _TYPES = 
-                    [
-                        "Group",
-                        "Shape",
-                        "Graphic",
-                        "Filter"
-                    ];
-                
-                    var types = arguments.slice();
-                
-                    types.forEach(function(type, idx){
-                        if(!_TYPES.includes(type)) this.remove(idx);
-                    })
-                
-                    var allProps = [];
-                
-                    for(var i = 1; i<this.content.numProperties+1; i++)
-                    {
-                        prop = this.content.property(i);
-                        mn = prop.matchName.split('-')[0].trim().split(" ").pop();
-                        if(types.includes(mn)) allProps.push(prop);
-                    }
-                
-                    return allProps;
                 }
             });
 
@@ -5860,14 +5884,12 @@
 
         AFFX$LAYER: (function(){
 
-            var C,L;
-            if(is(C = app.project.activeItem, CompItem)
-            && !is(L = C.layer(1), undefined))
-            {
-                $.global.layr = L; 
+            var C;
+            if(is(C = app.project.activeItem, CompItem) && C.numLayers){
+                $.global.layr = C.layer(1); 
             }
 
-            var LayerExt = 
+            var LayerExt= 
             {
 
                 clone: function(cloneName)

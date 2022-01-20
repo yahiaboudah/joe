@@ -6859,7 +6859,7 @@
             });
 
             // [OUTPUT/DISPLAYERS]
-            Table.prototype.xt({
+            Table.prototype.xt({ 
 
                 write : function(removePrev ,pad, path){
             

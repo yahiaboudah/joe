@@ -4643,12 +4643,12 @@
                     Points: "ADBE Vector Zigzag Points"
                 }
 
-                var A = [TOP_LEVEL, TRANSFORM, AUDIO, THREED, THREEDMATERIALS, CAMERA, CAMERAIRIS, LIGHT, TEXT, SHAPE];
+                var A = [TOP_LEVEL, TRANSFORM, AUDIO, THREED, THREEDMATERIALS, CAMERA, CAMERAIRIS, LIGHT, TEXT, SHAPE], i=-1;
                 
                 var C; // CURRENT
-                for(x in A) if(x.in(A))
+                while(++i<A.length)
                 {
-                    C = A[x];
+                    C = A[i];
                     for(k in C) if(x.in(C) && x == P) return C[k];
                 }
 

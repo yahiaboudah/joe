@@ -225,7 +225,7 @@
             
             function _se(k, dt)
             {
-                if(k === undefined) return "undefined";
+                if(k === undefined || k === null) return "undefined";
                 if(!!dt) indent = dt;
                 var str = "",
                     kC  = k.constructor.name;
@@ -250,7 +250,7 @@
                         for(x in k) if(k.hasOwnProperty(x))
                         {
                             v = k[x];
-                            C = ((v === undefined)? undefined:v.constructor.name);
+                            C = ((v === undefined || v === null)? undefined:v.constructor.name);
                             LINK += "[" + C + "] ";
 
                             if( C == "Object"
@@ -2269,7 +2269,9 @@
                     {
                         propKey = props[i].toString();
                         if(propKey == '__proto__') continue;
-                        P[propKey] = k[props[i]];
+
+                        try{ P[propKey] = k[props[i]];}
+                        catch(e){ P[propKey] = undefined; }
                     }
 
                     return {
@@ -4220,18 +4222,10 @@
 
         }),
 
-        AFFX$APP: (function(){
-
-            // [AECMD NUMBERS]
-            app.xt({
-                AECMD:
-                {
-                    SAVE_AS_FRAME: 2104
-                }
-            })
-
-            // [MATCH NAMES FUNCTION: app.MN("Masks") => ..]
-            app.xt({
+        AFFX$DATA: (function()
+        {
+             // [MATCH NAMES FUNCTION: MN("Masks") => ..]
+            $.global.xt({
                 
                 MN: function(P)
                 {
@@ -4661,31 +4655,17 @@
                     }
 
                     return "ADBE";
-                },
+                }
+            })
+        });
 
-                EXPRESSIONS_LIB :
+        AFFX$APP: (function(){
+
+            // [AECMD NUMBERS]
+            app.xt({
+                AECMD:
                 {
-                    SampleImage: function(layerArg, valArg){
-            
-                        return (function(){
-                        
-                            var targetLayer = thisComp.layer("$layerName");
-                            var compDimens  = [thisComp.width, thisComp.height]; 
-                            
-                            255 * targetLayer.sampleImage(
-                
-                                compDimens/2, //samplePoint
-                                compDimens,   //sampleRadius
-                                true, 
-                                time
-                            
-                            )[$RGBValue].toFixed();
-                        
-                        }).body()._replace({
-                            $layerName: layerArg.name,
-                            $RGBValue: valArg
-                        });
-                    }
+                    SAVE_AS_FRAME: 2104
                 }
             })
 

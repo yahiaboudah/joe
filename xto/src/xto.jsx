@@ -714,7 +714,8 @@
             {
                 PRFX: "LayerCollection.prototype.",
                 DEPS: [
-                    "PRIM/String"
+                    "PRIM/String",
+                    "PRIM/Object"
                 ],
                 FUNS: 
                 [
@@ -4889,7 +4890,7 @@
             
                 getLayersWith : function(prop, val)
                 {
-                    if(val.is(undefined)) val = true;
+                    if(is(val, undefined)) val = true;
             
                     return this.layers.grab(function(layer)
                     {

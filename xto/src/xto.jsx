@@ -2399,6 +2399,14 @@
                     return new F();
                 },
 
+                fromKeys: function(A, defV)
+                {
+                    var O = {}, i=-1;
+                    while(++i<A.length) O[A[i]] = defV || 0;
+
+                    return O;
+                },
+
                 fromArray: function(A)
                 {    
                     var O = {};

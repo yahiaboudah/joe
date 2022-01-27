@@ -374,11 +374,7 @@
                     var i = -1;
                     while(++i<A.length) s+= chr(A[i], i);
                     break;
-                
-                case String: 
-                    s = A.join(chr);
-                    break;
-
+			    
                 default: s = A.join(chr.toString())
             }
             

@@ -981,8 +981,10 @@
             var pWhat = what.split('/'), eWhat = EXTO, k =-1;
             while(++k<pWhat.length)
             {
-                try{ eWhat = eWhat[pWhat[k]]; }
-                catch(e){ throw Error("XTO:Loading Error: " + e); }
+                try{
+                    eWhat = eWhat[pWhat[k]];
+                }
+                catch(e){ throw Error("XTO:Loading Error: " + e.toString()); }
             }
 
             var deps = eWhat? eWhat.DEPS:[], i=-1;

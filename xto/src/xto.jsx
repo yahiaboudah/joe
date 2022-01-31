@@ -4149,7 +4149,7 @@
                 this.result = this.func.toString();
 
                 this.parseGen();
-                this.standardReplace(true);
+                this.standardReplace();
                 
                 return this.result;
             }
@@ -5901,7 +5901,6 @@
 
             var LayerExt= 
             {
-
                 clone: function(cloneName)
                 {
                     var c = this.containingComp,
@@ -5925,6 +5924,37 @@
                         default:
                             break;
                     }
+                },
+
+                mask: function(mask, cfg)
+                {
+                    var mModes = {
+                        '-': MaskMode.SUBTRACT
+                    }
+
+                    var msk = this.Masks.addProperty("Mask");
+                    msk.maskMode = mModes[mask.maskMode];
+                    switch(mask.path)
+                    {
+                        case Shape:
+                            msk.property("Mask Path").setValue(mask.path);
+                            break;
+                        
+                        case Expression:
+                            msk.property("Mask Path").expression = mask.path.toString();
+                    }
+
+                    if(cfg.locked == true) msk.locked = true;
+
+                    return msk;
+                },
+
+                masks: function(masksArr, cfg)
+                {
+                    var i = -1, MM = [];
+                    while(++i<masksArr.length) MM.push(this.mask(masksArr[i], cfg));
+
+                    return MM;
                 },
 
                 centerAnchorPoint: function(time)

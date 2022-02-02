@@ -3,7 +3,7 @@ var EXPRESSIONS_LIB =
 {
     "SampleImage": function(layerArg, valArg){
 
-        return (function(){
+        return new Expression(function(){
         
             var targetLayer = thisComp.layer("$layerName");
             var compDimens  = [thisComp.width, thisComp.height]; 
@@ -17,9 +17,9 @@ var EXPRESSIONS_LIB =
             
             )[$RGBValue].toFixed();
         
-        }).body()._replace({
+        },{
             $layerName: layerArg.name,
             $RGBValue: valArg
-        });
+        })
     }
 }

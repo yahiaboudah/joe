@@ -4851,7 +4851,19 @@
                 {
                     return this.resolutionFactor;
                 },
-            
+
+                deselect: function(i)
+                {
+                    var k = -1;
+                    var S = this.selectedLayers;
+                    if(i == 'A'){
+                        while(++k<S.length) S[k].selected = false;
+                    }
+                    else{
+                        if(S[i].selected) S[i].selected =false;
+                    }
+                },
+
                 sel : function()
                 {
                     LAYER_TYPES = [ShapeLayer, Textlayer, LightLayer, CameraLayer, AVLayer];
@@ -5089,7 +5101,6 @@
                 $add: function(what, cfg, args)
                 {
                     var CC = this.containingComp();
-                    $.writeln(CC.name);
                     var CONFIG = {
                         
                         "SHAPE": {},
@@ -5963,8 +5974,10 @@
                         xy = [src.width/2  + src.left, src.height/2 + src.top];
 
                     time?
-                    this.anchorPoint.setValueAtTime(time, xy):
-                    this.anchorPoint.setValue(xy);
+                        this.anchorPoint.setValueAtTime(time, xy):
+                        this.anchorPoint.setValue(xy);
+
+                    return this;
                 },
                 
                 transformIt: function(PROP, value, t, groupChecked)

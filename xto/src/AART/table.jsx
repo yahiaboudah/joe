@@ -1,7 +1,6 @@
-
-    /*
-        @requires
-    */
+/*
+    @requires ["PRIM/Array"]
+*/
 
     $.global.Table = function Table(T, M, V, H)
     {

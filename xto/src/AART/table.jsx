@@ -1,4 +1,8 @@
 
+    /*
+        @requires
+    */
+
     $.global.Table = function Table(T, M, V, H)
     {
         this.xt(Object.adapt({

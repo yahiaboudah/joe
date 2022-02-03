@@ -1,0 +1,5 @@
+{
+    "PRFX": "$.global.",
+    "DEPS": ["PRIM/Array"],
+    "FUNS": ["Table"]
+}

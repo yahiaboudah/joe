@@ -250,7 +250,9 @@
                         for(x in k) if(k.hasOwnProperty(x))
                         {
                             v = k[x];
-                            C = ((v === undefined || v === null)? undefined:v.constructor.name);
+                            if(v === undefined || v === null) C = undefined;
+                            else if(v == Error) C = "Error";
+                            else C = v.constructor.name;
                             LINK += "[" + C + "] ";
 
                             if( C == "Object"

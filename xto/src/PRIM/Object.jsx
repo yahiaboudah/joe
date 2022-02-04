@@ -1,4 +1,8 @@
 
+/*
+    @requires ["AFFX/CompItem" , "DATA/File"]
+*/
+
 // [CONSTRUCTORS]: {create, fromArray, fromEntries}
 Object.xt({
     

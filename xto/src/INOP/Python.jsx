@@ -1,4 +1,8 @@
 
+/*
+    @requires ["INOP/FileInterface"]
+*/
+
 // [PYTHON COSNTRUCTOR]
 $.global.Python = function Python(FInterface)
 {

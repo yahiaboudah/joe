@@ -2,7 +2,7 @@
 		Name:           xto
 		Desc:           A helper framework for Extendscript and AE.
 		Created:        2110 (YYMM)
-		Modified:       2112 (YYMM)
+		Modified:       2202 (YYMM)
         
     =================================== XTO ========================================
                         
@@ -609,77 +609,31 @@
     // [LOADERS]:
     S.xt({
 
-        load: function(what)
+        load: function load(what)
         {
-            S.LOADED.asModule.push(what);
-        
-            // Deal with DEP:
-            // First preprocess the name:
-            var pWhat = what.split('/'), eWhat = EXTO, k =-1;
-            while(++k<pWhat.length)
-            {
-                try{
-                    eWhat = eWhat[pWhat[k]];
-                }
-                catch(e){ throw Error("XTO:Loading Error: " + e.toString()); }
+            what = what.split('/'), i=-1, folder = Folder(File($.fileName).path);
+            var fd, ff;
+            while(folder.exists){
+                fd = Folder("{0}\\{1}".re(folder.fsName, what[++i]));
+                if(fd.exists) folder = fd;
+                else break; 
             }
+            i=-1;
 
-            var deps = eWhat? eWhat.DEPS:[], i=-1;
-            while(++i<deps.length)
-            {
-                n = deps[i];
-                n = n.replace(/\//g, '$').toUpperCase();
+            ff = File("{0}\\{1}.jsx".re(folder.fsName, what[what.length-1]))
+            
+            /*
+                Deal with dependencies first
+            */
+            ff.open('r');
+            var dd = ff.read(), deps = [], reqs;
+            var reqs = /\/\*[\n\r]*\s*\@requires\s+\[(.+)\][\n\r]*\*\//.exec(dd);
+            if(reqs) reqs = reqs[1].split(',');
+            while(++i<reqs.length) deps.push(reqs[i].replace(/\s+|\"|\'/g, ''));
+            i=-1;
+            while(++i<deps.length) load(deps)
 
-                //Dependecy does not exist in FUNS? continue:
-                if(!(f = FUNS[n])) continue;
-                
-                //Already loaded before? push new parent:
-                if(n.in(S.LOADED.asDepend))
-                {
-                    S.LOADED.asDepend[n].push(what);
-                    continue;
-                }
-                //Never loaded? add to S.LOADED.asDepend ({dep: [parent]}):
-                S.LOADED.asDepend[n] = [what];
-                
-                //Call the DEP
-                f.call($.global);
-            }
-    
-            FUNS[what.replace('/', '$').toUpperCase()].call($.global);
-        },
-
-        unload: function(what)
-        {
-            S.LOADED[
-                what.in(S.LOADED.asModule)?"asModule":
-                what.in(S.LOADED.asDepend)?"asDepend": ($.err = "wtf?")
-            ].remove(what);
-    
-            //===============
-            //=== UNLOAD ====
-            var arr = TREE[what].FUNS, i=-1;
-            for(;++i<arr.length;)
-            {
-                eval([
-                    "delete(" + arr[i] + ")",
-                    arr[i] + "= undefined;"
-                ].join(";"))
-            }
-            //================
-    
-            // UNLOAD DEPS:
-            var parentArr = [];
-            for(var k in S.LOADED.asDepend) if(k.in(S.LOADED.asDepend))
-            {
-                parentArr = S.LOADED.asDepend[k];
-                if(what.in(parentArr))
-                {
-                    parentArr = parentArr.remove(what);
-                    S.LOADED.asDepend[k] = parentArr;
-                    if(!parentArr.length) S.unload(k);
-                }
-            }
+            $.evalFile(ff);
         }
     })
 

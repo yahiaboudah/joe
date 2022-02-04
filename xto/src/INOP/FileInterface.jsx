@@ -1,4 +1,8 @@
 
+/*
+    @requires ["PRIM/Object"]
+*/
+
 $.global.FileInterface = function FileInterface(cfg)
 {
     cfg = cfg || {};

@@ -636,12 +636,10 @@
             }
             i=-1;
 
+
             ff = File("{0}\\{1}.jsx".re(folder.fsName, what[what.length-1]))
-            
-            /*
-                Deal with dependencies first
-            */
-          
+            var D = S.getDeps(ff), i=-1;
+            while(++i<D.length) load(D[i])
             $.evalFile(ff);
         }
     })

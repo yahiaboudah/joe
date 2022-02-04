@@ -1,6 +1,6 @@
 
 /*
-    @requires ["INOP/FileInterface"]
+    @requires ["INOP/FileInterface", "DATA/JSON", "DATA/File", "DOLR/Data"]
 */
 
 // [PYTHON COSNTRUCTOR]

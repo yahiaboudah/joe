@@ -1,3 +1,13 @@
+
+Folder.prototype.xt({
+
+    '/': function(op)
+    {
+        var pp = '{0}/{1}'.re(this.fsName, op);
+        return op.split('.').length? File(pp): Folder(pp);
+    }
+})
+
 // [CLIPBOARD]
 $.xt({
 

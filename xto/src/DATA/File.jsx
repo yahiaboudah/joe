@@ -1,3 +1,12 @@
+
+if(!Array.prototype.indexOf){
+    Array.prototype.indexOf = function(e){
+        var A = this, i=-1;
+        while(++i<A.length) if(A[i] == e) return i;
+        return -1;
+    }
+}
+
 // [CATEGORIES AND TYPES]
 File.xt({
 
@@ -28,7 +37,7 @@ File.prototype.xt({
 
         this.isOpen = this.open(
             (cases.indexOf(mode) == -1)?
-            (File(this.fsName).exists? 'e': 'w'):
+            (this.exists? 'e': 'w'):
             mode
         )
 

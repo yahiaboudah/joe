@@ -609,6 +609,22 @@
     // [LOADERS]:
     S.xt({
 
+        getDeps: function(F)
+        {
+            var REQ_REGEX = /\/\*[\n\r]*\s*\@requires\s+\[(.+)\][\n\r]*\*\//; 
+            var D = [], R, i=-1;
+            var ss;
+
+            F.open('r');
+
+            R = REQ_REGEX.exec(F.read());
+            if(R == null) return D;
+            R = R[1].split(',');
+
+            while(++i<R.length) D.push(R[i].replace(/\s+|\"|\'/g, ''));
+            return D;
+        },
+
         load: function load(what)
         {
             what = what.split('/'), i=-1, folder = Folder(File($.fileName).path);
@@ -625,14 +641,7 @@
             /*
                 Deal with dependencies first
             */
-            ff.open('r');
-            var dd = ff.read(), deps = [], reqs;
-            var reqs = /\/\*[\n\r]*\s*\@requires\s+\[(.+)\][\n\r]*\*\//.exec(dd);
-            if(reqs) reqs = reqs[1].split(',');
-            while(++i<reqs.length) deps.push(reqs[i].replace(/\s+|\"|\'/g, ''));
-            i=-1;
-            while(++i<deps.length) load(deps)
-
+          
             $.evalFile(ff);
         }
     })

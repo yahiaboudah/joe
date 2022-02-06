@@ -1,10 +1,7 @@
-
-if(!Array.prototype.indexOf){
-    Array.prototype.indexOf = function(e){
-        var A = this, i=-1;
-        while(++i<A.length) if(A[i] == e) return i;
-        return -1;
-    }
+Array.prototype.indexOf = function(e){
+    var A = this, i=-1;
+    while(++i<A.length) if(A[i] == e) return i;
+    return -1;
 }
 
 // [CATEGORIES AND TYPES]

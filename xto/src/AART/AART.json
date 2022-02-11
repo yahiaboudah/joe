@@ -1,5 +1,23 @@
 {
     "table": [
-        "Table"
+        "c:$.global.Table",
+
+        "f:$.global.Table.transpose",
+        "f:$.global.Table.process",
+        "f:$.global.Table.removeAll",
+        "f:$.global.Table.fRegex",
+        
+        "f:$.global.Table.prototype.forEachRow",
+        "f:$.global.Table.prototype.forEachCol",
+
+        "f:$.global.Table.prototype.toString",
+        "f:$.global.Table.prototype.getMaxColSizes",
+        "f:$.global.Table.prototype.getMaxRowSizes",
+
+        "f:$.global.Table.prototype.format",
+        "f:$.global.Table.prototype.render",
+
+        "f:$.global.Table.prototype.show",
+        "f:$.global.Table.prototype.write"
     ]
 }

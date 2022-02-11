@@ -611,6 +611,7 @@
 
         getDeps: function(F)
         {
+            // @requires regex
             var REQ_REGEX = /\/\*[\n\r]*\s*\@requires\s+\[(.+)\][\n\r]*\*\//; 
             var D = [], R, i=-1;
             var ss;
@@ -649,8 +650,8 @@
 
         version: '1.1.2',
 
-        functionsOf: function(what)
-        {
+        functionsOf: function(what){
+            
             if(!(efun = EXTO[what])) return;
             var arr  = [];
 

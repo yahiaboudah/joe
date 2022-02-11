@@ -1,0 +1,16 @@
+{
+    "in": ["f:Object.prototype.in"],
+    "is": ["f:Object.prototype.is"],
+    "re": ["f:Object.prototype.re"],
+    "xt": ["f:Object.prototype.xt"],
+    "se": ["f:Object.prototype.se"],
+    "zisc": [
+        "f:Object.prototype._toSource",
+        "f:Object.prototype.slice",
+        "f:$.global.is",
+        "f:$.global._in",
+        "f:Array.prototype._join",
+        "f:Function.prototype.bind",
+        "f:String.prototype.*"
+    ]
+}

@@ -1,5 +1,5 @@
 
-// [BIND BODY TIME]
+// [BODY TIME]
 Function.prototype.xt({
     
     body: function(repConfig)

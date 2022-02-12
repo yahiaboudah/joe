@@ -1,0 +1,24 @@
+{
+    "Logger": [
+        "LEVELS",
+        "DATES",
+        
+        "getScriptName",
+        "getScriptPath",
+
+        "prototype.formatMsg",
+        "prototype.now",
+        "prototype.config",
+        "prototype.debug",
+        "prototype.info",
+        "prototype.warning",
+        "prototype.error",
+        "prototype.critical"
+
+    ],
+
+    "Xester": [
+        "T", "F",
+        "prototype.test"
+    ]
+}

@@ -1,0 +1,38 @@
+{
+    "FileInterface": [
+        "prototype.validate",
+        "prototype.get",
+        "prototype.crop",
+        
+        "prototype.contactExists",
+        "prototype.validateContact",
+        "prototype.addContact",
+        "prototype.getContact",
+        "prototype.removeContact",
+        
+        "prototype.validateDef",
+
+        "prototype.forceMake",
+        "prototype.set",
+        "prototype.modify",
+        "prototype.post" 
+    ],
+
+    "Python": [
+        "prototype.run_pyjsx",
+        "prototype.execute",
+        "prototype.call",
+        "prototype.contact",
+        "prototype.build",
+        
+        "execTime",
+        "extensions",
+        "isPythonInstalled",
+        
+        "functions",
+        
+        "install",
+        "repair",
+        "uninstall"
+    ]
+}

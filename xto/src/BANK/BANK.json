@@ -1,0 +1,10 @@
+{
+    "ShapeBank:$.global": [
+        
+        "ShapeBank.bank",
+        "ShapeBank.getBank",
+        "ShapeBank.shape",
+
+        "ShapeBank"
+    ]
+}

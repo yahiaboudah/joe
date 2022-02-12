@@ -1,0 +1,96 @@
+{
+    "Bezier": [
+        "prototype.toString",
+
+        "PASCALS",
+        "mapToDistance",
+        "BC",
+        "Bernstein",
+        "nraphson",
+
+        "prototype.pointsWithStep",
+        "prototype.DC_pointAt",
+        "prototype.M_pointAt",
+        "prototype.BR_pointAt",
+
+        "prototype.DC_split",
+        "prototype.M_split",
+
+        "prototype.DE_Matrix",
+        "prototype.M_elevate",
+        "prototype.elevate",
+        "prototype.elevateN",
+
+        "prototype.derivative",
+        "prototype.deriv",
+
+        "prototype.alignAlongX",
+        
+        "prototype.getXs",
+        "prototype.getYs",
+        "prototype.BBox",
+
+        "prototype.FL_length",
+        
+        "prototype.kappa"
+    ],
+
+    "Complex": [
+        
+        "ZERO",
+        "UNITY",
+        "I",
+
+        "prototype.toString",
+        "prototype.valueOf",
+
+        "prototype.magnitude",
+        "prototype.invert",
+        "prototype.argumentRad",
+        "prototype.argumentDeg",
+        "prototype.def",
+        "prototype.+",
+        "prototype.-",
+        "prototype.*",
+        "prototype./",
+        "prototype.==",
+        "prototype.~",
+        "prototype.^",
+        "prototype.<<",
+        "prototype.>>"
+    ],
+
+    "Math": [
+        "degToRad",
+        "radToDeg",
+        "mult"
+    ],
+
+    "Matrix": [
+        
+        "dot",
+        "zeros",
+        "reduce",
+        "identity",
+
+        "prototype.toVector",
+        "prototype.show",
+
+        "prototype.det",
+        "prototype.decompose",
+        "prototype.inverse",
+        
+        "prototype.invert",
+        "prototype.transpose",
+
+        "prototype.+",
+        "prototype.-",
+        "prototype.*",
+        "prototype./",
+        "prototype.^",
+        "prototype.==",
+
+        "prototype.forEach",
+        "prototype.every"
+    ]
+}

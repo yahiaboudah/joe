@@ -1,0 +1,29 @@
+{
+    "Data:$": [
+        "clipboardLibFile",
+        "clipboardLib",
+        "chkClipboard",
+        "getClipboard",
+        "setClipboard",
+        
+        "silentCmdVBS",
+        "cmd",
+        "wget"
+    ],
+
+    "Debg:$": [
+        "inside",
+        "caller",
+        "$sleep",
+        "log",
+        "reflct",
+        "scan"
+    ],
+    
+    "Misc:$": [
+        "frame",
+        "hexToRgb",
+        "RgbToHex",
+        "$colorPicker"
+    ]
+}

@@ -1,7 +1,7 @@
 
 BridgeTalk.xt({
     
-    formatFunction: function(target, func, args)
+    _send: function(target, func, args)
     {
         new BridgeTalk.xt({
             target: target,

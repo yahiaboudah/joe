@@ -1,3 +1,5 @@
+["Bezier.prototype", "VALUE AT T", "CURVE SPLITTING", "DEGREE ELEVATION", "DERIVATIVE", "CURVE ALIGNEMENT", "BOUNDING BOXES", "ARC LENGTH", "CURVATURE"],
+["Bezier", "UTILS"]
 
 $.global.Bezier = function Bezier(coords)
 {
@@ -16,7 +18,7 @@ Bezier.prototype.toString = function()
 }
 
 // [VALUE AT T]
-Bezier.prototype.xt({
+Bezier.prototype.xt("VALUE AT T", {
 
     pointsWithStep: function(step, method)
     {
@@ -85,7 +87,7 @@ Bezier.prototype.xt({
 })
 
 // [UTILITIES: BERNSTEIN, BINOMIAL COEFF..]
-Bezier.xt({
+Bezier.xt(, "UTILS"{
 
     PASCALS: [[1]],
 

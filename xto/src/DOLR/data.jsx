@@ -1,3 +1,4 @@
+["$", "CLIPBOARD", "CMD"]
 
 Folder.prototype.xt({
 
@@ -9,7 +10,7 @@ Folder.prototype.xt({
 })
 
 // [CLIPBOARD]
-$.xt({
+$.xt("CLIPBOARD", {
 
     clipboardLibFile: false,
     clipboardLib : 0,
@@ -44,7 +45,7 @@ $.xt({
 })
 
 // [CMD]
-$.xt({
+$.xt("CMD", {
     
     silentCmdVBS: function(batPath)
     {

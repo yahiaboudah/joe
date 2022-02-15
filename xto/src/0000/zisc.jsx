@@ -43,13 +43,13 @@ Object.prototype.slice = function(n)
     return Array.prototype.slice.call(this, n);
 }
 
-$.global.is = function(what)
+$.global.is = function is(what)
 {
     if(what == undefined) what = "undefined";
     return Object.prototype.is.apply(what, arguments.slice(1));
 }
 
-$.global._in = function(what, oo)
+$.global._in = function _in(what, oo)
 {
     return Object.prototype.in.call(what, oo);
 }

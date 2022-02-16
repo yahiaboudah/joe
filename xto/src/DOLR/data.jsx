@@ -9,12 +9,15 @@ Folder.prototype.xt({
     }
 })
 
+load("DOLR")
+from("DOLR").load('getClipbaord')
+xto("$").with("Data.CLIPBOARD")
+
 // [CLIPBOARD]
 $.xt("CLIPBOARD", {
 
     clipboardLibFile: false,
     clipboardLib : 0,
-
     
     chkClipboard: function(p)
     {
@@ -33,6 +36,7 @@ $.xt("CLIPBOARD", {
         
         $.chkClipboard(path);
         return (new ExternalObject("lib:" + path)).getClipboard();
+    
     },
 
     setClipboard: function(){
@@ -57,6 +61,9 @@ $.xt("CMD", {
     },
 
     cmd: function(myCommand, silentMode)
+    /*
+        @requires ["DATA.Folder./"]
+    */
     {
         silentMode = is(silentMode, undefined)?true: silentMode;
 

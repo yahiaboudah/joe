@@ -1,5 +1,5 @@
 /*
-    @requires ["PRIM/Array"]
+    @requires [PRIM.Array.prototype.FORS]
 */
 
     $.global.Table = function Table(T, M, V, H)
@@ -42,6 +42,7 @@
             }
 
             return C;
+
         },
 
         process : function(A, sign)
@@ -74,10 +75,10 @@
         // File name regex pattern table [4x6](2)
         fRegex : new RegExp([
             
-            "^(table)", // starts w/ table
-            "\s+",      // space (1-)
-            "\[\d+(x)\d+\]", // [(d)x(d)] (d): table dimens
-            "\(\d+\)" // ((d)) (d): table number
+            "^(table)", // "table" (starts w/)
+            "\s*",      // "table  " (space)
+            "\[\d+(x)\d+\]\s*", // "table [10x3]" (table dimens)
+            "\(\d+\)" // "table [10x3](2)" (table number)
         
         ].join(''), 'g'),
 

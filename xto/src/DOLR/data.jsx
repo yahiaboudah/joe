@@ -1,90 +1,79 @@
-["$", "CLIPBOARD", "CMD"]
 
-Folder.prototype.xt({
+$
+    [STATIC]
+    ({
+        __name__: "CLIPBOARD",
 
-    '/': function(op)
-    {
-        var pp = '{0}/{1}'.re(this.fsName, op);
-        return op.split('.').length? File(pp): Folder(pp);
-    }
-})
+        clipboardLibFile: false,
+        clipboardLib : 0,
 
-load("DOLR")
-from("DOLR").load('getClipbaord')
-xto("$").with("Data.CLIPBOARD")
-
-// [CLIPBOARD]
-$.xt("CLIPBOARD", {
-
-    clipboardLibFile: false,
-    clipboardLib : 0,
-    
-    chkClipboard: function(p)
-    {
-        if(!$.clipboardLibFile)
+        chkClipboard: function(p)
         {
-            var ff = File(p);
-            (ff.encoding = "UTF-8", ff.open('w'), ff.write($.clipboardLib), ff.close()); 
-            $.clipboardLibFile = true;
-            $.clipBoardLib = 0;
+            if(!$.clipboardLibFile)
+            {
+                var ff = File(p);
+                (ff.encoding = "UTF-8", ff.open('w'), ff.write($.clipboardLib), ff.close()); 
+                $.clipboardLibFile = true;
+                $.clipBoardLib = 0;
+            }
+        },
+
+        getClipboard: function(){
+            
+            var path = Folder.userData + "/xto$clipboard.dll";
+            
+            $.chkClipboard(path);
+            return (new ExternalObject("lib:" + path)).getClipboard();
+        
+        },
+
+        setClipboard: function(){
+
+            var path = Folder.userData + "/xto$clipboard.dll";
+
+            $.chkClipboard(path);
+            return (new ExternalObject("lib:" + path)).setClipboard();
         }
-    },
+    })
 
-    getClipboard: function(){
-        
-        var path = Folder.userData + "/xto$clipboard.dll";
-        
-        $.chkClipboard(path);
-        return (new ExternalObject("lib:" + path)).getClipboard();
-    
-    },
+    [STATIC]
+    ({
+        __name__: "CMD",
 
-    setClipboard: function(){
+        silentCmdVBS: function(batPath)
+        {
+            return [
+                "Set WshShell = CreateObject(\"WScript.Shell\")", 
+                "WshShell.Run chr(34) & \"{0}\" & Chr(34), 0",
+                "Set WshShell = Nothing"
+            ].join("\n").re(batPath);
+        },
 
-        var path = Folder.userData + "/xto$clipboard.dll";
+        cmd: function(myCommand, silentMode)
+        /*
+            @requires ["this.silentCmdVBS", "DATA.Folder.proto.OPOVR", "DATA.File.proto.create:$execute"]
+        */
+        {
+            silentMode = is(silentMode, undefined)?true: silentMode;
 
-        $.chkClipboard(path);
-        return (new ExternalObject("lib:" + path)).setClipboard();
-    }
-})
+            if(!silentMode) return system.callSystem("cmd /c \"{0}\"".re(myCommand));
 
-// [CMD]
-$.xt("CMD", {
-    
-    silentCmdVBS: function(batPath)
-    {
-        return [
-            "Set WshShell = CreateObject(\"WScript.Shell\")", 
-            "WshShell.Run chr(34) & \"{0}\" & Chr(34), 0",
-            "Set WshShell = Nothing"
-        ].join("\n").re(batPath);
-    },
+            var vbs = (Folder.temp / "XTO_DOLLAR_DATA_cmd.vbs").create(
+                $.silentCmdVBS(
+                    (bat= (Folder.temp / "XTO_DOLLAR_DATA_cmd.bat").create(myCommand)).fsName.replace('/', '\\')
+                )
+            );
+            vbs.$execute(100, function(){this.remove(); bat.remove();});
+        },
 
-    cmd: function(myCommand, silentMode)
-    /*
-        @requires ["DATA.Folder./"]
-    */
-    {
-        silentMode = is(silentMode, undefined)?true: silentMode;
+        wget: function(fp, link)
+        {   // get images from the web with cmd utility: [WGET]
 
-        if(!silentMode) return system.callSystem("cmd /c \"{0}\"".re(myCommand));
-
-        var vbs = (Folder.temp / "XTO_DOLLAR_DATA_cmd.vbs").create(
-            $.silentCmdVBS(
-                (bat= (Folder.temp / "XTO_DOLLAR_DATA_cmd.bat").create(myCommand)).fsName.replace('/', '\\')
-            )
-        );
-        vbs.$execute(100, function(){this.remove(); bat.remove();});
-    },
-
-    wget: function(fp, link)
-    {   // get images from the web with cmd utility: [WGET]
-
-        system.callSystem("cd {0} & wget -O {1} {2}".re(
-                
-                Folder(File(fp).path).fsName.replace(/\\/gi, '/'),
-                fp.replace(/\\/gi, '/'),
-                link
-        ));
-    }
-})
+            system.callSystem("cd {0} & wget -O {1} {2}".re(
+                    
+                    Folder(File(fp).path).fsName.replace(/\\/gi, '/'),
+                    fp.replace(/\\/gi, '/'),
+                    link
+            ));
+        }
+    })

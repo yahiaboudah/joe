@@ -12,6 +12,6 @@
         "vertices"   : [["-radius",0],[0,"radius"],["radius",0],[0,"-radius"]],
         "inTangents" : [[0,"-radius"],["-stretch",0],[0,"stretch"],["stretch",0]],
         "outTangents": [[0,"stretch"],["stretch",0],[0,"-stretch"],["-stretch",0]],
-        "closed"     : true
+        "closed"     : false
     }
 }

@@ -1,7 +1,8 @@
+
 $.global.STATIC = "STATIC";
 $.global.PROTO = "PROTO";
 $.global.ARGLIST = "_1,_2,_3,_4,_5,_6,_7,_8,_9";
-$.global.CLASS = ("{0}[\"{1}\"] = (function {1}("+ARGLIST+"){return this.create("+ARGLIST+");})");
+$.global.CLASS = ("{0}[\"{1}\"] = (function {1}("+ARGLIST+"){this.create("+ARGLIST+"); return this;})");
 
 Object.prototype[PROTO] = function(oo){
 

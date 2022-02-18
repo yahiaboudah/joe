@@ -1,2 +1,1 @@
-# joe
-A virtual concierge.
+# XTO

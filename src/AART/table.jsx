@@ -1,152 +1,130 @@
-/*
-    @requires [PRIM.Array.prototype.FORS]
-*/
 
-    $.global.Table = function Table(T, M, V, H)
-    {
-        this.xt(Object.adapt({
-            
-            table: T,
-            margin: M,
-            VD: V,
-            HD: H
-        },{
-            
-            VD: "▓",
-            HD: "■",
+;eval(CLASS.re("$.global", "Table"))
 
-            table: [],
-            ftable: [],
-            margin: 5,
+    [PROTO]
+    ({
+        __name__: "CONSTRUCTOR",
 
-            maxColSizes: this.maxColSizes(),
-            maxRowSizes: this.maxRowSizes()
-        }))
-    }
+        create: function(table, margin, verDivider, horDivider)
+        //@requires ["PRIM.Object.adapt"]
+        //@requires ["module.PROTO.getMaxColSizes", "module.PROTO.getMaxRowSizes"]
+        {
+            this.xt(Object.adapt({
+                        
+                    table: table,
+                    margin: margin,
+                    VD: verDivider,
+                    HD: horDivider
+                },{
+                
+                    VD: "▓",
+                    HD: "■",
 
-    // [UTILS/PREPROCESSING]
-    Table.xt({
+                    table: [],
+                    ftable: [],
+                    margin: 5,
+
+                    maxColSizes: this.getMaxColSizes(),
+                    maxRowSizes: this.getMaxRowSizes()
+                }))
+        }
+    })
+
+    [STATIC]
+    ({
+        __name__: "UTILS",
+
+
+        // File name regex pattern table [4x6](2):
+
+        // ^(table) ==> "table" (starts w/ table)
+        // \s* ==> "table  " (space)
+        // \[\d+(x)\d+\]\s* ==> "table [10x3] " (table dimensions)
+        // \(\d+\) ==> "table [10x3] (2)" (table number)
+
+        REGX: /^(table)\s*(\[\d+(x)\d+\]\s*)(\(\d+\))/g,
 
         transpose: function(T)
         {
             var numCols = T[0].length;
-            var C = [], i =-1;
+            var C = [], i = j = -1;
 
-            while(++i<numCols)
-            {   
+            while(++i < numCols){
                 C[i] = [];
-                for(r in T) if(r.in(T))
-                {
-                    C[i].push(T[r][i]);
-                }
+                while(++j<T.length) C[i].push(T[j][i]);
             }
 
             return C;
-
         },
-
-        process : function(A, sign)
+        
+        process: function(A, sign)
         {
             var T = [];
             S = (sign || ",");
             
-            var jumpAtChar = 35, 
-            temp = [], 
-            row, els;
+            var jumpAtChar = 35,  
+            row, elements;
 
-            for(a in A) if(a.in(A))
+            var i=j=-1;
+            while(++i < A.length)
             {
                 tmp = [];
-                row = A[a];
-                els = row.split(S);
-
-                for(e in els) if(e.in(els))
+                row = A[i];
+                elements = row.split(S);
+                
+                T[i] = [];
+                while(++j < elements.length)
                 {
-                    tmp.push(e.trim().replace(
+                    e = elements[j];
+                    T[i].push(e.trim().replace(
                         RegExp("(.{{0}})".re(jumpAtChar), 'g'), "$1\n"
                     ))
                 }
-
-                T.push(tmp);
             }
 
-            return A;
+            return T;
         },
-        // File name regex pattern table [4x6](2)
-        fRegex : new RegExp([
-            
-            "^(table)", // "table" (starts w/)
-            "\s*",      // "table  " (space)
-            "\[\d+(x)\d+\]\s*", // "table [10x3]" (table dimens)
-            "\(\d+\)" // "table [10x3](2)" (table number)
-        
-        ].join(''), 'g'),
 
-        removeAll : function(FP)
+        removeFiles: function(FP)
+        //@requires ["module.STATIC.REGX"]
         {
-            var FS = Folder(FP || File($.fileName).path).getFiles("*.txt");
+            var FS = Folder(FP || File($.fileName).path).getFiles("*.txt"), i=-1, f;
 
-            for(f in FS) if(f.in(FS))
-            {
-                if(f.getName().match(Table.fRegx)) f.remove();
+            while(++i < FS.length){
+                f = FS[i];
+                if(f.displayName.match(this.REGX)) f.remove();
             }
         },
     })
 
-    // [FOREACH]
-    Table.prototype.xt({
+    [PROTO]
+    ({
+        __name__: "INFO",
 
-        forEachRow: function(cb, modify)
+        toString: function()
+        //@requires ["module.PROTO.render"]
         {
-            if(!(cb && cb.is(Function))) return;
-
-            var T = this.table, r, row, res;
-            for(r in T) if(r.in(T))
-            {
-                row = T[r];
-                res = cb.call(this, r, row, T);
-                if(modify) T[r] = res;
-            }
-        },
-
-        forEachCol: function(cb, modify)
-        {
-            if(!(cb && cb.is(Function))) return;
-
-            var T = Table.transpose(this.table), c, col, res;
-            for(c in T) if(c.in(T))
-            {
-                col = T[c];
-                res = cb.call(this, c, col, T);
-                if(modify) T[c] = res;
-            }
-
-            this.table = Table.transpose(T);
-        }
-    })
-
-    // [INFO/GETTERS]
-    Table.prototype.xt({
-        
-        toString: function(){
             return this.render();
         },
 
         getMaxColSizes: function()
+        //@requires [module.PROTO.FORS.forEachCol]
         {
-            var MS = [];
+            var MS = [], max;
+            var i = j = -1, e;
 
             this.forEachCol(function(col){
                 
-                var max = 0;
-                for(e in col) if(e.in(col))
+                max = 0;
+                while(++i<col)
                 {
-                    e = e.split("\n");
-                    m = e[0].length, i = -1;
-                    while(k = e[++i]) if(k.length > m) m = k.length;
-                    if(m > max) max = m;
+                    e = col[i];
+                    e = e.split('\n');
+                    m = e[0].length, j = -1;
+                    while(k = e[++j]) if(k.length > m) m = k.length;
+                    j = -1;
+                    if(m > max) max = m;   
                 }
-
                 MS.push(max)
             })
 
@@ -154,30 +132,71 @@
         },
 
         getMaxRowSizes: function()
+        //@requires ["module.PROTO.FORS.forEachRow"]
         {
-            var T = this.table;
-                MS = [];
-            
+            var MS = [], max, m;
+            var i = -1;
+
             this.forEachRow(function(row){
 
-                var max = 0;
-                for(e in row) if(e.in(row))
+                max = 0;
+                while(++i<row.length)
                 {
-                    e = row[e];
+                    e = row[i];
                     m = e.split("\n").length;
                     if(m > max) max = m;
                 }
-
                 MS.push(max);
             })
-        },
+
+            return MS;
+        }
     })
 
-    // [FORMATTER/RENDERER]
-    Table.prototype.xt( 
-    {
-        format : function(){
+    [PROTO]
+    ({
 
+        __name__: "FORS",
+
+        forEachRow: function(cb, modify)
+        {
+            if(!is(cb, Function)) return;
+
+            var T = this.table, i=-1;
+            var orow, nrow; //old row, new row
+
+            while(++i<T.length){
+                orow = T[i];
+                nrow = cb.call(this, orow, i, T);
+                if(modify) T[r] = nrow;
+            }
+        },
+
+        forEachCol: function(cb, modify)
+        //@requires ["module.STATIC.transpose"]
+        {
+            if(!is(cb, Function)) return;
+
+            var T = Table.transpose(this.table), i;
+            var col, res;
+            
+            while(++i<T.length)
+            {
+                ocol = T[i];
+                ncol = cb.call(this, ocol, i, T);
+                if(modify) T[i] = ncol;
+            }
+
+            this.table = Table.transpose(T);
+        }
+    })
+
+    [PROTO]
+    ({
+        __name__: "RENDERER",
+
+        format : function()
+        {
             // change the contents of each block:
             // justify = center
         
@@ -219,9 +238,10 @@
             }
             this.ftable = tb;
         },
-        
-        render : function(offset){
 
+        render: function(offset)
+        //@requires ["module.STATIC.format"]
+        {
             this.format(); // should be non-optional:
         
             var tb  = this.ftable,
@@ -247,15 +267,19 @@
                 fs += rr + of +(strr(this.HD) * (rw+1)) + "\n";
             }
             return fs;
-        },
-    });
+        }
 
-    // [OUTPUT/DISPLAYERS]
-    Table.prototype.xt({ 
+    })
 
-        write : function(removePrev ,pad, path){
+    [PROTO]
+    ({ 
+        __name__: "DISPLAYERS",
 
-            if(removePrev) Table.removeAll(path);
+        write: function(removePrev, pad, path)
+        //@requires ["module.STATIC.removeFiles", "module.PROTO.render"]
+        //@requires ["DATA.File.PROTO.$write"]
+        {
+            if(removePrev) Table.removeFiles(path);
             path = path || Folder(File($.fileName).path).fsName;
             pad  = pad || 8;
             patt = Table.fNamePatt;
@@ -274,7 +298,9 @@
             ).$write(this.render(pad)).fsName;
         },
         
-        show : function(){
+        show: function()
+        //@requires ["module.PROTO.render"]
+        {
             $.writeln(this.render())
-        },
+        }
     })

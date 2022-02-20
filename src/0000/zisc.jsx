@@ -91,6 +91,6 @@ Function.prototype.bind = function(T) //This
     var A = arguments.slice(1);
 
     return function(){
-        return F.apply(T, arguments.slice());
+        return F.apply(T, A.concat(arguments.slice()));
     }
 }

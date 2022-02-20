@@ -39,7 +39,7 @@ Math
         // Binomial Coefficients:
         BC: function(n, i)
         {
-            var P = Bezier.PASCALS;
+            var P = this.PASCALS;
             var N = P.length;
             if(n <= N) return P[n][i];
 
@@ -57,13 +57,14 @@ Math
                 k++;
             }
 
-            Bezier.PASCALS = P;
+            this.PASCALS = P;
             return P[n][i];
         },
 
         Bernstein: function(i, n, t)
+        //@@requires ["this.BC"]
         {
-            return Bezier.BC(n, i) * ((1-t)^(n-i)) * (t^i);
+            return this.BC(n, i) * ((1-t)^(n-i)) * (t^i);
         },
     })
 

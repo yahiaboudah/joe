@@ -20,6 +20,8 @@ eval(CLASS.re("$.global", "Bezier", "create"))
 
     [PROTO]
     ({
+        __name__: "DISPLAYERS",
+
         toString: function(){
             return this.points.se();
         }
@@ -28,7 +30,25 @@ eval(CLASS.re("$.global", "Bezier", "create"))
     [PROTO]
     ({
         __name__: "VALUEATT",
+        
+        // w/ DeCastaljau's algorithm:
+        DC_pointAt: function DC(t, p)
+        {
+            if(!(p && p.is(Array))) p = this.points;
 
+            var len = p.length;
+            if(len == 1) return p[0];
+
+            var pp = [], i = -1;
+            while(++i<len-1)
+            {
+                pp[i] = (1-t) * p[i] + t * p[i+1];
+            }
+
+            return DC(t, pp);
+        },
+
+        // get points with a step = t, and a method
         pointsWithStep: function(step, method)
         //@@requires ["this.DC_pointAt"]
         {
@@ -47,26 +67,9 @@ eval(CLASS.re("$.global", "Bezier", "create"))
             return P;
         },
 
-        // w/ DeCastaljau's algorithm:
-        DC_pointAt: function DC(t, p)
-        {
-            if(!(p && p.is(Array))) p = this.points;
-
-            var len = p.length;
-            if(len == 1) return p[0];
-
-            var pp = [], i = -1;
-            while(++i<len-1)
-            {
-                pp[i] = (1-t) * p[i] + t * p[i+1];
-            }
-
-            return DC(t, pp);
-        },
-
         // w/ Bernstein polynomials:
         BR_pointAt: function(t)
-        //@requires  ["module.STATIC.UTILS.Bernstein"]
+        //@requires  ["MATH.Math.BINOMIALS.Bernstein"]
         {
             var P = this.points;
 
@@ -98,234 +101,248 @@ eval(CLASS.re("$.global", "Bezier", "create"))
         }
     })
 
-// [CRUVE SPLITTING]
-Bezier.prototype.xt({
+    [PROTO]
+    ({
+        __name__: "SPLITTING",
 
-    DC_split: function(t)
-    {
-        var L = R = [];
-
-        var DC = function DC(z, p)
+        DC_split: function(t)
         {
-            var len = p.length,
-                one = (len === 1);
+            var L = R = [];
 
-            L.push(p[0]);
-            R.push(one?p[0]:p[len-1]);
-            if(one) return;
-
-            var pp = [], i = -1;
-            while(++i<len-1)
+            var DC = function DC(z, p)
             {
-                pp[i] = (1-t) * p[i] + t * p[i+1];
+                var len = p.length,
+                    one = (len === 1);
+
+                L.push(p[0]);
+                R.push(one?p[0]:p[len-1]);
+                if(one) return;
+
+                var pp = [], i = -1;
+                while(++i<len-1)
+                {
+                    pp[i] = (1-t) * p[i] + t * p[i+1];
+                }
+
+                DC(z, pp);
             }
 
-            DC(z, pp);
-        }
+            DC(t, this.points);
+            return [L, R];
+        },
 
-        DC(t, this.points);
-        return [L, R];
-    },
-
-    M_split: function()
-    {
-
-    }
-})
-
-// [DEGREE ELEVATION]
-Bezier.prototype.xt({
-
-    // DE_MATRIX = [
-    //     [1,0,0,0],
-    //     [1/k, (k-1)/k,0,0],
-    //     [0, 2/k,(k-2)/k,0],
-    //     [0,0, 3/k, (k-3)/k],
-    //     [0,0,0,1]
-    // ],
-    
-    DE_Matrix: function()
-    {
-        var P = this.points;
-        var D = this.degree;
-        var N = this.degree + 1;
-
-        var DMX = new M(N+1, N);
-        DMX.set(0, 0, 1);
-        DMX.set(N, N-1, 1);
-
-        while(++i < N)
+        M_split: function()
         {
-            DMX.set(i, i-1, i/N);
-            DMX.set(i, i, (N-i)/N);
+
         }
+    })
 
-        return DMX;
-    },
+    [PROTO]
+    ({
+        __name__: "ELEVATION",
 
-    M_elevate: function()
-    {
-        return this.DE_Matrix() * M(this.points);
-    },
-
-    elevate: function()
-    {
-        var P = this.points,
-            D = this.degree;
-
-        var Q = [P[0]];
-
-        var i = 0, s;
-        while(++i<=D)
-        {
-            s = (i/(D+1));
-            Q[i] = s*P[i-1] + (1-s)*P[i];
-        }
-
-        Q.push(P[D]);
-        return new Bezier(Q);
-    },
-
-    elevateN: function(n)
-    {
-        var B = this;
-        while(n--) B = B.elevate();
-
-        return B;
-    }
-})
-
-// [DERIVATIVE]
-Bezier.prototype.xt({
-
-    // return a Bezier of order (D-1)
-    derivative: function()
-    {
-        var P = this.points,
-            D = this.degree;
-
-        var i = -1, PP = [];
-        while(++i<=(D-1))
-        {
-            PP.push(D*(P[i+1]-P[i]));
-        }
-
-        return new Bezier(PP);
-    },
-
-    // return derivative value
-    deriv: function(t)
-    {
-        return this.derivative().M_pointAt(t);
-    }
-})
-
-// [CURVE ALIGNMENT]
-Bezier.prototype.xt({
-
-    // A = R*T*P:
-    alignAlongX: function()
-    {
-        var P = this.points, Q;
-
-        // 1) Translate by -P0
-        var T = P[0] * -1;
-        for(p in P) if(p.in(P)) P[p] = P[p] + T;
+        // DE_MATRIX = [
+        //     [1,0,0,0],
+        //     [1/k, (k-1)/k,0,0],
+        //     [0, 2/k,(k-2)/k,0],
+        //     [0,0, 3/k, (k-3)/k],
+        //     [0,0,0,1]
+        // ],
         
-        // 2) Rotate by θ (find θ first): x,y of last point
-        var x = P[P.length-1][0],
-            y = P[P.length-1][1];
-
-        var R = M([
-            [1/Math.sqrt(1+(y/x)*(y/x)), y/Math.sqrt(x*x+y*y)],
-            [-y/Math.sqrt(x*x+y*y), 1/Math.sqrt(1+(y/x)*(y/x))]
-        ]);
-        
-        Q = R * M(P);
-
-        return aligned = new Bezier(Q);
-    }
-})
-
-// [BOUNDING BOXES]
-Bezier.prototype.xt({
-
-    getXs: function()
-    {
-        var P = this.points, Q;
-        for(x in P) if(x.in(P)) Q.push(P[x][0])
-
-        return Q;
-    },
-
-    getYs: function()
-    {
-        var P = this.points, Q;
-        for(x in P) if(x.in(P)) Q.push(P[x][1])
-
-        return Q;
-    },
-
-    BBox: function(T/*ightness*/)
-    {
-        switch(T)
+        DE_Matrix: function()
+        //@@requires ["MATH.M"]
         {
-            case 0: // do min/max of Bezier-polygon
-                break;
+            var P = this.points;
+            var D = this.degree;
+            var N = this.degree + 1;
+
+            var DMX = new M(N+1, N);
+            DMX.set(0, 0, 1);
+            DMX.set(N, N-1, 1);
+
+            while(++i < N)
+            {
+                DMX.set(i, i-1, i/N);
+                DMX.set(i, i, (N-i)/N);
+            }
+
+            return DMX;
+        },
+
+        M_elevate: function()
+        //@@requires ["this.DE_Matrix", "MATH.M"]
+        {
+            return this.DE_Matrix() * M(this.points);
+        },
+
+        elevate: function()
+        {
+            var P = this.points,
+                D = this.degree;
+
+            var Q = [P[0]];
+
+            var i = 0, s;
+            while(++i<=D)
+            {
+                s = (i/(D+1));
+                Q[i] = s*P[i-1] + (1-s)*P[i];
+            }
+
+            Q.push(P[D]);
+            return new Bezier(Q);
+        },
+
+        elevateN: function(n)
+        //@@requires ["this.elevate"]
+        {
+            var B = this;
+            while(n--) B = B.elevate();
+
+            return B;
+        }
+    })
+
+    [PROTO]
+    ({
+        __name__: "DERIVATIVE",
+
+        // return a Bezier of order (D-1)
+        derivative: function()
+        {
+            var P = this.points,
+                D = this.degree;
+
+            var i = -1, PP = [];
+            while(++i<=(D-1))
+            {
+                PP.push(D*(P[i+1]-P[i]));
+            }
+
+            return new Bezier(PP);
+        },
+
+        // return derivative value
+        deriv: function(t)
+        {
+            return this.derivative().M_pointAt(t);
+        }
+    })
+
+    [PROTO]
+    ({
+        __name__: "ALIGN",
+
+        // A = R*T*P:
+        alignAlongX: function()
+        //@@requires ["MATH.M"]
+        {
+            var P = this.points, Q;
+
+            // 1) Translate by -P0
+            var T = P[0] * -1;
+            for(p in P) if(p.in(P)) P[p] = P[p] + T;
             
-            case 1: 
-                // find roots of (x'(t) = 0) and (y'(t) = 0)
-                break;
-            case 2:
-                /*
-                    1) Align the curve
-                    2) Find roots of x'(t) = 0, y'(t) = 0
-                    3) De-align the BBox back using -T and inv(R[θ])
-                */
-                break;
+            // 2) Rotate by θ (find θ first): x,y of last point
+            var x = P[P.length-1][0],
+                y = P[P.length-1][1];
+
+            var R = M([
+                [1/Math.sqrt(1+(y/x)*(y/x)), y/Math.sqrt(x*x+y*y)],
+                [-y/Math.sqrt(x*x+y*y), 1/Math.sqrt(1+(y/x)*(y/x))]
+            ]);
+            
+            Q = R * M(P);
+
+            return aligned = new Bezier(Q);
         }
-        //return bounding box:
-        return [B0, B1]
-    },
+    })
 
-})
+    [PROTO]
+    ({
 
-// [ARC LENGTH FUNCTION]
-Bezier.prototype.xt({
+        __name__: "BBOX",
 
-    // using curve FLattening 
-    FL_length: function(n)
-    {
-        var B = this;
-        
-        var i = -1, L = [];
-        while(++i<n)
+        getXs: function()
+        //@@requires ["PRIM.Array.map"]
         {
-            L.push(B.M_pointAt((i+1)/n) 
-                    - B.M_pointAt(i/n));
+            return this.points.map(function(v){return v[0]});
+        },
+
+        getYs: function()
+        //@@require ["PRIM.Array.map"]
+        {
+            return this.points.map(function(v){return v[1]});
+        },
+
+        // T: Tightness
+        BBox: function(T)
+        {
+            switch(T)
+            {
+                case 0: // do min/max of Bezier-polygon
+                    break;
+                
+                case 1: 
+                    // find roots of (x'(t) = 0) and (y'(t) = 0)
+                    break;
+                case 2:
+                    /*
+                        1) Align the curve
+                        2) Find roots of x'(t) = 0, y'(t) = 0
+                        3) De-align the BBox back using -T and inv(R[θ])
+                    */
+                    break;
+            }
+            //return bounding box:
+            return [B0, B1]
+        },
+
+    })
+
+    [PROTO]
+    ({
+        __name__: "ARCLENGTH",
+
+        // w/ Curve Flattening 
+        FL_length: function(n)
+        //@@requires ["module.PROTO.VALUEATT.M_pointAt"]
+        //@@requires ["PRIM.Array.MATH.mapToDistance"]
+        {
+            var B = this;
+            
+            var i = -1, L = [];
+            while(++i<n)
+            {
+                L.push(
+                    B.M_pointAt((i+1)/n) - 
+                    B.M_pointAt(i/n)
+                );
+            }
+
+            return Math.sum.apply(
+                null, 
+                L.mapToDistance(/*auto offset = [0,0]*/)
+            );
         }
+    })
+    
+    [PROTO]
+    ({
+        __name__: "CURVATURE",
 
-        return Math.sum.apply(
-            null, 
-            Bezier.mapToDistance(L, [0,0])
-        );
-    }
-})
+        kappa: function(t)
+        //@requires ["module.PROTO.DERIV", "module.PROTO.VALUEATT.M_pointAt"]
+        {
+            var B = this;
+            var D = B.derivative();
+            var S = D.deriv(t);
+                D = D.M_pointAt(t);
 
-// [CURVATURE]
-Bezier.prototype.xt({
-
-    kappa: function(t)
-    {
-        var B = this;
-        var D = B.derivative();
-        var S = D.deriv(t);
-            D = D.M_pointAt(t);
-
-        return (
-            (D[0] * S[1] - S[0] * D[1])
-            /
-            Math.pow(D[0]*D[0] + D[1]*D[1], 1.5) 
-        )
-    }
-})
+            return (
+                (D[0] * S[1] - S[0] * D[1])
+                /
+                Math.pow(D[0]*D[0] + D[1]*D[1], 1.5) 
+            )
+        }
+    })

@@ -4,7 +4,7 @@ if(is(C = app.project.activeItem, CompItem) && C.numLayers){
     $.global.layr = C.layer(1); 
 }
 
-var LayerExt= 
+var LayerExt =
 {
     clone: function(cloneName)
     {

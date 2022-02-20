@@ -594,7 +594,7 @@
         getDeps: function(F)
         {
             // @requires regex
-            var REQ_REGEX = /\/\*[\n\r]*\s*\@requires\s+\[(.+)\][\n\r]*\*\//; 
+            var REQ_REGEX = /\/\*[\n\r]*\s*\@requires\s+\[(.+)\][\n\r]*\*\//;
             var D = [], R, i=-1;
             var ss;
 

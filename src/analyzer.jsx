@@ -1,5 +1,6 @@
 
-// //@include "xto.jsx"
-// xto.load("$$$$/DEBG");
+//@include "xto.jsx"
+xto.load("PRIM/Array");
+xto.load("DATA/File");
 
-// $.writeln($.reflct({hello: "kaze"}, "props").se())
+$.writeln(File("c:/xto/src/PRIM/Number.jsx").$read())

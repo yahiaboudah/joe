@@ -3390,6 +3390,24 @@
 
         DATA$FILE: (function(){
 
+            Array.prototype.indexOf = function(e, fromIdx) {
+            
+                    var k,
+                        O = Object(this);
+                        len = O.length >>> 0,
+                        n = fromIdx | 0;
+            
+                    if(!len || len <= n) return -1;
+
+                    k = Math.max(n >= 0 ? n : (len - Math.abs(n)),
+                        0
+                    )-1;
+
+                    while(++k<len) if(k in O && O[k] === e) return k;
+
+                    return -1;
+            }
+
             // [CATEGORIES AND TYPES]
             File.xt({
 

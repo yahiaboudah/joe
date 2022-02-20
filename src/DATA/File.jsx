@@ -184,13 +184,12 @@ File
         }
     })
 
-    // [INFO/GETTERS]
     [PROTO]
-
     ({    
         __name__: "GETTERS",
 
         getDuration : function()
+        //@@requires ["this.getType"]
         {
             var F = this,
                 K, D;
@@ -213,21 +212,23 @@ File
         getExtension : function(toLower)
         {
             var E = this.name.replace(/^.*\./, ""); 
-            return toLower?
+            return  toLower?
                     E.toLowerCase():
                     E;
         },
 
-        withExtension : function(extens, noReplace)
         // File("mylife.txt").withExtension("eps") ==> File: mylife.eps;
+        withExtension : function(extension, noReplace)
+        //@@requires ["this.getName"]
         {
             return File(
-                noReplace? "{0}.{1}".re(this.fsName, extens):
-                "{0}.{1}".re(this.getName(), extens)
+                noReplace? "{0}.{1}".re(this.fsName, extension):
+                "{0}.{1}".re(this.getName(), extension)
             );
         },
         
         getType : function()
+        //@@requires ["module.STATIC.CATEGS", "this.getExtension"]
         {
             return File.CATEGORIES
             [ 
@@ -237,7 +238,6 @@ File
         }
     })
 
-    // [AE RELATED OPERATIONS]
     [PROTO]
     ({
         __name__: "AE",

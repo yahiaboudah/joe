@@ -457,8 +457,3 @@ $.global.TOMN = function (what)
 
     return DD[what];
 }
-
-// [AE COMMAND NUMBERS]:
-$.global.AECMD = {
-    SAVE_AS_FRAME: 2104
-}

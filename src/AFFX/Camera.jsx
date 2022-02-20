@@ -1,49 +1,54 @@
 
-// [MATRIX RELATED OPERATIONS]
-CameraLayer.prototype.xt({
-    
-    getAOV : function()
-    {
-        var filmSize    = this.containingComp.height;
-            focalLength = this.getProp("Camera Options/Zoom").value;
+CameraLayer
 
-        return MathEx.getAOV(filmSize, focalLength);
-    },
+    [PROTO]
+    ({
+        __name__: "MATRIX",
 
-    getWorldMatrix : function()
-    {
-        return LayerEx.getWorldMatrix(camera = this);
-    },
+        getAOV: function()
+        //@requires ["AFFX.AVLayer.PROPS.getProp", "MATH.AOV.getAOV"]
+        {
+            var filmSize    = this.containingComp.height;
+                focalLength = this.getProp("Camera Options/Zoom").value;
 
-    getLocalMatrix : function()
-    {
-        var camera = this;
-        var lookAtMatrix = LayerEx.getLookAt(camera);
-        var localMatrix  = Matrix.multiplyArrayOfMatrices([
+            return MathEx.getAOV(filmSize, focalLength);
+        },
 
-            LayerEx.getRotationMatrix(camera),
-            LayerEx.getOrientationMatrix(camera),
-            Matrix.invert(lookAtMatrix),
-            LayerEx.getPositionMatrix(camera),
-        ]);
+        getWorldMatrix: function()
+        {
+            return LayerEx.getWorldMatrix(camera = this);
+        },
 
-        return localMatrix;
-    },
+        getLocalMatrix: function()
+        {
+            var camera = this;
+            var lookAtMatrix = LayerEx.getLookAt(camera);
+            var localMatrix  = Matrix.multiplyArrayOfMatrices([
 
-    getProjectedZ : function(w)
-    {
-        var z = this.getProp("Camera Options/Zoom").value;
-        return (z - (z / w));
-    },
+                LayerEx.getRotationMatrix(camera),
+                LayerEx.getOrientationMatrix(camera),
+                Matrix.invert(lookAtMatrix),
+                LayerEx.getPositionMatrix(camera),
+            ]);
 
-    getViewMatrix : function()
-    {
-        var viewMatrix;
+            return localMatrix;
+        },
 
-        return viewMatrix = Matrix.multiplyArrayOfMatrices([
-            
-            this.getLocalMatrix(camera),
-            this.getWorldMatrix(camera),
-        ]);
-    }
-})
+        getProjectedZ: function(w)
+        //@requires ["AFFX.AVLayer.PROPS.getProp"]
+        {
+            var z = this.getProp("Camera Options/Zoom").value;
+            return (z - (z / w));
+        },
+
+        getViewMatrix : function()
+        {
+            var viewMatrix;
+
+            return viewMatrix = Matrix.multiplyArrayOfMatrices([
+                
+                this.getLocalMatrix(camera),
+                this.getWorldMatrix(camera),
+            ]);
+        }
+    })

@@ -1,50 +1,55 @@
-AVLayer.prototype.xt(
-{
-    addProp : function(propPath)
-    {            
-        var props    = propPath.split("/"),
-            lastProp = props[props.length-1].split(':'),
-            layer    = this;
 
-        props[props.length-1] = lastProp[0];
-        var name = lastProp[1];
 
-        currProp = layer;
-        for(i in props) if(props.has(i))
+AVLayer
+
+    [PROTO]
+    ({
+        __name__: "PROPS",
+
+        addProp: function(pp)
         {
-            currProp = currProp.has(props[i])?
-                    currProp.property(props[i]):
-                    currProp.addProperty(props[i]);
-        }
+            var layer = this,
+                props = pp.split('/'),
+                lprop = props[props.length-1].split(':'), //last prop
+                pname = lprop[1],
+                prop, i=-1;
 
-        if(!!name) currProp.name = name;
-        return currProp;
-    },
+            //reset lprop:
+            props[props.length-1] = lprop[0];
 
-    getProp : function(propPath)
-    {    
-        var props = propPath.split("/");
-        var layer = this;
+            prop = layer;
+            while(++i<props.length)
+            {
+                prop = prop.hasOwnProperty(props[i])?
+                       prop.property(props[i]):
+                       prop.addProperty(props[i]);
+            }
 
-        currProp = layer;
-        for(i in props) if(props.has(i))
-        {
-            currProp = currProp.has(props[i])?
-                    currProp.property(props[i]):
-                    0;
+            if(is(name, String)) prop.name = name;
+            return prop;
+        },
+
+        getProp: function(pp)
+        {    
+            var layer = this,
+                props = pp.split('/'),
+                prop, i =-1;
             
-            if(!currProp) return undefined;
+            prop = layer;
+            while(++i<props.length)
+            {
+                if(!prop.hasOwnProperty(props[i])) return undefined;
+                prop = prop.property(props[i]);
+            }
+
+            return prop;
+        },
+
+        removeProp : function(pp)
+        //@requires ["this.getProp"]
+        {
+            pp = this.getProp(pp);
+            if(is(pp, undefined)) return undefined;
+            return pp.remove();
         }
-
-        return currProp;
-    },
-
-    removeProp : function(propPath)
-    {
-        return this.getProp(propPath).remove();
-    }
-})
-
-ShapeLayer.prototype.getProp = AVLayer.prototype.getProp;
-ShapeLayer.prototype.removeProp = AVLayer.prototype.removeProp;
-ShapeLayer.prototype.addProp = AVLayer.prototype.addProp;
+    })

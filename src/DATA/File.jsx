@@ -131,6 +131,7 @@ File
         __name__: "LISTENERS",
 
         listenForModif : function(debug, wait, maxiter)
+        //@requires ["DOLR.Debg.$sleep"]
         {
             var WAIT_MSG = "File not modified, sleeping for {0}.."; 
 
@@ -147,28 +148,27 @@ File
         },
         
         listenForChar: function(chrc, pos, wait, maxiter, debug)
-        
+        //@requires ["DOLR.Debg.$sleep"]
+        //@@requires ["this.$open", "this.$seek"]
         {
+            var WAIT_MSG = "Character not found, sleeping for {0}..";
+            
             if(!(is(maxiter, Number))) maxiter = 100;
             
             var i = -1;
-            while(++i<maxiter)
-            {
+            while(++i<maxiter){
                 if(this.$open('r').$seek(pos).readch() == chrc) break;
-                else
-                {
-                    $.sleep(wait == 'exp'? ~~ Math.pow(2, (i+6)): wait);
-                    if(debug) $.writeln(
-                        "Character not found, sleeping for {0}..".re(wait)
-                    );
-                }
+                $.sleep(wait == 'exp'? ~~ Math.pow(2, (i+6)): wait, debug?WAIT_MSG.re(wait):0);
             }
-            
+
             this.$close();
         },
         
         listen : function(wait, debug, patience, cleanup)
+        //@requires ["DOLR.Debg.$sleep"]
         {
+            var WAIT_MSG = "File not found, sleeping for {0}..";
+
             if(!(is(patience, Number))) patience = 60000;
 
             var ttdelay = 0, i=0, delay =0;
@@ -177,10 +177,7 @@ File
                 if(this.exists) return (cleanup? this.remove():this);
                 if(ttdelay > patience) return;
 
-                $.sleep(delay = (wait == 'exp'? ~~ Math.pow(2, (i+6)): wait));
-                if(debug) $.writeln(
-                    "File not found, sleeping for {0}..".re(delay)
-                );
+                $.$sleep(delay = (wait == 'exp'? ~~ Math.pow(2, (i+6)): wait), debug?WAIT_MSG.re(delay):0);
                 ttdelay += delay;
                 i++;
             }

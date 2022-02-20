@@ -170,7 +170,9 @@ Array.prototype.xt({
 })
 
 // [MATH Related Functions]
-Array.prototype.xt({
+[PROTO]
+({
+    __name__: "MATH",
 
     math2: function(type, xory)
     {
@@ -180,15 +182,16 @@ Array.prototype.xt({
     },
 
     mapToDistance: function(offset)
+    //@@requires ["module.PROTO.map"]
     {
-        if(!offset) offset = [0, 0];
+        if(!is(offset, Array)) offset = [0, 0];
 
         return this.map(function(v){
             return Math.sqrt(
-                Math.pow(v[0] - offset[0], 2)
-                + Math.pow(v[1] - offset[1], 2)
+                Math.pow(v[0] - offset[0], 2) + 
+                Math.pow(v[1] - offset[1], 2)
             )
-        })  
+        })
     },
 
     getIndex: function(type)

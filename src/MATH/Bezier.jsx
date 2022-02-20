@@ -1,160 +1,102 @@
-["Bezier.prototype", "VALUE AT T", "CURVE SPLITTING", "DEGREE ELEVATION", "DERIVATIVE", "CURVE ALIGNEMENT", "BOUNDING BOXES", "ARC LENGTH", "CURVATURE"],
-["Bezier", "UTILS"]
 
-$.global.Bezier = function Bezier(coords)
-{
-    this.points = [];
-    for(c in coords) this.points.push(coords[c]);
-    this.degree = this.points.length -1;
+eval(CLASS.re("$.global", "Bezier", "create"))
 
-    this.start = coords[0];
-    this.end   = coords[coords.length-1];
-    this.controls = (coords.shift(), coords.pop(), coords);
-}
+    [PROTO]
+    ({
+        __name__: "CONSTRUCTOR",
 
-Bezier.prototype.toString = function()
-{
-    return this.points.se();
-}
-
-// [VALUE AT T]
-Bezier.prototype.xt("VALUE AT T", {
-
-    pointsWithStep: function(step, method)
-    {
-        var P = [], p;
-        var t = 0, tn = 1;
-
-        if(!(step && step.is(Number))) step = 0.1; 
-        step = Math.abs(step <= 1?step:(1/step));
-
-        for(;t <= tn; t += step)
+        create: function(coords)
         {
-            // p = this["{0}_pointAt".re(method || 'M')](t);
-            P.push(this.DC_pointAt(t));
+            this.points = [], i=-1;
+            // clone the coords array into _points:
+            while(++i < coords.length) this.points.push(coords[i]);
+            this.degree = this.points.length -1;
+
+            this.start = coords[0];
+            this.end   = coords[coords.length-1];
+            this.controls = (coords.shift(), coords.pop(), coords);
         }
+    })
 
-        return P;
-    },
-
-    // w/ DeCastaljau's algorithm:
-    DC_pointAt: function DC(t, p)
-    {
-        if(!(p && p.is(Array))) p = this.points;
-
-        var len = p.length;
-        if(len == 1) return p[0];
-
-        var pp = [], i = -1;
-        while(++i<len-1)
-        {
-            pp[i] = (1-t) * p[i] + t * p[i+1];
+    [PROTO]
+    ({
+        toString: function(){
+            return this.points.se();
         }
+    })
 
-        return DC(t, pp);
-    },
+    [PROTO]
+    ({
+        __name__: "VALUEATT",
 
-    // w/ Bernstein polynomials:
-    BR_pointAt: function(t)
-    {
-        var P = this.points;
-
-        var sum = 0, i = -1;
-        while(++i<=n) sum += (Bezier.Bernstein(i, n, t) * P[i]);
-
-        return sum;
-    },
-
-    // w/ Matrix operations:
-    M_pointAt: function(t)
-    {
-        // QUADRATIC BEZIER CURVE EXAMPLE:
-
-        var T = M([
-            [1, t, t^2]
-        ]);
-
-        var M = M([
-            [1 ,  0, 0],
-            [-2,  2, 0],
-            [1 , -2, 1]
-        ]);
-
-        var P = M(this.points);
-
-        return T * M * P;
-    },
-})
-
-// [UTILITIES: BERNSTEIN, BINOMIAL COEFF..]
-Bezier.xt(, "UTILS"{
-
-    PASCALS: [[1]],
-
-    mapToDistance: function(A, offset)
-    {
-        if(!offset) offset = [0, 0];
-
-        var A = A;
-        for(x in A) if(x.in(A))
+        pointsWithStep: function(step, method)
+        //@@requires ["this.DC_pointAt"]
         {
-            A[x] = Math.sqrt(
-                    Math.pow(A[x][0] - offset[0], 2)
-                    + Math.pow(A[x][1] - offset[1], 2)
-            );
-        }
+            var P = [], p;
+            var t = 0, tn = 1;
 
-        return A;
-    },
+            if(!(step && step.is(Number))) step = 0.1; 
+            step = Math.abs(step <= 1?step:(1/step));
 
-    // Binomial Coefficients:
-    BC: function(n, i)
-    {
-        var P = Bezier.PASCALS;
-        var N = P.length;
-        if(n <= N) return P[n][i];
-
-        var k = n;
-        while(k > N)
-        {
-            A = [1];
-            PA = P[P.length-1], i = -1;
-            while(++i < PA.length-1)
+            for(;t <= tn; t += step)
             {
-                A.push(PA[i] + PA[i+1]);
+                // p = this["{0}_pointAt".re(method || 'M')](t);
+                P.push(this.DC_pointAt(t));
             }
-            A.push(1);
-            P.push(A);
-            k++;
-        }
 
-        Bezier.PASCALS = P;
-        return P[n][i];
-    },
+            return P;
+        },
 
-    Bernstein: function(i, n, t)
-    {
-        return Bezier.BC(n, i) * ((1-t)^(n-i)) * (t^i);
-    },
-
-    // [Newton-Raphson for root-finding]
-    nraphson: function(F, DF, maxIter, tolerance)
-    {
-        if(!is(maxIter, Number))   maxIter = 20;
-        if(!is(tolerance, Number)) tolerance = 0.001;
-
-        var x = 5, x0;
-        
-        var i = -1;
-        while((++i < maxIter) && (Math.abs(x-x0) > tolerance))
+        // w/ DeCastaljau's algorithm:
+        DC_pointAt: function DC(t, p)
         {
-            x0 = x - F.call(x)/DF.call(x);
-            x = x0;
-        }
+            if(!(p && p.is(Array))) p = this.points;
 
-        return x0;
-    }
-})
+            var len = p.length;
+            if(len == 1) return p[0];
+
+            var pp = [], i = -1;
+            while(++i<len-1)
+            {
+                pp[i] = (1-t) * p[i] + t * p[i+1];
+            }
+
+            return DC(t, pp);
+        },
+
+        // w/ Bernstein polynomials:
+        BR_pointAt: function(t)
+        //@requires  ["module.STATIC.UTILS.Bernstein"]
+        {
+            var P = this.points;
+
+            var sum = 0, i = -1;
+            while(++i<=n) sum += (Bezier.Bernstein(i, n, t) * P[i]);
+
+            return sum;
+        },
+
+        // w/ Matrix operations:
+        M_pointAt: function(t)
+        //@requires ["MATH.M"]
+        {
+            // QUADRATIC BEZIER CURVE EXAMPLE:
+
+            var T = M([
+                [1, t, t^2]
+            ]);
+
+            var M = M([
+                [1 ,  0, 0],
+                [-2,  2, 0],
+                [1 , -2, 1]
+            ]);
+
+            var P = M(this.points);
+
+            return T * M * P;
+        }
+    })
 
 // [CRUVE SPLITTING]
 Bezier.prototype.xt({

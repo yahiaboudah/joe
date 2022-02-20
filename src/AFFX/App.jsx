@@ -1,59 +1,68 @@
 
-// [DOERS/ WRAPUNDO/ DOUNDO]
-app.xt(
-{
-    makeAnimMarkers : function(animObj)
-    /**
-        * Convert this: 
-        * [
+app
+
+    [STATIC]
+    ({
+        __name__: "DOUNDO",
+
+        wrapUndo: function(F, T)
         {
-            animation: "move it up",
-            duration : 2
+            var A = arguments.slice(2);
+
+            return function()
+            {
+                app.beginUndoGroup(F.name);
+                F.apply(T, A);
+                app.endUndoGroup();
+            }
         },
-        {
-            animation : "move it down",
-            duration  : 3
-        }
-        ]
         
-        to this:
+        doUndo: function(F, T, offset)
         {
-        "move it up": 2,
-        "move it down": 3
-        }
-    
+            // execute F:
+            app.wrapUndo(F, T || {}, arguments.slice(3))();
+            
+            // undo with an offset time:
+            app.setTimeout(function(){
+                app.executeCommand(
+                    app.findMenuCommandId("Undo {0}".re(F.name))
+                );
+            }, offset || 0);
+        
+        },
+    })
+
+    [STATIC]
+    ({
+
+        __name__: "SUBTITLES",
+        
+        /**
+            * Convert this: 
+            * [
+            {
+                animation: "move it up",
+                duration : 2
+            },
+            {
+                animation : "move it down",
+                duration  : 3
+            }
+            ]
+            
+            to this:
+            {
+            "move it up": 2,
+            "move it down": 3
+            }
+        
         */
-    {  
-        var oo = {}, i =0;
-        oo[animObj[i]["animation"]] = 0;
-        for(;++i<animObj.length;)oo[animObj[i]["animation"]] = animObj[i-1]["duration"]; 
-    
-        return oo;
-    },
-
-    wrapUndo : function(F, T)
-    {
-        var A = arguments.slice(2);
-
-        return function()
-        {
-            app.beginUndoGroup(F.name);
-            F.apply(T, A);
-            app.endUndoGroup();
-        }
-    },
-    
-    doUndo   : function(F, T, offset)
-    {
-        // execute F:
-        app.wrapUndo(F, T || {}, arguments.slice(3))();
+        makeAnimMarkers: function(animObj)
+        {  
+            var oo = {}, i =0;
+            oo[animObj[i]["animation"]] = 0;
+            for(;++i<animObj.length;)oo[animObj[i]["animation"]] = animObj[i-1]["duration"]; 
         
-        // undo with an offset time:
-        app.setTimeout(function(){
-            app.executeCommand(
-                app.findMenuCommandId("Undo {0}".re(F.name))
-            );
-        }, offset || 0);
-    
-    },
-})
+            return oo;
+        }
+    })

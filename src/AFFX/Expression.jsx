@@ -16,88 +16,103 @@
 //     "$p3": 45
 // }).result); ==> valid expression string
 
+eval(CLASS.re("$.global", "Expression"))
 
-$.global.Expression = function Expression(fn, cfg)
-{
-    this.func = fn;
-    this.config = cfg;
-    this.result = this.func.toString();
-
-    this.parseGen();
-    this.standardReplace();
-    
-    return this.result;
-}
-
-// [PROPS]
-Expression.xt({
-    PATTERNS: {
-        "GEN": /GEN\[\((.*)\)\,(.*)\,(.*)\,(.*)\]/g
-    }
-})
-
-Expression.prototype.xt({
-    standardReplace: function()
-    {
-        this.result = this.result._replace(this.config);
-    }
-})
-
-Expression.prototype.xt({
-
-    parseGen: function()
-    {
-        var F = this.result;
-        var cfg = this.config;
-        var G = [], i=-1;
-
-        while(match = Expression.PATTERNS.GEN.exec(F))
+    [PROTO]
+    ({
+        create: function(fn, cfg)
         {
-            G.push({
-                firstIndex: match.index,
-                lastIndex: match.index + match[0].length,
-                config : {},
-                expr: match[1],
-                keys: match[1].match(/\$(\w+)/g),
-                startsWith: match[2],
-                endsWith: match[3],
-                joinedWith: match[4]
-            })
+            this.func = fn;
+            this.config = cfg;
+            this.result = this.func.toString();
+
+            this.parseGen();
+            this.standardReplace();
+            
+            return this.result;
         }
+    })
 
-        var g, R, j;
-        var offset = 0;
-        while(++i<G.length)
+    [STATIC]
+    ({
+        __name__: "PATTERNS",
+        
+        PATTERNS: {
+            "GEN": /GEN\[\((.*)\)\,(.*)\,(.*)\,(.*)\]/g
+        }   
+    })
+
+    [PROTO]
+    ({
+        __name__: "REPLACERS",
+        
+        standardReplace: function()
+        //@@requires ["PRIM.String.PROTO.REPLACERS._replace"]
         {
-            R = []; j =-1;
-            g = G[i];
-                        
-            // get relevant keys, and select the arrays with the most recurring length:
-            var k;
-            for(k in cfg) if(k.in(cfg) && k.in(g.keys)) g.config[k] = cfg[k];
-            g.config = Object.mostRecurring(g.config, Array, "length");
-            // get array size:
-            var genSize = g.config[Object.first(g.config)].length >>> 0;
+            this.result = this.result._replace(this.config);
+        }
+    })
 
-            while(++j<genSize)
+
+    [PROTO]
+    ({
+        __name__: "PARSERS",
+
+        parseGen: function()
+        //@@requires ["PRIM.Object.mostRecurring", "PRIM.Object.first"]
+        //@@requires ["DATA.JSON", "PRIM.String.PROTO.REPLACERS._replace"]
+        {
+            var F = this.result;
+            var cfg = this.config;
+            var G = [], i=-1;
+
+            while(match = Expression.PATTERNS.GEN.exec(F))
             {
-                R.push(g.expr._replace(g.config, function(v){return v[j]}));
+                G.push({
+                    firstIndex: match.index,
+                    lastIndex: match.index + match[0].length,
+                    config : {},
+                    expr: match[1],
+                    keys: match[1].match(/\$(\w+)/g),
+                    startsWith: match[2],
+                    endsWith: match[3],
+                    joinedWith: match[4]
+                })
             }
 
+            var g, R, j;
+            var offset = 0;
+            while(++i<G.length)
+            {
+                R = []; j =-1;
+                g = G[i];
+                            
+                // get relevant keys, and select the arrays with the most recurring length:
+                var k;
+                for(k in cfg) if(k.in(cfg) && k.in(g.keys)) g.config[k] = cfg[k];
+                g.config = Object.mostRecurring(g.config, Array, "length");
+                // get array size:
+                var genSize = g.config[Object.first(g.config)].length >>> 0;
 
-            if(!R.length) return F;
-            R = deser(g.startsWith) + R.join(deser(g.joinedWith)) + deser(g.endsWith);
+                while(++j<genSize)
+                {
+                    R.push(g.expr._replace(g.config, function(v){return v[j]}));
+                }
 
-            // Replace 
-            F = F.replaceBetween(
-                g.firstIndex + offset,
-                g.lastIndex + offset, 
-                R
-            );
 
-            offset += (R.length -( g.lastIndex - g.firstIndex));
+                if(!R.length) return F;
+                R = deser(g.startsWith) + R.join(deser(g.joinedWith)) + deser(g.endsWith);
+
+                // Replace 
+                F = F.replaceBetween(
+                    g.firstIndex + offset,
+                    g.lastIndex + offset, 
+                    R
+                );
+
+                offset += (R.length -( g.lastIndex - g.firstIndex));
+            }
+
+            this.result = F;
         }
-
-        this.result = F;
-    }
-})
+    })

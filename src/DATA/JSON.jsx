@@ -44,8 +44,11 @@ eval(MODULE.re("$.global", "JSON", "stringify"))
     ({
         __name__: "STR_FUNC",
 
-        j_str: function(key, holder)
+        j_str: function j_str(key, holder)
         //@@requires ["module.STATIC.quote"]
+        //@@requires ["PRIM.Date.PROTO.JSON.toJSON"]
+        //@@requires ["PRIM.Boolean.PROTO.JSON.toJSON"]r
+        //@@requires ["PRIM.String.PROTO.JSON.toJSON", "PRIM.Number.PROTO.JSON.toJSON"]
         {
             var i;
             var k;          
@@ -79,7 +82,7 @@ eval(MODULE.re("$.global", "JSON", "stringify"))
                     if(is(value, Array))
                     {
                         length = value.length, i = -1;
-                        for(;++i<length;) partial[i] = str(i, value) || "null";
+                        for(;++i<length;) partial[i] = j_str(i, value) || "null";
 
                         v = !partial.length? "[]"
                             : gap ?
@@ -99,7 +102,7 @@ eval(MODULE.re("$.global", "JSON", "stringify"))
                         while(++i<length)
                         {
                             if(!rep[i].is(String)) continue;
-                            k = rep[i], v = str(k, value);
+                            k = rep[i], v = j_str(k, value);
                             if(!v) continue;
                             partial.push("{0}:{1}{2}".re(quote(k), gap?" ":"", v));
                         }
@@ -107,7 +110,7 @@ eval(MODULE.re("$.global", "JSON", "stringify"))
                     
                     else for(k in value) if(k.in(value))
                     {
-                        v = str(k, value);
+                        v = j_str(k, value);
                         if(!v) continue;
                         partial.push("{0}:{1}{2}".re(quote(k), gap?" ":"", v));
                     }
@@ -120,33 +123,6 @@ eval(MODULE.re("$.global", "JSON", "stringify"))
                     return v;
                 }
             }
-    })
-
-    [STATIC]
-    ({
-        __name__: "TOJSON_XT",
-
-        extendToJSON: function()
-        {
-            Date.prototype.toJSON = function()
-            {
-                return isFinite(this.valueOf())?
-                    (
-                        "{0}-{1}-{2}T{3}:{4}:{5}Z".re(
-                            this.getUTCFullYear(),
-                            this.getUTCMonth(),
-                            this.getUTCDate(), //Date or day?
-                            this.getUTCHours(),
-                            this.getUTCMinutes(),
-                            this.getUTCSeconds()
-                        )
-                    ) : null;
-            }
-
-            Boolean.prototype.toJSON = function() {return this.valueOf()};
-            String.prototype.toJSON  = function() {return this.valueOf()};
-            Number.prototype.toJSON  = function() {return this.valueOf()};
-        }
     })
 
     [STATIC]
@@ -176,7 +152,7 @@ eval(MODULE.re("$.global", "JSON", "stringify"))
             this.indent = is(space, String)?space:is(space, Number)?str(' ') * space:'';
             this.gap = '';
 
-            return j_str('', {'': value});
+            return this.j_str('', {'': value});
         },
 
         parse: function(text, reviver)

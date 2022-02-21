@@ -17,18 +17,24 @@ function tokenize(str)
     {
         spc: /\s/,
         num: /[0-9]/,
-        ltr: /[a-z]/, 
+        ltr: /[a-z]/,
     }
 
     while(++i<str.length)
     {
         c = str[i];
         val = c;
-        
-        (c == "=" && (typ = "OPR"));
+        $.writeln(c)
 
+        if(c == '=') typ = "OPR";
+        
+        // STRING DETECTOR
+        if(c == '"' && typ = "STR") while((c = str[++i]) !== '"') val+=c;
+        // SKIP SPACES
         if(RE.spc.test(c)) continue;
+        // LETTER
         if(RE.ltr.test(c) && (typ = "LTR")) while(RE.ltr.test(c = str[++i])) val+= c;
+        // NUMBER
         if(RE.num.test(c) && (typ = "NUM")) while(RE.num.test(c = str[++i])) val+= c;
         
         TOKENS.push({type: typ, value: val});

@@ -1,17 +1,52 @@
 
+// REGEX FOR LATER:
+/*
+var RX = /\[PROTO\][\t\r\n\s]*\(\{([^]*)\}\)/g;
+$.writeln(dd.match(RX))
+*/
+
 //@include "xto.jsx"
 xto.load("PRIM/Array");
 xto.load("DATA/File");
 
-var pp = "c:/xto/src/MATH/Bezier.jsx";
+function tokenize(str)
+{
+    var TOKENS = [];
+    var i = -1, c, val = "", typ;
+    var RE = 
+    {
+        spc: /\s/,
+        num: /[0-9]/,
+        ltr: /[a-z]/, 
+    }
+
+    while(++i<str.length)
+    {
+        c = str[i];
+        val = c;
+        
+        (c == "=" && (typ = "OPR"));
+
+        if(RE.spc.test(c)) continue;
+        if(RE.ltr.test(c) && (typ = "LTR")) while(RE.ltr.test(c = str[++i])) val+= c;
+        if(RE.num.test(c) && (typ = "NUM")) while(RE.num.test(c = str[++i])) val+= c;
+        
+        TOKENS.push({type: typ, value: val});
+    }
+
+    return TOKENS;
+}
+
+var pp = "c:/xto/src/test.jsx";
 
 var ff = File(pp);
-ff.open();
+
+$.writeln("Opening [{0}] ==> {1}\n-----------------"
+          .re(pp, ff.open()));
+
 var dd = ff.read();
-// $.writeln(dd);
+$.writeln(dd);
+$.writeln(tokenize(dd).se());
 
+$.writeln("=======");
 ff.close();
-
-var RX = /\[PROTO\][\t\r\n\s]*\(\{([^]*)\}\)/g;
-
-$.writeln(dd.match(RX))

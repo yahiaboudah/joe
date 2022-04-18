@@ -11,8 +11,6 @@
         //@include "0000/in.jsx"
         //@include "0000/se.jsx"
         //@include "0000/zisc.jsx"
-
-        //@include "0000/XTO_STRUCT.jsx"
     });
 
     var EXTO =
@@ -638,6 +636,7 @@
 
         version: '1.1.2',
 
+        // Do this without loading the JSON module
         loadStruct: function(){
             
         },

@@ -1,7 +1,8 @@
+
 (function(H, S)
 {   
-    //TODO :fix some garbage
     var FUNS = {};
+    // Initialize the framework with Basic functionality
     var BASC = (function(){
 
         //@include "0000/re.jsx"
@@ -12,7 +13,7 @@
         //@include "0000/zisc.jsx"
     });
 
-    var EXTO=
+    var EXTO =
     {
         // BASIC
         MATH:

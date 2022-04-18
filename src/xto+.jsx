@@ -57,7 +57,7 @@
             }
         },
 
-        $$$$:
+        DOLR:
         {
             Data:
             {
@@ -594,7 +594,7 @@
 
         getDeps: function(F)
         {
-            // @requires regex
+            //@@requires regex
             var REQ_REGEX = /\/\*[\n\r]*\s*\@requires\s+\[(.+)\][\n\r]*\*\//;
             var D = [], R, i=-1;
             var ss;
@@ -611,8 +611,11 @@
 
         load: function load(what)
         {
+            $.writeln(what);
+            return;
             what = what.split('/'), i=-1, folder = Folder(File($.fileName).path);
             var fd, ff;
+            $.writeln(what)
             while(folder.exists){
                 fd = Folder("{0}\\{1}".re(folder.fsName, what[++i]));
                 if(fd.exists) folder = fd;

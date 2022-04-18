@@ -1,0 +1,549 @@
+{
+    "MATH": {
+      "MATH": {
+        "PRFX": "$.global.Math.",
+        "DEPS": [],
+        "FUNS": [
+          "degreesToRadians",
+          "radiansToDegrees",
+          "mult"
+        ]
+      },
+      "COMPLEX": {
+        "PRFX": "$.global.",
+        "DEPS": [],
+        "FUNS": [
+          "Complex"
+        ]
+      },
+      "MATRIX": {
+        "PRFX": "$.global.",
+        "DEPS": [],
+        "FUNS": [
+          "Matrix"
+        ]
+      },
+      "BEZIER": {
+        "PRFX": "$.global.",
+        "DEPS": [],
+        "FUNS": [
+          "Bezier"
+        ]
+      }
+    },
+    "DOLR": {
+      "Data": {
+        "PRFX": "$.",
+        "DEPS": [
+          "Data/Folder",
+          "Data/File"
+        ],
+        "FUNS": [
+          "log",
+          "ser",
+          "deser",
+          "http"
+        ]
+      },
+      "Dbug": {
+        "PRFX": "$.",
+        "DEPS": [],
+        "FUNS": [
+          "inside",
+          "scan",
+          "inspect"
+        ]
+      },
+      "Misc": {
+        "PRFX": "$.",
+        "DEPS": [],
+        "FUNS": [
+          "$colorPicker",
+          "$sleep",
+          "getClipbaord",
+          "setClipboard",
+          "clearClipboard",
+          "cmd",
+          "wget"
+        ]
+      }
+    },
+    "PRIM": {
+      "String": {
+        "PRFX": "String.prototype.",
+        "DEPS": [],
+        "FUNS": [
+          "inspectFF",
+          "checkFF",
+          "startsWith",
+          "padding",
+          "replaceSeq",
+          "fstr",
+          "_replace",
+          "title",
+          "trim",
+          "pushAt",
+          "*"
+        ]
+      },
+      "Array": {
+        "PRFX": "Array.prototype.",
+        "DEPS": [],
+        "FUNS": [
+          "range",
+          "oneDimIndexFunc",
+          "twoDimIndexFunc",
+          "forEach",
+          "eve",
+          "indexOf",
+          "remove",
+          "includes",
+          "rotate",
+          "reduce",
+          "map",
+          "fliter",
+          "select",
+          "max",
+          "min",
+          "sortedIndices",
+          "math2D",
+          "sum",
+          "upIndex",
+          "bottomIndex",
+          "leftIndex",
+          "rightIndex",
+          "upperLeftIndex",
+          "upperRightIndex",
+          "bottomRightIndex",
+          "bottomLeftIndex",
+          "+",
+          "-",
+          "*",
+          "/",
+          "^"
+        ]
+      },
+      "Function": {
+        "PRFX": "Function.prototype.",
+        "DEPS": [],
+        "FUNS": [
+          "bind",
+          "body",
+          "time",
+          "getArgs",
+          "params",
+          "check"
+        ]
+      },
+      "Number": {
+        "PRFX": "Number.prototype.",
+        "DEPS": [],
+        "FUNS": [
+          "isOdd",
+          "isEven",
+          "floor",
+          "ceiling"
+        ]
+      },
+      "Object": {
+        "PRFX": "Object.",
+        "DEPS": [],
+        "FUNS": [
+          "keys",
+          "newKeys",
+          "extend",
+          "size",
+          "getValue",
+          "getPrototypeOf",
+          "has",
+          "inspect",
+          "type",
+          "print",
+          "write",
+          "dcKeys",
+          "validate",
+          "validateKeys",
+          "modify",
+          "create",
+          "newObject",
+          "fromEntries"
+        ]
+      }
+    },
+    "DATA": {
+      "File": {
+        "PRFX": "File.prototype.",
+        "DEPS": [],
+        "FUNS": [
+          "isOpen",
+          "$open",
+          "$write",
+          "$read",
+          "$close",
+          "clear",
+          "$seek",
+          "create",
+          "$execute",
+          "listenForChange",
+          "listenForChar",
+          "listen",
+          "getLines",
+          "getDuration",
+          "getName",
+          "getExtension",
+          "getType"
+        ]
+      },
+      "Folder": {
+        "PRFX": "Folder.prototype.",
+        "DEPS": [
+          "DATA/File"
+        ],
+        "FUNS": [
+          "clearFolder",
+          "$remove",
+          "getFolders",
+          "$getFiles"
+        ]
+      },
+      "Socket": {
+        "DEPS": [],
+        "FUNS": []
+      },
+      "Http": {
+        "PRFX": "Http.prototype.",
+        "DEPS": [],
+        "FUNS": [
+          "request",
+          "responose",
+          "rawResponse"
+        ]
+      },
+      "Json": {
+        "PRFX": "$.global.",
+        "DEPS": [],
+        "FUNS": [
+          "JSON.stringify",
+          "JSON.parse",
+          "ser",
+          "deser"
+        ]
+      }
+    },
+    "AFFX": {
+      "Global": {
+        "PRFX": "$.global.",
+        "DEPS": [],
+        "FUNS": [
+          "_MN",
+          "AECMD",
+          "EXPRESSIONS_LIB"
+        ]
+      },
+      "App": {
+        "PRFX": "$.global.",
+        "DEPS": [],
+        "FUNS": [
+          "getSpecifier",
+          "makeAnimMarkers",
+          "wrapUndo",
+          "doUndo"
+        ]
+      },
+      "Expression": {
+        "PRFX": "$.global.",
+        "DEPS": [
+          "PRIM/String",
+          "PRIM/Object",
+          "DATA/Json"
+        ],
+        "FUNS": [
+          "parseGen",
+          "standardReplace"
+        ]
+      },
+      "CompItem": {
+        "PRFX": "CompItem.prototype.",
+        "DEPS": [],
+        "FUNS": [
+          "drop",
+          "importAndDrop",
+          "setTime",
+          "setResolution",
+          "snap",
+          "sel",
+          "getLayersWith",
+          "getResolution",
+          "workAreaDomain",
+          "getAOV",
+          "getProjectedZ",
+          "getViewMatrix",
+          "getZoom",
+          "getActiveAOV",
+          "getActiveProjectedZ",
+          "getActiveViewMatrix"
+        ]
+      },
+      "Camera": {
+        "PRFX": "Camera.prototype.",
+        "DEPS": [],
+        "FUNS": [
+          "getAOV",
+          "getWorldMatrix",
+          "getLocalMatrix",
+          "getProjectedZ",
+          "getViewMatrix"
+        ]
+      },
+      "ItemCollection": {
+        "PRFX": "ItemCollection.prototype.",
+        "DEPS": [],
+        "FUNS": [
+          "toArray",
+          "grab"
+        ]
+      },
+      "LayerCollection": {
+        "PRFX": "LayerCollection.prototype.",
+        "DEPS": [
+          "PRIM/String",
+          "PRIM/Object"
+        ],
+        "FUNS": [
+          "toArray",
+          "grab",
+          "$add",
+          "axis",
+          "dynamicLine",
+          "point",
+          "code",
+          "plot"
+        ]
+      },
+      "AVLayer": {
+        "PRFX": "AVLayer.prototype.",
+        "DEPS": [],
+        "FUNS": [
+          "clone",
+          "transformIt",
+          "getType",
+          "getMatrixOf",
+          "getLocalMatrix",
+          "getWorldMatrix",
+          "getLookAt",
+          "getModalMatrix",
+          "getModalViewProjection",
+          "toComp",
+          "toWorld",
+          "addProp",
+          "getProp",
+          "removeProp"
+        ]
+      },
+      "ShapeLayer": {
+        "PRFX": "ShapeLayer.prototype.",
+        "DEPS": [],
+        "FUNS": [
+          "clone",
+          "transformIt",
+          "getType",
+          "getMatrixOf",
+          "getLocalMatrix",
+          "getWorldMatrix",
+          "getLookAt",
+          "getModalMatrix",
+          "getModalViewProjection",
+          "toComp",
+          "toWorld",
+          "addProp",
+          "getProp",
+          "removeProp",
+          "alpha",
+          "area",
+          "areas",
+          "distances",
+          "moveFirstVertex",
+          "grabProps",
+          "stroke",
+          "fill"
+        ]
+      },
+      "TextLayer": {
+        "PRFX": "TextLayer.prototype.",
+        "DEPS": [],
+        "FUNS": [
+          "clone",
+          "transformIt",
+          "getType",
+          "getMatrixOf",
+          "getLocalMatrix",
+          "getWorldMatrix",
+          "getLookAt",
+          "getModalMatrix",
+          "getModalViewProjection",
+          "toComp",
+          "toWorld",
+          "addProp",
+          "getProp",
+          "removeProp",
+          "cofig",
+          "animator",
+          "fromJSONAndMarkersOf"
+        ]
+      },
+      "PropertyGroup": {
+        "PRFX": "PropertyGroup.prototype.",
+        "DEPS": [],
+        "FUNS": [
+          "is",
+          "isnt",
+          "containingComp",
+          "properties",
+          "moveFirstVertex",
+          "mFirstIndex",
+          "$nearestKeyIndex",
+          "addTextFill",
+          "addExpressionSelector",
+          "getParent",
+          "copyPropertiesTo"
+        ]
+      }
+    },
+    "SCUI": {
+      "Window": {
+        "PRFX": "Window.prototype.",
+        "DEPS": [],
+        "FUNS": [
+          "addAnimatedSequence",
+          "playAudio"
+        ]
+      },
+      "DropDownList": {
+        "PRFX": "DropDownList.prototype.",
+        "DEPS": [],
+        "FUNS": [
+          "makeGroupVisible"
+        ]
+      },
+      "XYLayout": {
+        "PRFX": "$.global.",
+        "DEPS": [],
+        "FUNS": [
+          "CustomLayout",
+          "XYLayout"
+        ]
+      }
+    },
+    "CSTR": {
+      "Table": {
+        "PRFX": "$.global.",
+        "DEPS": [
+          "MATH/Complex",
+          "MATH/Math"
+        ],
+        "FUNS": [
+          "Table"
+        ],
+        "INFO": {
+          "FUNS": [
+            "Table.fNamePatt",
+            "Table.process",
+            "Table.removeAll",
+            "toString",
+            "getMaxRowSizes",
+            "maxColumnSizes",
+            "format",
+            "render",
+            "write",
+            "show"
+          ]
+        }
+      },
+      "Path": {
+        "PRFX": "$.global.",
+        "DEPS": [],
+        "FUNS": [
+          "Path"
+        ]
+      },
+      "Python": {
+        "PRFX": "$.global.",
+        "DEPS": [
+          "$$$$/DATA",
+          "PRIM/Object",
+          "CSTR/FileInterface",
+          "DATA/File",
+          "DATA/Folder",
+          "DATA/Json"
+        ],
+        "FUNS": [
+          "Python"
+        ],
+        "INFO": {
+          "FUNS": [
+            "Python.installed",
+            "Python.execStr",
+            "Python.execPath",
+            "Python.extensions",
+            "Python.prototype.execTime",
+            "Python.prototype.functions",
+            "Python.prototype.makeExec",
+            "Python.prototype.viewExec",
+            "Python.prototype.editExec",
+            "Python.prototype.runExec",
+            "Python.prototype.install",
+            "Python.prototype.repair",
+            "Python.prototype.uninstall",
+            "Python.prototype.call",
+            "Python.prototype.contact",
+            "Python.prototype.build"
+          ]
+        }
+      },
+      "FileInterface": {
+        "PRFX": "FileInterface.prototype.",
+        "DEPS": [
+          "DATA/File"
+        ],
+        "FUNS": [
+          "validate",
+          "make",
+          "set",
+          "get",
+          "modify",
+          "post",
+          "crop"
+        ]
+      },
+      "Logger": {
+        "PRFX": "$.global.",
+        "DEPS": [],
+        "FUNS": [
+          "Logger"
+        ]
+      },
+      "Xester": {
+        "PRFX": "$.global.",
+        "DEPS": [],
+        "FUNS": [
+          "Xester"
+        ]
+      }
+    },
+    "WRPR": {
+      "SShape": {
+        "PRFX": "$.global.",
+        "DEPS": [],
+        "FUNS": [
+          "SShape"
+        ]
+      },
+      "WWindow": {
+        "PRFX": "$.global.",
+        "DEPS": [],
+        "FUNS": [
+          "WWindow"
+        ]
+      }
+    }
+  }

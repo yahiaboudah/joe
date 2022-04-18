@@ -11,6 +11,8 @@
         //@include "0000/in.jsx"
         //@include "0000/se.jsx"
         //@include "0000/zisc.jsx"
+
+        //@include "0000/XTO_STRUCT.jsx"
     });
 
     var EXTO =
@@ -583,6 +585,8 @@
     BASC.call($.global);//|
     //---------------------
 
+    S.SOURCE_PATH = "C:\\xto\\src";
+
     S.LOADED = 
     {
         asModule: [],
@@ -611,11 +615,9 @@
 
         load: function load(what)
         {
-            $.writeln(what);
-            return;
-            what = what.split('/'), i=-1, folder = Folder(File($.fileName).path);
+            what = what.split('/'), i=-1, folder = Folder(S.SOURCE_PATH);
+            
             var fd, ff;
-            $.writeln(what)
             while(folder.exists){
                 fd = Folder("{0}\\{1}".re(folder.fsName, what[++i]));
                 if(fd.exists) folder = fd;
@@ -636,7 +638,13 @@
 
         version: '1.1.2',
 
+        loadStruct: function(){
+            
+        },
+
         functionsOf: function(what){
+            
+            var EXTO = loadStruct();
             
             if(!(efun = EXTO[what])) return;
             var arr  = [];

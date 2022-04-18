@@ -156,7 +156,7 @@
     [PROTO]
     ({
 
-        __name__: "FORS",
+        __name__: "ITERATORS",
 
         forEachRow: function(cb, modify)
         {

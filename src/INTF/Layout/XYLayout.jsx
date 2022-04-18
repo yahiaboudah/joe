@@ -1,8 +1,5 @@
 
-$.global.CustomLayout = function CustomLayout(c){
-    this.c = c; // c: container
-}
-
+//@include "CustomLayout.jsx"
 /*
 * Usage: 
 =================================
@@ -14,42 +11,51 @@ container.layout = new XYLayout({
 =================================
 */
 
-$.global.XYLayout = function XYLayout(cfg){
-    CustomLayout.call(this, cfg.c);
-    this.t = this.c.orientation.toLowerCase();
-    this.x = cfg.x;
-    this.y = cfg.y;
-}
+;eval(CLASS.re("$.global", "XYLayout", "create"))
 
-XYLayout.prototype.xt(
-{
-    tt  : function(v, t)
-    {
-        return (this.t == t)?v:0;
-    },
+    [PROTO]
+    ({
+        __name__: "CONSTRUCTORS",
 
-    layout: function()
-    {
-    const K  = "children",
-            PS = "preferredSize";
+        create: function(cfg){
+            CustomLayout.call(this, cfg.c);
+            this.t = this.c.orientation.toLowerCase();
+            this.x = cfg.x;
+            this.y = cfg.y;
+        }
+    })
 
-    var top = left = kid = 0,
-        i = -1;
+    [PROTO]
+    ({
+        __name__: "LOGIC",
 
-    for(; ++i <this.c[K].length;)
-    {
-        kid = this.c[K][i];
-        kid.size = k[PS];
-        if(typeof kid.layout !== "undefined") kid.layout.layout();
-        
-        kid.location = [left, top];
-        top  += this.tt(kid.size.height, 'column')  + this.y; //top+
-        left += this.tt(kid.size.width , 'row')  + this.x; //left+
-    }
+        tt  : function(v, t)
+        {
+            return (this.t == t)?v:0;
+        },
     
-    this.c[PS] = [(left-this.x) + this.tt(kid.size.width , 'column'), 
-                    (top -this.y) + this.tt(kid.size.height, 'row')
-                    ];
-    kid = top = left = null;
-    }
-})
+        layout: function()
+        {
+        const K  = "children",
+                PS = "preferredSize";
+    
+        var top = left = kid = 0,
+            i = -1;
+    
+        for(; ++i <this.c[K].length;)
+        {
+            kid = this.c[K][i];
+            kid.size = k[PS];
+            if(typeof kid.layout !== "undefined") kid.layout.layout();
+            
+            kid.location = [left, top];
+            top  += this.tt(kid.size.height, 'column')  + this.y; //top+
+            left += this.tt(kid.size.width , 'row')  + this.x; //left+
+        }
+        
+        this.c[PS] = [(left-this.x) + this.tt(kid.size.width , 'column'), 
+                        (top -this.y) + this.tt(kid.size.height, 'row')
+                        ];
+        kid = top = left = null;
+        }
+    })

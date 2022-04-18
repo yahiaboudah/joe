@@ -3,7 +3,7 @@ ShapeLayer
 
     [STATIC]
     ({  
-        __name__: "PPS",  
+        __name__: "ATTRIBS",  
 
         PROPS:
         {

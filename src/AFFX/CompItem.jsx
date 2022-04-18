@@ -12,7 +12,7 @@ CompItem
 
     [PROTO]
     ({
-        __name__: "GETTERS",
+        __name__: "GETTERS&SETTERS",
 
         setResolution: function(newRes)
         {

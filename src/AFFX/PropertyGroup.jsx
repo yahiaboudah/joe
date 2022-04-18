@@ -3,7 +3,7 @@ PropertyGroup
 
     [PROTO]
     ({
-        __name__: "",
+        __name__: "CHECKERS",
             
         containingComp : function()
         {

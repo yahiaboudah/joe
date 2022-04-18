@@ -1,5 +1,7 @@
 
-$.global.toMN = function toMN(P)
+$.global.MN = {};
+
+MN.toMN = function toMN(P)
 {
     TOP_LEVEL =
     {
@@ -430,7 +432,7 @@ $.global.toMN = function toMN(P)
 }
 
 // [global match names funcs]:
-$.global.fromMN = function fromMN(m, category)
+MN.fromMN = function fromMN(m, category)
 {
     m = m.split('-');
     var k, d;
@@ -443,7 +445,7 @@ $.global.fromMN = function fromMN(m, category)
     ][category || 0];
 }
 
-$.global.TOMN = function (what)
+MN.TOMN = function (what)
 {
     what = what.replace(/\_|\W|\d/g, '').toLowerCase();
 

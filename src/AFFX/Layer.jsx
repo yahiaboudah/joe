@@ -4,8 +4,16 @@ if(is(C = app.project.activeItem, CompItem) && C.numLayers){
     $.global.layr = C.layer(1); 
 }
 
-var LayerExt =
-{
+eval(MODULE.re("$.global", "Layer", "dummy_auto"))
+
+
+[STATIC]
+
+({
+    dummy_auto: function(){
+        return;
+    },
+
     clone: function(cloneName)
     {
         var c = this.containingComp,
@@ -296,7 +304,7 @@ var LayerExt =
         // if not 3d, pop z:
         return (!layer.threeDLayer? result.pop(): result[2] *= -1, result);
     }
-}
+})
 
 ShapeLayer.prototype.xt(LayerExt);
 CameraLayer.prototype.xt(LayerExt);

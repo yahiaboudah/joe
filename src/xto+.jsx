@@ -584,6 +584,7 @@
     //---------------------
 
     S.SOURCE_PATH = "C:\\xto\\src";
+    S.CFG_PATH = "C:\\xto\\src\\xto.cfg";
 
     S.LOADED = 
     {
@@ -639,6 +640,22 @@
         // Do this without loading the JSON module
         loadStruct: function(){
             
+            var config = {};
+
+            var padding = function(str){
+                (pad = /^\s*/).exec(str);
+                return pad.lastIndex;
+            }
+
+            var file = File(S.CFG_PATH), dd, line, pad;
+            (file.open('r'), dd = file.read(), file.close())
+
+            while(!file.eof)
+            {
+                line = file.readln();
+                pad = padding(line);
+                if(pad == 4) config[line.trim()] = {};
+            }
         },
 
         functionsOf: function(what){

@@ -13,8 +13,9 @@ Object.prototype.se = function()
         return s;
     }
     
-    function _se(k, dt)
+    function _se(kk, dt)
     {
+        var k = kk;
         if(k === undefined || k === null) return "undefined";
         if(!!dt) indent = dt;
         var str = "",

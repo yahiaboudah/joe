@@ -52,20 +52,21 @@ function processXaml(file){
     var A = [];
     var address = [];
 
-    var lineProcessor = function(lvl, str){
-
+    var lineProcessor = function(lvl, str)
+    {
         if(!str) return;
 
-        var evalStr = "A";
-        var i = -1;
+        var evalStr = "A", i = -1, iLvl = lvl;
         while(++i<lvl) evalStr += ("[" + address[i] + "].branches");
         evalStr += ".push({name: \"" + str + "\", branches:[]})";
+        
         eval(evalStr);
 
+        //Increment address
         if(address[lvl] === undefined) address.push(0);
         else address[lvl] = address[lvl]+1;
 
-        var iLvl = lvl;
+        //Reset all next addresses
         while(++iLvl<address.length) address[iLvl] = -1;
     }
 

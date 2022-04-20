@@ -186,6 +186,93 @@ function collapseNext(oo, defaultPad){
     }
 }
 
+// If the branches are null then the branch
+// is automatically considered a leaf:
+
+// Transform the json structure into a tree
+// Walk the tree and get the leafs based on the
+// particular branch
+
+// [new Branch(name = "XTO", branches = [
+//     new Branch(name = "INOP", branches = [...]),
+//     new Branch(name = "PRIM", branches = [...]),
+//     new Branch(name = "TABLE", leafs = [
+//         new Leaf(name = "draw", props = {
+//             version = 1, age = 10, speed = 0.1
+//         })
+//     ])
+// ])]
+
+
+
+function loaderFunc(){
+    $.writeln("loading: " + this.path);
+}
+
+var bind = function(func, T) //This 
+{
+    var F = func;
+    var A = Array.prototype.slice.call(arguments, 2);
+
+    return function(){
+        return F.apply(T, A.concat(Array.prototype.slice.call(arguments)));
+    }
+}
+
+xto = {
+    load: bind(loaderFunc, {path: "xto"}),
+
+    PRIM: {
+        load: bind(loaderFunc, {path: "xto.PRIM"})
+    }
+}
+
+// xto.PRIM.load()
+// the key points to the value only
+/* and perhaps to the next key as well
+{} is equivilant to new Object({}) so there is
+no information inside the newly created instance
+about where it fits in any hirearchy, it is simply
+pointed to from some key somewhere
+This is the hypothesis
+
+The only possible solution in this case would be to
+to bind a loadFunc to different contexts
+*/
+
+xto.load(PRIM.String)
+
+// This one is probably garbage
+// var oo = {
+//     someProp: 45,
+//     other : {
+//         access: function(){
+//             $.writeln(this)
+//         }
+//     }
+// }
+
+xto.load("PRIM")
+
+load(xto.root.PRIM.String.Replacers)
+load()
+
+access(oo.other)
+oo.other.access()
+
+// xto.load();
+// xto.PRIM.load();
+// xto.PRIM.String.load();
+
+// xto = new Branch();
+// xto.addBranch("PRIM")
+// xto.getBranch("PRIM/String").loadLeafs();
+
+// xto.PRIM.String = new Leaf();
+
+// $.writeln(Object.prototype.toSource())
+// $.writeln(xto.__proto__.toSource())
+
 // try{
 //     var A = [];
 //     while(!file.eof){

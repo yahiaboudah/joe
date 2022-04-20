@@ -6,6 +6,7 @@
         __name__: "PROCESSORS",
         
         process: function process(file)
+        //@@requires [""]
         {
             var A = [], address = [];
         
@@ -28,7 +29,7 @@
             }
         
             file.open('r');
-            while(!file.eof) lineProcessor(padding(line = file.readln())/4, trim(line))
+            while(!file.eof) lineProcessor((line = file.readln()).padding()/4, line.trim())
         
             return A;
         } 

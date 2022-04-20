@@ -2,29 +2,6 @@
 
 // xto.loadStruct();
 
-function padding(str){
-    (pad = /^\s*/).exec(str);
-    return pad.lastIndex;
-}
-
-function trim(str){
-    return str.replace(/^\s*|\s*$/,'');
-}
-
-function line(str){
-    return {
-        contents: trim(str),
-        padding: padding(str)
-    }
-}
-
-function last(oo){
-    var k, fk;
-    for(k in oo) if(oo.hasOwnProperty(k)) fk = k;
-    return fk;
-}
-
-
 // function collapse(currPad){
 
 //     var oo = {};
@@ -46,6 +23,23 @@ function last(oo){
 var file = File("C:/xto/src/xto.cfg");
 file.open('r');
 //Use arrays instead to populate with structure data
+
+function padding(str){
+    (pad = /^\s*/).exec(str);
+    return pad.lastIndex;
+}
+
+function trim(str){
+    return str.replace(/^\s*|\s*$/,'');
+}
+
+function line(str){
+    return {
+        contents: trim(str),
+        padding: padding(str)
+    }
+}
+
 
 function processXaml(file){
 
@@ -207,5 +201,6 @@ function collapseNext(oo, defaultPad){
 
 // $.writeln(A.toSource())
 
-var finalArr = processXaml(File('C:/xto/src/xto.cfg'))
-$.writeln(finalArr.toSource())
+// var finalArr = processXaml(File('C:/xto/src/xto.cfg'))
+// $.writeln(finalArr.toSource())
+

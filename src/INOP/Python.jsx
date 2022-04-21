@@ -1,6 +1,6 @@
 
 /*
-    @requires ["INOP/FileInterface", "DATA/JSON", "DATA/File", "DOLR/Data"]
+    @requires ["INOP/FileInterface", "DATA/Serial/JSON", "DATA/Local/File", "DOLR/data"]
 */
 
 ;eval(CLASS.re("$.global", "Python"))

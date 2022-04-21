@@ -319,5 +319,4 @@ to bind a loadFunc to different contexts
 
 // //@include "xto+.jsx"
 
-
-$.writeln($.getenv("Path").split(';').join('\n'));
+// xto.showRoot()

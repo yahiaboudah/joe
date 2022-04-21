@@ -53,9 +53,32 @@
 (function(H/*ost*/, S/*elf*/)
 {
     S.root = {};
-    const µ = '/';
-    const SOURCE_PATH = "C:" + µ + "xto" + µ + "src";
-    const CONFIG_PATH = SOURCE_PATH + µ + "xto.cfg";
+    const µ = {
+        sep: $.os.split('/')[0].toLowerCase() == "windows"? '\\':'/',
+        req: /\/\*[\n\r]*\s*\@requires\s+\[(.+)\][\n\r]*\*\//,
+        ext: 'jsx',
+        cfg: 'cfg'
+    };
+
+    // Add xto source path to Environ Vars
+    const SOURCE_PATH = (function()
+    {
+        var path = $.getenv(S.toString());
+        if(path !== null) return path;
+        else
+        {
+            throw Error([
+                "No source path was found in the User variables",
+                "Please add: [\"xto\" = \"path/to/xto\"]"
+            ].join('\n'));
+        }
+    })();
+
+    // TODO: what if cfg file is damaged or not found?
+    // Create a cfg extractor function
+    const CONFIG_PATH = (function(){
+        return SOURCE_PATH + µ.sep + "xto." + µ.cfg;
+    })();
 
     var XTO_GUTS =
     {
@@ -133,55 +156,117 @@
     XTO_GUTS.POPULATE_ROOT.call({}, S.root, processXaml(File(CONFIG_PATH)))
     //---------------------
 
-    var LOADED = { asModule: [], asDepend: {} };
     // [LOADERS]:
+    var LOADED = { asModule: [], asDepend: {} };
     S.xt({
-        
-        getDeps: function(F)
+    
+        loadFile: function loadFile(file)
         {
-            //@@requires regex
-            var REQ_REGEX = /\/\*[\n\r]*\s*\@requires\s+\[(.+)\][\n\r]*\*\//;
-            var D = [], R, i=-1;
-            var ss;
+            if(!is(file, File)) throw Error("First arg needs to be of type File")
+            
+            try { $.evalFile(file); }
+            catch(e){
+                throw Error("{0} error in file: {1}".re(e.split(':')[0], file.fsName))
+            }
+        },
 
+        loadDeps: function(F, loader)
+        {
+            var R, i=-1;
             F.open('r');
+            if(R = µ.req.exec(F.read())) R = (F.close(), R[1].split(','));
+            else return [];
 
-            R = REQ_REGEX.exec(F.read());
-            if(R == null) return D;
-            R = R[1].split(',');
-
-            while(++i<R.length) D.push(R[i].replace(/\s+|\"|\'/g, ''));
-            return D;
+            while(++i<R.length) R[i] = R[i].replace(/\s+|\"|\'/g, '');
+            
+            return loader.apply(undefined, R);
         },
 
         // build the xto.root object
         // Either pass an object with a path property
         // Or simply pass
-        xto.load(
-            xto.root.PRIM.String,
-            xto.root.MATH.Bezier,
-            xto.root.MATH.M,
-            { path: "PRIM/Number" },
-            "PRIM/Boolean"
-        )
+    
+        // xto.load(
+        //     xto.root.PRIM.String,
+        //     xto.root.MATH.Bezier,
+        //     xto.root.MATH.M,
+        //     { path: "PRIM/Number" },
+        //     "PRIM/Boolean"
+        // )
 
         load: function load()
         {
+            var loaded = [];
             var loadees = arguments.slice(0), loadee, i=-1;
-            
+            var fd, fl, pp, dp, i=-1;
+
             loader:
             while(++i<loadees.length)
             {
-                switch(typeof loadee = loadees[i])
+                switch(typeof (loadee = loadees[i]))
                 {
                     case "object":
-                        if(loadee["path"] === undefined) continue loader;
-                        break;
+                        
+                        pp = loadee["path"];
+                        
+                        if(pp === undefined) 
+                            throw Error("Object: \"{0}\" does not contain a path property".re(loadee.toString()));
+
+                        Array.prototype.push.apply(
+                            loaded, load(loadee["path"])
+                        );
+
+                        continue loader;
                     
                     case "string":
-                        "{1}{0}{2}".re(µ, S.SOURCE_PATH, loadee.split('/').join(µ))
+                        
+                        fd = Folder("{1}{0}{2}".re(µ.sep, S.SOURCE_PATH, loadee.split('/').join(µ)));
+                        fl = File(fd.fsName + µ.ext);
+
+                        if(!(fd.exists && fl.exists)) 
+                            throw Error("Path: \"{0}\" does not exist".re(loadee));
+
+                        //==========================
+                        //--------------------------
+                        if(fl.exists)
+                        {
+                            Array.prototype.push.apply(
+                                loaded, S.loadDeps(fl, load)
+                            );
+
+                            /**************/
+                            S.loadFile(fl);
+                            loaded.push(fl.fsName);
+                            /*************/
+
+                            LOADED.asModule.push(loadee);
+                        }
+                        //--------------------------
+                        //==========================
+
+                        // load all:
+                        var fdFiles;
+                        if(fd.exists && fdFiles = fd.getFiles) while(++i<fdFiles.length){
+                            Array.prototype.push.apply(
+                                loaded, load(fdFiles[i].fsName.split('.')[0])
+                            );
+                        }
+
+                        continue loader;
+
+                    default:
+                        
+                        throw Error([
+                            "Invalid loadee argument type: [{0}]".re(typeof loadee),
+                            "Loadees must be a String: (\"path/to/thing\") or ",
+                            "an Object with a path property: ({path: \"path/to/thing\"})"
+                        ].join('\n'));
+                        
+                        continue loader;
                 }
             }
+
+            return loaded;
 
             what = what.split('/'), i=-1, folder = Folder(S.SOURCE_PATH);
             

@@ -70,162 +70,162 @@ function processXaml(file){
     return A;
 }
 
-function processLine(A, str, lvl)
-{
+// function processLine(A, str, lvl)
+// {
     
-    address = [];
-    while(lvl--){
+//     address = [];
+//     while(lvl--){
         
-    }
+//     }
 
-    if(lvl == 0){
-        A.push({
-            name: str,
-            branches: []
-        })
-    }
-
-    if(lvl == 1){
-        var i1 = A.length-1;
-        A[i1].branches.push({
-            name: str,
-            branches: []
-        })
-    }
-
-    if(lvl == 2){
-        address.push(i1)
-        var i1 = A.length-1;
-        var i2 = A[i1].branches.length-1;
-        A[i1].branches[i2].branches.push({
-            name: str,
-            branches: []
-        })
-    }
-
-    if(lvl == 3){
-        var i1 = A.length-1;
-        var i2 = A[i1].branches.length-1;
-        var i3 = A[i1].branches[i2].branches.length-1;
-        A[i1].branches[i2].branches[i3].branches.push({
-            name: str,
-            branches: []
-        })
-    }
-
-    if(lvl == 4){
-        var i1 = A.length-1;
-        var i2 = A[i1].branches.length-1;
-        var i3 = A[i1].branches[i2].branches.length-1;
-        var i4 = A[i1].branches[i2].branches[i3].branches.length-1;
-        A[i1].branches[i2].branches[i3].branches[i4].branches.push({
-            name: str,
-            branches: []
-        })
-    }
-
-    if(lvl == 5){
-        
-        var i1 = A.length-1;
-        var i2 = A[i1].branches.length-1;
-        var i3 = A[i1].branches[i2].branches.length-1;
-        var i4 = A[i1].branches[i2].branches[i3].branches.length-1;
-        var i5 = A[i1].branches[i2].branches[i3].branches[i4].branches.length -1;
-        A[i1].branches[i2].branches[i3].branches[i4].branches[i5].branches.push({
-            name: str,
-            branches: []
-        })
-    }
-
-    return A;
-}
-
-function collapseNext(oo, defaultPad){
-
-    var line = file.readln();
-
-    if(file.eof) return oo;
-
-    $.writeln(
-        "Iteration: " + oo.toSource() + "\n"
-        + "DEFAULT_PAD: " + defaultPad + "\n"
-        + "AT LINE: " + trim(line) + " ("+ padding(line) +")"
-    );
-
-    var str = trim(line);
-    var pad = padding(line);
-
-    if(pad == defaultPad){
-        $.writeln("PAD = DEFAULT PAD\n")
-        oo[str] = {};
-        return collapseNext(oo, pad);
-    }
-
-    if(pad > defaultPad){
-        $.writeln("PAD > DEFAULT PAD")
-        // $.writeln("pad: " + pad + " for: " + str)
-        var subOO = {};
-        subOO[str] = {};
-        $.writeln("LAST OO is: " + last(oo) + "\n")
-        var collapseNextResult = collapseNext(subOO, pad);
-        // $.writeln("Last is: " + last(oo));
-        // return;
-        // $.writeln(last(oo))
-        oo[last(oo)] = collapseNextResult.crop;
-        oo[collapseNextResult.last] = {};
-
-        collapseNext(oo, defaultPad);
-    }
-
-    if((pad < defaultPad)) {
-        $.writeln("PAD < DEFAULT PAD\n")
-        return {
-            "crop": oo,
-            "last": str
-        };
-    }
-}
-
-// If the branches are null then the branch
-// is automatically considered a leaf:
-
-// Transform the json structure into a tree
-// Walk the tree and get the leafs based on the
-// particular branch
-
-// [new Branch(name = "XTO", branches = [
-//     new Branch(name = "INOP", branches = [...]),
-//     new Branch(name = "PRIM", branches = [...]),
-//     new Branch(name = "TABLE", leafs = [
-//         new Leaf(name = "draw", props = {
-//             version = 1, age = 10, speed = 0.1
+//     if(lvl == 0){
+//         A.push({
+//             name: str,
+//             branches: []
 //         })
-//     ])
-// ])]
+//     }
+
+//     if(lvl == 1){
+//         var i1 = A.length-1;
+//         A[i1].branches.push({
+//             name: str,
+//             branches: []
+//         })
+//     }
+
+//     if(lvl == 2){
+//         address.push(i1)
+//         var i1 = A.length-1;
+//         var i2 = A[i1].branches.length-1;
+//         A[i1].branches[i2].branches.push({
+//             name: str,
+//             branches: []
+//         })
+//     }
+
+//     if(lvl == 3){
+//         var i1 = A.length-1;
+//         var i2 = A[i1].branches.length-1;
+//         var i3 = A[i1].branches[i2].branches.length-1;
+//         A[i1].branches[i2].branches[i3].branches.push({
+//             name: str,
+//             branches: []
+//         })
+//     }
+
+//     if(lvl == 4){
+//         var i1 = A.length-1;
+//         var i2 = A[i1].branches.length-1;
+//         var i3 = A[i1].branches[i2].branches.length-1;
+//         var i4 = A[i1].branches[i2].branches[i3].branches.length-1;
+//         A[i1].branches[i2].branches[i3].branches[i4].branches.push({
+//             name: str,
+//             branches: []
+//         })
+//     }
+
+//     if(lvl == 5){
+        
+//         var i1 = A.length-1;
+//         var i2 = A[i1].branches.length-1;
+//         var i3 = A[i1].branches[i2].branches.length-1;
+//         var i4 = A[i1].branches[i2].branches[i3].branches.length-1;
+//         var i5 = A[i1].branches[i2].branches[i3].branches[i4].branches.length -1;
+//         A[i1].branches[i2].branches[i3].branches[i4].branches[i5].branches.push({
+//             name: str,
+//             branches: []
+//         })
+//     }
+
+//     return A;
+// }
+
+// function collapseNext(oo, defaultPad){
+
+//     var line = file.readln();
+
+//     if(file.eof) return oo;
+
+//     $.writeln(
+//         "Iteration: " + oo.toSource() + "\n"
+//         + "DEFAULT_PAD: " + defaultPad + "\n"
+//         + "AT LINE: " + trim(line) + " ("+ padding(line) +")"
+//     );
+
+//     var str = trim(line);
+//     var pad = padding(line);
+
+//     if(pad == defaultPad){
+//         $.writeln("PAD = DEFAULT PAD\n")
+//         oo[str] = {};
+//         return collapseNext(oo, pad);
+//     }
+
+//     if(pad > defaultPad){
+//         $.writeln("PAD > DEFAULT PAD")
+//         // $.writeln("pad: " + pad + " for: " + str)
+//         var subOO = {};
+//         subOO[str] = {};
+//         $.writeln("LAST OO is: " + last(oo) + "\n")
+//         var collapseNextResult = collapseNext(subOO, pad);
+//         // $.writeln("Last is: " + last(oo));
+//         // return;
+//         // $.writeln(last(oo))
+//         oo[last(oo)] = collapseNextResult.crop;
+//         oo[collapseNextResult.last] = {};
+
+//         collapseNext(oo, defaultPad);
+//     }
+
+//     if((pad < defaultPad)) {
+//         $.writeln("PAD < DEFAULT PAD\n")
+//         return {
+//             "crop": oo,
+//             "last": str
+//         };
+//     }
+// }
+
+// // If the branches are null then the branch
+// // is automatically considered a leaf:
+
+// // Transform the json structure into a tree
+// // Walk the tree and get the leafs based on the
+// // particular branch
+
+// // [new Branch(name = "XTO", branches = [
+// //     new Branch(name = "INOP", branches = [...]),
+// //     new Branch(name = "PRIM", branches = [...]),
+// //     new Branch(name = "TABLE", leafs = [
+// //         new Leaf(name = "draw", props = {
+// //             version = 1, age = 10, speed = 0.1
+// //         })
+// //     ])
+// // ])]
 
 
 
-function loaderFunc(){
-    $.writeln("loading: " + this.path);
-}
+// function loaderFunc(){
+//     $.writeln("loading: " + this.path);
+// }
 
-var bind = function(func, T) //This 
-{
-    var F = func;
-    var A = Array.prototype.slice.call(arguments, 2);
+// var bind = function(func, T) //This 
+// {
+//     var F = func;
+//     var A = Array.prototype.slice.call(arguments, 2);
 
-    return function(){
-        return F.apply(T, A.concat(Array.prototype.slice.call(arguments)));
-    }
-}
+//     return function(){
+//         return F.apply(T, A.concat(Array.prototype.slice.call(arguments)));
+//     }
+// }
 
-xto = {
-    load: bind(loaderFunc, {path: "xto"}),
+// xto = {
+//     load: bind(loaderFunc, {path: "xto"}),
 
-    PRIM: {
-        load: bind(loaderFunc, {path: "xto.PRIM"})
-    }
-}
+//     PRIM: {
+//         load: bind(loaderFunc, {path: "xto.PRIM"})
+//     }
+// }
 
 // xto.PRIM.load()
 // the key points to the value only
@@ -240,7 +240,6 @@ The only possible solution in this case would be to
 to bind a loadFunc to different contexts
 */
 
-xto.load(PRIM.String)
 
 // This one is probably garbage
 // var oo = {
@@ -252,13 +251,13 @@ xto.load(PRIM.String)
 //     }
 // }
 
-xto.load("PRIM")
+// xto.load("PRIM")
 
-load(xto.root.PRIM.String.Replacers)
-load()
+// load(xto.root.PRIM.String.Replacers)
+// load()
 
-access(oo.other)
-oo.other.access()
+// access(oo.other)
+// oo.other.access()
 
 // xto.load();
 // xto.PRIM.load();
@@ -291,3 +290,34 @@ oo.other.access()
 // var finalArr = processXaml(File('C:/xto/src/xto.cfg'))
 // $.writeln(finalArr.toSource())
 
+// var fakeRoot = {};
+// var POPULATE_ROOT = function(oo, tree)
+// {
+//     var currElement;
+//     var i =-1;
+//     while(++i<tree.length)
+//     {
+//         currElement = tree[i];       
+//         if(currElement.branches[0] == undefined){
+//             oo[currElement.name] = {
+//                 "kind": "function"
+//             }
+//             continue;
+//         }
+//             oo[currElement.name] = {
+//                 "kind": "container"
+//             };
+//             oo[currElement.name] = POPULATE_ROOT(oo[currElement.name], currElement.branches);
+//     }
+
+//     return oo;
+// }
+
+// POPULATE_ROOT(fakeRoot, finalArr);
+
+// $.writeln(fakeRoot.toSource())
+
+// //@include "xto+.jsx"
+
+
+$.writeln($.getenv("Path").split(';').join('\n'));

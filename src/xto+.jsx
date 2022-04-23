@@ -52,7 +52,9 @@
 
 (function(H/*ost*/, S/*elf*/)
 {
+    var LOADED;
     S.root = {};
+
     const µ = {
         sep: $.os.split('/')[0].toLowerCase() == "windows"? '\\':'/',
         req: /\/\*[\n\r]*\s*\@requires\s+\[(.+)\][\n\r]*\*\//,
@@ -174,8 +176,47 @@
     //     { path: "PRIM/Number" },
     //     "PRIM/Boolean"
     // )
-    
-    var LOADED = { asModule: [], asDepend: {} };
+
+    // Ledger logic to keep track of what's being loaded
+    $.global.LoadedLedger = function LoadedLedger(asMain, asDeps)
+    {
+        this.main = asMain;
+        this.deps = asDeps;
+    }
+
+    LoadedLedger.prototype.xt({
+        
+        getMain: function(){
+            return this.main;
+        },
+
+        getDeps: function(){
+            return this.deps;
+        },
+
+        addDep: function(dep, depender)
+        {
+            if(is(this.deps[dep], Array)) this.deps[dep].push(depender);
+            else this.deps[dep] = [depender];
+        },
+
+        mergeAsMain: function(loadedLedger, loadeeVal)
+        {
+            Array.prototype.push.apply(this.main, loadedLedger.getMain());
+            this.deps.xt(loadedLedger.getDeps());
+        },
+
+        mergeAsDeps: function(loadedLedger, loadeeVal)
+        {    
+            var i=-1, k;
+            var loadedMain = loadedLedger.getMain(),
+                loadedDeps = loadedLedger.getDeps();
+            
+            while(++i<loadedMain.length) this.addDep(loadedMain[i], loadeeVal);
+            this.deps.xt(loadedDeps);
+        }
+    });
+
     S.xt({
     
         loadFile: function loadFile(file)
@@ -200,14 +241,24 @@
             return loader.apply(undefined, R);
         },
 
-        load: function load()
+        load: function(){
+            
+            var loaded = new LoadedLedger([], {}),
+                loadees = arguments.slice(0), i=-1;
+            
+            while(++i<loadees.length) loaded.mergeAsMain(this._load(loadees[i]));
+
+            return loaded;
+        },
+
+        _load: function _load(thing)
         {
             const shoveDepsToLoaded = function(otherLoaded, loadeeVal)
             {
                 var i=-1, k;
                 var lam = otherLoaded.asMain;
                 while(++i<lam.length){
-                    if(is(loaded.asDeps[lam[i]], Array)) loaded.asDeps[lam[i]].concat(loadeeVal);
+                    if(is(loaded.asDeps[lam[i]], Array)) loaded.asDeps[lam[i]].push(loadeeVal);
                     else loaded.asDeps[lam[i]] = [loadeeVal];
                 }
 
@@ -216,97 +267,90 @@
                 }
             }
 
-            const loadeeToPath = function(loadeeVal){
-                "{1}{0}{2}".re(µ.sep, S.SOURCE_PATH, loadee.split('/').join(µ))
-            }
-
             var loaded = {asDeps:{}, asMain:[]};
             var loadees = arguments.slice(0), loadee, i=-1;
-            var fd, fl, pp, dp, i=-1;
+            var fd, fl, pp = "", dp, i=-1;
 
             loader:
             while(++i<loadees.length)
             {
-                loadee = loadees[i];
-                if(is(loadee, Object) && is(loadee["path"], String)) pp = loadee.path;
-                if(is(loadee, String) && File(loadee))
+                rawLoadee = loadees[i]; 
+                loadee = rawLoadee;
+                if(is(loadee, Object) && is(loadee["path"], String)) loadee = loadee.path;
+                else if(is(loadee, String) && Folder(pp = callee.loadeeToPath(loadee)).exists) loadee = Folder(pp);
+                else if(!Folder(pp).exists && File(pp + µ.ext)).exists) loadee = File(pp);
+                else throw callee.InvalidLoadeeError(loadee, i);
 
-                switch(typeof (loadee = loadees[i]))
+                switch(loadee.constructor)
                 {
-                    case "object":
-                        
-                        pp = loadee["path"];
-                        
-                        if(pp === undefined) 
-                            throw Error("Object: \"{0}\" does not contain a path property".re(loadee.toString()));
+                    case Folder:
 
-                        var loadedFromPathObj = load(loadee["path"]); 
-
-                        // Shove to loaded:
-                        loaded.asMain.concat(loadedFromPathObj.asMain);
-                        var k;
-                        for(k in loadedFromPathObj.asDeps) if(k.in(loadedFromPathObj.asDeps)){
-                            loaded.asDeps[k] = loadedFromPathObj[k];
-                        }
-
-                        continue loader;
-                    
-                    case "string":
-                        
-                        fd = Folder("{1}{0}{2}".re(µ.sep, S.SOURCE_PATH, loadee.split('/').join(µ)));
-                        fl = File(fd.fsName + µ.ext);
-
-                        if(!(fd.exists && fl.exists)) 
-                            throw Error("Path: \"{0}\" does not exist".re(loadee));
-
-                        //==========================
-                        //--------------------------
-                        if(fl.exists)
+                        var fd = loadee, files = fd.getFiles(), j=-1;
+                        while(++j < files.length)
                         {
-                            // Get dependencies:
-                            shoveDepsToLoaded(S.loadDeps(fl, load), loadee);
+                            var subLoads = load("{1}{0}{2}".re(µ.sep, rawLoadee, files[j].name.split('.')[0]));
+                            Array.prototype.push.apply(loaded.asMain, subLoads.asMain);
 
-                            /**************/
-                            S.loadFile(fl);
-                            loaded.asMain.push(loadee);
-                            /*************/
-                        }
-                        //--------------------------
-                        //==========================
-
-                        // load all:
-                        var fdFiles;
-                        if(fd.exists && fdFiles = fd.getFiles)
-                        {
-                            loaded.asMain.push(loadee);
-                            while(++i<fdFiles.length)
-                            {
-                                var loadedSubFiles = load("{1}{0}{2}".re(µ.sep, loadee, fdFiles[i].name.split('.')[0]));
-                                loaded.asMain.concat.apply(loadedSubFiles.asMain);
-                                
-                                var k;
-                                for(k in loadedSubFiles.asDeps) if(loadedSubFiles.asDeps.hasOwnProperty(k)){
-                                    loaded.asDeps[k] = loadedSubFiles.asDeps[k];
-                                }
+                            var k;
+                            for(k in loadedSubFiles.asDeps) if(loadedSubFiles.asDeps.hasOwnProperty(k)){
+                                loaded.asDeps[k] = loadedSubFiles.asDeps[k];
                             }
                         }
 
-                        continue loader;
+                        break;
+                    //==========================
+                    //--------------------------
+                    case File:
+                        var fl = loadee;
 
-                    default:
-                        
-                        throw Error([
-                            "Invalid loadee argument type: [{0}]".re(typeof loadee),
-                            "Loadees must be a String: (\"path/to/thing\") or ",
-                            "an Object with a path property: ({path: \"path/to/thing\"})"
-                        ].join('\n'));
-                        
-                        continue loader;
+                        /*
+                            Within each file there is a "requires" annotation
+                            that points to the dependecies of the loadee, this function
+                            loads all the dependecies before loading the file, and 
+                            it shoves them into the "loaded" object.
+                        */
+                        shoveDepsToLoaded(
+                            S.loadDeps(fl, load),
+                            rawLoadee
+                        );
+
+                        /**************/
+                        S.loadFile(fl);
+                        loaded.asMain.push(rawLoadee);
+                        /*************/
+                        break;
+                    //----------------------------
+                    //============================
                 }
             }
 
+            loaded.asMain.push(rawLoadee);
             return loaded;
-        }
+
+        }.xt({
+            
+            loadee_sep: '/',
+            
+            loadeeToPath: function(loadeeVal)
+            {
+                return "{1}{0}{2}".re(µ.sep, S.SOURCE_PATH, loadeeVal.split(this.loadee_sep).join(µ.sep));
+            },
+
+            InvalidLoadeeError: function(loadeeVal, index)
+            {
+                this.message =
+                [
+                    "Invalid loadee argument: \"{0}\" at index position: [{1}].\n"
+                    .re(loadeeVal, index),
+                    "Loadees must be a valid path string: \"path/to/loadee\" or ",
+                    "an Object with a path key: ({path: \"path/to/thing\"}) "
+                    "with a valid path string as a value."
+                
+                ].join('');
+
+                return this.message;
+            }
+        })
     })
 
     // [INFO]

@@ -52,7 +52,6 @@
 
 (function(H/*ost*/, S/*elf*/)
 {
-    var LOADED;
     S.root = {};
 
     const µ = {
@@ -147,41 +146,14 @@
         }
     };
 
-    var XTO_LEDGER = {
-        
-    };
-
-
-    H[S] = S;
-    // BY-DEFAULT: load BASC [is, in, re, xt, se, zisc]
-    //---------------------
-    XTO_GUTS.BASC.call($.global);//|
-    //---------------------
-    
-    // ALWAYS: construct xto.root:
-    //---------------------
-    XTO_GUTS.POPULATE_ROOT.call({}, S.root, processXaml(File(CONFIG_PATH)))
-    //---------------------
-
-    // [LOADERS]:
-    
-    // build the xto.root object
-    // Either pass an object with a path property
-    // Or simply pass
-
-    // xto.load(
-    //     xto.root.PRIM.String,
-    //     xto.root.MATH.Bezier,
-    //     xto.root.MATH.M,
-    //     { path: "PRIM/Number" },
-    //     "PRIM/Boolean"
-    // )
-
     // Ledger logic to keep track of what's being loaded
-    $.global.LoadedLedger = function LoadedLedger(asMain, asDeps)
+    $.global.LoadedLedger = function LoadedLedger(rawLoadee)
     {
-        this.main = asMain;
-        this.deps = asDeps;
+        this.rawLoadee = rawLoadee || "loadeePlaceholder";
+        this.main = [];
+        this.deps = {};
+
+        if(this.rawLoadee !== "loadeePlaceholder") this.main.push(rawLoadee);
     }
 
     LoadedLedger.prototype.xt({
@@ -200,22 +172,50 @@
             else this.deps[dep] = [depender];
         },
 
-        mergeAsMain: function(loadedLedger, loadeeVal)
+        mergeAsMain: function(loadedLedger)
         {
             Array.prototype.push.apply(this.main, loadedLedger.getMain());
             this.deps.xt(loadedLedger.getDeps());
         },
 
-        mergeAsDeps: function(loadedLedger, loadeeVal)
+        mergeAsDeps: function(loadedLedger)
+        // this requires a defined rawLoadee value
         {    
             var i=-1, k;
             var loadedMain = loadedLedger.getMain(),
                 loadedDeps = loadedLedger.getDeps();
             
-            while(++i<loadedMain.length) this.addDep(loadedMain[i], loadeeVal);
+            while(++i<loadedMain.length) this.addDep(loadedMain[i], this.rawLoadee);
             this.deps.xt(loadedDeps);
         }
     });
+
+    var XTO_LEDGER = new LoadedLedger();
+
+    H[S] = S;
+    // BY-DEFAULT: load BASC [is, in, re, xt, se, zisc]
+    //---------------------
+    XTO_GUTS.BASC.call($.global);//|
+    //---------------------
+    
+    // ALWAYS: construct xto.root:
+    //---------------------
+    XTO_GUTS.POPULATE_ROOT.call({}, S.root, XTO_GUTS.processXaml(File(CONFIG_PATH)))
+    //---------------------
+
+    // [LOADERS]:
+    
+    // build the xto.root object
+    // Either pass an object with a path property
+    // Or simply pass
+
+    // xto.load(
+    //     xto.root.PRIM.String,
+    //     xto.root.MATH.Bezier,
+    //     xto.root.MATH.M,
+    //     { path: "PRIM/Number" },
+    //     "PRIM/Boolean"
+    // )
 
     S.xt({
     
@@ -229,102 +229,75 @@
             }
         },
 
-        loadDeps: function(F, loader)
-        {
-            var R, i=-1;
-            F.open('r');
-            if(R = µ.req.exec(F.read())) R = (F.close(), R[1].split(','));
-            else return [];
-
-            while(++i<R.length) R[i] = R[i].replace(/\s+|\"|\'/g, '');
+        loadAll: function(){
             
-            return loader.apply(undefined, R);
-        },
-
-        load: function(){
-            
-            var loaded = new LoadedLedger([], {}),
+            var loaded = new LoadedLedger(),
                 loadees = arguments.slice(0), i=-1;
             
-            while(++i<loadees.length) loaded.mergeAsMain(this._load(loadees[i]));
+            while(++i<loadees.length) loaded.mergeAsMain(this.load(loadees[i]));
 
             return loaded;
         },
 
-        _load: function _load(thing)
+        load: function load(rawLoadee)
         {
-            const shoveDepsToLoaded = function(otherLoaded, loadeeVal)
-            {
-                var i=-1, k;
-                var lam = otherLoaded.asMain;
-                while(++i<lam.length){
-                    if(is(loaded.asDeps[lam[i]], Array)) loaded.asDeps[lam[i]].push(loadeeVal);
-                    else loaded.asDeps[lam[i]] = [loadeeVal];
-                }
-
-                for(k in otherLoaded.asDeps) if(k.in(otherLoaded.asDeps)){
-                    loaded.asDeps[k] = loadedDeps.asDeps[k];
-                }
-            }
-
-            var loaded = {asDeps:{}, asMain:[]};
-            var loadees = arguments.slice(0), loadee, i=-1;
+            var loaded = new LoadedLedger(rawLoadee), loadee = rawLoadee;
             var fd, fl, pp = "", dp, i=-1;
 
-            loader:
-            while(++i<loadees.length)
+            if(is(loadee, Object) && is(loadee["path"], String)) loadee = loadee.path;
+            else if(is(loadee, String) && Folder(pp = callee.loadeeToPath(loadee)).exists) loadee = Folder(pp);
+            else if(!Folder(pp).exists && File(pp + µ.ext).exists) loadee = File(pp);
+            else throw callee.InvalidLoadeeError(loadee, i);
+
+            switch(loadee.constructor)
             {
-                rawLoadee = loadees[i]; 
-                loadee = rawLoadee;
-                if(is(loadee, Object) && is(loadee["path"], String)) loadee = loadee.path;
-                else if(is(loadee, String) && Folder(pp = callee.loadeeToPath(loadee)).exists) loadee = Folder(pp);
-                else if(!Folder(pp).exists && File(pp + µ.ext)).exists) loadee = File(pp);
-                else throw callee.InvalidLoadeeError(loadee, i);
+                /*
+                    Try to load all the subfolders and files:
+                    This would break if any file is corrupt or is not loadable
+                    as a jsx script. This part could produce tons of errors because
+                    it operates blindly. It does not know of the structure of the folder
+                    or of that of the files, it has no map of the package. It just blindly
+                    iterates through the sub-files, and idiotically loads everything.
 
-                switch(loadee.constructor)
-                {
-                    case Folder:
+                    The better alternative is to create a structure extractor that first
+                    grabs the structure of the package, delivers warnings or errors, and then
+                    have the loader use that middle-man structure instead to load files properly
+                    and avoid evalFile errors
+                */
+                case Folder:
 
-                        var fd = loadee, files = fd.getFiles(), j=-1;
-                        while(++j < files.length)
-                        {
-                            var subLoads = load("{1}{0}{2}".re(µ.sep, rawLoadee, files[j].name.split('.')[0]));
-                            Array.prototype.push.apply(loaded.asMain, subLoads.asMain);
-
-                            var k;
-                            for(k in loadedSubFiles.asDeps) if(loadedSubFiles.asDeps.hasOwnProperty(k)){
-                                loaded.asDeps[k] = loadedSubFiles.asDeps[k];
-                            }
-                        }
-
-                        break;
-                    //==========================
-                    //--------------------------
-                    case File:
-                        var fl = loadee;
-
-                        /*
-                            Within each file there is a "requires" annotation
-                            that points to the dependecies of the loadee, this function
-                            loads all the dependecies before loading the file, and 
-                            it shoves them into the "loaded" object.
-                        */
-                        shoveDepsToLoaded(
-                            S.loadDeps(fl, load),
-                            rawLoadee
+                    var fd = loadee, files = fd.getFiles(), j=-1;
+                    while(++j < files.length){
+                        // Merge whatever Ledger you get into the current parent Ledger
+                        loadedLedger.mergeAsMain(
+                            load("{1}{0}{2}".re(µ.sep, rawLoadee, files[j].name.split('.')[0]))
                         );
+                    }
 
-                        /**************/
-                        S.loadFile(fl);
-                        loaded.asMain.push(rawLoadee);
-                        /*************/
-                        break;
-                    //----------------------------
-                    //============================
-                }
+                    break;
+
+                //==========================
+                //--------------------------
+                case File:
+                    var fl = loadee;
+                    /*
+                        Within each file there is a "requires" annotation
+                        that points to the dependecies of the loadee, this function
+                        loads all the dependecies before loading the file, and 
+                        it shoves them into the "loaded" object.
+                    */
+                    var deps = callee.getDeps(fl), j=-1;
+                    while(++j<deps.length) loaded.mergeAsDeps(load(deps[j]));
+
+                    /**************/
+                    S.loadFile(fl);
+                    /*************/
+                    break;
+                //----------------------------
+                //============================
+                default: break;
             }
 
-            loaded.asMain.push(rawLoadee);
             return loaded;
 
         }.xt({
@@ -343,12 +316,24 @@
                     "Invalid loadee argument: \"{0}\" at index position: [{1}].\n"
                     .re(loadeeVal, index),
                     "Loadees must be a valid path string: \"path/to/loadee\" or ",
-                    "an Object with a path key: ({path: \"path/to/thing\"}) "
+                    "an Object with a path key: ({path: \"path/to/thing\"}) ",
                     "with a valid path string as a value."
                 
                 ].join('');
 
                 return this.message;
+            },
+
+            getDeps: function(file)
+            {
+                var D, i=-1;
+                file.open('r');
+                if(D = µ.req.exec(file.read())) D = (file.close(), D[1].split(','));
+                else return [];
+    
+                while(++i<D.length) D[i] = D[i].replace(/\s+|\"|\'/g, '');
+
+                return D;
             }
         })
     })

@@ -145,6 +145,11 @@
         }
     };
 
+    var XTO_LEDGER = {
+        
+    };
+
+
     H[S] = S;
     // BY-DEFAULT: load BASC [is, in, re, xt, se, zisc]
     //---------------------
@@ -157,6 +162,19 @@
     //---------------------
 
     // [LOADERS]:
+    
+    // build the xto.root object
+    // Either pass an object with a path property
+    // Or simply pass
+
+    // xto.load(
+    //     xto.root.PRIM.String,
+    //     xto.root.MATH.Bezier,
+    //     xto.root.MATH.M,
+    //     { path: "PRIM/Number" },
+    //     "PRIM/Boolean"
+    // )
+    
     var LOADED = { asModule: [], asDepend: {} };
     S.xt({
     
@@ -182,21 +200,23 @@
             return loader.apply(undefined, R);
         },
 
-        // build the xto.root object
-        // Either pass an object with a path property
-        // Or simply pass
-    
-        // xto.load(
-        //     xto.root.PRIM.String,
-        //     xto.root.MATH.Bezier,
-        //     xto.root.MATH.M,
-        //     { path: "PRIM/Number" },
-        //     "PRIM/Boolean"
-        // )
-
         load: function load()
         {
-            var loaded = [];
+            const shoveToLoaded = function(otherLoaded, loadeeVal)
+            {
+                var i=-1, k;
+                var lam = otherLoaded.asMain;
+                while(++i<lam.length){
+                    if(is(loaded.asDeps[lam[i]], Array)) loaded.asDeps[lam[i]].concat(loadeeVal);
+                    else loaded.asDeps[lam[i]] = [loadeeVal];
+                }
+
+                for(k in otherLoaded.asDeps) if(otherLoaded.asDeps.hasOwnProperty(k)){
+                    loaded.asDeps[k] = loadedDeps.asDeps[k];
+                }
+            }
+
+            var loaded = {asDeps:{}, asMain:[]};
             var loadees = arguments.slice(0), loadee, i=-1;
             var fd, fl, pp, dp, i=-1;
 
@@ -230,26 +250,32 @@
                         //--------------------------
                         if(fl.exists)
                         {
-                            Array.prototype.push.apply(
-                                loaded, S.loadDeps(fl, load)
-                            );
+                            // Get dependencies:
+                            shoveToLoaded(S.loadDeps(fl, load), loadee);
 
                             /**************/
                             S.loadFile(fl);
-                            loaded.push(fl.fsName);
+                            loaded.asMain.push(loadee);
                             /*************/
-
-                            LOADED.asModule.push(loadee);
                         }
                         //--------------------------
                         //==========================
 
                         // load all:
                         var fdFiles;
-                        if(fd.exists && fdFiles = fd.getFiles) while(++i<fdFiles.length){
-                            Array.prototype.push.apply(
-                                loaded, load(fdFiles[i].fsName.split('.')[0])
-                            );
+                        if(fd.exists && fdFiles = fd.getFiles)
+                        {
+                            loaded.asMain.push(loadee);
+                            while(++i<fdFiles.length)
+                            {
+                                var loadedSubFiles = load("{1}{0}{2}".re(µ.sep, loadee, fdFiles[i].name.split('.')[0]));
+                                loaded.asMain.concat.apply(loadedSubFiles.asMain);
+                                
+                                var k;
+                                for(k in loadedSubFiles.asDeps) if(loadedSubFiles.asDeps.hasOwnProperty(k)){
+                                    loaded.asDeps[k] = loadedSubFiles.asDeps[k];
+                                }
+                            }
                         }
 
                         continue loader;

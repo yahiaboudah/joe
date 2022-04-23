@@ -202,7 +202,7 @@
 
         load: function load()
         {
-            const shoveToLoaded = function(otherLoaded, loadeeVal)
+            const shoveDepsToLoaded = function(otherLoaded, loadeeVal)
             {
                 var i=-1, k;
                 var lam = otherLoaded.asMain;
@@ -211,9 +211,13 @@
                     else loaded.asDeps[lam[i]] = [loadeeVal];
                 }
 
-                for(k in otherLoaded.asDeps) if(otherLoaded.asDeps.hasOwnProperty(k)){
+                for(k in otherLoaded.asDeps) if(k.in(otherLoaded.asDeps)){
                     loaded.asDeps[k] = loadedDeps.asDeps[k];
                 }
+            }
+
+            const loadeeToPath = function(loadeeVal){
+                "{1}{0}{2}".re(µ.sep, S.SOURCE_PATH, loadee.split('/').join(µ))
             }
 
             var loaded = {asDeps:{}, asMain:[]};
@@ -223,6 +227,10 @@
             loader:
             while(++i<loadees.length)
             {
+                loadee = loadees[i];
+                if(is(loadee, Object) && is(loadee["path"], String)) pp = loadee.path;
+                if(is(loadee, String) && File(loadee))
+
                 switch(typeof (loadee = loadees[i]))
                 {
                     case "object":
@@ -232,9 +240,14 @@
                         if(pp === undefined) 
                             throw Error("Object: \"{0}\" does not contain a path property".re(loadee.toString()));
 
-                        Array.prototype.push.apply(
-                            loaded, load(loadee["path"])
-                        );
+                        var loadedFromPathObj = load(loadee["path"]); 
+
+                        // Shove to loaded:
+                        loaded.asMain.concat(loadedFromPathObj.asMain);
+                        var k;
+                        for(k in loadedFromPathObj.asDeps) if(k.in(loadedFromPathObj.asDeps)){
+                            loaded.asDeps[k] = loadedFromPathObj[k];
+                        }
 
                         continue loader;
                     
@@ -251,7 +264,7 @@
                         if(fl.exists)
                         {
                             // Get dependencies:
-                            shoveToLoaded(S.loadDeps(fl, load), loadee);
+                            shoveDepsToLoaded(S.loadDeps(fl, load), loadee);
 
                             /**************/
                             S.loadFile(fl);
@@ -293,22 +306,6 @@
             }
 
             return loaded;
-
-            what = what.split('/'), i=-1, folder = Folder(S.SOURCE_PATH);
-            
-            var fd, ff;
-            while(folder.exists){
-                fd = Folder("{0}\\{1}".re(folder.fsName, what[++i]));
-                if(fd.exists) folder = fd;
-                else break; 
-            }
-            i=-1;
-
-
-            ff = File("{0}\\{1}.jsx".re(folder.fsName, what[what.length-1]))
-            var D = S.getDeps(ff), i=-1;
-            while(++i<D.length) load(D[i])
-            $.evalFile(ff);
         }
     })
 

@@ -1,16 +1,16 @@
 
-eval(MODULE.re("$.global", "JSON", "stringify"))
+;eval(MODULE.re("$.global", "JSON", "stringify"))
 
     [STATIC]
     ({
         __name__: "REGX",
 
-        rx_one: /^[\],:{}\s]*$/;
-        rx_two: /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g;
-        rx_three: /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;
-        rx_four: /(?:^|:|,)(?:\s*\[)+/g;
-        rx_escapable: /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
-        rx_dangerous: /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+        rx_one: /^[\],:{}\s]*$/,
+        rx_two: /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,
+        rx_three: /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,
+        rx_four: /(?:^|:|,)(?:\s*\[)+/g,
+        rx_escapable: /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
+        rx_dangerous: /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g
     })
 
     [STATIC]
@@ -156,7 +156,7 @@ eval(MODULE.re("$.global", "JSON", "stringify"))
         },
 
         parse: function(text, reviver)
-        //@requires ["module.STATIC.REGX"]
+        //@@requires ["module.STATIC.REGX"]
         {
             var j;
             

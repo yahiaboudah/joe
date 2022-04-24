@@ -131,7 +131,7 @@ File
         __name__: "LISTENERS",
 
         listenForModif : function(debug, wait, maxiter)
-        //@requires ["DOLR.Debg.$sleep"]
+        //@@requires ["DOLR.Debg.$sleep"]
         {
             var WAIT_MSG = "File not modified, sleeping for {0}.."; 
 
@@ -148,7 +148,7 @@ File
         },
         
         listenForChar: function(chrc, pos, wait, maxiter, debug)
-        //@requires ["DOLR.Debg.$sleep"]
+        //@@requires ["DOLR.Debg.$sleep"]
         //@@requires ["this.$open", "this.$seek"]
         {
             var WAIT_MSG = "Character not found, sleeping for {0}..";
@@ -165,7 +165,7 @@ File
         },
         
         listen : function(wait, debug, patience, cleanup)
-        //@requires ["DOLR.Debg.$sleep"]
+        //@@requires ["DOLR.Debg.$sleep"]
         {
             var WAIT_MSG = "File not found, sleeping for {0}..";
 

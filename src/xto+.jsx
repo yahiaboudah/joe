@@ -175,6 +175,8 @@
     // Ledger logic to keep track of what's being loaded
     $.global.LoadedLedger = function LoadedLedger(rawLoadee)
     {
+        $.hiresTimer;
+
         this.rawLoadee = rawLoadee || "loadeePlaceholder";
         this.main = [];
         this.deps = {};
@@ -213,6 +215,10 @@
             
             while(++i<loadedMain.length) this.addDep(loadedMain[i], this.rawLoadee);
             this.deps.xt(loadedDeps);
+        },
+
+        endTimer: function(){
+            this.loadTime = $.hiresTimer / 1000000;
         }
     });
 
@@ -224,7 +230,7 @@
             
             try { $.evalFile(file); }
             catch(e){
-                throw Error("{0} error in file: {1}".re(e.split(':')[0], file.fsName))
+                throw Error("{0} error in file: {1}".re(e.toString().split(':')[0], file.fsName))
             }
         },
 
@@ -294,10 +300,14 @@
                         loads all the dependecies before loading the file, and 
                         it shoves them into the "loaded" object.
                     */
-                    var deps = callee.getDeps(ff), j=-1;
-                    while(++j<deps.length) loaded.mergeAsDeps(
-                        load(deps[j])
-                    );
+                    var deps = callee.getDeps(ff), loadedDep, j=-1;
+                    while(++j<deps.length)
+                    {
+                        loadedDep = load(deps[j]); 
+                        loaded.mergeAsDeps(loadedDep);
+                        delete(loadedDep);
+                        loadedDep = undefined;
+                    }
 
                     /**************/
                     S.loadFile(ff);
@@ -308,6 +318,7 @@
                 default: break;
             }
 
+            loaded.endTimer();
             return loaded;
 
         }.xt({

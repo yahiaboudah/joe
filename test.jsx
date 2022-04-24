@@ -891,18 +891,16 @@
 //     5470
 // ], kwargs: {}})
 
-//@include "src/xto+.jsx"
+// //@include "src/xto+.jsx"
 
-try{
-    var miracle = xto.load("PRIM/String");
-    mircale.stiff
-}
-catch(e){
-    $.writeln(e.message)
-}
+// try{
+//     var miracle = xto.load("INOP/Python");
+//     $.writeln(miracle.getMain().se());
+//     $.writeln(miracle.getDeps().se())
+// }
+// catch(e)
+// {
+//     $.writeln(e.message)
+// }
 
-// $.writeln(miracle.getMain())
-
-// $.writeln("some shit"._replace({
-//     "shit": "crap"
-// }))
+$.writeln("azeok")

@@ -5,7 +5,7 @@ CompItem
     ({
         __name__: "ATTRIBS",
 
-        LAYER_TYPES: [ShapeLayer, Textlayer, LightLayer, CameraLayer, AVLayer],
+        LAYER_TYPES: [ShapeLayer, TextLayer, LightLayer, CameraLayer, AVLayer],
         FILM_SIZE: 36,
         FOCAL_LENGTH: 50
     })
@@ -36,8 +36,8 @@ CompItem
         },
 
         sel: function()
-        //@requires ["module.STATIC.LAYER_TYPES"]
-        //@requires ["PRIM.Array.FORS.forEach", "AFFX.LayerCollection.grab"]
+        //@@requires ["module.STATIC.LAYER_TYPES"]
+        //@@requires ["PRIM.Array.FORS.forEach", "AFFX.LayerCollection.grab"]
         {
             var args = arguments.slice();
 
@@ -62,7 +62,7 @@ CompItem
         },
 
         snap: function(t, pp)
-        //@requires ["AFFX.AECMD"]
+        //@@requires ["AFFX.AECMD"]
         {
             t = is(t, Number)? t: this.time;
 
@@ -77,7 +77,7 @@ CompItem
         },
 
         getLayersWith: function(prop, val)
-        //@requires ["AFFX.LayerCollection.grab"]
+        //@@requires ["AFFX.LayerCollection.grab"]
         {
             if(is(val, undefined)) val = true;
 
@@ -93,7 +93,7 @@ CompItem
         },
 
         setTime: function(t, all)
-        //@requires ["AFFX.LayerCollection.grab", "PRIM.Array.PROTO.FORS.forEach"]
+        //@@requires ["AFFX.LayerCollection.grab", "PRIM.Array.PROTO.FORS.forEach"]
         {
             if(!is(t, Number)) return this;
 
@@ -140,8 +140,8 @@ CompItem
         },
 
         importAndDrop: function(FP, force, inv, i)
-        //@requires ["AFFX.Project.GETTERS.getItemsWith"]
-        //@requires ["AFFX.Data.File.PROTO.AE.importAE"]
+        //@@requires ["AFFX.Project.GETTERS.getItemsWith"]
+        //@@requires ["AFFX.Data.File.PROTO.AE.importAE"]
         {
             var F = File(FP),
                 I = app.project.getItemsWith("name",function(name){return name == F.name;});

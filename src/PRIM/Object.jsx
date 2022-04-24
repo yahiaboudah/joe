@@ -1,6 +1,6 @@
 
 /*
-    @requires ["AFFX/CompItem" , "DATA/File"]
+    @requires ["AFFX/CompItem" , "DATA/Local/File"]
 */
 
 // [CONSTRUCTORS]: {create, fromArray, fromEntries}

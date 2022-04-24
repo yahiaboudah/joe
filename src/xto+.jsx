@@ -302,13 +302,7 @@
                         it shoves them into the "loaded" object.
                     */
                     var deps = callee.getDeps(ff), loadedDep, j=-1;
-                    while(++j<deps.length)
-                    {
-                        loadedDep = load(deps[j]); 
-                        loaded.mergeAsDeps(loadedDep);
-                        delete(loadedDep);
-                        loadedDep = undefined;
-                    }
+                    while(++j<deps.length) loaded.mergeAsDeps(load(deps[j]));
 
                     /**************/
                     S.loadFile(ff);
@@ -319,7 +313,7 @@
                 default: break;
             }
 
-            loaded.endTimer();
+            loaded.stopTimer();
             return loaded;
 
         }.xt({
@@ -345,38 +339,32 @@
 
             InvalidLoadeeType: function(loadeeVal)
             {
-                this.message = 
+                return this.message = 
                 [
                     "Bad loadee type: {0}\n".re(typeof loadeeVal),
                     "Loadees must be a valid path string: \"path/to/loadee\" or ",
                     "an Object with a path key: ({path: \"path/to/thing\"}) ",
                     "with a valid path string as a value."
                 ].join('');
-
-                return this.message;
             },
 
             InvalidLoadeeObject: function(loadeeVal)
             {
-                this.message = 
+                return this.message = 
                 [
                     "Bad loadee Object: {0}\n".re(loadeeVal.toSource()),
                     "It must be an Object with a \"path\" key: ({path: \"path/to/thing\"}) ",
                     "having a valid path string as a value."
                 ].join('');
-
-                return this.message;
             },
             
             InvalidLoadeePath: function(loadeeVal)
             {
-                this.message = 
+                return this.message = 
                 [
                     "Bad loadee path: {0}\n".re(loadeeVal),
                     "Check if the loadee path actually exists inside the xto package"
                 ].join('');
-
-                return this.message;
             },
         })
     })

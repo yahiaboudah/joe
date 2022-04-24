@@ -146,6 +146,32 @@
         }
     };
 
+    H[S] = S;
+    // BY-DEFAULT: load BASC [is, in, re, xt, se, zisc]
+    //---------------------
+    XTO_GUTS.BASC.call($.global);//|
+    //---------------------
+    
+    // ALWAYS: construct xto.root:
+    //---------------------
+    XTO_GUTS.POPULATE_ROOT.call({}, S.root, XTO_GUTS.PROCESS_XAML(File(CONFIG_PATH)))
+    //---------------------
+
+    // [LOADERS]:
+    
+    // build the xto.root object
+    // Either pass an object with a path property
+    // Or simply pass
+
+    // xto.load(
+    //     xto.root.PRIM.String,
+    //     xto.root.MATH.Bezier,
+    //     xto.root.MATH.M,
+    //     { path: "PRIM/Number" },
+    //     "PRIM/Boolean"
+    // )
+
+    // [LEDGER]
     // Ledger logic to keep track of what's being loaded
     $.global.LoadedLedger = function LoadedLedger(rawLoadee)
     {
@@ -190,33 +216,6 @@
         }
     });
 
-    var XTO_LEDGER = new LoadedLedger();
-
-    H[S] = S;
-    // BY-DEFAULT: load BASC [is, in, re, xt, se, zisc]
-    //---------------------
-    XTO_GUTS.BASC.call($.global);//|
-    //---------------------
-    
-    // ALWAYS: construct xto.root:
-    //---------------------
-    XTO_GUTS.POPULATE_ROOT.call({}, S.root, XTO_GUTS.processXaml(File(CONFIG_PATH)))
-    //---------------------
-
-    // [LOADERS]:
-    
-    // build the xto.root object
-    // Either pass an object with a path property
-    // Or simply pass
-
-    // xto.load(
-    //     xto.root.PRIM.String,
-    //     xto.root.MATH.Bezier,
-    //     xto.root.MATH.M,
-    //     { path: "PRIM/Number" },
-    //     "PRIM/Boolean"
-    // )
-
     S.xt({
     
         loadFile: function loadFile(file)
@@ -242,14 +241,24 @@
         load: function load(rawLoadee)
         {
             var loaded = new LoadedLedger(rawLoadee), loadee = rawLoadee;
-            var fd, fl, pp = "", dp, i=-1;
+            var ff, pp = "", i=-1;
 
-            if(is(loadee, Object) && is(loadee["path"], String)) loadee = loadee.path;
-            else if(is(loadee, String) && Folder(pp = callee.loadeeToPath(loadee)).exists) loadee = Folder(pp);
-            else if(!Folder(pp).exists && File(pp + µ.ext).exists) loadee = File(pp);
-            else throw callee.InvalidLoadeeError(loadee, i);
+            if(!is(loadee, Object, String))
+                throw new callee.InvalidLoadeeType(loadee);
 
-            switch(loadee.constructor)
+            if(is(loadee, Object) && !is(loadee = loadee["path"], String))
+                throw new callee.InvalidLoadeeObject(loadee);
+            
+            if(
+                is(loadee, String) &&
+                !
+                (
+                 (ff = Folder((pp = callee.loadeeToPath(loadee)))).exists ||
+                 (ff = File(pp + '.' + µ.ext)).exists
+                )
+            ) throw new callee.InvalidLoadeePath(ff.fsName);
+
+            switch(ff.constructor)
             {
                 /*
                     Try to load all the subfolders and files:
@@ -265,8 +274,8 @@
                     and avoid evalFile errors
                 */
                 case Folder:
-
-                    var fd = loadee, files = fd.getFiles(), j=-1;
+                
+                    var files = ff.getFiles(), j=-1;
                     while(++j < files.length){
                         // Merge whatever Ledger you get into the current parent Ledger
                         loadedLedger.mergeAsMain(
@@ -279,18 +288,19 @@
                 //==========================
                 //--------------------------
                 case File:
-                    var fl = loadee;
                     /*
                         Within each file there is a "requires" annotation
                         that points to the dependecies of the loadee, this function
                         loads all the dependecies before loading the file, and 
                         it shoves them into the "loaded" object.
                     */
-                    var deps = callee.getDeps(fl), j=-1;
-                    while(++j<deps.length) loaded.mergeAsDeps(load(deps[j]));
+                    var deps = callee.getDeps(ff), j=-1;
+                    while(++j<deps.length) loaded.mergeAsDeps(
+                        load(deps[j])
+                    );
 
                     /**************/
-                    S.loadFile(fl);
+                    S.loadFile(ff);
                     /*************/
                     break;
                 //----------------------------
@@ -306,24 +316,9 @@
             
             loadeeToPath: function(loadeeVal)
             {
-                return "{1}{0}{2}".re(µ.sep, S.SOURCE_PATH, loadeeVal.split(this.loadee_sep).join(µ.sep));
+                return "{1}{0}{2}".re(µ.sep, SOURCE_PATH, loadeeVal.split(this.loadee_sep).join(µ.sep));
             },
-
-            InvalidLoadeeError: function(loadeeVal, index)
-            {
-                this.message =
-                [
-                    "Invalid loadee argument: \"{0}\" at index position: [{1}].\n"
-                    .re(loadeeVal, index),
-                    "Loadees must be a valid path string: \"path/to/loadee\" or ",
-                    "an Object with a path key: ({path: \"path/to/thing\"}) ",
-                    "with a valid path string as a value."
-                
-                ].join('');
-
-                return this.message;
-            },
-
+            
             getDeps: function(file)
             {
                 var D, i=-1;
@@ -334,7 +329,43 @@
                 while(++i<D.length) D[i] = D[i].replace(/\s+|\"|\'/g, '');
 
                 return D;
-            }
+            },
+
+            InvalidLoadeeType: function(loadeeVal)
+            {
+                this.message = 
+                [
+                    "Bad loadee type: {0}\n".re(typeof loadeeVal),
+                    "Loadees must be a valid path string: \"path/to/loadee\" or ",
+                    "an Object with a path key: ({path: \"path/to/thing\"}) ",
+                    "with a valid path string as a value."
+                ].join('');
+
+                return this.message;
+            },
+
+            InvalidLoadeeObject: function(loadeeVal)
+            {
+                this.message = 
+                [
+                    "Bad loadee Object: {0}\n".re(loadeeVal.toSource()),
+                    "It must be an Object with a \"path\" key: ({path: \"path/to/thing\"}) ",
+                    "having a valid path string as a value."
+                ].join('');
+
+                return this.message;
+            },
+            
+            InvalidLoadeePath: function(loadeeVal)
+            {
+                this.message = 
+                [
+                    "Bad loadee path: {0}\n".re(loadeeVal),
+                    "Check if the loadee path actually exists inside the xto package"
+                ].join('');
+
+                return this.message;
+            },
         })
     })
 

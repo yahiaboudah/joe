@@ -892,3 +892,17 @@
 // ], kwargs: {}})
 
 //@include "src/xto+.jsx"
+
+try{
+    var miracle = xto.load("PRIM/String");
+    mircale.stiff
+}
+catch(e){
+    $.writeln(e.message)
+}
+
+// $.writeln(miracle.getMain())
+
+// $.writeln("some shit"._replace({
+//     "shit": "crap"
+// }))

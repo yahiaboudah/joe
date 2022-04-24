@@ -891,16 +891,15 @@
 //     5470
 // ], kwargs: {}})
 
-// //@include "src/xto+.jsx"
+//@include "src/xto+.jsx"
 
-// try{
-//     var miracle = xto.load("INOP/Python");
-//     $.writeln(miracle.getMain().se());
-//     $.writeln(miracle.getDeps().se())
-// }
-// catch(e)
-// {
-//     $.writeln(e.message)
-// }
-
-$.writeln("azeok")
+try{
+    var miracle = xto.load("INOP/Python");
+    $.writeln(miracle.getMain().se());
+    $.writeln(miracle.getDeps().se())
+    $.writeln(miracle.loadTime)
+}
+catch(e)
+{
+    $.writeln(e.message)
+}

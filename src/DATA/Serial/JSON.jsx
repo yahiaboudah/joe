@@ -1,4 +1,5 @@
 
+
 ;eval(MODULE.re("$.global", "JSON", "stringify"))
 
     [STATIC]

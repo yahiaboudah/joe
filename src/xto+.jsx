@@ -86,10 +86,10 @@
         // Initialize
         BASC: function(){
 
-            //@include "0000/re.jsx"
-            //@include "0000/xt.jsx"
             //@include "0000/is.jsx"
             //@include "0000/in.jsx"
+            //@include "0000/re.jsx"
+            //@include "0000/xt.jsx"
             //@include "0000/se.jsx"
             //@include "0000/zisc.jsx"
         },
@@ -154,7 +154,8 @@
     
     // ALWAYS: construct xto.root:
     //---------------------
-    XTO_GUTS.POPULATE_ROOT.call({}, S.root, XTO_GUTS.PROCESS_XAML(File(CONFIG_PATH)))
+    // SLOW AND NASTY FUNCTION!
+    // XTO_GUTS.POPULATE_ROOT.call({}, S.root, XTO_GUTS.PROCESS_XAML(File(CONFIG_PATH)))
     //---------------------
 
     // [LOADERS]:

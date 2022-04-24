@@ -69,7 +69,7 @@
         else
         {
             throw Error([
-                "No source path was found in the User variables",
+                "No source path was found in User Variables",
                 "Please add: [\"xto\" = \"path/to/xto\"]"
             ].join('\n'));
         }

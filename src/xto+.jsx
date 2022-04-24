@@ -176,7 +176,8 @@
     // Ledger logic to keep track of what's being loaded
     $.global.LoadedLedger = function LoadedLedger(rawLoadee)
     {
-        $.hiresTimer;
+        this.loadTime = 999999;
+        $.hiresTimer; // set the timer to 0
 
         this.rawLoadee = rawLoadee || "loadeePlaceholder";
         this.main = [];
@@ -218,7 +219,7 @@
             this.deps.xt(loadedDeps);
         },
 
-        endTimer: function(){
+        stopTimer: function(){
             this.loadTime = $.hiresTimer / 1000000;
         }
     });

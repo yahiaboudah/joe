@@ -6,7 +6,7 @@ CameraLayer
         __name__: "MATRIX",
 
         getAOV: function()
-        //@requires ["AFFX.AVLayer.PROPS.getProp", "MATH.AOV.getAOV"]
+        //@@requires ["AFFX.AVLayer.PROPS.getProp", "MATH.AOV.getAOV"]
         {
             var filmSize    = this.containingComp.height;
                 focalLength = this.getProp("Camera Options/Zoom").value;
@@ -35,7 +35,7 @@ CameraLayer
         },
 
         getProjectedZ: function(w)
-        //@requires ["AFFX.AVLayer.PROPS.getProp"]
+        //@@requires ["AFFX.AVLayer.PROPS.getProp"]
         {
             var z = this.getProp("Camera Options/Zoom").value;
             return (z - (z / w));

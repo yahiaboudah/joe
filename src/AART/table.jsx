@@ -1,4 +1,8 @@
 
+/*
+    @requires ["PRIM/Object"]
+*/
+
 ;eval(CLASS.re("$.global", "Table"))
 
     [PROTO]
@@ -6,8 +10,8 @@
         __name__: "CONSTRUCTOR",
 
         create: function(table, margin, verDivider, horDivider)
-        //@requires ["PRIM.Object.adapt"]
-        //@requires ["module.PROTO.getMaxColSizes", "module.PROTO.getMaxRowSizes"]
+        //@@requires ["PRIM.Object.adapt"]
+        //@@requires ["module.PROTO.getMaxColSizes", "module.PROTO.getMaxRowSizes"]
         {
             this.xt(Object.adapt({
                         
@@ -26,7 +30,10 @@
 
                     maxColSizes: this.getMaxColSizes(),
                     maxRowSizes: this.getMaxRowSizes()
-                }))
+                }));
+            
+            $.writeln(typeof this.table);
+            $.writeln(this.margin)
         }
     })
 
@@ -86,7 +93,7 @@
         },
 
         removeFiles: function(FP)
-        //@requires ["module.STATIC.REGX"]
+        //@@requires ["module.STATIC.REGX"]
         {
             var FS = Folder(FP || File($.fileName).path).getFiles("*.txt"), i=-1, f;
 
@@ -102,13 +109,13 @@
         __name__: "INFO",
 
         toString: function()
-        //@requires ["module.PROTO.render"]
+        //@@requires ["module.PROTO.render"]
         {
             return this.render();
         },
 
         getMaxColSizes: function()
-        //@requires [module.PROTO.FORS.forEachCol]
+        //@@requires [module.PROTO.FORS.forEachCol]
         {
             var MS = [], max;
             var i = j = -1, e;
@@ -132,7 +139,7 @@
         },
 
         getMaxRowSizes: function()
-        //@requires ["module.PROTO.FORS.forEachRow"]
+        //@@requires ["module.PROTO.FORS.forEachRow"]
         {
             var MS = [], max, m;
             var i = -1;
@@ -173,11 +180,11 @@
         },
 
         forEachCol: function(cb, modify)
-        //@requires ["module.STATIC.transpose"]
+        //@@requires ["module.STATIC.transpose"]
         {
             if(!is(cb, Function)) return;
 
-            var T = Table.transpose(this.table), i;
+            var T = Table.transpose(this.table), i = -1;
             var col, res;
             
             while(++i<T.length)
@@ -240,7 +247,7 @@
         },
 
         render: function(offset)
-        //@requires ["module.STATIC.format"]
+        //@@requires ["module.STATIC.format"]
         {
             this.format(); // should be non-optional:
         
@@ -276,8 +283,8 @@
         __name__: "DISPLAYERS",
 
         write: function(removePrev, pad, path)
-        //@requires ["module.STATIC.removeFiles", "module.PROTO.render"]
-        //@requires ["DATA.File.PROTO.$write"]
+        //@@requires ["module.STATIC.removeFiles", "module.PROTO.render"]
+        //@@requires ["DATA.File.PROTO.$write"]
         {
             if(removePrev) Table.removeFiles(path);
             path = path || Folder(File($.fileName).path).fsName;
@@ -299,7 +306,7 @@
         },
         
         show: function()
-        //@requires ["module.PROTO.render"]
+        //@@requires ["module.PROTO.render"]
         {
             $.writeln(this.render())
         }

@@ -46,7 +46,7 @@ AVLayer
         },
 
         removeProp : function(pp)
-        //@requires ["this.getProp"]
+        //@@requires ["this.getProp"]
         {
             pp = this.getProp(pp);
             if(is(pp, undefined)) return undefined;

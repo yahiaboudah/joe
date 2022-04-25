@@ -891,10 +891,12 @@
 //     5470
 // ], kwargs: {}})
 
-// //@include "src/xto+.jsx"
+//@include "src/xto+.jsx"
+
+// $.writeln(app.project.activeItem.numLayers)
 
 // try{
-//     var miracle = xto.load("INOP/Python");
+//     var miracle = xto.load("");
 //     $.writeln(miracle.getMain().se());
 //     $.writeln(miracle.getDeps().se())
 //     $.writeln(miracle.loadTime)
@@ -902,4 +904,14 @@
 // catch(e)
 // {
 //     $.writeln(e.message)
+//     $.writeln(e.line)
 // }
+
+var oo = {};
+var bb = {};
+
+[oo, bb][STATIC]({
+    myProp: 447
+});
+
+$.writeln(oo.se())

@@ -10,8 +10,12 @@ $.global.CLASS = ("{0}[\"{1}\"] = (function {1}("+ARGLIST+"){this.create("+ARGLI
 delete($.global.MODULE);
 $.global.MODULE = ("{0}[\"{1}\"] = (function {1}("+ARGLIST+"){return callee[{2}].call(callee,"+ARGLIST+")})");
 
+
+obj.xt()
+arr.xt([78, 77])
+
 delete(Object.prototype.xt);
-Object.prototype.xt = function(oo)
+Object.prototype.xt = function xt(oo)
 {
     var T = this;
 
@@ -24,7 +28,9 @@ Object.prototype.xt = function(oo)
         }
     }
 
-    else for(x in oo) if(oo.hasOwnProperty(x)) this[x] = oo[x];
+    else for(x in oo) if(oo.hasOwnProperty(x)){
+        this[x] = oo[x];
+    }
 
     return this;
 }

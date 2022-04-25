@@ -286,7 +286,7 @@
                     var files = ff.getFiles(), j=-1;
                     while(++j < files.length){
                         // Merge whatever Ledger you get into the current parent Ledger
-                        loadedLedger.mergeAsMain(
+                        loaded.mergeAsMain(
                             load("{1}{0}{2}".re(µ.sep, rawLoadee, files[j].name.split('.')[0]))
                         );
                     }

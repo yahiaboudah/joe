@@ -10,10 +10,6 @@ $.global.CLASS = ("{0}[\"{1}\"] = (function {1}("+ARGLIST+"){this.create("+ARGLI
 delete($.global.MODULE);
 $.global.MODULE = ("{0}[\"{1}\"] = (function {1}("+ARGLIST+"){return callee[{2}].call(callee,"+ARGLIST+")})");
 
-
-obj.xt()
-arr.xt([78, 77])
-
 delete(Object.prototype.xt);
 Object.prototype.xt = function xt(oo)
 {

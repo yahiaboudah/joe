@@ -12,6 +12,7 @@
     sourceURL  : "http://latex.codecogs.com/png.latex?\\dpi{300}%20\\huge%20",
     savePath   : "C:/wget/x.png",
   }
+  
   Afterfx     = 
   {
     specifier: "aftereffects",

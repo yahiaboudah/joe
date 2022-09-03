@@ -8,8 +8,11 @@
     ({
         __name__: "main",
 
-        tokenize: function()
+        tokenize: function(str)
         {
-            
+            var i=-1;
+            while(++i<str.length){
+                if(true){}
+            }
         }
     })

@@ -1,0 +1,3 @@
+//@include "test.jsx"
+
+someTest()

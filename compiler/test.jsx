@@ -1,12 +1,35 @@
 
 
+
+
 //@include "tokenizer.jsx"
-
-var x = -14;
-
 // the else is mapped to the closest possible
 // if statement
 
-if(x>0)
-    if(x>20) $.writeln("x greater than 20")
-else $.writeln("x is less than 20")
+// PUBLIC returns a code block
+
+// Basically create an anonymous closure with the H,S
+// pattern to do stuff
+
+// String
+//     .xt(
+//         PUBLIC
+//         ({
+//             __name__: "firstPublic",
+
+//             str: function(){}
+//         })
+
+//         +PRIVATE
+//         ({
+
+//             processer: function(){}
+//         })
+
+//         +PUBLIC
+//         ({
+
+//         })
+//     )
+
+$.writeln()

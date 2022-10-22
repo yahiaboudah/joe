@@ -383,14 +383,13 @@
         {    
             if(!(efun = EXTO[what])) return;
             var arr  = [];
-
+            
             var i = -1;
             while(++i<efun.length)
             {
                 curr = efun[i];
                 // curr = (curr[0] == '-')? curr.shift(): curr;
                 jcur = [what, efun[i]].join('.');
-    
                 arr.push(jcurr);
             }
 

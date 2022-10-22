@@ -1,3 +1,0 @@
-//@include "test.jsx"
-
-someTest()

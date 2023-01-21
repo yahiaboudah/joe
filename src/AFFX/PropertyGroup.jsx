@@ -1,41 +1,29 @@
 
 PropertyGroup
 
-    [PROTO]
+    [PROTO ('CHECKERS')]
     ({
         __name__: "CHECKERS",
-            
-        containingComp : function()
-        {
-            var DEPTH = this.propertyDepth, P = this;
+
         
-            while(DEPTH--) P = P.parentProperty;
-            
-            return P.containingComp;
+        is : function(){
+            return this.matchName.split(' ')[2].in(arguments.slice())
         },
 
-        is : function()
-        {
-            var P = this,
-                A = arguments.slice();
-
-            var match = P.matchName.split(' ')[2];
-            
-            var i = -1;
-            while(++i<A.length) if(match == A[i]) return true;
-        
-            return false;
-        },
-
-        isnt : function()
-        {
+        isnt : function(){
             return !this.is.apply(this, arguments.slice());
         }
     })
 
-    [PROTO]
+    [PROTO ("GETTERS")]
     ({
-        __name__: "GETTERS",
+        __prefix__: 'get',
+
+        _: function(propName, time)
+        {
+            var pp = this.property(propName);
+            return (time? pp.valueAtTime(time): pp.value);
+        },
         
         properties : function()
         {
@@ -46,26 +34,22 @@ PropertyGroup
 
             return P;
         },
-
-        get: function(propName, time)
-        {
-            var pp = this.property(propName);
-            return (time? pp.valueAtTime(time): pp.value);
-        }
     })
 
-    [PROTO]
-    ({
-        __name__: "SETTERS",
+    [PROTO ("ADDERS")]
 
-        set: function(propName, value, time)
+    [PROTO ("SETTERS")]
+    ({
+        __prefix__: "set",
+
+        _: function(propName, value, time)
         {
             time?
             this.property(propName).setValueAtTime(time, value):
             this.property(propName).setValue(value)
         },
         
-        moveFirstVertex : function(index)
+        firstVertex : function(index)
         {    
             const ERRS = 
             {
